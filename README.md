@@ -2,7 +2,7 @@
 
 ## Installation React-Native + Dependencies
 ```
-cd CustomApp
+cd App
 npm install -g yarn  
 yarn install
 npx react-native start
