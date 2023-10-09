@@ -1,6 +1,6 @@
 # SAE-5
 
-## Installation React-Native + Dependencies
+## Dependencies
 ```
 cd App
 npm install
