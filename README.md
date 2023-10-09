@@ -2,6 +2,7 @@
 
 ## Dependencies
 ```
+npm i -g expo-cli
 cd App
 npm install
 ```
