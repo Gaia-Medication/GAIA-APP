@@ -1,10 +1,10 @@
 # SAE-5
 
-## Installation React-Native + Dependencies
+## Dependencies
 ```
+npm i -g expo-cli
 cd App
-npm install -g yarn  
-yarn install
+npm install
 ```
 
 https://reactnative.dev/docs/environment-setup
@@ -12,5 +12,5 @@ https://reactnative.dev/docs/environment-setup
 
 ## Lancer l'emulateur
 ```
-npx react-native start
+npx start
 ```
