@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 import { Text, View } from '../../components/Themed';
 import React from 'react';
 
-export default function JournalScreen() {
+export default function StockScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Gestion du Stock</Text>

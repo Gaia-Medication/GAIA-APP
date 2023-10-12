@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 import { Text, View } from '../../components/Themed';
 import React from 'react';
 
-export default function JournalScreen() {
+export default function SuivisScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Suivis du profil</Text>

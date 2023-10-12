@@ -1,8 +1,14 @@
 import { StyleSheet } from 'react-native';
 
 import { Text, View } from '../../components/Themed';
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+import { useEffect, useState } from 'react';
 
-export default function TabOneScreen() {
+export default function AccueilScreen() {
+  const[image,setImage]=useState(null)
+
+  
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Recherche</Text>
