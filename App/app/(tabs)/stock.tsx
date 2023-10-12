@@ -6,7 +6,7 @@ import React from 'react';
 export default function JournalScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Journal</Text>
+      <Text style={styles.title}>Gestion du Stock</Text>
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" /> 
     </View>
   );
