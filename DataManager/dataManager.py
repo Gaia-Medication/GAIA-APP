@@ -3,6 +3,7 @@ import numpy as np
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin, urlparse, parse_qs
+from tqdm import tqdm
 
 class DataManager :
     def __init__(self, url, filesNames) -> None:
@@ -25,11 +26,17 @@ class DataManager :
     def getFiles(self):
         urls = self.getUrls()
         validUrls = [url for url in urls if any(param in url for param in self.filesNames)]
+        progress_bar = tqdm(total=len(validUrls), desc="Écriture des fichiers")
         for url in validUrls:
-            response = requests.get(url)
+            try:
+                response = requests.get(url)
+            except Exception as e:
+                print(f"An error occurred: {e}")
+
             a = parse_qs(urlparse(url).query)['fichier'][0]
             with open('data/'+a, 'wb') as f:
                 f.write(response.content)
+            progress_bar.update(1)
 
     
 

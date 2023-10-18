@@ -2,6 +2,7 @@ from dataManager import DataManager
 import pandas as pd
 import numpy as np
 
+
 # DATA
 url = 'https://base-donnees-publique.medicaments.gouv.fr/telechargement.php'
 params = np.array([
@@ -20,13 +21,7 @@ params = np.array([
 # INITIALISATION
 dataManager = DataManager(url, params)
 
-#files = dataManager.getFiles()
-
-
-fichier='data/CIS_CIP_bdpm.txt'
-with open(fichier,"r", encoding='latin-1') as f:
-    data=f.read()
-    print(data)
+files = dataManager.getFiles()
 
 def lecture_base(bd):
     df=pd.read_csv(bd, sep="\t", header=None)
