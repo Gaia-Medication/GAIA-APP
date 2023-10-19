@@ -24,10 +24,10 @@ dataManager = DataManager(url, params)
 files = dataManager.getFiles()
 
 def lecture_base(bd):
-    df=pd.read_csv(bd, sep="\t", header=None)
-    return df
+    return pd.read_csv(bd, sep="\t", header=None, encoding="latin1")
 
 
+print(lecture_base("data/CIS_bdpm.txt"))
 
 
 #Code CIS    Code CIP7   Libellé de la présentation  Statut administratif de la présentk,jation Etat de commercialisation
