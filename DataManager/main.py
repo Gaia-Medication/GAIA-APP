@@ -2,7 +2,6 @@ from dataManager import DataManager
 import pandas as pd
 import numpy as np
 
-
 # DATA
 url = 'https://base-donnees-publique.medicaments.gouv.fr/telechargement.php'
 params = np.array([
@@ -26,7 +25,7 @@ def lecture_base(bd):
 date=[
     ['data/CIS_InfoImportantes.txt',"data/CIS_CIP_Dispo_Spec.txt","data/CIS_CIP_bdpm.txt","data/CIS_bdpm.txt","data/CIS_HAS_SMR_bdpm.txt","data/CIS_HAS_ASMR_bdpm.txt"],
     [[1,3],[4,6],[5,6],[7,8],[3,4],[3,4]],
-    ["d-m-y","d/m/y","d/m/y","d/m/y","ymd","ymd"]
+    ["y-m-d","d/m/y","d/m/y","d/m/y","ymd","ymd"]
 ]
 
 
@@ -44,26 +43,27 @@ def clear_data():
         
         tab_ms_values+=f"{i} : {np.sum(missing_values, axis=0)} \n \n"
     return tab_ms_values
-    
+
+print("Clear data => ", clear_data()) 
     
     
 for i in range(6):
     data=pd.read_csv(date[0][i], sep="\t", header=None, encoding="latin1").iloc[:,date[1][i][0]:date[1][i][1]]
+    dates=[]
+    new_data=pd.DataFrame({'date': []})
     
-    if date[2][i]=='d-m-y':
-        for row in range(data.shape[0]):
-            data.values[row][0]=data.values[row][0].replace('-','/')
-            data.values[row][1]=data.values[row][0].replace('-','/')
-    if date[2][i]=='ymd':
-        for row in range(data.shape[0]):
-            dstr=str(data.values[row][0])
-            y=dstr[0:4]
-            m=dstr[4:6]
-            d=dstr[6:8]             #problème de type
-            data.astype(str)
-            data.values[row][0]=int(f"{d}/{m}/{y}")
-    
+    if date[2][i]=='y-m-d':
+        print(data.iloc[:,0].str.split('-').apply(lambda x: f"{x[2]}/{x[1]}/{x[0]}"))
+        print(data.iloc[:,1].str.split('-').apply(lambda x: f"{x[2]}/{x[1]}/{x[0]}"))
 
+    # if date[2][i]=='ymd':
+    #     dstr=str(data.values[:,0])
+    #     y=dstr[0:4]
+    #     m=dstr[4:6]
+    #     d=dstr[6:8]
+    #     dates.append(f"{d}/{m}/{y}")
+    
+print(dates)
 
 
 #Code CIS    Code CIP7   Libellé de la présentation  Statut administratif de la présentk,jation Etat de commercialisation
