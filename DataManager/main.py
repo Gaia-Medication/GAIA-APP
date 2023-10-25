@@ -27,10 +27,12 @@ date=[
 ]
 
 
+
+
 # INITIALISATION
 dataManager = DataManager(url, params)
 
-files = dataManager.getFiles()
+#files = dataManager.getFiles()
 
  # NETTOYAGE DES DONNEES
 def missing_value_count():
@@ -52,9 +54,11 @@ def clean_date():
             print("Colone 1  :   \n",data.iloc[:,0].str.split('-').apply(lambda x: f"{x[2]}/{x[1]}/{x[0]}"))
             print("Colone 2  :   \n",data.iloc[:,1].str.split('-').apply(lambda x: f"{x[2]}/{x[1]}/{x[0]}"))
         
-    
 
-print(lecture_base("data/CIS_CIP_bdpm.txt"))
+
+
+for i in range (0,len(lecture_base("data/CIS_CIP_bdpm.txt").iloc[:,2:3])):
+    print(lecture_base("data/CIS_CIP_bdpm.txt").iloc[:,2:3].values[i][0])
 
 
 #Code CIS    Code CIP7   Libellé de la présentation  Statut administratif de la présentk,jation Etat de commercialisation
