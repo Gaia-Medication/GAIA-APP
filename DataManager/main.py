@@ -26,6 +26,11 @@ date=[
     ["y-m-d"]
 ]
 
+meds={
+    "contenant":["plaquette","flacon","tube","ampoule","pilullier","sachet","pot","seringue","stylo","spray","sachet","bouteille","récipient","film","boite","boîte","poche","inhalateur","cartouche","vaporateur","disposit","enveloppe","applicateur"],
+    "quantité":["mL","L","l","ml","mg","g","G","mG","comprimé","gélule","sachet","dose"],
+    "matière":[]
+}
 
 
 
