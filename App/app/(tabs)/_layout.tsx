@@ -38,6 +38,7 @@ export default function TabLayout() {
           position:'absolute',
           height:60,
           borderTopWidth: 0,
+          backgroundColor:'transparent',
           justifyContent:'space-between'
         },
         tabBarLabelPosition: "below-icon",
