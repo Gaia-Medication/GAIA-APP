@@ -26,7 +26,7 @@ date=[
 
 dictionnary={
     "produit":["plaquette","kit","conditionnement","bande","poudre","générateur","distributeur","flacon","tube","ampoule","pilulier","sachet","pot","seringue","stylo","spray","sachet","bouteille","récipient","film","boite","boîte","poche","inhalateur","cartouche","vaporateur","dispositif","enveloppe","applicateur"],
-    "quantité":["mL","L","l","ml","mg","g","G","mG","comprimé","gélule","sachet","dose"],
+    "quantité":["l","ml","mg","g","comprimé","gélule","sachet","dose"],
     "matière":['pvdc','aluminium','pvc','polyamide','polyéthylène','papier','thermoformée',"en verre","acier","polypropylène"]
 }
 
@@ -85,9 +85,21 @@ string_data = brut_data.astype(str)
 all_desciption = np.char.split(string_data) # split les strings en array de string
 
 
-liste_no_de = []
+liste_occ = {"longueur":[],"occurence":[]}
 data_df={"quantité":[],"produit":[],"matière":[], "quantité produit 2":[],"produit 2":[]}
 df_description = pd.DataFrame(data_df)
+
+
+
+autorisation = lecture_base("data/CIS_bdpm.txt").iloc[:,4:5].values[:,0]
+l_autorisation=[]
+for i in autorisation:
+    if i not in l_autorisation:
+        l_autorisation.append(i)
+print(l_autorisation)
+
+
+
 
 
 
@@ -99,10 +111,15 @@ for description in all_desciption:
     quantité_1=""
     quantité_2=""
     
-    if len(description) not in liste_no_de:
-        liste_no_de.append(len(description))
+    if len(description) not in liste_occ["longueur"]:
+        liste_occ["longueur"].append(len(description))
+        liste_occ["occurence"].append(1)
+    elif len(description) in liste_occ["longueur"]:
+        for i in range(0,len(liste_occ["longueur"])-1):
+            if liste_occ["longueur"][i] == len(description):
+                liste_occ["occurence"][i]+=1
     # if len(description)==4:
-    #     print(description)
+    #      print(description)
     
     if len(description)<5:
         if has_number(description[0]):
@@ -134,7 +151,19 @@ for description in all_desciption:
         
     
     
-print(df_description.shape)
-liste_no_de.sort()
-#print(liste_no_de)
+#print(df_description)
+
+
+
+
+# Regrouper les longueurs et occurrences ensemble
+grouped_data = list(zip(liste_occ['longueur'], liste_occ['occurence']))
+
+# Trier en fonction des occurrences
+sorted_data = sorted(grouped_data, key=lambda x: x[1], reverse=True)
+
+# Afficher les longueurs triées en fonction des occurrences
+sorted_longueurs = [x[0] for x in sorted_data]
+sorted_occ=[x[1] for x in sorted_data]
+print("Longueurs : \n",sorted_longueurs,"\n Occurences : \n",sorted_occ)
 
