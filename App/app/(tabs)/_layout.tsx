@@ -32,6 +32,14 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="suivis"
+        options={{
+          tabBarLabel: ({ focused })=>focused?'Suivis':null,
+          headerShown: false,
+          tabBarIcon: ({ color }) => <TabBarIcon name="envelope" color={color} />,
+        }}
+      />
+      <Tabs.Screen
         name="messagerie"
         options={{
           tabBarLabel: ({ focused })=>focused?'Messagerie':null,
@@ -42,7 +50,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="settings"
         options={{
-          tabBarLabel: ({ focused })=>focused? 'Messagerie':null, 
+          tabBarLabel: ({ focused })=>focused? 'Paramètres':null, 
           headerShown: false,
           tabBarIcon: ({ color }) => <TabBarIcon name="gear" color={color} />,
         }}
