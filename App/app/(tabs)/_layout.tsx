@@ -22,7 +22,7 @@ export default function TabLayout() {
     tabtitle: {
       fontSize: 16,
       fontWeight: '600',
-      marginLeft:16,
+          marginTop:-10,
       color: Colors[colorScheme ?? "light"].tint ,
     },
   });
@@ -31,9 +31,16 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
+        //tabBarActiveBackgroundColor: Colors[colorScheme ?? "light"].tint,
         headerShown: false,
-        tabBarStyle:{paddingVertical: 5,position:'absolute',height:50,borderTopWidth: 0,justifyContent:'space-between'},
-        tabBarLabelPosition: "beside-icon",
+        tabBarStyle:{
+          marginVertical: 5,
+          position:'absolute',
+          height:60,
+          borderTopWidth: 0,
+          justifyContent:'space-between'
+        },
+        tabBarLabelPosition: "below-icon",
       }}
     >
       <Tabs.Screen

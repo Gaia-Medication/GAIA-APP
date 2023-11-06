@@ -10,7 +10,6 @@ const checkFirstConnection = async () => {
   try {
     const isFirstConnection = await AsyncStorage.getItem('firstConnection');
     await AsyncStorage.setItem('tutoCompleted', 'false');
-    const 
     if (isFirstConnection === null) {
       // L'utilisateur se connecte pour la première fois
       // TODO: affiche la page de creation de profil + condition pour savoir si il y a un profil

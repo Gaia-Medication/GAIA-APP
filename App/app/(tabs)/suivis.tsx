@@ -6,7 +6,7 @@ import React from 'react';
 export default function SuivisScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Messagerie</Text>
+      <Text style={styles.title}>Tabs de suivis</Text>
     </View>
   );
 }
