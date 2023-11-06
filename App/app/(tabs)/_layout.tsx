@@ -26,7 +26,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          tabBarLabel: 'Accueil',
+          tabBarLabel: ({ focused })=>focused?<Text>Accueil</Text>:null,
           headerShown: false,
           tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
         }}
@@ -34,15 +34,16 @@ export default function TabLayout() {
       <Tabs.Screen
         name="suivis"
         options={{
-          tabBarLabel: ({ focused })=>focused?'Suivis':null,
+          tabBarLabel: ({ focused })=>focused?<Text>Suivis</Text>:null,
           headerShown: false,
-          tabBarIcon: ({ color }) => <TabBarIcon name="envelope" color={color} />,
+          tabBarLabelPosition: 'beside-icon',
+          tabBarIcon: ({ color }) => <TabBarIcon name="book" color={color} />,
         }}
       />
       <Tabs.Screen
         name="messagerie"
         options={{
-          tabBarLabel: ({ focused })=>focused?'Messagerie':null,
+          tabBarLabel: ({ focused })=>focused?<Text>Messagerie</Text>:null,
           headerShown: false,
           tabBarIcon: ({ color }) => <TabBarIcon name="envelope" color={color} />,
         }}
@@ -50,7 +51,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="settings"
         options={{
-          tabBarLabel: ({ focused })=>focused? 'Paramètres':null, 
+          tabBarLabel: ({ focused })=>focused?<Text>Paramètres</Text>:null, 
           headerShown: false,
           tabBarIcon: ({ color }) => <TabBarIcon name="gear" color={color} />,
         }}
