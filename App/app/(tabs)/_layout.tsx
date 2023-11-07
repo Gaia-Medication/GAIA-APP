@@ -34,11 +34,11 @@ export default function TabLayout() {
         //tabBarActiveBackgroundColor: Colors[colorScheme ?? "light"].tint,
         headerShown: false,
         tabBarStyle:{
-          marginVertical: 5,
+          marginBottom: 10,
           position:'absolute',
           height:60,
           borderTopWidth: 0,
-          backgroundColor:'transparent',
+          backgroundColor:'#fff', 
           justifyContent:'space-between'
         },
         tabBarLabelPosition: "below-icon",
@@ -54,7 +54,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="suivis"
+        name="(top)"
         options={{
           tabBarLabel: ({ focused }) => 
             focused ? <Text style={styles.tabtitle}>Suivis</Text> : null,

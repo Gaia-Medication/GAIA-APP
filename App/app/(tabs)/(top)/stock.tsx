@@ -1,12 +1,12 @@
 import { StyleSheet } from 'react-native';
 
-import { Text, View } from '../../components/Themed';
+import { Text, View } from '../../../components/Themed';
 import React from 'react';
 
-export default function SettingsScreen() {
+export default function StockScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Paramètres</Text>
+      <Text style={styles.title}>Stock</Text>
     </View>
   );
 }

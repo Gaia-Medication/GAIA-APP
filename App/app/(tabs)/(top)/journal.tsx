@@ -1,12 +1,12 @@
 import { StyleSheet } from 'react-native';
 
-import { Text, View } from '../../components/Themed';
+import { Text, View } from '../../../components/Themed';
 import React from 'react';
 
-export default function SuivisScreen() {
+export default function JournalScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Tabs de suivis</Text>
+      <Text style={styles.title}>Journal</Text>
     </View>
   );
 }
