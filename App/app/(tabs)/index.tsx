@@ -34,20 +34,45 @@ export default function TabOneScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Recherche</Text>
+      <View style={styles.header}>
+        <Text style={styles.subtitle}>Welcome back</Text>
+        <Text style={styles.title}>Alexandre</Text>
+      </View>
+      <View style={styles.searchContainer}>
+        <Text style={styles.title2}>Recherche d’un médicament</Text>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    display: "flex",
+    height:"100%",
+    gap:20,
+  },
+  header: {
+    paddingTop:20,
+    display: "flex",
     alignItems: "center",
-    justifyContent: "center",
+  },
+  searchContainer: {
+    display: "flex",
+    marginHorizontal:25,
   },
   title: {
+    fontSize: 30,
+    fontWeight: "600",
+    lineHeight:30,
+  },
+  title2: {
     fontSize: 20,
-    fontWeight: "bold",
+    fontWeight: "600",
+  },
+  subtitle: {
+    fontSize: 12,
+    color: '#888888',
+    fontWeight: "normal",
   },
   separator: {
     marginVertical: 30,
