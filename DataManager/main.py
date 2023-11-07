@@ -2,6 +2,7 @@ from dataManager import DataManager
 import pandas as pd
 import numpy as np
 from text_to_num import text2num
+from utils import is_in_dictionnary, is_convertible_to_number, has_number, replace_accents, lecture_base
 
 # DATA
 url = 'https://base-donnees-publique.medicaments.gouv.fr/telechargement.php'
@@ -36,26 +37,7 @@ dataManager = DataManager(url, params)
 #files = dataManager.getFiles()
 
 
-# LECTURE DES FICHIERS
-def lecture_base(bd):
-    return pd.read_csv(bd, sep="\t", header=None, encoding="latin1")
 
-
-def has_number(string):
-    return any(char.isdigit() for char in string)
-
-def is_in_dictionnary(substring_to_check:str,category):             # SERT A REGARDER SI LE STRING EN ENTREE FAIT PARTIE D'UN MOT DE LA CATEGORIE DONNEE
-    if any(string in substring_to_check for string in dictionnary[category]):return True    # EX: mot="produit"  substring_to_check="pro"  return True
-    else: return False                                                                      # EST UTILE UNIQUEMENT POUR LES MOTS QU'ON SAIT DANS LE DICTIONNAIRE
-                                                                                            # CELA EVITE DE VERIFIER LES PLURIELS DE CHAQUE MOTS
-    
-def is_convertible_to_number(s):
-    try:
-        return text2num(s,"fr")
-    except ValueError:
-        return False
-
- # NETTOYAGE DES DONNEES
 def missing_value_count():
     tab_ms_values =""
     for i in params:
@@ -65,16 +47,6 @@ def missing_value_count():
         tab_ms_values+=f"{i} : {np.sum(missing_values, axis=0)} \n \n"
     return tab_ms_values
 
-
-
-def clean_date():
-    for i in range(len(date[0])):
-        data=pd.read_csv(date[0][i], sep="\t", header=None, encoding="latin1").iloc[:,date[1][i][0]:date[1][i][1]]
-        
-        if date[2][i]=='y-m-d':
-            print("Colone 1  :   \n",data.iloc[:,0].str.split('-').apply(lambda x: f"{x[2]}/{x[1]}/{x[0]}"))
-            print("Colone 2  :   \n",data.iloc[:,1].str.split('-').apply(lambda x: f"{x[2]}/{x[1]}/{x[0]}"))
-        
 
 
 
@@ -88,15 +60,6 @@ all_desciption = np.char.split(string_data) # split les strings en array de stri
 liste_occ = {"longueur":[],"occurence":[]}
 data_df={"quantité":[],"produit":[],"matière":[], "quantité produit 2":[],"produit 2":[]}
 df_description = pd.DataFrame(data_df)
-
-
-
-autorisation = lecture_base("data/CIS_bdpm.txt").iloc[:,4:5].values[:,0]
-l_autorisation=[]
-for i in autorisation:
-    if i not in l_autorisation:
-        l_autorisation.append(i)
-print(l_autorisation)
 
 
 
@@ -156,14 +119,14 @@ for description in all_desciption:
 
 
 
-# Regrouper les longueurs et occurrences ensemble
-grouped_data = list(zip(liste_occ['longueur'], liste_occ['occurence']))
+# # Regrouper les longueurs et occurrences ensemble
+# grouped_data = list(zip(liste_occ['longueur'], liste_occ['occurence']))
 
-# Trier en fonction des occurrences
-sorted_data = sorted(grouped_data, key=lambda x: x[1], reverse=True)
+# # Trier en fonction des occurrences
+# sorted_data = sorted(grouped_data, key=lambda x: x[1], reverse=True)
 
-# Afficher les longueurs triées en fonction des occurrences
-sorted_longueurs = [x[0] for x in sorted_data]
-sorted_occ=[x[1] for x in sorted_data]
-print("Longueurs : \n",sorted_longueurs,"\n Occurences : \n",sorted_occ)
+# # Afficher les longueurs triées en fonction des occurrences
+# sorted_longueurs = [x[0] for x in sorted_data]
+# sorted_occ=[x[1] for x in sorted_data]
+# print("Longueurs : \n",sorted_longueurs,"\n Occurences : \n",sorted_occ)
 
