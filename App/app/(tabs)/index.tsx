@@ -40,6 +40,15 @@ export default function TabOneScreen() {
       </View>
       <View style={styles.searchContainer}>
         <Text style={styles.title2}>Recherche d’un médicament</Text>
+        <View style={styles.searchBarwQR}>  
+          <View style={styles.searchBar}>
+          </View>
+          <View style={styles.searchQR}>
+          </View>
+        </View>
+      </View>
+      <View style={styles.traitementContainer}>
+        <Text style={styles.title2}>Suivis d'un traitement</Text>
       </View>
     </View>
   );
@@ -57,6 +66,30 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   searchContainer: {
+    display: "flex",
+    gap:10,
+    marginHorizontal:25,
+  },
+  searchBarwQR: {
+    display: "flex",
+    gap:19,
+    marginHorizontal:10,
+    flexDirection:"row",
+    height:50
+  },
+  searchBar: {
+    display: "flex",
+    flex:1,
+    backgroundColor:"#A0DB3050",
+    borderRadius:10,
+  },
+  searchQR: {
+    width:50,
+    display: "flex",
+    backgroundColor:"#A0DB3050",
+    borderRadius:10,
+  },
+  traitementContainer: {
     display: "flex",
     marginHorizontal:25,
   },
