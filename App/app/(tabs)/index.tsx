@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
-import React, { useEffect } from 'react';
-
+import React, { useEffect, useState } from 'react';
+import { SearchBar } from 'react-native-elements';
 import { Text, View } from "../../components/Themed";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -31,8 +31,15 @@ export default function TabOneScreen() {
   useEffect(() => {
     checkFirstConnection();
   }, []);
+  
+  const [search, setSearch] = useState("");
+
+  const updateSearch = (text: string) => {
+    setSearch(text)
+  };
 
   return (
+    
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.subtitle}>Welcome back</Text>
@@ -42,6 +49,11 @@ export default function TabOneScreen() {
         <Text style={styles.title2}>Recherche d’un médicament</Text>
         <View style={styles.searchBarwQR}>  
           <View style={styles.searchBar}>
+            <SearchBar
+              placeholder="Doliprane, Aspirine ..."
+              onChangeText={updateSearch}
+              value={search}
+            />
           </View>
           <View style={styles.searchQR}>
           </View>
