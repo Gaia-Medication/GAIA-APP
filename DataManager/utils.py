@@ -15,11 +15,9 @@ def lecture_base(bd):
 def has_number(string):
     return any(char.isdigit() for char in string)
 
-def is_in_dictionnary(substring_to_check:str,category):             # SERT A REGARDER SI LE STRING EN ENTREE FAIT PARTIE D'UN MOT DE LA CATEGORIE DONNEE
-    if any(string in substring_to_check for string in dictionnary[category]):return True    # EX: mot="produit"  substring_to_check="pro"  return True
-    else: return False                                                                      # EST UTILE UNIQUEMENT POUR LES MOTS QU'ON SAIT DANS LE DICTIONNAIRE
-                                                                                            # CELA EVITE DE VERIFIER LES PLURIELS DE CHAQUE MOTS
-    
+
+
+
 def is_convertible_to_number(s):
     try:
         return text2num(s,"fr")
@@ -34,6 +32,24 @@ def replace_accents(chaine):
         for caractere in chaine
     )
     return chaine_sans_accents
+
+
+
+
+# CREATION DES DICTIONNAIRES
+
+def create_regex_from_dictionnary(dictionnary):
+    regex_dict={}
+    for category in dictionnary:
+        regex_dict[category]=[]
+        for word in dictionnary[category]:
+            word=word.lower()
+            word=replace_accents(word)
+            regex_dict[category].append(fr"\b{word}(\(s\)|s)?\b")
+    return regex_dict
+
+
+
 
 
 # ANALYSE DES DONNEES
@@ -75,35 +91,3 @@ for i in l_voie:
     result_voie+=i+"\n"
 with open("data/voie.txt","w") as f:
     f.write(result_voie)
-
-
-
-
-dictionnary={
-    "produit":["plaquette","kit","conditionnement","bande","poudre","générateur","distributeur","flacon","tube","ampoule","pilulier","sachet","pot","seringue","stylo","spray","sachet","bouteille","récipient","film","boite","boîte","poche","inhalateur","cartouche","vaporateur","dispositif","enveloppe","applicateur"],
-    "quantité":["l","ml","mg","g","comprimé","gélule","sachet","dose"],
-    "matière":['pvdc','aluminium','pvc','polyamide','polyéthylène','papier','thermoformée',"en verre","acier","polypropylène"]
-}
-
-regex_dict={
-    "product":[],
-    "quantity":[],
-    "material":[]
-}
-
-
-
-
-# for expression in dictionnary["produit"]:
-#     expression=replace_accents(expression)
-#     expression=f"{expression}|{expression}"
-
-pattern=r"plaquette($(\(s\))|$s)"
-t1="plaquette"
-t2="plaquettes"
-t3="plaquette(s)"
-t4="plaq"
-
-
-# if re.search(pattern,t3):
-#     print("oui")

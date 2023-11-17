@@ -2,7 +2,7 @@ from dataManager import DataManager
 import pandas as pd
 import numpy as np
 from text_to_num import text2num
-from utils import is_in_dictionnary, is_convertible_to_number, has_number, replace_accents, lecture_base
+import re
 
 # DATA
 url = 'https://base-donnees-publique.medicaments.gouv.fr/telechargement.php'
@@ -17,26 +17,25 @@ params = np.array([
     'HAS_LiensPageCT_bdpm'
 ])
 
+# INITIALISATION
+dataManager = DataManager(url, params)
 
+files = dataManager.getFiles()
 
+from utils import is_convertible_to_number, has_number, replace_accents, lecture_base, create_regex_from_dictionnary
 date=[
     ['data/CIS_InfoImportantes.txt'],
     [[1,3]],
     ["y-m-d"]
 ]
 
+
 dictionnary={
-    "produit":["plaquette","kit","conditionnement","bande","poudre","générateur","distributeur","flacon","tube","ampoule","pilulier","sachet","pot","seringue","stylo","spray","sachet","bouteille","récipient","film","boite","boîte","poche","inhalateur","cartouche","vaporateur","dispositif","enveloppe","applicateur"],
-    "quantité":["l","ml","mg","g","comprimé","gélule","sachet","dose"],
-    "matière":['pvdc','aluminium','pvc','polyamide','polyéthylène','papier','thermoformée',"en verre","acier","polypropylène"]
+    "product":["plaquette","kit","conditionnement","bande","poudre","générateur","distributeur","flacon","tube","ampoule","pilulier","sachet","pot","seringue","stylo","spray","bouteille","récipient","film","boite","boite","poche","inhalateur","cartouche","evaporateur","dispositif","enveloppe","applicateur"],
+    "quantity":["l","ml","mg","g","comprimé","gélule","sachet","dose"],
+    "material":['pvdc','aluminium','pvc','polyamide','polyéthylène','papier','thermoformée',"verre","acier","polypropylène"]
 }
-
-# INITIALISATION
-dataManager = DataManager(url, params)
-
-#files = dataManager.getFiles()
-
-
+dictionnary=create_regex_from_dictionnary(dictionnary)
 
 def missing_value_count():
     tab_ms_values =""
@@ -48,32 +47,44 @@ def missing_value_count():
     return tab_ms_values
 
 
-
-
-
-
 brut_data = lecture_base("data/CIS_CIP_bdpm.txt").iloc[:,2:3].values[:,0]
 string_data = brut_data.astype(str)
 all_desciption = np.char.split(string_data) # split les strings en array de string
 
 
-liste_occ = {"longueur":[],"occurence":[]}
-data_df={"quantité":[],"produit":[],"matière":[], "quantité produit 2":[],"produit 2":[]}
-df_description = pd.DataFrame(data_df)
 
 
 
 
+liste=[]
 
-
-for description in all_desciption:
+for description in string_data:
     
     produit_1=""
     produit_2=""
     matiere=""
     quantité_1=""
     quantité_2=""
-    
+    flag=False
+    description=description.lower()
+    description=replace_accents(description)
+    for category, regex in dictionnary.items():
+        for reg in regex:
+            if re.search(reg,description):
+                flag=True
+    if flag==True:
+        liste.append(description)
+    if flag==False:
+        print(description)
+print(len(liste), len(string_data))  
+
+
+
+
+# Créer une liste de longueurs et une liste d'occurences
+
+liste_occ = {"longueur":[],"occurence":[]}
+for description in all_desciption:    
     if len(description) not in liste_occ["longueur"]:
         liste_occ["longueur"].append(len(description))
         liste_occ["occurence"].append(1)
@@ -81,52 +92,16 @@ for description in all_desciption:
         for i in range(0,len(liste_occ["longueur"])-1):
             if liste_occ["longueur"][i] == len(description):
                 liste_occ["occurence"][i]+=1
-    # if len(description)==4:
-    #      print(description)
-    
-    if len(description)<5:
-        if has_number(description[0]):
-            quantité_1=description[0]
-            if is_in_dictionnary(description[1].lower(),"produit"):
-                produit_1=description[1]
-            if len(description)==4 and description[3]=="verre":
-                matiere=description[3]
-            if len(description)>2 and is_in_dictionnary(description[2].lower(),"matière"):
-                matiere=description[2]
-        elif is_convertible_to_number(description[0]):
-            quantité_1=str(text2num(description[0],"fr"))
-            if is_in_dictionnary(description[1].lower(),"produit"):
-                produit_1=description[1]
-            if is_in_dictionnary(description[2].lower(),"matière"):
-                matiere=description[2]
-        elif len(description)==4:
-            produit_1=description[0]
-            quantité_2=description[2]
-            produit_2=description[3]
-        if produit_1=="" and quantité_1=="" and matiere=="":
-            print(description)
-        temp_df = pd.DataFrame({"quantité":quantité_1,"produit":produit_1,  "matière":matiere,"quantité produit 2":quantité_2,"produit 2":produit_2}, index=[0])
-        df_description=pd.concat([df_description,temp_df],ignore_index=True)
-        # else:
-        #     produit=description[0]
-        #     if  not  is_in_dictionnary(produit.lower(),"produit"):
-        #         print(produit,description[0:])
-        
-    
-    
-#print(df_description)
 
 
+# Regrouper les longueurs et occurrences ensemble
+grouped_data = list(zip(liste_occ["longueur"], liste_occ["occurence"]))
 
+# Trier en fonction des occurrences
+sorted_data = sorted(grouped_data, key=lambda x: x[1], reverse=True)
 
-# # Regrouper les longueurs et occurrences ensemble
-# grouped_data = list(zip(liste_occ['longueur'], liste_occ['occurence']))
-
-# # Trier en fonction des occurrences
-# sorted_data = sorted(grouped_data, key=lambda x: x[1], reverse=True)
-
-# # Afficher les longueurs triées en fonction des occurrences
-# sorted_longueurs = [x[0] for x in sorted_data]
-# sorted_occ=[x[1] for x in sorted_data]
-# print("Longueurs : \n",sorted_longueurs,"\n Occurences : \n",sorted_occ)
+# Afficher les longueurs triées en fonction des occurrences
+sorted_longueurs = [x[0] for x in sorted_data]
+sorted_occ=[x[1] for x in sorted_data]
+print("Longueurs : \n",sorted_longueurs,"\n Occurences : \n",sorted_occ)
 
