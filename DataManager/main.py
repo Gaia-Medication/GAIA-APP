@@ -23,6 +23,7 @@ dataManager = DataManager(url, params)
 files = dataManager.getFiles()
 
 from utils import is_convertible_to_number, has_number, replace_accents, lecture_base, create_regex_from_dictionnary
+
 date=[
     ['data/CIS_InfoImportantes.txt'],
     [[1,3]],
@@ -57,7 +58,7 @@ all_desciption = np.char.split(string_data) # split les strings en array de stri
 
 
 liste=[]
-
+n=0
 for description in string_data:
     
     produit_1=""
@@ -70,13 +71,12 @@ for description in string_data:
     description=replace_accents(description)
     for category, regex in dictionnary.items():
         for reg in regex:
-            if re.search(reg,description):
+            if re.search(reg,"product"):
                 flag=True
-    if flag==True:
+    if flag:
         liste.append(description)
     if flag==False:
-        print(description)
-print(len(liste), len(string_data))  
+        n+=1
 
 
 
@@ -103,5 +103,4 @@ sorted_data = sorted(grouped_data, key=lambda x: x[1], reverse=True)
 # Afficher les longueurs triées en fonction des occurrences
 sorted_longueurs = [x[0] for x in sorted_data]
 sorted_occ=[x[1] for x in sorted_data]
-print("Longueurs : \n",sorted_longueurs,"\n Occurences : \n",sorted_occ)
-
+#print("Longueurs : \n",sorted_longueurs,"\n Occurences : \n",sorted_occ)
