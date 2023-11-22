@@ -20,7 +20,7 @@ params = np.array([
 # INITIALISATION
 dataManager = DataManager(url, params)
 
-files = dataManager.getFiles()
+#files = dataManager.getFiles()
 
 from utils import is_convertible_to_number, has_number, replace_accents, lecture_base, create_regex_from_dictionnary
 
@@ -32,8 +32,8 @@ date=[
 
 
 dictionnary={
-    "product":["plaquette","kit","conditionnement","bande","poudre","générateur","distributeur","flacon","tube","ampoule","pilulier","sachet","pot","seringue","stylo","spray","bouteille","récipient","film","boite","boite","poche","inhalateur","cartouche","evaporateur","dispositif","enveloppe","applicateur"],
-    "quantity":["l","ml","mg","g","comprimé","gélule","sachet","dose"],
+    "product":["plaquette","kit","comprimé","gélule","dose","pastille","lyophilisat","capsule","conditionnement","bande","poudre","générateur","distributeur","flacon","tube","ampoule","pilulier","sachet","pot","seringue","stylo","spray","bouteille","récipient","film","boite","boite","poche","inhalateur","cartouche","evaporateur","dispositif","enveloppe","applicateur","sac"],
+    "quantity":["l","ml","mg","g","litre"],
     "material":['pvdc','aluminium','pvc','polyamide','polyéthylène','papier','thermoformée',"verre","acier","polypropylène"]
 }
 dictionnary=create_regex_from_dictionnary(dictionnary)
@@ -48,41 +48,58 @@ def missing_value_count():
     return tab_ms_values
 
 
+
+
+# for i in range(len(date[0])):
+#     data=pd.read_csv(date[0][i], sep="\t", header=None, encoding="latin1").iloc[:,date[1][i][0]:date[1][i][1]]
+#     print("Colone 1  :   \n",data.iloc[:,0].str.split('-').apply(lambda x: f"{x[2]}/{x[1]}/{x[0]}"))
+#     print("Colone 2  :   \n",data.iloc[:,1].str.split('-').apply(lambda x: f"{x[2]}/{x[1]}/{x[0]}"))
+
+
 brut_data = lecture_base("data/CIS_CIP_bdpm.txt").iloc[:,2:3].values[:,0]
 string_data = brut_data.astype(str)
 all_desciption = np.char.split(string_data) # split les strings en array de string
 
 
-
-
-
-
 liste=[]
 n=0
 for description in string_data:
-    
-    produit_1=""
-    produit_2=""
-    matiere=""
-    quantité_1=""
-    quantité_2=""
-    flag=False
+    #print(description)
+    product=[]
+    quantity=[]
+    material=[]
     description=description.lower()
     description=replace_accents(description)
     for category, regex in dictionnary.items():
         for reg in regex:
-            if re.search(reg,"product"):
-                flag=True
-    if flag:
-        liste.append(description)
-    if flag==False:
+            if re.search(reg,description):
+                word=re.search(reg,description).group()
+                if category=="product":
+                    product.append(word)
+                if category=="quantity":
+                    quantity.append(word)
+                if category=="material":
+                    material.append(word)
+
+                #print(product,quantity) 
+    if len(quantity)==0:
         n+=1
+        print(n,"ERROR quantity :", description)
+    if len(product)==0 and len(quantity)==0 :
+        print("ERROR product :", description)
 
 
 
+
+
+
+########################################################################################
+########################################################################################
+################################## ANALYSE DES DONNEES #################################
+########################################################################################
+########################################################################################
 
 # Créer une liste de longueurs et une liste d'occurences
-
 liste_occ = {"longueur":[],"occurence":[]}
 for description in all_desciption:    
     if len(description) not in liste_occ["longueur"]:
