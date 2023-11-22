@@ -1,6 +1,6 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, TextInput } from "react-native";
 import React, { useEffect, useState } from 'react';
-import { SearchBar } from 'react-native-elements';
+import { Image, SearchBar } from 'react-native-elements';
 import { Text, View } from "../../components/Themed";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -49,13 +49,17 @@ export default function TabOneScreen() {
         <Text style={styles.title2}>Recherche d’un médicament</Text>
         <View style={styles.searchBarwQR}>  
           <View style={styles.searchBar}>
-            <SearchBar
+            <TextInput
+              style={styles.searchBarInput}
               placeholder="Doliprane, Aspirine ..."
               onChangeText={updateSearch}
               value={search}
             />
           </View>
           <View style={styles.searchQR}>
+            <Image
+              source={{ uri: "App/assets/images/Scan.png" }}
+            />
           </View>
         </View>
       </View>
@@ -94,6 +98,12 @@ const styles = StyleSheet.create({
     flex:1,
     backgroundColor:"#A0DB3050",
     borderRadius:10,
+  },
+  searchBarInput: {
+    display: "flex",
+    flex:1,
+    color:"#9CDE00",
+    fontSize:16
   },
   searchQR: {
     width:50,
