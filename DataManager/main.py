@@ -22,7 +22,7 @@ params = np.array([
 # INITIALISATION
 dataManager = DataManager(url, params)
 
-files = dataManager.getFiles()
+#files = dataManager.getFiles()
 
 from utils import is_convertible_to_number, has_number, replace_accents, lecture_base, create_regex_from_dictionnary
 
@@ -65,31 +65,48 @@ s=str(string_data)
 
 
 
-n=0
-for description in string_data:
-    #print(description)
-    product=[]
-    quantity=[]
-    material=[]
-    description=description.lower()
-    description=replace_accents(description)
-    for category, regex in dictionnary.items():
-        for reg in regex:
-            if re.search(reg,description):
-                word=re.search(reg,description).group()
-                if category=="product":
-                    product.append(word)
-                if category=="quantity":
-                    quantity.append(word)
-                if category=="material":
-                    material.append(word)
+# n=0
+# for description in string_data:
+#     #print(description)
+#     product=[]
+#     quantity=[]
+#     material=[]
+#     description=description.lower()
+#     description=replace_accents(description)
+#     for category, regex in dictionnary.items():
+#         for reg in regex:
+#             if re.search(reg,description):
+#                 word=re.search(reg,description).group()
+#                 if category=="product":
+#                     product.append(word)
+#                 if category=="quantity":
+#                     quantity.append(word)
+#                 if category=="material":
+#                     material.append(word)
 
                 #print(product,quantity) 
-    if len(quantity)==0:
-        n+=1
-        print(n,"ERROR quantity :", description)
-    if len(product)==0 and len(quantity)==0 :
-        print("ERROR product :", description)
+    # if len(quantity)==0:
+    #     n+=1
+    #     print(n,"ERROR quantity :", description)
+    # if len(product)==0 and len(quantity)==0 :
+    #     print("ERROR product :", description)
+
+
+
+print(string_data[0],string_data[1394])
+
+nlp = spacy.load("fr_core_news_lg")
+
+doc = nlp("plaquette(s) PVC PVDC aluminium de 30 comprimé(s) 1 pilulier(s) polypropylène de 30 comprimé(s)")
+
+# Crée des spans pour "super restaurant" et "bar vraiment sympa"
+span1 = doc[0:7]
+span2 = doc[8:13]
+
+# Obtiens la similarité entre les spans
+similarity = span1.similarity(span2)
+print(similarity)
+
 
 # nlp = spacy.load("fr_core_news_sm")
 # matcher=Matcher(nlp.vocab)
