@@ -32,7 +32,7 @@ date=[
 
 
 dictionnary={
-    "product":["plaquette","kit","comprimé","gélule","dose","pastille","lyophilisat","capsule","conditionnement","bande","poudre","générateur","distributeur","flacon","tube","ampoule","pilulier","sachet","pot","seringue","stylo","spray","bouteille","récipient","film","boite","boite","poche","inhalateur","cartouche","evaporateur","dispositif","enveloppe","applicateur","sac"],
+    "product":["plaquette","kit","comprimé","gélule","dose","pastille","lyophilisat","capsule","suppositoire","conditionnement","bande","poudre","générateur","distributeur","flacon","tube","ampoule","pilulier","sachet","pot","seringue","stylo","spray","bouteille","récipient","film","boite","boite","poche","inhalateur","cartouche","evaporateur","dispositif","enveloppe","applicateur","sac"],
     "quantity":["l","ml","mg","g","litre"],
     "material":['pvdc','aluminium','pvc','polyamide','polyéthylène','papier','thermoformée',"verre","acier","polypropylène"]
 }
