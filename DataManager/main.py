@@ -3,6 +3,8 @@ import pandas as pd
 import numpy as np
 from text_to_num import text2num
 import re
+import spacy
+from spacy.matcher import Matcher
 
 # DATA
 url = 'https://base-donnees-publique.medicaments.gouv.fr/telechargement.php'
@@ -20,7 +22,7 @@ params = np.array([
 # INITIALISATION
 dataManager = DataManager(url, params)
 
-#files = dataManager.getFiles()
+files = dataManager.getFiles()
 
 from utils import is_convertible_to_number, has_number, replace_accents, lecture_base, create_regex_from_dictionnary
 
@@ -38,30 +40,31 @@ dictionnary={
 }
 dictionnary=create_regex_from_dictionnary(dictionnary)
 
-def missing_value_count():
-    tab_ms_values =""
-    for i in params:
-        table=lecture_base("data/"+i+".txt")
-        missing_values=table.isnull().values
+# def missing_value_count():
+#     tab_ms_values =""
+#     for i in params:
+#         table=lecture_base("data/"+i+".txt")
+#         missing_values=table.isnull().values
         
-        tab_ms_values+=f"{i} : {np.sum(missing_values, axis=0)} \n \n"
-    return tab_ms_values
+#         tab_ms_values+=f"{i} : {np.sum(missing_values, axis=0)} \n \n"
+#     return tab_ms_values
 
 
 
-
-# for i in range(len(date[0])):
-#     data=pd.read_csv(date[0][i], sep="\t", header=None, encoding="latin1").iloc[:,date[1][i][0]:date[1][i][1]]
-#     print("Colone 1  :   \n",data.iloc[:,0].str.split('-').apply(lambda x: f"{x[2]}/{x[1]}/{x[0]}"))
-#     print("Colone 2  :   \n",data.iloc[:,1].str.split('-').apply(lambda x: f"{x[2]}/{x[1]}/{x[0]}"))
+def date_format(date): #return the date format et l'implémenter dans le dataframe
+    for i in range(len(date[0])):
+        data=pd.read_csv(date[0][i], sep="\t", header=None, encoding="latin1").iloc[:,date[1][i][0]:date[1][i][1]]
+        print("Colone 1  :   \n",data.iloc[:,0].str.split('-').apply(lambda x: f"{x[2]}/{x[1]}/{x[0]}"))
+        print("Colone 2  :   \n",data.iloc[:,1].str.split('-').apply(lambda x: f"{x[2]}/{x[1]}/{x[0]}"))
 
 
 brut_data = lecture_base("data/CIS_CIP_bdpm.txt").iloc[:,2:3].values[:,0]
 string_data = brut_data.astype(str)
 all_desciption = np.char.split(string_data) # split les strings en array de string
+s=str(string_data)
 
 
-liste=[]
+
 n=0
 for description in string_data:
     #print(description)
@@ -88,7 +91,24 @@ for description in string_data:
     if len(product)==0 and len(quantity)==0 :
         print("ERROR product :", description)
 
+# nlp = spacy.load("fr_core_news_sm")
+# matcher=Matcher(nlp.vocab)
 
+# doc=nlp(s)
+# pattern = [
+#     {"LOWER": {"IN": ["plaquette", "tube", "récipient", "flacon"]}},  # Packaging type
+#     {"IS_PUNCT": True, "OP": "?"},  # Optional punctuation
+#     {"LOWER": {"IN": ["pvc", "polypropylène", "polyéthylène", "aluminium", "pvdc"]}, "OP": "?"},  # Material (optional)
+#     {"IS_PUNCT": True, "OP": "?"},  # Optional punctuation
+#     {"LIKE_NUM": True},  # Quantity
+#     {"LOWER": {"IN": ["comprimé", "ml", "g", "kg"]}}  # Unit
+# ]
+
+# matcher.add("PACKAGING_PATTERN", [pattern])
+# matches=matcher(doc)
+# for match_id, start, end in matches:
+#     span=doc[start:end]
+#     print(span.text)
 
 
 
