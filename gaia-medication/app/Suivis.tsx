@@ -6,10 +6,6 @@ function Suivis() {
   return (
     <SafeAreaView edges={['top']}>
       <Text>Suivis</Text>
-      <Button
-        title='Click Here'
-        onPress={() => alert('Button Clicked!')}
-      />
     </SafeAreaView>
   );
 }

@@ -6,10 +6,6 @@ function Messager() {
   return (
     <SafeAreaView edges={['top']}>
       <Text>Messager</Text>
-      <Button
-        title='Click Here'
-        onPress={() => alert('Button Clicked!')}
-      />
     </SafeAreaView>
   );
 }

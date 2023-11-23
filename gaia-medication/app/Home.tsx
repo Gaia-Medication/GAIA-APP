@@ -2,23 +2,22 @@ import React, { useEffect, useState } from "react";
 import { View,StyleSheet, Text, StatusBar, TextInput,  } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Redirect } from 'expo-router';
+import {NavigationProp, ParamListBase} from '@react-navigation/native';
 
-const checkFirstConnection = async () => {
+const checkFirstConnection = async (navigation: NavigationProp<ParamListBase>) => {
   try {
-    const isFirstConnection = await AsyncStorage.getItem('firstConnection');
-    await AsyncStorage.setItem('tutoCompleted', 'false');
+    const isFirstConnection = await AsyncStorage.getItem('firstConnectionn');
     if (isFirstConnection === null) {
+      await AsyncStorage.setItem('tutoCompleted', 'false');
       // L'utilisateur se connecte pour la première fois
       // TODO: affiche la page de creation de profil + condition pour savoir si il y a un profil
       alert('Première connexion')
       
-      // On enregistre que l'utilisateur s'est déjà connecté
-      await AsyncStorage.setItem('firstConnection', 'true');
+      // -> mettre ca une fois le premier profil crée : await AsyncStorage.setItem('firstConnection', 'true');
+      navigation.navigate('CreateProfile')
     } else {
       // L'utilisateur s'est déjà connecté
-      // TODO: Affiche la page d'acceuil ou de selection de profil
-      alert('Tu t déjà connecté toi') 
+      alert('Tout est bon mon con') 
       
     }
   } catch (error) {
@@ -26,14 +25,17 @@ const checkFirstConnection = async () => {
   }
 };
 
-function Home()  { 
+interface IHomeProps {
+  navigation: NavigationProp<ParamListBase>
+}
+export default function Home({navigation}:IHomeProps)  { 
   const [search, setSearch] = useState("");
 
-  const updateSearch = (text: string) => {
+  const updateSearch = (text : string) => {
     setSearch(text)
   };
   useEffect(() => {
-    checkFirstConnection();
+    checkFirstConnection(navigation);
   }, []);
 
   return (
@@ -67,7 +69,6 @@ function Home()  {
   );
 }
 
-export default Home;
 
 
 const styles = StyleSheet.create({
