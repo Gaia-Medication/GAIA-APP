@@ -1,16 +1,17 @@
 import React from 'react';
 import { View, Text, Button } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-function Home2() {
+function Suivis() {
   return (
-    <View>
-      <Text>Home Screen 2</Text>
+    <SafeAreaView edges={['top']}>
+      <Text>Suivis</Text>
       <Button
         title='Click Here'
         onPress={() => alert('Button Clicked!')}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
-export default Home2;
+export default Suivis;

@@ -7,14 +7,14 @@ import { Redirect } from 'expo-router';
 
 
 
-const Login = () => { 
+const CreateProfile = () => { 
 
   return (
     <SafeAreaView edges={['top']}>
       <StatusBar backgroundColor="blue" />
-      <Text>LOGIN</Text>
+      <Text>CreateProfile</Text>
     </SafeAreaView>
   );
 }
 
-export default Login;
+export default CreateProfile;
