@@ -53,9 +53,9 @@ const Home = () => {
             />
           </View>
           <View style={styles.searchQR}>
-            {/*<Image
+            {/* <Image
               source={{ uri: "App/assets/images/Scan. png" }}
-            />*/}
+            /> */}
           </View>
         </View>
       </View>
