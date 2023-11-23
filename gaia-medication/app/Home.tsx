@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View,StyleSheet, Text, StatusBar, TextInput,  } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Redirect } from 'expo-router';
 
 const checkFirstConnection = async () => {
   try {
@@ -17,15 +18,15 @@ const checkFirstConnection = async () => {
     } else {
       // L'utilisateur s'est déjà connecté
       // TODO: Affiche la page d'acceuil ou de selection de profil
-      alert('Tu t déjà connecté toi')
+      alert('Tu t déjà connecté toi') 
+      
     }
   } catch (error) {
     console.error('Error while reading/writing AsyncStorage', error);
   }
 };
 
-const Home = () => { 
-  
+function Home()  { 
   const [search, setSearch] = useState("");
 
   const updateSearch = (text: string) => {
@@ -35,6 +36,7 @@ const Home = () => {
     checkFirstConnection();
   }, []);
 
+  //return <Redirect href="/CreateProfile" />;
   return (
     <SafeAreaView edges={['top']} style={styles.container}> 
       <View style={styles.header}>
