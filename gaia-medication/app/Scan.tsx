@@ -2,12 +2,14 @@ import React from 'react';
 import { View, Text, Button } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-function Suivis() {
+export default function Scan() {
   return (
     <SafeAreaView edges={['top']}>
-      <Text>Suivis</Text>
+      <Text>Scan</Text>
+      <Button
+        title='Click Here'
+        onPress={() => alert('Button Clicked!')}
+      />
     </SafeAreaView>
   );
 }
-
-export default Suivis;

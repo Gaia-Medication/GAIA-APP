@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { View,StyleSheet, Text, StatusBar, TextInput,  } from 'react-native';
+import { View,StyleSheet, Text, StatusBar, TextInput, Button,  } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {NavigationProp, ParamListBase} from '@react-navigation/native';
+import {Link, NavigationProp, ParamListBase} from '@react-navigation/native';
 
 interface IHomeProps {
   navigation: NavigationProp<ParamListBase>
@@ -34,11 +34,11 @@ export default function Home({navigation}:IHomeProps)  {
               value={search}
             />
           </View>
-          <View style={styles.searchQR}>
+          <Link to={{ screen: 'Scan' }} style={styles.searchQR}>
             {/* <Image
               source={{ uri: "App/assets/images/Scan. png" }}
             /> */}
-          </View>
+          </Link>
         </View>
       </View>
       <View style={styles.traitementContainer}>

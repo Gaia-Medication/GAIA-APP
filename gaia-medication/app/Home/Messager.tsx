@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, Button } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-function Messager() {
+export default function Messager() {
   return (
     <SafeAreaView edges={['top']}>
       <Text>Messager</Text>
@@ -10,4 +10,3 @@ function Messager() {
   );
 }
 
-export default Messager;

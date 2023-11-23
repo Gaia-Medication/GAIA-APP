@@ -4,14 +4,19 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { StyleSheet, Text } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import Home from "./Home/Home";
 import Settings from "./Home/Settings";
-import Suivis from "./Home/Suivis";
+import Suivis from "./Suivis/Suivis";
 import Messager from "./Home/Messager";
 import CreateProfile from "./Profile/CreateProfile";
+import Scan from "./Scan";
+import Stock from "./Suivis/Stock";
+import Journal from "./Suivis/Journal";
 
 const Stack = createNativeStackNavigator();
-const Tab = createBottomTabNavigator();
+const BottomTab = createBottomTabNavigator();
+const TopTab = createMaterialTopTabNavigator();
 
 function TabBarIcon(props: {
   name: React.ComponentProps<typeof FontAwesome>["name"];
@@ -20,7 +25,7 @@ function TabBarIcon(props: {
   return <FontAwesome size={24} {...props} />;
 }
 
-function Navigation() {
+export default function Navigation() {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Home">
@@ -33,6 +38,14 @@ function Navigation() {
           name="CreateProfile"
           component={CreateProfile}
         />
+        <Stack.Screen
+          name="Profile"
+          component={CreateProfile}
+        />
+        <Stack.Screen
+          name="Scan"
+          component={Scan}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -40,7 +53,7 @@ function Navigation() {
 
 function HomeHandler() {
   return (
-    <Tab.Navigator
+    <BottomTab.Navigator
       screenOptions={{
        // tabBarActiveTintColor: "",
         //tabBarActiveBackgroundColor: "",
@@ -56,7 +69,7 @@ function HomeHandler() {
         tabBarLabelPosition: "below-icon",
       }}
     >
-      <Tab.Screen
+      <BottomTab.Screen
         name="Home"
         component={Home}
         options={{
@@ -66,9 +79,9 @@ function HomeHandler() {
           tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
         }}
       />
-      <Tab.Screen
-        name="Suivis"
-        component={Suivis}
+      <BottomTab.Screen
+        name="SuivisHandler"
+        component={SuivisHandler}
         options={{
           headerShown: false,
           tabBarLabel: ({ focused }) =>
@@ -76,7 +89,7 @@ function HomeHandler() {
           tabBarIcon: ({ color }) => <TabBarIcon name="book" color={color} />,
         }}
       />
-      <Tab.Screen
+      <BottomTab.Screen
         name="Messager"
         component={Messager}
         options={{
@@ -88,7 +101,7 @@ function HomeHandler() {
           ),
         }}
       />
-      <Tab.Screen
+      <BottomTab.Screen
         name="Settings"
         component={Settings}
         options={{
@@ -98,11 +111,19 @@ function HomeHandler() {
           tabBarIcon: ({ color }) => <TabBarIcon name="gear" color={color} />,
         }}
       />
-    </Tab.Navigator>
+    </BottomTab.Navigator>
   );
 }
 
-export default Navigation;
+function SuivisHandler() {
+  return (
+    <TopTab.Navigator>
+      <TopTab.Screen name="Suivis" component={Suivis} />
+      <TopTab.Screen name="Stock" component={Stock} />
+      <TopTab.Screen name="Journal" component={Journal} />
+    </TopTab.Navigator>
+  );
+}
 
 const styles = StyleSheet.create({
   tabtitle: {
