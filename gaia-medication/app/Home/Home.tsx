@@ -1,46 +1,24 @@
-import { StyleSheet, TextInput } from "react-native";
-import React, { useEffect, useState } from 'react';
-import { Image, SearchBar } from 'react-native-elements';
-import { Text, View } from "../../components/Themed";
+import React, { useEffect, useState } from "react";
+import { View,StyleSheet, Text, StatusBar, TextInput, Button,  } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {Link, NavigationProp, ParamListBase} from '@react-navigation/native';
 
-import AsyncStorage from "@react-native-async-storage/async-storage";
-
-// Vérifie si l'utilisateur s'est déjà connecté
-const checkFirstConnection = async () => {
-  try {
-    const isFirstConnection = await AsyncStorage.getItem('firstConnection');
-    await AsyncStorage.setItem('tutoCompleted', 'false');
-    if (isFirstConnection === null) {
-      // L'utilisateur se connecte pour la première fois
-      // TODO: affiche la page de creation de profil + condition pour savoir si il y a un profil
-      alert('Première connexion')
-      
-      // On enregistre que l'utilisateur s'est déjà connecté
-      await AsyncStorage.setItem('firstConnection', 'true');
-    } else {
-      // L'utilisateur s'est déjà connecté
-      // TODO: Affiche la page d'acceuil ou de selection de profil
-      alert('Tu t déjà connecté toi')
-    }
-  } catch (error) {
-    console.error('Error while reading/writing AsyncStorage', error);
-  }
-};
-
-export default function TabOneScreen() {
-  useEffect(() => {
-    checkFirstConnection();
-  }, []);
-  
+interface IHomeProps {
+  navigation: NavigationProp<ParamListBase>
+}
+export default function Home({navigation}:IHomeProps)  { 
   const [search, setSearch] = useState("");
 
-  const updateSearch = (text: string) => {
+  const updateSearch = (text : string) => {
     setSearch(text)
   };
+  useEffect(() => {
+    checkFirstConnection(navigation);
+  }, []);
 
   return (
-    
-    <View style={styles.container}>
+    <SafeAreaView edges={['top']} style={styles.container}> 
       <View style={styles.header}>
         <Text style={styles.subtitle}>Welcome back</Text>
         <Text style={styles.title}>Alexandre</Text>
@@ -56,19 +34,40 @@ export default function TabOneScreen() {
               value={search}
             />
           </View>
-          <View style={styles.searchQR}>
-            <Image
-              source={{ uri: "App/assets/images/Scan.png" }}
-            />
-          </View>
+          <Link to={{ screen: 'Scan' }} style={styles.searchQR}>
+            {/* <Image
+              source={{ uri: "App/assets/images/Scan. png" }}
+            /> */}
+          </Link>
         </View>
       </View>
       <View style={styles.traitementContainer}>
         <Text style={styles.title2}>Suivis d'un traitement</Text>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
+
+const checkFirstConnection = async (navigation: NavigationProp<ParamListBase>) => {
+  try {
+    const isFirstConnection = await AsyncStorage.getItem('firstConnection');
+    if (isFirstConnection === null) {
+      await AsyncStorage.setItem('tutoCompleted', 'false');
+      // L'utilisateur se connecte pour la première fois
+      // TODO: affiche la page de creation de profil + condition pour savoir si il y a un profil
+      alert('Première connexion')
+      
+      // -> mettre ca une fois le premier profil crée : await AsyncStorage.setItem('firstConnection', 'true');
+      navigation.navigate('CreateProfile')
+    } else {
+      // L'utilisateur s'est déjà connecté
+      alert('Tout est bon mon con') 
+      
+    }
+  } catch (error) {
+    console.error('Error while reading/writing AsyncStorage', error);
+  }
+};
 
 const styles = StyleSheet.create({
   container: {
