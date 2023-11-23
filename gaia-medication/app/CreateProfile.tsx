@@ -7,7 +7,7 @@ import { Redirect } from 'expo-router';
 
 
 
-const CreateProfile = () => { 
+function CreateProfile() { 
 
   return (
     <SafeAreaView edges={['top']}>

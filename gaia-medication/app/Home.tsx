@@ -26,7 +26,7 @@ const checkFirstConnection = async () => {
   }
 };
 
-function Home({navigation})  { 
+function Home()  { 
   const [search, setSearch] = useState("");
 
   const updateSearch = (text: string) => {
@@ -36,7 +36,6 @@ function Home({navigation})  {
     checkFirstConnection();
   }, []);
 
-  navigation.navigate('CreateProfile')
   return (
     <SafeAreaView edges={['top']} style={styles.container}> 
       <View style={styles.header}>
