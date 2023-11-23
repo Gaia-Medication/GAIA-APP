@@ -6,7 +6,7 @@ import {NavigationProp, ParamListBase} from '@react-navigation/native';
 
 const checkFirstConnection = async (navigation: NavigationProp<ParamListBase>) => {
   try {
-    const isFirstConnection = await AsyncStorage.getItem('firstConnectionn');
+    const isFirstConnection = await AsyncStorage.getItem('firstConnection');
     if (isFirstConnection === null) {
       await AsyncStorage.setItem('tutoCompleted', 'false');
       // L'utilisateur se connecte pour la première fois

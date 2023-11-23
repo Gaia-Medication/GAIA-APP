@@ -6,9 +6,6 @@ function Settings() {
   return (
     <SafeAreaView edges={['top']}>
       <Text>Settings</Text>
-      <Button
-        title='Click Here'
-      />
     </SafeAreaView>
   );
 }
