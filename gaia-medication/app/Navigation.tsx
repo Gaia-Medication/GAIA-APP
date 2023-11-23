@@ -4,11 +4,11 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { StyleSheet, Text } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import Home from "./Home";
-import Settings from "./Settings";
-import Suivis from "./Suivis";
-import Messager from "./Messager";
-import CreateProfile from "./CreateProfile";
+import Home from "./Home/Home";
+import Settings from "./Home/Settings";
+import Suivis from "./Home/Suivis";
+import Messager from "./Home/Messager";
+import CreateProfile from "./Profile/CreateProfile";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();

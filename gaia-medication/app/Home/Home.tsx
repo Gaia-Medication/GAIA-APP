@@ -4,27 +4,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {NavigationProp, ParamListBase} from '@react-navigation/native';
 
-const checkFirstConnection = async (navigation: NavigationProp<ParamListBase>) => {
-  try {
-    const isFirstConnection = await AsyncStorage.getItem('firstConnection');
-    if (isFirstConnection === null) {
-      await AsyncStorage.setItem('tutoCompleted', 'false');
-      // L'utilisateur se connecte pour la première fois
-      // TODO: affiche la page de creation de profil + condition pour savoir si il y a un profil
-      alert('Première connexion')
-      
-      // -> mettre ca une fois le premier profil crée : await AsyncStorage.setItem('firstConnection', 'true');
-      navigation.navigate('CreateProfile')
-    } else {
-      // L'utilisateur s'est déjà connecté
-      alert('Tout est bon mon con') 
-      
-    }
-  } catch (error) {
-    console.error('Error while reading/writing AsyncStorage', error);
-  }
-};
-
 interface IHomeProps {
   navigation: NavigationProp<ParamListBase>
 }
@@ -69,7 +48,26 @@ export default function Home({navigation}:IHomeProps)  {
   );
 }
 
-
+const checkFirstConnection = async (navigation: NavigationProp<ParamListBase>) => {
+  try {
+    const isFirstConnection = await AsyncStorage.getItem('firstConnection');
+    if (isFirstConnection === null) {
+      await AsyncStorage.setItem('tutoCompleted', 'false');
+      // L'utilisateur se connecte pour la première fois
+      // TODO: affiche la page de creation de profil + condition pour savoir si il y a un profil
+      alert('Première connexion')
+      
+      // -> mettre ca une fois le premier profil crée : await AsyncStorage.setItem('firstConnection', 'true');
+      navigation.navigate('CreateProfile')
+    } else {
+      // L'utilisateur s'est déjà connecté
+      alert('Tout est bon mon con') 
+      
+    }
+  } catch (error) {
+    console.error('Error while reading/writing AsyncStorage', error);
+  }
+};
 
 const styles = StyleSheet.create({
   container: {
