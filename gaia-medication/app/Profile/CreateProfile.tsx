@@ -36,13 +36,6 @@ export default function CreateProfile({ navigation }: ICreateProps) {
     if (isFormEmpty) {
       console.log(`error not valid`);
     } else {
-      type User = {
-        firstname: string;
-        lastname: string;
-        birthdate: string;
-        gender: string;
-        preference: string;
-      };
       try {
         const user: User = {
           firstname,
