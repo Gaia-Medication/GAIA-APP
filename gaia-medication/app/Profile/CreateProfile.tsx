@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import RNPickerSelect from "react-native-picker-select";
 import DatePicker from "react-native-date-picker";
 import { Button, StyleSheet, Text, TextInput, View } from "react-native";
@@ -32,8 +32,12 @@ export default function CreateProfile({ navigation }: ICreateProps) {
     setIsValidLastname(lastname.length >= 2);
   };
 
+  useEffect(() => {
+      console.log("Nav on CreationProfile Page")
+  },[]); 
+
   const handleSumbit = () => {
-    if (isFormEmpty) {
+    if (!isFormEmpty) {
       console.log(`error not valid`);
     } else {
       try {
@@ -97,7 +101,7 @@ export default function CreateProfile({ navigation }: ICreateProps) {
       <Button
         title="Enregistrer le profil"
         onPress={handleSumbit}
-        disabled={isFormEmpty}
+        disabled={!isFormEmpty}
       />
     </View>
   );

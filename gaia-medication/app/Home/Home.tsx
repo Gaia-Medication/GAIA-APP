@@ -32,7 +32,7 @@ export default function Home({ navigation }: IHomeProps) {
   
       }*/else{
         setUser(JSON.parse(isConnected));
-        console.log(isConnected)
+        console.log("user :",isConnected)
       }
   };
 
@@ -42,6 +42,7 @@ export default function Home({ navigation }: IHomeProps) {
 
   useEffect(() => {
     if(isFocused){ 
+      console.log("Nav on Home Page")
       eventHandler();
     }
   },[isFocused]); 
