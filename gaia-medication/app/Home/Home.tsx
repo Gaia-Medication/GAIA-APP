@@ -47,7 +47,20 @@ export default function Home({ navigation }: IHomeProps) {
         alert("Va falloir faire le tuto bro");
   
       }*/else{
-        setUser(await AsyncStorage.getItem("users") as unknown as User);
+        AsyncStorage.getItem("users").then((userData) => {
+          if (userData) {
+            // Conversion de la chaîne JSON en objet JavaScript
+            const getUser = JSON.parse(userData);
+            setUser(getUser)
+            console.log('Données utilisateur récupérées avec succès', user);
+          } else {
+            console.log('Aucune donnée utilisateur trouvée');
+          }
+        })
+        .catch((error) => {
+          console.error('Erreur lors de la récupération des données utilisateur', error);
+        });
+        //setUser(await  as unknown as User);
       }
     } catch (error) {
       console.error("Error while reading/writing AsyncStorage", error);
