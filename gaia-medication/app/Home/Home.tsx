@@ -8,12 +8,14 @@ import {
   Button,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Link, NavigationProp, ParamListBase, useFocusEffect } from "@react-navigation/native";
+import { Link, NavigationProp, ParamListBase } from "@react-navigation/native";
+import { useIsFocused } from "@react-navigation/native";
 
 interface IHomeProps {
   navigation: NavigationProp<ParamListBase>;
 }
 export default function Home({ navigation }: IHomeProps) {
+  const isFocused = useIsFocused();
   type User = {
     firstname: string;
     lastname: string;
@@ -64,9 +66,11 @@ export default function Home({ navigation }: IHomeProps) {
 
   // Utilisez useEffect pour appeler la fonction lors de la montée du composant
   useEffect(() => {
-    eventHandler();
-    console.log("EXEC")
-  },[]); // Le tableau de dépendances est vide pour exécuter cela une seule fois à la montée du composant
+    if(isFocused){ 
+      eventHandler();
+      console.log("EXEC")
+    }
+  },[isFocused]); // Le tableau de dépendances est vide pour exécuter cela une seule fois à la montée du composant
   
 
   return (
