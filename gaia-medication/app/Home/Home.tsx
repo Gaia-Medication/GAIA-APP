@@ -8,7 +8,7 @@ import {
   Button,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Link, NavigationProp, ParamListBase } from "@react-navigation/native";
+import { Link, NavigationProp, ParamListBase, useFocusEffect } from "@react-navigation/native";
 
 interface IHomeProps {
   navigation: NavigationProp<ParamListBase>;
@@ -26,7 +26,7 @@ export default function Home({ navigation }: IHomeProps) {
   const [search, setSearch] = useState("");
   console.log(user);
 
-  const checkFirstConnection = async () => {
+  const eventHandler = async () => {
     try {
       const isTutoComplete = await AsyncStorage.getItem("tutoComplete");
       const isConnected = await AsyncStorage.getItem("users");
@@ -47,7 +47,7 @@ export default function Home({ navigation }: IHomeProps) {
         alert("Va falloir faire le tuto bro");
   
       }*/else{
-        setUser(AsyncStorage.getItem("users") as unknown as User);
+        setUser(await AsyncStorage.getItem("users") as unknown as User);
       }
     } catch (error) {
       console.error("Error while reading/writing AsyncStorage", error);
@@ -57,9 +57,9 @@ export default function Home({ navigation }: IHomeProps) {
   const updateSearch = (text: string) => {
     setSearch(text);
   };
-  useEffect(() => {
-    checkFirstConnection();
-  }, []);
+  useFocusEffect(() => {
+    eventHandler();
+  });
 
   return (
     <View style={styles.container}>
