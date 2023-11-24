@@ -63,6 +63,44 @@ string_data = brut_data.astype(str)
 all_desciption = np.char.split(string_data) # split les strings en array de string
 s=str(string_data)
 
+# #############################################  CREATION DES DATAFRAMES  #############################################
+
+# ######### Importantes informations
+
+dfInformation = pd.read_csv("data/CIS_InfoImportantes", sep="\t", header=None, encoding="latin1")
+dfInformation.columns = [
+    'CIS', #0
+    'Prescription_conditions', #1
+]
+print(dfInformation)
+
+# ######### PrescriptionConditions
+dfPrescription = pd.read_csv("data/CIS_CPD_bdpm.txt", sep="\t", header=None, encoding="latin1")
+dfPrescription.columns = [
+    'CIS', #0
+    'Prescription_conditions', #1
+]
+print(dfPrescription)
+
+# ######### Medication
+dfMedication = pd.read_csv("data/CIS_bdpm.txt", sep="\t", header=None, encoding="latin1")
+dfMedication = dfMedication.drop([5,7,9,10], axis=1)
+dfMedication.columns = [
+    'CIS', #0
+    'Name', #1
+    'Shape', #2
+    'Administration_way', #3
+    'Authorization',#4
+    'Marketed', #6
+    'Stock', #8
+    'Warning', #11 
+    #'Important_informations', 
+]
+dfMedication = dfMedication.merge(dfPrescription, on='CIS')
+
+print(dfMedication)
+jsonMedication = dfMedication.to_json(orient="records")
+#print(jsonMedication)
 
 
 # n=0
@@ -93,19 +131,19 @@ s=str(string_data)
 
 
 
-print(string_data[0],string_data[1394])
+# print(string_data[0],string_data[1394])
 
-nlp = spacy.load("fr_core_news_lg")
+# nlp = spacy.load("fr_core_news_lg")
 
-doc = nlp("plaquette(s) PVC PVDC aluminium de 30 comprimé(s) 1 pilulier(s) polypropylène de 30 comprimé(s)")
+# doc = nlp("plaquette(s) PVC PVDC aluminium de 30 comprimé(s) 1 pilulier(s) polypropylène de 30 comprimé(s)")
 
-# Crée des spans pour "super restaurant" et "bar vraiment sympa"
-span1 = doc[0:7]
-span2 = doc[8:13]
+# # Crée des spans pour "super restaurant" et "bar vraiment sympa"
+# span1 = doc[0:7]
+# span2 = doc[8:13]
 
-# Obtiens la similarité entre les spans
-similarity = span1.similarity(span2)
-print(similarity)
+# # Obtiens la similarité entre les spans
+# similarity = span1.similarity(span2)
+# print(similarity)
 
 
 # nlp = spacy.load("fr_core_news_sm")
