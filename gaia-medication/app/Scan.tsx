@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Image, View, Platform } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import TextRecognition from '@react-native-ml-kit/text-recognition';
-
+    
 
 
 export default function Scan() {
