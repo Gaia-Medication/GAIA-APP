@@ -63,16 +63,32 @@ string_data = brut_data.astype(str)
 all_desciption = np.char.split(string_data) # split les strings en array de string
 s=str(string_data)
 
+
+
+
+
+
+
 # #############################################  CREATION DES DATAFRAMES  #############################################
 
+def group_by_cis(group):
+    return group.to_dict(orient='records')
 # ######### Importantes informations
 
-dfInformation = pd.read_csv("data/CIS_InfoImportantes", sep="\t", header=None, encoding="latin1")
+dfInformation = pd.read_csv("data/CIS_InfoImportantes.txt", sep="\t", header=None, encoding="latin1")
 dfInformation.columns = [
     'CIS', #0
-    'Prescription_conditions', #1
+    'dateDebut', #1
+    'dateFin', #2
+    'Important_informations', #1
 ]
+print(dfInformation.shape)
+# Group the DataFrame by 'Category'
+
+
+
 print(dfInformation)
+
 
 # ######### PrescriptionConditions
 dfPrescription = pd.read_csv("data/CIS_CPD_bdpm.txt", sep="\t", header=None, encoding="latin1")
@@ -80,7 +96,38 @@ dfPrescription.columns = [
     'CIS', #0
     'Prescription_conditions', #1
 ]
-print(dfPrescription)
+# Group the DataFrame by 'Category'
+dfPrescription = dfPrescription.groupby('CIS')
+# Concatenate the string values in 'Value' for each category
+dfPrescription = dfPrescription['Prescription_conditions'].agg(', '.join)
+# Display the result
+#print(dfPrescription)
+
+# ######### Presentation
+dfPresentation = pd.read_csv("data/CIS_CIP_bdpm.txt", sep="\t", header=None, encoding="latin1")
+dfPresentation = dfPresentation.drop([3,4,5,6,7,11], axis=1)
+dfPresentation.columns = [
+    'CIS', #0
+    'CIP', #1
+    'Denomination', #2
+    'Remboursement', #8
+    'Price_without_taxes', #9-
+    'Price_with_taxes', #10-
+    'Infos_remboursement',#12
+]
+dfPresentation = dfPresentation.sort_values(by=['CIS'])
+actCIS = dfPresentation.iloc[0,0]
+
+# Group the DataFrame by 'CIS' and apply the custom function
+dfPresentation = dfPresentation.groupby('CIS').apply(group_by_cis)
+
+# Create a new DataFrame from the grouped data
+dfPresentation = pd.DataFrame({'CIS': dfPresentation.index, 'Values': dfPresentation.values})
+
+# Reset the index if needed
+dfPresentation.reset_index(drop=True, inplace=True)
+        
+#print(dfPresentation)
 
 # ######### Medication
 dfMedication = pd.read_csv("data/CIS_bdpm.txt", sep="\t", header=None, encoding="latin1")
@@ -96,12 +143,27 @@ dfMedication.columns = [
     'Warning', #11 
     #'Important_informations', 
 ]
-dfMedication = dfMedication.merge(dfPrescription, on='CIS')
 
-print(dfMedication)
+dfInformation = dfInformation[dfInformation['CIS'].isin(dfMedication['CIS'])]
+
+dfInformation = dfInformation.groupby('CIS').apply(group_by_cis)
+
+# Create a new DataFrame from the grouped data
+dfInformation = pd.DataFrame({'CIS': dfInformation.index, 'infos': dfInformation.values})
+
+# Reset the index if needed
+dfInformation.reset_index(drop=True, inplace=True)
+
+
+
+dfMedication = dfMedication.merge(dfPrescription, on='CIS', how='outer')
+dfMedication = dfMedication.merge(dfInformation, on='CIS', how='outer')
+## DEUX ENREGISTREMENTS EN TROP
+dfMedication = dfMedication.merge(dfPresentation, on='CIS', how='outer')
+
+print(dfMedication.sort_values(by=['CIS']))
 jsonMedication = dfMedication.to_json(orient="records")
 #print(jsonMedication)
-
 
 # n=0
 # for description in string_data:
