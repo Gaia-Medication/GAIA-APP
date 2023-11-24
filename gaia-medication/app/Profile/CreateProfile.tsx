@@ -43,7 +43,6 @@ export default function CreateProfile({navigation}:ICreateProps) {
       const userJSON = JSON.stringify(user);
       console.log(user);
       AsyncStorage.setItem("users", userJSON);
-      AsyncStorage.setItem("firstConnection", "true"); 
       navigation.goBack();
     } catch (e){
       console.log(e);
