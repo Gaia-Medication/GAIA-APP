@@ -4,9 +4,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Messager() {
   return (
-    <SafeAreaView edges={['top']}>
+    <View>
       <Text>Messager</Text>
-    </SafeAreaView>
+    </View>
   );
 }
 

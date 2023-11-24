@@ -4,9 +4,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Settings() {
   return (
-    <SafeAreaView edges={['top']}>
+    <View>
       <Text>Settings</Text>
-    </SafeAreaView>
+    </View>
   );
 }
 

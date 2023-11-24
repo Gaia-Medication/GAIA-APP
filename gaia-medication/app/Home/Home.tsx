@@ -8,20 +8,33 @@ interface IHomeProps {
   navigation: NavigationProp<ParamListBase>
 }
 export default function Home({navigation}:IHomeProps)  { 
+
+  type User = {
+    firstname: string,
+    lastname: string,
+    birthdate: string,
+    gender: string,
+    preference: string
+  };
+
+  const [user, setUser] = useState<User | null>(null);
   const [search, setSearch] = useState("");
+  console.log();
 
   const updateSearch = (text : string) => {
     setSearch(text)
   };
   useEffect(() => {
     checkFirstConnection(navigation);
+    setUser(AsyncStorage.getItem('users') as unknown as User);
   }, []);
 
   return (
-    <SafeAreaView edges={['top']} style={styles.container}> 
+    (user) && (
+    <View style={styles.container}> 
       <View style={styles.header}>
         <Text style={styles.subtitle}>Welcome back</Text>
-        <Text style={styles.title}>Alexandre</Text>
+        <Text style={styles.title}>{user?.firstname}</Text>
       </View>
       <View style={styles.searchContainer}>
         <Text style={styles.title2}>Recherche d’un médicament</Text>
@@ -44,24 +57,42 @@ export default function Home({navigation}:IHomeProps)  {
       <View style={styles.traitementContainer}>
         <Text style={styles.title2}>Suivis d'un traitement</Text>
       </View>
-    </SafeAreaView>
+      <Button
+        title="CLEAR USERS DATA"
+        onPress={() => AsyncStorage.removeItem('users')} />
+    </View>
+    )
   );
 }
 
 const checkFirstConnection = async (navigation: NavigationProp<ParamListBase>) => {
   try {
+    const isConnected = await AsyncStorage.getItem('users');
     const isFirstConnection = await AsyncStorage.getItem('firstConnection');
     if (isFirstConnection === null) {
-      await AsyncStorage.setItem('tutoCompleted', 'false');
+      //await AsyncStorage.setItem('tutoCompleted', 'false');
       // L'utilisateur se connecte pour la première fois
       // TODO: affiche la page de creation de profil + condition pour savoir si il y a un profil
       alert('Première connexion')
+      const keys = await AsyncStorage.getAllKeys();
+
+      // Get all values associated with the keys
+      const values = await AsyncStorage.multiGet(keys);
+      console.log(values)
       
-      // -> mettre ca une fois le premier profil crée : await AsyncStorage.setItem('firstConnection', 'true');
-      navigation.navigate('CreateProfile')
+      if (isConnected === null) {
+        // -> mettre ca une fois le premier profil crée : await AsyncStorage.setItem('firstConnection', 'true');
+        navigation.navigate('CreateProfile')
+      }
     } else {
-      // L'utilisateur s'est déjà connecté
-      alert('Tout est bon mon con') 
+      if (isConnected === null) {
+        // -> mettre ca une fois le premier profil crée : await AsyncStorage.setItem('firstConnection', 'true');
+        navigation.navigate('CreateProfile')
+      } else {
+        // L'utilisateur s'est déjà connecté
+        alert('Tout est bon mon con') 
+      }
+
       
     }
   } catch (error) {

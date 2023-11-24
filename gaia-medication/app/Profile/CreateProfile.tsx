@@ -4,8 +4,15 @@ import DatePicker from 'react-native-date-picker'
 import { Button, StyleSheet, Text, TextInput, View } from "react-native";
 import { Input } from "react-native-elements";
 import { SafeAreaView } from "react-native-safe-area-context";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {Link, NavigationProp, ParamListBase} from '@react-navigation/native';
 
-export default function CreateProfile() {
+
+interface ICreateProps {
+  navigation: NavigationProp<ParamListBase>
+}
+
+export default function CreateProfile({navigation}:ICreateProps) {
   const [lastname, setLastname] = useState("");
   const [firstname, setFirstname] = useState("");
   const [birthdate, setBirthdate] = useState("");
@@ -16,15 +23,41 @@ export default function CreateProfile() {
 
   const handleSumbit = () => {
     console.log(`Nom: ${lastname}`);
+    type User = {
+      firstname: string,
+      lastname: string,
+      birthdate: string,
+      gender: string,
+      preference: string
+    };
+    try {
+      const user: User = {
+        firstname,
+        lastname,
+        birthdate,
+        gender,
+        preference
+      };
+      
+      // Convert the user object to JSON
+      const userJSON = JSON.stringify(user);
+      console.log(user);
+      AsyncStorage.setItem("users", userJSON);
+      AsyncStorage.setItem("firstConnection", "true"); 
+      navigation.goBack();
+    } catch (e){
+      console.log(e);
+    }
+    
   };
 
   return (
-    <SafeAreaView edges={['top']} style={styles.container}>
+    <View style={styles.container}>
       <Input
         label="Prenom"
         placeholder="Entrez votre prenom"
         leftIcon={{ type: "font-awesome", name: "user" }}
-        onChangeText={(text) => setLastname(text)}
+        onChangeText={(text) => setFirstname(text)}
         value={firstname}
       />
 
@@ -35,7 +68,6 @@ export default function CreateProfile() {
         onChangeText={(text) => setLastname(text)}
         value={lastname}
       />
-
 
       <Input
         label="Preference/Allergies"
@@ -56,7 +88,7 @@ export default function CreateProfile() {
       />
 
       <Button title="Enregistrer le profil" onPress={handleSumbit} />
-    </SafeAreaView>
+    </View>
   );
 }
 

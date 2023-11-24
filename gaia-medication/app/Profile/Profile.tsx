@@ -4,13 +4,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Profile() {
   return (
-    <SafeAreaView edges={['top']}>
+    <View>
       <Text>Profile</Text>
       <Button
         title='Click Here'
         onPress={() => alert('Button Clicked!')}
       />
-    </SafeAreaView>
+    </View>
   );
 }
 
