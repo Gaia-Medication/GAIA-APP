@@ -8,12 +8,14 @@ import {
   Button,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Link, NavigationProp, ParamListBase, useFocusEffect } from "@react-navigation/native";
+import { Link, NavigationProp, ParamListBase } from "@react-navigation/native";
+import { useIsFocused } from "@react-navigation/native";
 
 interface IHomeProps {
   navigation: NavigationProp<ParamListBase>;
 }
 export default function Home({ navigation }: IHomeProps) {
+  const isFocused = useIsFocused();
   type User = {
     firstname: string;
     lastname: string;
@@ -24,22 +26,16 @@ export default function Home({ navigation }: IHomeProps) {
 
   const [user, setUser] = useState<User | null>(null);
   const [search, setSearch] = useState("");
-  console.log(user);
 
   const eventHandler = async () => {
-    try {
-      const isTutoComplete = await AsyncStorage.getItem("tutoComplete");
+      //const isTutoComplete = await AsyncStorage.getItem("tutoComplete");
       const isConnected = await AsyncStorage.getItem("users");
       if (isConnected === null) {
         //await AsyncStorage.setItem('tutoCompleted', 'false');
         // L'utilisateur se connecte pour la première fois
         // TODO: affiche la page de creation de profil + condition pour savoir si il y a un profil
         alert("Première connexion");
-        const keys = await AsyncStorage.getAllKeys();
-  
-        // Get all values associated with the keys
-        const values = await AsyncStorage.multiGet(keys);
-        console.log(values);
+
         // -> mettre ca une fois le premier profil crée : await AsyncStorage.setItem('firstConnection', 'true');
         navigation.navigate("CreateProfile");
         
@@ -47,32 +43,35 @@ export default function Home({ navigation }: IHomeProps) {
         alert("Va falloir faire le tuto bro");
   
       }*/else{
-        AsyncStorage.getItem("users").then((userData) => {
-          if (userData) {
-            // Conversion de la chaîne JSON en objet JavaScript
-            const getUser = JSON.parse(userData);
-            setUser(getUser)
-            console.log('Données utilisateur récupérées avec succès', user);
-          } else {
-            console.log('Aucune donnée utilisateur trouvée');
-          }
-        })
-        .catch((error) => {
-          console.error('Erreur lors de la récupération des données utilisateur', error);
-        });
-        //setUser(await  as unknown as User);
+        // AsyncStorage.getItem("users").then((userData) => {
+        //   if (userData) {
+        //     // Conversion de la chaîne JSON en objet JavaScript
+        //     const getUser = JSON.parse(userData);
+        //     setUser(getUser)
+        //     console.log('Données utilisateur récupérées avec succès', user);
+        //   } else {
+        //     console.log('Aucune donnée utilisateur trouvée');
+        //   }
+        // })
+        // .catch((error) => {
+        //   console.error('Erreur lors de la récupération des données utilisateur', error);
+        // });
+        setUser(JSON.parse(isConnected));
       }
-    } catch (error) {
-      console.error("Error while reading/writing AsyncStorage", error);
-    }
   };
 
   const updateSearch = (text: string) => {
     setSearch(text);
   };
-  useFocusEffect(() => {
-    eventHandler();
-  });
+
+  // Utilisez useEffect pour appeler la fonction lors de la montée du composant
+  useEffect(() => {
+    if(isFocused){ 
+      eventHandler();
+      console.log("EXEC")
+    }
+  },[isFocused]); // Le tableau de dépendances est vide pour exécuter cela une seule fois à la montée du composant
+  
 
   return (
     <View style={styles.container}>
