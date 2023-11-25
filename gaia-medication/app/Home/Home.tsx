@@ -1,19 +1,47 @@
 import React, { useEffect, useState } from "react";
-import { View,StyleSheet, Text, StatusBar, TextInput, Button, TouchableOpacity,  } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Text,
+  StatusBar,
+  TextInput,
+  Button,
+  TouchableOpacity
+} from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {Link, NavigationProp, ParamListBase} from '@react-navigation/native';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Link, NavigationProp, ParamListBase } from "@react-navigation/native";
+import { useIsFocused } from "@react-navigation/native";
 import * as ImagePicker from 'expo-image-picker';
 import callGoogleVisionAsync from "../../OCR/helperFunctions";
 
 interface IHomeProps {
-  navigation: NavigationProp<ParamListBase>
+  navigation: NavigationProp<ParamListBase>;
 }
-export default function Home({navigation}:IHomeProps)  { 
+export default function Home({ navigation }: IHomeProps) {
+  const isFocused = useIsFocused();
+
+  const [user, setUser] = useState<User | null>(null);
   const [search, setSearch] = useState("");
 
-  const updateSearch = (text : string) => {
-    setSearch(text)
+  const eventHandler = async () => {
+      //const isTutoComplete = await AsyncStorage.getItem("tutoComplete");
+      const isConnected = await AsyncStorage.getItem("users");
+      if (isConnected === null) {
+        // L'utilisateur se connecte pour la première fois
+        navigation.navigate("CreateProfile");
+        
+      } /*else if(isTutoComplete === null){
+        alert("Va falloir faire le tuto bro");
+  
+      }*/else{
+        setUser(JSON.parse(isConnected));
+        console.log("user :",isConnected)
+      }
+  };
+
+  const updateSearch = (text: string) => {
+    setSearch(text);
   };
   
   const pickImage = async () => {
@@ -33,8 +61,12 @@ export default function Home({navigation}:IHomeProps)  {
 
  
   useEffect(() => {
-    checkFirstConnection(navigation);
-  }, []);
+    if(isFocused){ 
+      console.log("Nav on Home Page")
+      eventHandler();
+    }
+  },[isFocused]); 
+  
 
   return (
     <SafeAreaView edges={['top']} style={styles.container}> 
@@ -67,76 +99,57 @@ export default function Home({navigation}:IHomeProps)  {
   );
 }
 
-const checkFirstConnection = async (navigation: NavigationProp<ParamListBase>) => {
-  try {
-    const isFirstConnection = await AsyncStorage.getItem('firstConnection');
-    if (isFirstConnection === null) {
-      await AsyncStorage.setItem('tutoCompleted', 'false');
-      // L'utilisateur se connecte pour la première fois
-      // TODO: affiche la page de creation de profil + condition pour savoir si il y a un profil
-      alert('Première connexion')
-      
-      // -> mettre ca une fois le premier profil crée : await AsyncStorage.setItem('firstConnection', 'true');
-      navigation.navigate('CreateProfile')
-    } else {
-      // L'utilisateur s'est déjà connecté
-      alert('Tout est bon mon con') 
-      
-    }
-  } catch (error) {
-    console.error('Error while reading/writing AsyncStorage', error);
-  }
-};
+
 
 const styles = StyleSheet.create({
   container: {
     display: "flex",
-    height:"100%",
-    gap:20,
+    height: "100%",
+    gap: 20,
   },
   header: {
-    paddingTop:20,
+    paddingTop: 20,
     display: "flex",
     alignItems: "center",
   },
   searchContainer: {
     display: "flex",
-    gap:10,
-    marginHorizontal:25,
+    gap: 10,
+    marginHorizontal: 25,
   },
   searchBarwQR: {
     display: "flex",
-    gap:19,
-    marginHorizontal:10,
-    flexDirection:"row",
-    height:50
+    gap: 19,
+    marginHorizontal: 10,
+    flexDirection: "row",
+    height: 50,
   },
   searchBar: {
     display: "flex",
-    flex:1,
-    backgroundColor:"#A0DB3050",
-    borderRadius:10,
+    flex: 1,
+    backgroundColor: "#A0DB3050",
+    borderRadius: 10,
   },
   searchBarInput: {
     display: "flex",
-    flex:1,
-    color:"#9CDE00",
-    fontSize:16
+    flex: 1,
+    color: "#9CDE00",
+    fontSize: 16,
   },
   searchQR: {
-    width:50,
+    width: 50,
     display: "flex",
-    backgroundColor:"#A0DB3050",
-    borderRadius:10,
+    backgroundColor: "#A0DB3050",
+    borderRadius: 10,
   },
   traitementContainer: {
     display: "flex",
-    marginHorizontal:25,
+    marginHorizontal: 25,
   },
   title: {
     fontSize: 30,
     fontWeight: "600",
-    lineHeight:30,
+    lineHeight: 30,
   },
   title2: {
     fontSize: 20,
@@ -144,7 +157,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 12,
-    color: '#888888',
+    color: "#888888",
     fontWeight: "normal",
   },
   separator: {
