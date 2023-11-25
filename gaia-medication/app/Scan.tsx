@@ -19,6 +19,7 @@ export default function Scan() {
       setImage(result.assets[0].uri);
       //run the onSubmit handler and pass in the image data. 
       const googleText = await callGoogleVisionAsync(result.assets[0].base64);
+      setText(googleText.text); //change the value of this Hook again.
     }
   };
 
