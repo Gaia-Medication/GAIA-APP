@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { View,StyleSheet, Text, StatusBar, TextInput, Button,  } from 'react-native';
+import { View,StyleSheet, Text, StatusBar, TextInput, Button, TouchableOpacity,  } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Link, NavigationProp, ParamListBase} from '@react-navigation/native';
+import * as ImagePicker from 'expo-image-picker';
+import callGoogleVisionAsync from "../../OCR/helperFunctions";
 
 interface IHomeProps {
   navigation: NavigationProp<ParamListBase>
@@ -13,6 +15,23 @@ export default function Home({navigation}:IHomeProps)  {
   const updateSearch = (text : string) => {
     setSearch(text)
   };
+  
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      base64: true, //return base64 data.
+      //this will allow the Vision API to read this image.
+    });
+    if (!result.canceled) { //if the user submits an image,
+      //setImage(result.assets[0].uri);
+      //run the onSubmit handler and pass in the image data. 
+      const googleText = await callGoogleVisionAsync(result.assets[0].base64);
+      console.log(googleText.text)
+      alert(googleText.text)
+    }
+  };
+
+ 
   useEffect(() => {
     checkFirstConnection(navigation);
   }, []);
@@ -34,11 +53,11 @@ export default function Home({navigation}:IHomeProps)  {
               value={search}
             />
           </View>
-          <Link to={{ screen: 'Scan' }} style={styles.searchQR}>
+          <TouchableOpacity  onPress={pickImage} style={styles.searchQR}>
             {/* <Image
               source={{ uri: "App/assets/images/Scan. png" }}
             /> */}
-          </Link>
+          </TouchableOpacity>
         </View>
       </View>
       <View style={styles.traitementContainer}>

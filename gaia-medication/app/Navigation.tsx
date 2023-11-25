@@ -10,9 +10,9 @@ import Settings from "./Home/Settings";
 import Suivis from "./Suivis/Suivis";
 import Messager from "./Home/Messager";
 import CreateProfile from "./Profile/CreateProfile";
-import Scan from "./Scan";
 import Stock from "./Suivis/Stock";
 import Journal from "./Suivis/Journal";
+import Profile from "./Profile/Profile";
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -40,11 +40,7 @@ export default function Navigation() {
         />
         <Stack.Screen
           name="Profile"
-          component={CreateProfile}
-        />
-        <Stack.Screen
-          name="Scan"
-          component={Scan}
+          component={Profile}
         />
       </Stack.Navigator>
     </NavigationContainer>
