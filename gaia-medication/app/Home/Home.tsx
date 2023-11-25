@@ -13,7 +13,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Link, NavigationProp, ParamListBase } from "@react-navigation/native";
 import { useIsFocused } from "@react-navigation/native";
 import * as ImagePicker from 'expo-image-picker';
-import callGoogleVisionAsync from "../../OCR/helperFunctions";
+import callGoogleVisionAsync from "../../ocr/helperFunctions";
+import { styles } from "../../style/style";
 
 interface IHomeProps {
   navigation: NavigationProp<ParamListBase>;
@@ -54,7 +55,7 @@ export default function Home({ navigation }: IHomeProps) {
       //setImage(result.assets[0].uri);
       //run the onSubmit handler and pass in the image data. 
       const googleText = await callGoogleVisionAsync(result.assets[0].base64);
-      console.log(googleText.text)
+      console.log("OCR :",googleText.text)
       alert(googleText.text)
     }
   };
@@ -69,7 +70,7 @@ export default function Home({ navigation }: IHomeProps) {
   
 
   return (
-    <SafeAreaView edges={['top']} style={styles.container}> 
+    <View style={styles.container}> 
       <View style={styles.header}>
         <Text style={styles.subtitle}>Welcome back</Text>
         <Text style={styles.title}>Alexandre</Text>
@@ -95,74 +96,8 @@ export default function Home({ navigation }: IHomeProps) {
       <View style={styles.traitementContainer}>
         <Text style={styles.title2}>Suivis d'un traitement</Text>
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
 
-
-const styles = StyleSheet.create({
-  container: {
-    display: "flex",
-    height: "100%",
-    gap: 20,
-  },
-  header: {
-    paddingTop: 20,
-    display: "flex",
-    alignItems: "center",
-  },
-  searchContainer: {
-    display: "flex",
-    gap: 10,
-    marginHorizontal: 25,
-  },
-  searchBarwQR: {
-    display: "flex",
-    gap: 19,
-    marginHorizontal: 10,
-    flexDirection: "row",
-    height: 50,
-  },
-  searchBar: {
-    display: "flex",
-    flex: 1,
-    backgroundColor: "#A0DB3050",
-    borderRadius: 10,
-  },
-  searchBarInput: {
-    display: "flex",
-    flex: 1,
-    color: "#9CDE00",
-    fontSize: 16,
-  },
-  searchQR: {
-    width: 50,
-    display: "flex",
-    backgroundColor: "#A0DB3050",
-    borderRadius: 10,
-  },
-  traitementContainer: {
-    display: "flex",
-    marginHorizontal: 25,
-  },
-  title: {
-    fontSize: 30,
-    fontWeight: "600",
-    lineHeight: 30,
-  },
-  title2: {
-    fontSize: 20,
-    fontWeight: "600",
-  },
-  subtitle: {
-    fontSize: 12,
-    color: "#888888",
-    fontWeight: "normal",
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: "80%",
-  },
-});
