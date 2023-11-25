@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import RNPickerSelect from "react-native-picker-select";
 import DatePicker from "react-native-date-picker";
-import { Button, StyleSheet, Text, TextInput, View } from "react-native";
+import { Alert, Button, StyleSheet, Text, TextInput, View } from "react-native";
 import { Input } from "react-native-elements";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -34,6 +34,25 @@ export default function CreateProfile({ navigation }: ICreateProps) {
 
   useEffect(() => {
       console.log("Nav on CreationProfile Page")
+
+      //Empecher le redirection, on reste sur la page creation de profile tant qu'il y a 0 Users -> a finir 
+      navigation.addListener('beforeRemove', (e) => {
+        e.preventDefault();
+        /*Alert.alert(
+          'Discard changes?',
+          'You have unsaved changes. Are you sure to discard them and leave the screen?',
+          [
+            { text: "Don't leave", style: 'cancel', onPress: () => {} },
+            {
+              text: 'Discard',
+              style: 'destructive',
+              // If the user confirmed, then we dispatch the action we blocked earlier
+              // This will continue the action that had triggered the removal of the screen
+              onPress: () => navigation.dispatch(e.data.action),
+            },
+          ]
+        );*/
+      })
   },[]); 
 
   const handleSumbit = () => {
@@ -53,7 +72,7 @@ export default function CreateProfile({ navigation }: ICreateProps) {
         const userJSON = JSON.stringify(user);
         console.log(user);
         AsyncStorage.setItem("users", userJSON);
-        navigation.goBack();
+        navigation.navigate('Home');
       } catch (e) {
         console.log(e);
       }
