@@ -37,7 +37,6 @@ export default function Home({ navigation }: IHomeProps) {
   
       }*/else{
         setUser(JSON.parse(isConnected));
-        console.log("user :",isConnected)
       }
   };
 
