@@ -1,29 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Image, View, Platform } from 'react-native';
+import { Button, Image, View, Text  } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import TextRecognition from '@react-native-ml-kit/text-recognition';
+import callGoogleVisionAsync from '../OCR/helperFunctions';
     
 
 
 export default function Scan() {
   const [image, setImage] = useState("");
+  const [text, setText] = useState("Please add an image");
 
   const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
+      base64: true, //return base64 data.
+      //this will allow the Vision API to read this image.
     });
-
-    console.log(result);
-
-    if (!result.canceled) {
+    if (!result.canceled) { //if the user submits an image,
       setImage(result.assets[0].uri);
-      const res = await TextRecognition.recognize(result.assets[0].uri);
-
-      console.log('Recognized text:', res.text);
+      //run the onSubmit handler and pass in the image data. 
+      const googleText = await callGoogleVisionAsync(result.assets[0].base64);
     }
   };
 
@@ -31,6 +26,7 @@ export default function Scan() {
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       <Button title="Pick an image from camera roll" onPress={pickImage} />
       {image && <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />}
+      <Text>{text}</Text>
     </View>
   );
 }
