@@ -32,9 +32,9 @@ date=[
 
 
 dictionnary={
-    "product":["plaquette","kit","dose","pastille","lyophilisat","capsule","suppositoire","conditionnement","bande","poudre","générateur","distributeur","flacon","tube","ampoule","pilulier","sachet","pot","seringue","stylo","spray","bouteille","récipient","film","boite","boite","poche","inhalateur","cartouche","evaporateur","dispositif","enveloppe","applicateur","sac"],
-    "quantity":["l","ml","mg","g","litre","comprimé","gélule"],
-    "material":['pvdc','aluminium','pvc','polyamide','polyéthylène','papier','thermoformée',"verre","acier","polypropylène"]
+    "product":["plaquette","kit","dose","comprimé","gélule","pastille","lyophilisat","capsule","suppositoire","conditionnement","bande","poudre","générateur","distributeur","flacon","tube","ampoule","pilulier","sachet","pot","seringue","stylo","spray","bouteille","récipient","film","boite","boite","poche","inhalateur","cartouche","evaporateur","dispositif","enveloppe","applicateur","sac"],
+    "quantity":["l","ml","mg","g","litre","ui"]
+    # "material":['pvdc','aluminium','pvc','polyamide','polyéthylène','papier','thermoformée',"verre","acier","polypropylène"]
 }
 dictionnary=create_regex_from_dictionnary(dictionnary)
 
@@ -56,10 +56,82 @@ s=str(string_data)
 
 
 
+# index=0
+# for description in string_data:
+#     #print(description)
+#     flag=False
+
+#     product=[]
+#     quantity=[]
+#     description=description.lower()
+#     description=replace_accents(description)
+#     description=description.split(" ")
+#     if has_number(description):
+#         for word in range(0,len(description)):
+#             if has_number(description[word]):
+#                 flag=True
+#             if flag:
+#                 description[word]=description[word]+" "+description[word+1]
+#                 description.pop(word+1)
+#             flag=False
+
+#     for word in range(0,len(description)):
+#         for category, regex in dictionnary.items():
+#             for reg in regex:
+#                 if re.search(reg,word):
+#                     w=re.search(reg,word).group()
+#                     if category=="product":
+#                         product.append(w)
+#                     if category=="quantity":
+#                         quantity.append(w)
+#                     print(product,quantity)
+                # if len(product)==3:
+                #     print(description) 
+    # if len(product)==0:
+    #     print("ERROR product :", description)
 
 
 
-# #############################################  CREATION DES DATAFRAMES  #############################################
+
+
+########################################################################################
+########################################################################################
+################################## ANALYSE DES DONNEES #################################
+########################################################################################
+########################################################################################
+
+# Créer une liste de longueurs et une liste d'occurences
+liste_occ = {"longueur":[],"occurence":[]}
+for description in all_desciption:    
+    if len(description) not in liste_occ["longueur"]:
+        liste_occ["longueur"].append(len(description))
+        liste_occ["occurence"].append(1)
+    elif len(description) in liste_occ["longueur"]:
+        for i in range(0,len(liste_occ["longueur"])-1):
+            if liste_occ["longueur"][i] == len(description):
+                liste_occ["occurence"][i]+=1
+
+
+# Regrouper les longueurs et occurrences ensemble
+grouped_data = list(zip(liste_occ["longueur"], liste_occ["occurence"]))
+
+# Trier en fonction des occurrences
+sorted_data = sorted(grouped_data, key=lambda x: x[1], reverse=True)
+
+# Afficher les longueurs triées en fonction des occurrences
+sorted_longueurs = [x[0] for x in sorted_data]
+sorted_occ=[x[1] for x in sorted_data]
+#print("Longueurs : \n",sorted_longueurs,"\n Occurences : \n",sorted_occ)
+
+
+
+
+
+########################################################################################
+########################################################################################
+############################  CREATION DES DATAFRAMES  #################################
+########################################################################################
+########################################################################################
 
 def group_by_cis(group):
     return group.to_dict(orient='records')
@@ -154,65 +226,3 @@ dfMedication = dfMedication.merge(dfPresentation, on='CIS', how='outer')
 #print(dfMedication.sort_values(by=['CIS']))
 jsonMedication = dfMedication.to_json('out/medication.json', orient="records")
 #print(jsonMedication)
-
-
-
-
-# n=0
-# for description in string_data:
-#     #print(description)
-#     product=[]
-#     quantity=[]
-#     material=[]
-#     description=description.lower()
-#     description=replace_accents(description)
-#     for category, regex in dictionnary.items():
-#         for reg in regex:
-#             if re.search(reg,description):
-#                 word=re.search(reg,description).group()
-#                 if category=="product":
-#                     product.append(word)
-#                 if category=="quantity":
-#                     quantity.append(word)
-#                 if category=="material":
-#                     material.append(word)
-
-#                 print(product,quantity) 
-#     if len(quantity)==0:
-#         n+=1
-#         print(n,"ERROR quantity :", description)
-#     if len(product)==0 and len(quantity)==0 :
-#         print("ERROR product :", description)
-
-
-
-
-
-########################################################################################
-########################################################################################
-################################## ANALYSE DES DONNEES #################################
-########################################################################################
-########################################################################################
-
-# Créer une liste de longueurs et une liste d'occurences
-liste_occ = {"longueur":[],"occurence":[]}
-for description in all_desciption:    
-    if len(description) not in liste_occ["longueur"]:
-        liste_occ["longueur"].append(len(description))
-        liste_occ["occurence"].append(1)
-    elif len(description) in liste_occ["longueur"]:
-        for i in range(0,len(liste_occ["longueur"])-1):
-            if liste_occ["longueur"][i] == len(description):
-                liste_occ["occurence"][i]+=1
-
-
-# Regrouper les longueurs et occurrences ensemble
-grouped_data = list(zip(liste_occ["longueur"], liste_occ["occurence"]))
-
-# Trier en fonction des occurrences
-sorted_data = sorted(grouped_data, key=lambda x: x[1], reverse=True)
-
-# Afficher les longueurs triées en fonction des occurrences
-sorted_longueurs = [x[0] for x in sorted_data]
-sorted_occ=[x[1] for x in sorted_data]
-#print("Longueurs : \n",sorted_longueurs,"\n Occurences : \n",sorted_occ)
