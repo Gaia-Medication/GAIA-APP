@@ -4,7 +4,3 @@ pip install numpy
 pip install requests
 pip install bs4
 pip install tqdm
-pip install spacy
-python3 -m spacy download fr_core_news_sm
-python3 -m spacy download fr_core_news_md
-python3 -m spacy download fr_core_news_lg

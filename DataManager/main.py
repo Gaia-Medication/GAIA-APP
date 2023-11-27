@@ -3,8 +3,6 @@ import pandas as pd
 import numpy as np
 from text_to_num import text2num
 import re
-import spacy
-from spacy.matcher import Matcher
 
 # DATA
 url = 'https://base-donnees-publique.medicaments.gouv.fr/telechargement.php'
@@ -34,20 +32,12 @@ date=[
 
 
 dictionnary={
-    "product":["plaquette","kit","comprimé","gélule","dose","pastille","lyophilisat","capsule","suppositoire","conditionnement","bande","poudre","générateur","distributeur","flacon","tube","ampoule","pilulier","sachet","pot","seringue","stylo","spray","bouteille","récipient","film","boite","boite","poche","inhalateur","cartouche","evaporateur","dispositif","enveloppe","applicateur","sac"],
-    "quantity":["l","ml","mg","g","litre"],
+    "product":["plaquette","kit","dose","pastille","lyophilisat","capsule","suppositoire","conditionnement","bande","poudre","générateur","distributeur","flacon","tube","ampoule","pilulier","sachet","pot","seringue","stylo","spray","bouteille","récipient","film","boite","boite","poche","inhalateur","cartouche","evaporateur","dispositif","enveloppe","applicateur","sac"],
+    "quantity":["l","ml","mg","g","litre","comprimé","gélule"],
     "material":['pvdc','aluminium','pvc','polyamide','polyéthylène','papier','thermoformée',"verre","acier","polypropylène"]
 }
 dictionnary=create_regex_from_dictionnary(dictionnary)
 
-# def missing_value_count():
-#     tab_ms_values =""
-#     for i in params:
-#         table=lecture_base("data/"+i+".txt")
-#         missing_values=table.isnull().values
-        
-#         tab_ms_values+=f"{i} : {np.sum(missing_values, axis=0)} \n \n"
-#     return tab_ms_values
 
 
 
@@ -82,12 +72,12 @@ dfInformation.columns = [
     'dateFin', #2
     'Important_informations', #1
 ]
-print(dfInformation.shape)
+#print(dfInformation.shape)
 # Group the DataFrame by 'Category'
 
 
 
-print(dfInformation)
+#print(dfInformation)
 
 
 # ######### PrescriptionConditions
@@ -161,9 +151,12 @@ dfMedication = dfMedication.merge(dfInformation, on='CIS', how='outer')
 ## DEUX ENREGISTREMENTS EN TROP
 dfMedication = dfMedication.merge(dfPresentation, on='CIS', how='outer')
 
-print(dfMedication.sort_values(by=['CIS']))
-jsonMedication = dfMedication.to_json(orient="records")
+#print(dfMedication.sort_values(by=['CIS']))
+jsonMedication = dfMedication.to_json('out/medication.json', orient="records")
 #print(jsonMedication)
+
+
+
 
 # n=0
 # for description in string_data:
@@ -184,48 +177,13 @@ jsonMedication = dfMedication.to_json(orient="records")
 #                 if category=="material":
 #                     material.append(word)
 
-                #print(product,quantity) 
-    # if len(quantity)==0:
-    #     n+=1
-    #     print(n,"ERROR quantity :", description)
-    # if len(product)==0 and len(quantity)==0 :
-    #     print("ERROR product :", description)
+#                 print(product,quantity) 
+#     if len(quantity)==0:
+#         n+=1
+#         print(n,"ERROR quantity :", description)
+#     if len(product)==0 and len(quantity)==0 :
+#         print("ERROR product :", description)
 
-
-
-# print(string_data[0],string_data[1394])
-
-# nlp = spacy.load("fr_core_news_lg")
-
-# doc = nlp("plaquette(s) PVC PVDC aluminium de 30 comprimé(s) 1 pilulier(s) polypropylène de 30 comprimé(s)")
-
-# # Crée des spans pour "super restaurant" et "bar vraiment sympa"
-# span1 = doc[0:7]
-# span2 = doc[8:13]
-
-# # Obtiens la similarité entre les spans
-# similarity = span1.similarity(span2)
-# print(similarity)
-
-
-# nlp = spacy.load("fr_core_news_sm")
-# matcher=Matcher(nlp.vocab)
-
-# doc=nlp(s)
-# pattern = [
-#     {"LOWER": {"IN": ["plaquette", "tube", "récipient", "flacon"]}},  # Packaging type
-#     {"IS_PUNCT": True, "OP": "?"},  # Optional punctuation
-#     {"LOWER": {"IN": ["pvc", "polypropylène", "polyéthylène", "aluminium", "pvdc"]}, "OP": "?"},  # Material (optional)
-#     {"IS_PUNCT": True, "OP": "?"},  # Optional punctuation
-#     {"LIKE_NUM": True},  # Quantity
-#     {"LOWER": {"IN": ["comprimé", "ml", "g", "kg"]}}  # Unit
-# ]
-
-# matcher.add("PACKAGING_PATTERN", [pattern])
-# matches=matcher(doc)
-# for match_id, start, end in matches:
-#     span=doc[start:end]
-#     print(span.text)
 
 
 
