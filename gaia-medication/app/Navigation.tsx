@@ -13,22 +13,18 @@ import CreateProfile from "./Profile/CreateProfile";
 import Stock from "./Suivis/Stock";
 import Journal from "./Suivis/Journal";
 import Profile from "./Profile/Profile";
+import * as Icon from "react-native-feather";
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
 const TopTab = createMaterialTopTabNavigator();
 
-function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>["name"];
-  color: string;
-}) {
-  return <FontAwesome size={24} {...props} />;
-}
+
 
 export default function Navigation() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
+      <Stack.Navigator initialRouteName="Home" >
         <Stack.Screen
           name="HomeHandler"
           component={HomeHandler}
@@ -51,18 +47,34 @@ function HomeHandler() {
   return (
     <BottomTab.Navigator
       screenOptions={{
-       // tabBarActiveTintColor: "",
-        //tabBarActiveBackgroundColor: "",
+        tabBarActiveTintColor: "#fff",
+        tabBarInactiveTintColor: "#363636",
+        tabBarActiveBackgroundColor: "#363636",
         headerShown: false,
+        tabBarShowLabel: false,
         tabBarStyle: {
-          marginBottom: 10,
           position: "absolute",
-          height: 60,
+          bottom: 20,
+          left: 20,
+          right: 20,
+          height: 80,
           borderTopWidth: 0,
-          backgroundColor: "#fff",
+          backgroundColor: "#GGGGGG",
           justifyContent: "space-between",
+          width: "90%",
+          borderRadius: 30,
+          shadowColor: "#fff",
         },
-        tabBarLabelPosition: "below-icon",
+        tabBarIconStyle: {
+          color: "#fff",
+        },
+        tabBarItemStyle: {
+          top: 20,
+          bottom: 20,
+          height: "65%",
+          borderRadius: 50,
+        },
+
       }}
     >
       <BottomTab.Screen
@@ -70,9 +82,7 @@ function HomeHandler() {
         component={Home}
         options={{
           headerShown: false,
-          tabBarLabel: ({ focused }) =>
-            focused ? <Text style={styles.tabtitle}>Accueil</Text> : null,
-          tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
+          tabBarIcon: ({ color }) => <Icon.Home color={color} />,
         }}
       />
       <BottomTab.Screen
@@ -80,9 +90,8 @@ function HomeHandler() {
         component={SuivisHandler}
         options={{
           headerShown: false,
-          tabBarLabel: ({ focused }) =>
-            focused ? <Text style={styles.tabtitle}>Suivis</Text> : null,
-          tabBarIcon: ({ color }) => <TabBarIcon name="book" color={color} />,
+          
+          tabBarIcon: ({ color }) => <Icon.Package color={color} />,
         }}
       />
       <BottomTab.Screen
@@ -90,11 +99,8 @@ function HomeHandler() {
         component={Messager}
         options={{
           headerShown: false,
-          tabBarLabel: ({ focused }) =>
-            focused ? <Text style={styles.tabtitle}>Messagerie</Text> : null,
-          tabBarIcon: ({ color }) => (
-            <TabBarIcon name="envelope" color={color} />
-          ),
+          
+          tabBarIcon: ({ color }) => <Icon.Mail color={color} />,
         }}
       />
       <BottomTab.Screen
@@ -102,9 +108,8 @@ function HomeHandler() {
         component={Settings}
         options={{
           headerShown: false,
-          tabBarLabel: ({ focused }) =>
-            focused ? <Text style={styles.tabtitle}>Paramètres</Text> : null,
-          tabBarIcon: ({ color }) => <TabBarIcon name="gear" color={color} />,
+          
+          tabBarIcon: ({ color }) => <Icon.Settings color={color} />,
         }}
       />
     </BottomTab.Navigator>

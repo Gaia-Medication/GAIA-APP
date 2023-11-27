@@ -7,10 +7,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function App() {
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} >
       <StatusBar barStyle={"dark-content"} backgroundColor="transparent" />
       <Navigation />
-    </View> 
+    </SafeAreaView> 
   );
 }
 

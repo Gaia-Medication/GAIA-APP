@@ -77,6 +77,6 @@ export const styles = StyleSheet.create({
       marginVertical: 30,
       height: 1,
       width: "80%",
-    },
+    }
   });
   
