@@ -11,6 +11,7 @@ import { useIsFocused } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
 import callGoogleVisionAsync from "../../OCR/helperFunctions";
 import { styles } from "../../style/style";
+import AvatarButton from "../Avatar";
 
 interface IHomeProps {
   navigation: NavigationProp<ParamListBase>;
@@ -34,6 +35,10 @@ export default function Home({ navigation }: IHomeProps) {
       setUser(JSON.parse(isConnected));
     }
   };
+
+  const handleAvatarButton = () => {
+
+  }
 
   const updateSearch = (text: string) => {
     setSearch(text);
@@ -67,8 +72,14 @@ export default function Home({ navigation }: IHomeProps) {
       {user && (
         <>
           <View style={styles.header}>
-            <Text style={styles.subtitle}>Welcome back</Text>
-            <Text style={styles.title}>{user?.firstname}</Text>
+            <AvatarButton ></AvatarButton>
+            <View style={styles.titleContainer}>
+              <Text style={styles.subtitle}>Welcome back</Text>
+              <Text style={styles.title}>{user?.firstname}</Text>
+            </View>
+            <View style={styles.notification}>
+              <Text>Notif</Text>
+            </View>
           </View>
           <View style={styles.searchContainer}>
             <Text style={styles.title2}>Recherche d’un médicament</Text>

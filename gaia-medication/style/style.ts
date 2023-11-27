@@ -13,7 +13,12 @@ export const styles = StyleSheet.create({
     header: {
       paddingTop: 20,
       display: "flex",
+      flexDirection: "row",
       alignItems: "center",
+      justifyContent: "space-around",
+    },
+    notification: {
+      width: 50
     },
     searchContainer: {
       display: "flex",
@@ -48,6 +53,11 @@ export const styles = StyleSheet.create({
     traitementContainer: {
       display: "flex",
       marginHorizontal: 25,
+    },
+    titleContainer: {
+      display: "flex",
+      alignItems: "center",
+      gap: 8,
     },
     title: {
       fontSize: 30,
