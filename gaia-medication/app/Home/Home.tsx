@@ -14,6 +14,7 @@ import { styles } from "../../style/style";
 import AvatarButton from "../Avatar";
 import { getUser } from "../../dao/User";
 import {  getAllMed } from "../../dao/Medicaments";
+import { searchMed } from "../../dao/Recherche";
 
 interface IHomeProps {
   navigation: NavigationProp<ParamListBase>;
@@ -45,6 +46,7 @@ export default function Home({ navigation }: IHomeProps) {
 
   const updateSearch = (text: string) => {
     setSearch(text);
+    //searchMed(text)
   };
 
   const pickImage = async () => {
