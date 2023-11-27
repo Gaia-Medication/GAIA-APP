@@ -11,6 +11,7 @@ import { useIsFocused } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
 import callGoogleVisionAsync from "../../OCR/helperFunctions";
 import { styles } from "../../style/style";
+import { getUser } from "../../dao/User";
 
 interface IHomeProps {
   navigation: NavigationProp<ParamListBase>;
@@ -22,6 +23,7 @@ export default function Home({ navigation }: IHomeProps) {
   const [search, setSearch] = useState("");
 
   const eventHandler = async () => {
+    //getUser(1,setUser)
     //const isTutoComplete = await AsyncStorage.getItem("tutoComplete");
     const isConnected = await AsyncStorage.getItem("users");
     if (isConnected === null) {
