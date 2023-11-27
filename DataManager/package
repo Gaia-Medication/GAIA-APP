@@ -1,0 +1,6 @@
+pip install pandas
+pip install text2num
+pip install numpy
+pip install requests
+pip install bs4
+pip install tqdm
