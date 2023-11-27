@@ -6,6 +6,7 @@ import { Input } from "react-native-elements";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Link, NavigationProp, ParamListBase } from "@react-navigation/native";
+import { createUser } from "../../dao/User";
 
 interface ICreateProps {
   navigation: NavigationProp<ParamListBase>;
@@ -22,7 +23,8 @@ export default function CreateProfile({ navigation }: ICreateProps) {
   const [isValidFirstname, setIsValidFirstname] = useState(true);
   const [isValidLastname, setIsValidLastname] = useState(true);
 
-  const isFormEmpty = !firstname || !lastname || !birthdate || !gender;
+  //TODO: ajouté un input birthdate 
+  const isFormEmpty = !firstname || !lastname || !gender;
 
   const validateFirstname = () => {
     setIsValidFirstname(firstname.length >= 2);
@@ -56,18 +58,20 @@ export default function CreateProfile({ navigation }: ICreateProps) {
   },[]); 
 
   const handleSumbit = () => {
-    if (!isFormEmpty) {
+    if (!isValidFirstname || !isValidLastname || isFormEmpty) {
       console.log(`error not valid`);
     } else {
       try {
         const user: User = {
+          id:1,
           firstname,
           lastname,
           birthdate,
           gender,
           preference,
         };
-
+        
+        //createUser(user)
         // Convert the user object to JSON
         const userJSON = JSON.stringify(user);
         console.log(user);
@@ -86,18 +90,26 @@ export default function CreateProfile({ navigation }: ICreateProps) {
         placeholder="Entrez votre prenom"
         leftIcon={{ type: "font-awesome", name: "user" }}
         onChangeText={(text) => setFirstname(text)}
+        onBlur={validateFirstname}
         value={firstname}
         renderErrorMessage={isValidFirstname}
       />
+      {!isValidFirstname && (
+        <Text style={styles.errorText}>Le prénom doit comporter au moins 1 caractères.</Text>
+      )}
 
       <Input
         label="Nom"
         placeholder="Entrez votre nom"
         leftIcon={{ type: "font-awesome", name: "user" }}
         onChangeText={(text) => setLastname(text)}
+        onBlur={validateLastname}
         value={lastname}
         renderErrorMessage={isValidLastname}
       />
+      {!isValidLastname && (
+        <Text style={styles.errorText}>Le nom doit comporter au moins 1 caractères.</Text>
+      )}
 
       <Input
         label="Preference/Allergies"
@@ -120,7 +132,7 @@ export default function CreateProfile({ navigation }: ICreateProps) {
       <Button
         title="Enregistrer le profil"
         onPress={handleSumbit}
-        disabled={!isFormEmpty}
+        disabled={isFormEmpty}
       />
     </View>
   );
@@ -144,5 +156,9 @@ const styles = StyleSheet.create({
     marginVertical: 30,
     height: 1,
     width: "80%",
+  },
+  errorText: {
+    color: "red",
+    marginBottom: 10,
   },
 });
