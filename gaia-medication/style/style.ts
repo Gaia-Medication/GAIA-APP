@@ -20,6 +20,21 @@ export const styles = StyleSheet.create({
       alignItems: "center",
       justifyContent: "space-between",
     },
+    AvatarIcon: {
+      width: 45,
+      height: 45,
+      textAlign: "center",
+      textAlignVertical: "center",
+      backgroundColor: "#FFCF26",
+      borderRadius: 25,
+      fontSize: 18,
+      fontWeight: "900",
+      color: "white",
+    },
+    chevron: {
+      backgroundColor: "#F5F5F5",
+      borderRadius: 50,
+    },
     notification: {
       width: 50
     },

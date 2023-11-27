@@ -93,9 +93,6 @@ export default function Home({ navigation }: IHomeProps) {
                 />
               </View>
               <TouchableOpacity onPress={pickImage} style={styles.searchQR}>
-                {/* <Image
-                  source={{ uri: "App/assets/images/Scan. png" }}
-                /> */}
               </TouchableOpacity>
             </View>
           </View>
