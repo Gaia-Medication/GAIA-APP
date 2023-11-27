@@ -1,7 +1,11 @@
 import React, { useState } from "react";
-import { Animated, Text, TouchableOpacity, View } from "react-native";
+import { Animated, TouchableOpacity, View } from "react-native";
 
-const AvatarButton = () => {
+interface AvatarButtonProps {
+  onPress: () => void;
+}
+
+const AvatarButton: React.FC<AvatarButtonProps> = ({ onPress }) => {  
   const [expanded, setExpanded] = useState(false);
   const [animation] = useState(new Animated.Value(50));
 
@@ -9,15 +13,16 @@ const AvatarButton = () => {
     if (expanded) {
       Animated.spring(animation, {
         toValue: 50,
-        useNativeDriver: false, // You can set this to true if you use 'react-native-reanimated'.
+        useNativeDriver: false,
       }).start();
     } else {
       Animated.spring(animation, {
-        toValue: 200, // You can adjust this value to control the expansion level.
-        useNativeDriver: false, // You can set this to true if you use 'react-native-reanimated'.
+        toValue: 350,
+        useNativeDriver: false,
       }).start();
     }
     setExpanded(!expanded);
+    onPress();
   };
 
   return (
@@ -31,8 +36,7 @@ const AvatarButton = () => {
             borderWidth: 1,
             borderColor: "grey",
           }}
-        >
-        </Animated.View>
+        ></Animated.View>
       </TouchableOpacity>
     </View>
   );

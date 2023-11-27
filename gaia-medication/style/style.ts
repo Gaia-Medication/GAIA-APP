@@ -6,16 +6,19 @@ export const styles = StyleSheet.create({
     container: {
       display: "flex",
       height: "100%",
+      width: "100%",
       backgroundColor:"#fff",
       flex:1,
       gap: 20,
+      alignItems: "center",
     },
     header: {
+      width: "90%",
       paddingTop: 20,
       display: "flex",
       flexDirection: "row",
       alignItems: "center",
-      justifyContent: "space-around",
+      justifyContent: "space-between",
     },
     notification: {
       width: 50
