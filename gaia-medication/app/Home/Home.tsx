@@ -13,6 +13,7 @@ import callGoogleVisionAsync from "../../OCR/helperFunctions";
 import { styles } from "../../style/style";
 import AvatarButton from "../Avatar";
 import { getUser } from "../../dao/User";
+import {  getAllMed } from "../../dao/Medicaments";
 
 interface IHomeProps {
   navigation: NavigationProp<ParamListBase>;
@@ -47,7 +48,7 @@ export default function Home({ navigation }: IHomeProps) {
   };
 
   const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
+    let result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       base64: true, //return base64 data.
       //this will allow the Vision API to read this image.
@@ -65,6 +66,7 @@ export default function Home({ navigation }: IHomeProps) {
   useEffect(() => {
     if (isFocused) {
       console.log("Nav on Home Page");
+      getAllMed()
       eventHandler();
     }
   }, [isFocused]);
