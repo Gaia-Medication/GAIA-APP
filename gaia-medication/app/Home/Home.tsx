@@ -9,7 +9,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
 import { useIsFocused } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
-import callGoogleVisionAsync from "../../ocr/helperFunctions";
+import callGoogleVisionAsync from "../../OCR/helperFunctions";
 import { styles } from "../../style/style";
 
 interface IHomeProps {
