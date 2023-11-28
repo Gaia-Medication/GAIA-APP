@@ -88,7 +88,7 @@ export default function Home({ navigation }: IHomeProps) {
                   style={styles.searchBarInput}
                   placeholder="Doliprane, Aspirine ..."
                   value={""}
-                  //onPressIn={navigation.navigate("SearchPage")}
+                  onPressIn={() => navigation.navigate("Search", { focusSearchInput: true })}
                 />
               </View>
               <TouchableOpacity onPress={pickImage} style={styles.searchQR}>
