@@ -13,8 +13,8 @@ import callGoogleVisionAsync from "../../OCR/helperFunctions";
 import { styles } from "../../style/style";
 import AvatarButton from "../Avatar";
 import { getUser } from "../../dao/User";
-import {  getAllMed } from "../../dao/Medicaments";
-import { searchMed } from "../../dao/Recherche";
+import {  getAllMed } from "../../dao/Meds";
+import { searchMed } from "../../dao/Search";
 
 interface IHomeProps {
   navigation: NavigationProp<ParamListBase>;

@@ -1,4 +1,4 @@
-import { getAllMed } from "./Medicaments";
+import { getAllMed } from "./Meds";
 
 function findMostAccurateMed(meds: any[], search: string) {
   const scores = meds.map((med: { Name: string }) => {
@@ -22,12 +22,11 @@ function findMostAccurateMed(meds: any[], search: string) {
   const sortedMeds = medScores.sort(
     (a: { score: number }, b: { score: number }) => b.score - a.score
   );
-  return sortedMeds.map((med: { Name: any }) => med.Name);
+  return sortedMeds//.map((med: { Name: any }) => med.Name);
 }
 
-export function searchMed(inputText: string, maxResults = 10) {
+export function searchMed(inputText: string, maxResults = 20) {
   const medicaments = getAllMed();
-
   // Calcul de la distance pour chaque médicament et tri par proximité
   return findMostAccurateMed(medicaments, inputText).slice(0, maxResults);
 }
