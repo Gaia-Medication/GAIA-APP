@@ -14,6 +14,8 @@ import Stock from "./Suivis/Stock";
 import Journal from "./Suivis/Journal";
 import Profile from "./Profile/Profile";
 import * as Icon from "react-native-feather";
+import Search from "./Meds/Search";
+import Drug from "./Meds/Drug";
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -37,6 +39,14 @@ export default function Navigation() {
         <Stack.Screen
           name="Profile"
           component={Profile}
+        />
+        <Stack.Screen
+          name="Drug"
+          component={Drug}
+        />
+        <Stack.Screen
+          name="Search"
+          component={Search}
         />
       </Stack.Navigator>
     </NavigationContainer>

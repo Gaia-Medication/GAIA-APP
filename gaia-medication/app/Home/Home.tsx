@@ -23,7 +23,6 @@ export default function Home({ navigation }: IHomeProps) {
   const isFocused = useIsFocused();
 
   const [user, setUser] = useState<User | null>(null);
-  const [search, setSearch] = useState("");
 
   const eventHandler = async () => {
     //getUser(1,setUser)
@@ -43,11 +42,6 @@ export default function Home({ navigation }: IHomeProps) {
   const handleAvatarButton = () => {
 
   }
-
-  const updateSearch = (text: string) => {
-    setSearch(text);
-    searchMed(text)
-  };
 
   const pickImage = async () => {
     let result = await ImagePicker.launchCameraAsync({
@@ -93,8 +87,8 @@ export default function Home({ navigation }: IHomeProps) {
                 <TextInput
                   style={styles.searchBarInput}
                   placeholder="Doliprane, Aspirine ..."
-                  onChangeText={updateSearch}
-                  value={search}
+                  value={""}
+                  //onPressIn={navigation.navigate("SearchPage")}
                 />
               </View>
               <TouchableOpacity onPress={pickImage} style={styles.searchQR}>

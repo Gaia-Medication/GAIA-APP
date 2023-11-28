@@ -2,20 +2,18 @@ import { useIsFocused } from '@react-navigation/native';
 import React, { useEffect } from 'react';
 import { View, Text, Button } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { searchMed } from '../../dao/Search';
 
-export default function SearchPage() {
+export default function DrugPage() {
   const isFocused = useIsFocused();
   useEffect(() => {
     if(isFocused){ 
-      console.log("Nav on Search Page")
+      console.log("Nav on Drug Page")
     }
   },[isFocused]); 
   
-  //searchMed(text)
   return (
     <View>
-      <Text>Search</Text>
+      <Text>Drug</Text>
     </View>
   );
 }
