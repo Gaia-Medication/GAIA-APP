@@ -81,7 +81,6 @@ function HomeHandler() {
         name="Home"
         component={Home}
         options={{
-          headerShown: false,
           tabBarIcon: ({ color }) => <Icon.Home color={color} />,
         }}
       />
@@ -89,8 +88,6 @@ function HomeHandler() {
         name="SuivisHandler"
         component={SuivisHandler}
         options={{
-          headerShown: false,
-          
           tabBarIcon: ({ color }) => <Icon.Package color={color} />,
         }}
       />
@@ -98,8 +95,6 @@ function HomeHandler() {
         name="Messager"
         component={Messager}
         options={{
-          headerShown: false,
-          
           tabBarIcon: ({ color }) => <Icon.Mail color={color} />,
         }}
       />
@@ -107,8 +102,6 @@ function HomeHandler() {
         name="Settings"
         component={Settings}
         options={{
-          headerShown: false,
-          
           tabBarIcon: ({ color }) => <Icon.Settings color={color} />,
         }}
       />
@@ -126,10 +119,3 @@ function SuivisHandler() {
   );
 }
 
-const styles = StyleSheet.create({
-  tabtitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    marginTop: -10,
-  },
-});

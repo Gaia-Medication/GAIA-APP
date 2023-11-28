@@ -1,6 +1,6 @@
 import data from './medication.json';
 
-export async function getAllMed(){   
+export function getAllMed(){   
   try {
     const medicaments=JSON.parse(JSON.stringify(data))
     return medicaments

@@ -46,7 +46,7 @@ export default function Home({ navigation }: IHomeProps) {
 
   const updateSearch = (text: string) => {
     setSearch(text);
-    //searchMed(text)
+    searchMed(text)
   };
 
   const pickImage = async () => {
@@ -68,7 +68,6 @@ export default function Home({ navigation }: IHomeProps) {
   useEffect(() => {
     if (isFocused) {
       console.log("Nav on Home Page");
-      getAllMed()
       eventHandler();
     }
   }, [isFocused]);
