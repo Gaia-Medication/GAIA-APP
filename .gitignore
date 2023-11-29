@@ -1,0 +1,3 @@
+DataManager/data/*
+.DS_Store
+DataManager/__pycache__

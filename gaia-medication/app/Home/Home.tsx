@@ -7,7 +7,9 @@ import * as ImagePicker from "expo-image-picker";
 import callGoogleVisionAsync from "../../OCR/helperFunctions";
 import { styles } from "../../style/style";
 import AvatarButton from "../component/Avatar";
-import { Bell } from "react-native-feather";
+import { getUser } from "../../dao/User";
+import {  getAllMed } from "../../dao/Meds";
+import { searchMed } from "../../dao/Search";
 
 interface IHomeProps {
   navigation: NavigationProp<ParamListBase>;
@@ -37,12 +39,8 @@ export default function Home({ navigation }: IHomeProps) {
     setHeader(!header);
   };
 
-  const updateSearch = (text: string) => {
-    setSearch(text);
-  };
-
   const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
+    let result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       base64: true, //return base64 data.
       //this will allow the Vision API to read this image.
@@ -87,8 +85,8 @@ export default function Home({ navigation }: IHomeProps) {
                 <TextInput
                   style={styles.searchBarInput}
                   placeholder="Doliprane, Aspirine ..."
-                  onChangeText={updateSearch}
-                  value={search}
+                  value={""}
+                  onPressIn={() => navigation.navigate("Search", { focusSearchInput: true })}
                 />
               </View>
               <TouchableOpacity
