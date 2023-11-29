@@ -1,17 +1,12 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, TextInput, TouchableOpacity } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
 import { useIsFocused } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
 import callGoogleVisionAsync from "../../OCR/helperFunctions";
 import { styles } from "../../style/style";
-import AvatarButton from "../Avatar";
+import AvatarButton from "../component/Avatar";
 import { getUser } from "../../dao/User";
 import {  getAllMed } from "../../dao/Meds";
 import { searchMed } from "../../dao/Search";
@@ -23,9 +18,10 @@ export default function Home({ navigation }: IHomeProps) {
   const isFocused = useIsFocused();
 
   const [user, setUser] = useState<User | null>(null);
+  const [search, setSearch] = useState("");
+  const [header, setHeader] = useState(true);
 
   const eventHandler = async () => {
-    //getUser(1,setUser)
     //const isTutoComplete = await AsyncStorage.getItem("tutoComplete");
     const isConnected = await AsyncStorage.getItem("users");
     if (isConnected === null) {
@@ -40,8 +36,8 @@ export default function Home({ navigation }: IHomeProps) {
   };
 
   const handleAvatarButton = () => {
-
-  }
+    setHeader(!header);
+  };
 
   const pickImage = async () => {
     let result = await ImagePicker.launchCameraAsync({
@@ -71,14 +67,16 @@ export default function Home({ navigation }: IHomeProps) {
       {user && (
         <>
           <View style={styles.header}>
-            <AvatarButton ></AvatarButton>
-            <View style={styles.titleContainer}>
-              <Text style={styles.subtitle}>Welcome back</Text>
-              <Text style={styles.title}>{user?.firstname}</Text>
-            </View>
-            <View style={styles.notification}>
-              <Text>Notif</Text>
-            </View>
+            <AvatarButton onPress={handleAvatarButton}></AvatarButton>
+            {header && (
+              <>
+                <View style={styles.titleContainer}>
+                  <Text style={styles.subtitle}>Welcome back</Text>
+                  <Text style={styles.title}>{user?.firstname}</Text>
+                </View>
+                <Bell stroke="#242424" width={24} height={24}></Bell>
+              </>
+            )}
           </View>
           <View style={styles.searchContainer}>
             <Text style={styles.title2}>Recherche d’un médicament</Text>
@@ -91,11 +89,10 @@ export default function Home({ navigation }: IHomeProps) {
                   onPressIn={() => navigation.navigate("Search", { focusSearchInput: true })}
                 />
               </View>
-              <TouchableOpacity onPress={pickImage} style={styles.searchQR}>
-                {/* <Image
-                  source={{ uri: "App/assets/images/Scan. png" }}
-                /> */}
-              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={pickImage}
+                style={styles.searchQR}
+              ></TouchableOpacity>
             </View>
           </View>
           <View style={styles.traitementContainer}>
