@@ -13,9 +13,10 @@ function findMostAccurateMed(meds: any[], search: string) {
       return s.length / (name.length + index);
     }
   });
-  const medScores = meds.map((med: { Name: any }, index: string | number) => {
+  const medScores = meds.map((med, index: string | number) => {
     return {
       Name: med.Name,
+      CIS: med.CIS,
       score: scores[index],
     };
   });

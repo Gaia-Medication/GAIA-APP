@@ -10,7 +10,7 @@ export const styles = StyleSheet.create({
       backgroundColor:"#fff",
       flex:1,
       gap: 20,
-      alignItems: "center",
+      //alignItems: "center",
     },
     header: {
       width: "90%",

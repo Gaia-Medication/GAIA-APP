@@ -1,11 +1,11 @@
 import { useIsFocused } from "@react-navigation/native";
 import React, { useEffect, useRef, useState } from "react";
-import { View, Text, Button, TextInput, FlatList } from "react-native";
+import { View, Text, Button, TextInput, FlatList, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { searchMed } from "../../dao/Search";
 import { styles } from "../../style/style";
 
-export default function Search({ route }) {
+export default function Search({ route,navigation }) {
   const searchInputRef = useRef(null);
   const [search, setSearch] = useState([]);
 
@@ -37,7 +37,10 @@ export default function Search({ route }) {
       <FlatList
         data={search}
         keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => <Text>{item.Name}</Text>}
+        renderItem={({ item }) => 
+        <TouchableOpacity
+        onPress={() => navigation.navigate("Drug", { drugCIS: item.CIS })}
+        ><Text>{item.Name}</Text></TouchableOpacity>}
       />
     </View>
   );

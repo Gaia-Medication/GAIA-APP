@@ -6,10 +6,11 @@ import { useIsFocused } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
 import callGoogleVisionAsync from "../../OCR/helperFunctions";
 import { styles } from "../../style/style";
-import AvatarButton from "../component/Avatar";
+import AvatarButton from "../component/Avatar"; 
 import { getUser } from "../../dao/User";
 import {  getAllMed } from "../../dao/Meds";
 import { searchMed } from "../../dao/Search";
+import { Bell } from "react-native-feather";
 
 interface IHomeProps {
   navigation: NavigationProp<ParamListBase>;
@@ -18,7 +19,6 @@ export default function Home({ navigation }: IHomeProps) {
   const isFocused = useIsFocused();
 
   const [user, setUser] = useState<User | null>(null);
-  const [search, setSearch] = useState("");
   const [header, setHeader] = useState(true);
 
   const eventHandler = async () => {
