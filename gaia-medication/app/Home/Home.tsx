@@ -7,6 +7,7 @@ import * as ImagePicker from "expo-image-picker";
 import callGoogleVisionAsync from "../../OCR/helperFunctions";
 import { styles } from "../../style/style";
 import AvatarButton from "../component/Avatar";
+import { Bell } from "react-native-feather";
 
 interface IHomeProps {
   navigation: NavigationProp<ParamListBase>;
@@ -75,9 +76,7 @@ export default function Home({ navigation }: IHomeProps) {
                   <Text style={styles.subtitle}>Welcome back</Text>
                   <Text style={styles.title}>{user?.firstname}</Text>
                 </View>
-                <View style={styles.notification}>
-                  <Text>Notif</Text>
-                </View>
+                <Bell stroke="#242424" width={24} height={24}></Bell>
               </>
             )}
           </View>
@@ -92,8 +91,10 @@ export default function Home({ navigation }: IHomeProps) {
                   value={search}
                 />
               </View>
-              <TouchableOpacity onPress={pickImage} style={styles.searchQR}>
-              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={pickImage}
+                style={styles.searchQR}
+              ></TouchableOpacity>
             </View>
           </View>
           <View style={styles.traitementContainer}>

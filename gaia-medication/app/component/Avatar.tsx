@@ -1,5 +1,10 @@
 import React, { useState, useMemo } from "react";
-import { Animated, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
+import {
+  Animated,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
+} from "react-native";
 import { Text } from "react-native-elements";
 import { styles } from "../../style/style";
 import { ChevronDown, Bell } from "react-native-feather";
@@ -13,7 +18,7 @@ const AvatarButton: React.FC<AvatarButtonProps> = ({ onPress }) => {
   const animation = useMemo(() => new Animated.Value(60), []);
 
   const toggleExpansion = () => {
-    const toValue = expanded ? 60 : 300;
+    const toValue = expanded ? 60 : 340;
     const config = {
       toValue,
       useNativeDriver: false,
@@ -36,26 +41,48 @@ const AvatarButton: React.FC<AvatarButtonProps> = ({ onPress }) => {
             borderColor: "#E8E8E8",
             display: "flex",
             flexDirection: "row",
-            justifyContent: "space-evenly",
+            justifyContent: "space-between",
             alignItems: "center",
+            paddingLeft: 10,
+            paddingRight: 10,
           }}
         >
           <Text style={styles.AvatarIcon}>AC</Text>
           {expanded && (
-            <TouchableOpacity style={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 5,
-            }}>
-              <ChevronDown stroke="#D1D1D1" width={24} height={24} style={styles.chevron} />
-              <Text style={{
-                color: "#9CDE00",
-                backgroundColor: "#A0DB3050",
-                borderRadius: 15,
-                padding: 6,
-              }}>#profile 1</Text>
+            <TouchableOpacity
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 5,
+              }}
+            >
+              <View style={{
+                display: "flex",
+              }}>
+                <Text>Alexandre</Text>
+                <Text>Clenet</Text>
+              </View>
+              <ChevronDown
+                stroke="#B9B9B9"
+                width={24}
+                height={24}
+                style={styles.chevron}
+              />
+              <View style={styles.bar}></View>
+              <Text
+                style={{
+                  color: "#4296E4",
+                  backgroundColor: "#4296E450",
+                  borderRadius: 15,
+                  padding: 4,
+                  paddingLeft: 6,
+                  paddingRight: 6,
+                }}
+              >
+                #profile 1
+              </Text>
             </TouchableOpacity>
           )}
         </Animated.View>

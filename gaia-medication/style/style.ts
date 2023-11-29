@@ -27,16 +27,18 @@ export const styles = StyleSheet.create({
       textAlignVertical: "center",
       backgroundColor: "#FFCF26",
       borderRadius: 25,
-      fontSize: 18,
+      fontSize: 24,
       fontWeight: "900",
       color: "white",
     },
     chevron: {
-      backgroundColor: "#F5F5F5",
+      backgroundColor: "#F1F1F1",
       borderRadius: 50,
     },
-    notification: {
-      width: 50
+    bar: {
+      backgroundColor: "#E0E0E0",
+      height: 25,
+      width: 2,
     },
     searchContainer: {
       display: "flex",
