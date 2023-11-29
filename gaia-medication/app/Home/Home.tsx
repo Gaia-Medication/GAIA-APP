@@ -7,15 +7,12 @@ import * as ImagePicker from "expo-image-picker";
 import callGoogleVisionAsync from "../../OCR/helperFunctions";
 import { styles } from "../../style/style";
 import AvatarButton from "../component/Avatar"; 
-import { getUser } from "../../dao/User";
+import { getDBConnection, getUser } from "../../dao/User";
 import {  getAllMed } from "../../dao/Meds";
 import { searchMed } from "../../dao/Search";
 import { Bell } from "react-native-feather";
 
-interface IHomeProps {
-  navigation: NavigationProp<ParamListBase>;
-}
-export default function Home({ navigation }: IHomeProps) {
+export default function Home({ navigation }) {
   const isFocused = useIsFocused();
 
   const [user, setUser] = useState<User | null>(null);
@@ -23,6 +20,14 @@ export default function Home({ navigation }: IHomeProps) {
 
   const eventHandler = async () => {
     //const isTutoComplete = await AsyncStorage.getItem("tutoComplete");
+    // var isConnected = null
+    // try {
+    //   const db = await getDBConnection();
+    //    isConnected = await getUser(db, 1);
+    //   // Utilisez user ici
+    // } catch (error) {
+    //   console.error("Erreur lors de la récupération de l'utilisateur:", error);
+    // }
     const isConnected = await AsyncStorage.getItem("users");
     if (isConnected === null) {
       // L'utilisateur se connecte pour la première fois
@@ -31,6 +36,7 @@ export default function Home({ navigation }: IHomeProps) {
         alert("Va falloir faire le tuto bro");
   
       }*/ else {
+      //setUser(JSON.parse(isConnected));
       setUser(JSON.parse(isConnected));
     }
   };

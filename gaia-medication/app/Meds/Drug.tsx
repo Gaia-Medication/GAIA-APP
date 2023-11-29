@@ -1,22 +1,29 @@
-import { useIsFocused } from '@react-navigation/native';
-import React, { useEffect } from 'react';
-import { View, Text, Button } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { getMedbyCIS } from '../../dao/Meds';
+import { useIsFocused } from "@react-navigation/native";
+import React, { useEffect } from "react";
+import { View, Text, Button } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { getMedbyCIS } from "../../dao/Meds";
 
-export default function Drug({route}) {
+export default function Drug({ route }) {
   const isFocused = useIsFocused();
   useEffect(() => {
-    if(isFocused){ 
-      console.log("Nav on Drug Page")
+    if (isFocused) {
+      console.log("Nav on Drug Page");
     }
-  },[isFocused]); 
+  }, [isFocused]);
   const { drugCIS } = route.params;
-  console.log(drugCIS)
-  const drug= getMedbyCIS(drugCIS)
+  console.log(drugCIS);
+  const drug = getMedbyCIS(drugCIS);
   return (
     <View>
-      {drug&&<Text>Name: {drug.Name}</Text>}
+      {drug && (
+        <>
+          <Text>Name : {drug.Name}</Text>
+          <Text>Administration : {drug.Administration_way}</Text>
+          <Text>Description : {drug.Values.Denomination}</Text>
+          <Text>Remboursement : {drug.Values.Remboursement}</Text>
+        </>
+      )}
     </View>
   );
 }

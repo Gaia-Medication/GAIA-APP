@@ -6,7 +6,7 @@ import { Input } from "react-native-elements";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Link, NavigationProp, ParamListBase } from "@react-navigation/native";
-import { createUser } from "../../dao/User";
+import { createUser, getDBConnection } from "../../dao/User";
 
 interface ICreateProps {
   navigation: NavigationProp<ParamListBase>;
@@ -57,7 +57,7 @@ export default function CreateProfile({ navigation }: ICreateProps) {
       })
   },[]); 
 
-  const handleSumbit = () => {
+  const handleSumbit = async () => {
     if (!isValidFirstname || !isValidLastname || isFormEmpty) {
       console.log(`error not valid`);
     } else {
@@ -70,11 +70,10 @@ export default function CreateProfile({ navigation }: ICreateProps) {
           gender,
           preference,
         };
-        
-        //createUser(user)
+        console.log(user);
+        //await createUser(user)
         // Convert the user object to JSON
         const userJSON = JSON.stringify(user);
-        console.log(user);
         AsyncStorage.setItem("users", userJSON);
         navigation.navigate('Home');
       } catch (e) {

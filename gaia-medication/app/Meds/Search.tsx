@@ -39,9 +39,11 @@ export default function Search({ route,navigation }) {
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => 
         <TouchableOpacity
+        style={styles.listItem}
         onPress={() => navigation.navigate("Drug", { drugCIS: item.CIS })}
         ><Text>{item.Name}</Text></TouchableOpacity>}
       />
     </View>
   );
 }
+
