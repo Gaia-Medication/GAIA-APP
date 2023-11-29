@@ -1,13 +1,8 @@
-import React, { useState, useMemo } from "react";
-import {
-  Animated,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View,
-} from "react-native";
+import React, { useState, useMemo, useEffect } from "react";
+import { Animated, Pressable, TouchableOpacity, View } from "react-native";
 import { Text } from "react-native-elements";
 import { styles } from "../../style/style";
-import { ChevronDown, Bell } from "react-native-feather";
+import { ChevronDown } from "react-native-feather";
 
 interface AvatarButtonProps {
   onPress: () => void;
@@ -16,6 +11,15 @@ interface AvatarButtonProps {
 const AvatarButton: React.FC<AvatarButtonProps> = ({ onPress }) => {
   const [expanded, setExpanded] = useState(false);
   const animation = useMemo(() => new Animated.Value(60), []);
+  const textOpacity = useMemo(() => new Animated.Value(0), []);
+
+  useEffect(() => {
+    Animated.timing(textOpacity, {
+      toValue: expanded ? 1 : 0,
+      duration: 400,
+      useNativeDriver: false,
+    }).start();
+  }, [expanded]);
 
   const toggleExpansion = () => {
     const toValue = expanded ? 60 : 340;
@@ -31,7 +35,7 @@ const AvatarButton: React.FC<AvatarButtonProps> = ({ onPress }) => {
 
   return (
     <View style={{ alignItems: "center" }}>
-      <TouchableWithoutFeedback onPress={toggleExpansion}>
+      <Pressable onPress={toggleExpansion}>
         <Animated.View
           style={{
             width: animation,
@@ -51,19 +55,30 @@ const AvatarButton: React.FC<AvatarButtonProps> = ({ onPress }) => {
           {expanded && (
             <TouchableOpacity
               style={{
+                width: "80%",
                 display: "flex",
                 flexDirection: "row",
                 alignItems: "center",
-                justifyContent: "center",
+                justifyContent: "space-between",
                 gap: 5,
               }}
             >
-              <View style={{
-                display: "flex",
-              }}>
-                <Text>Alexandre</Text>
+              <Animated.View
+                style={{
+                  display: "flex",
+                  opacity: textOpacity,
+                }}
+              >
+                <Text
+                  style={{
+                    fontWeight: "bold",
+                    fontSize: 20,
+                  }}
+                >
+                  Alexandre
+                </Text>
                 <Text>Clenet</Text>
-              </View>
+              </Animated.View>
               <ChevronDown
                 stroke="#B9B9B9"
                 width={24}
@@ -86,7 +101,7 @@ const AvatarButton: React.FC<AvatarButtonProps> = ({ onPress }) => {
             </TouchableOpacity>
           )}
         </Animated.View>
-      </TouchableWithoutFeedback>
+      </Pressable>
     </View>
   );
 };
