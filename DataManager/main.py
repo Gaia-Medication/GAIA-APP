@@ -56,37 +56,38 @@ s=str(string_data)
 
 
 
-# index=0
+# index = 0
 # for description in string_data:
-#     #print(description)
-#     flag=False
-
-#     product=[]
-#     quantity=[]
-#     description=description.lower()
-#     description=replace_accents(description)
-#     description=description.split(" ")
+#     product = []
+#     quantity = []
+#     description = description.lower()
+#     description = replace_accents(description)
+#     description = description.split(" ")
 #     if has_number(description):
-#         for word in range(0,len(description)):
-#             if has_number(description[word]):
-#                 flag=True
-#             if flag:
-#                 description[word]=description[word]+" "+description[word+1]
-#                 description.pop(word+1)
-#             flag=False
+#         n = 0
+#         w_index = 0
+#         while w_index < len(description):
+#             #print(w_index, len(description),description, '\n')
+#             for category, regex in dictionnary.items():
+#                 for reg in regex:
+#                     if w_index < len(description) - 1 and has_number(description[w_index]) and re.search(reg, description[w_index + 1]):
+#                         description[w_index] = description[w_index] + " " + description[w_index + 1]
+#                         description.pop(w_index + 1)
+#                     w_index += 1
+#         print(description)
 
-#     for word in range(0,len(description)):
-#         for category, regex in dictionnary.items():
-#             for reg in regex:
-#                 if re.search(reg,word):
-#                     w=re.search(reg,word).group()
-#                     if category=="product":
-#                         product.append(w)
-#                     if category=="quantity":
-#                         quantity.append(w)
-#                     print(product,quantity)
-                # if len(product)==3:
-                #     print(description) 
+    # for word in range(0,len(description)):
+    #     for category, regex in dictionnary.items():
+    #         for reg in regex:
+    #             if re.search(reg,word):
+    #                 w=re.search(reg,word).group()
+    #                 if category=="product":
+    #                     product.append(w)
+    #                 if category=="quantity":
+    #                     quantity.append(w)
+    #                 print(product,quantity)
+    #             if len(product)==3:
+    #                 print(description) 
     # if len(product)==0:
     #     print("ERROR product :", description)
 
@@ -224,5 +225,5 @@ dfMedication = dfMedication.merge(dfInformation, on='CIS', how='outer')
 dfMedication = dfMedication.merge(dfPresentation, on='CIS', how='outer')
 
 #print(dfMedication.sort_values(by=['CIS']))
-jsonMedication = dfMedication.to_json('out/medication.json', orient="records")
+#jsonMedication = dfMedication.to_json('out/medication.json', orient="records")
 #print(jsonMedication)
