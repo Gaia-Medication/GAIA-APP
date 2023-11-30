@@ -5,12 +5,11 @@ import * as ImagePicker from "expo-image-picker";
 import callGoogleVisionAsync from "../../OCR/helperFunctions";
 import { styles } from "../../style/style";
 import AvatarButton from "../component/Avatar";
-import { readList } from "../../dao/Storage";
-import { getAllMed } from "../../dao/Meds";
-import { searchMed } from "../../dao/Search";
+import { getUserByID, readList } from "../../dao/Storage";
 import { Bell } from "react-native-feather";
 import { Input } from "react-native-elements";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Home({ navigation }) {
   const isFocused = useIsFocused();
@@ -20,17 +19,18 @@ export default function Home({ navigation }) {
   const [header, setHeader] = useState(true);
 
   const eventHandler = async () => {
-    //const isConnected = await AsyncStorage.getItem("users");
     const userList = await readList("users");
     setUsers(userList);
     console.log(userList);
-    if (userList.length < 1) {
+    const currentId =await AsyncStorage.getItem("currentUser");
+    if (userList.length < 1 && currentId) {
       // L'utilisateur se connecte pour la première fois
       navigation.navigate("CreateProfile");
     } /*else if(isTutoComplete === null){
         alert("Va falloir faire le tuto bro");
       }*/ else {
-      setUser(userList[0]);
+      const current = await getUserByID(JSON.parse(currentId));
+      setUser(current);
     }
   };
 

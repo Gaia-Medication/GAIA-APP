@@ -6,7 +6,7 @@ import { Input } from "react-native-elements";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Link, NavigationProp, ParamListBase } from "@react-navigation/native";
-import { addItemToList } from "../../dao/Storage";
+import { UserIdAutoIncrement, addItemToList } from "../../dao/Storage";
 
 interface ICreateProps {
   navigation: NavigationProp<ParamListBase>;
@@ -63,7 +63,7 @@ export default function CreateProfile({ navigation }: ICreateProps) {
     } else {
       try {
         const user: User = {
-          id:1,
+          id:await UserIdAutoIncrement(),
           firstname,
           lastname,
           birthdate,
@@ -73,7 +73,7 @@ export default function CreateProfile({ navigation }: ICreateProps) {
         console.log(user);
 
         await addItemToList("users",user)
-        await AsyncStorage.setItem("currentUser", user.firstname);
+        await AsyncStorage.setItem("currentUser", JSON.stringify(user.id));
         navigation.navigate('Home');
       } catch (e) {
         console.log(e);

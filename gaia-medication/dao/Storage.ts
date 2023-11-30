@@ -1,8 +1,22 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+export const UserIdAutoIncrement = async () => {
+  try {
+    const jsonValue = await AsyncStorage.getItem("users");
+    const users = jsonValue != null ? JSON.parse(jsonValue) : [];
+    const userIds = users.map(user => user.id);
+    let incr = 1;
+    while (userIds.includes(incr)) {
+      incr += 1;
+    }
+    return incr
+  } catch (error) {
+    console.error(`Erreur UserIdAutoIncrement:`, error);
+  }
+};
 
 // Lire la liste depuis AsyncStorage
-export const readList = async (key) => {
+export const readList = async (key:string) => {
   try {
     const jsonValue = await AsyncStorage.getItem(key);
     return jsonValue != null ? JSON.parse(jsonValue) : [];
@@ -13,18 +27,19 @@ export const readList = async (key) => {
 };
 
 // Lire un user 
-export const getItemByID = async (user) => {
+export const getUserByID = async (id:number) => {
   try {
-    const jsonValue = await AsyncStorage.getItem(user);
-    return jsonValue != null ? JSON.parse(jsonValue) : [];
+    const jsonValue = await AsyncStorage.getItem("users");
+    const users = jsonValue != null ? JSON.parse(jsonValue) : [];
+    const user = users.find(user => user.id === id);
+    return user || null;
   } catch (error) {
-    console.error(`Erreur lors de la lecture de l'user ${user}:`, error);
-    return [];
+    console.error(`Erreur lors de la lecture de l'user avec l'id ${id}:`, error);
   }
 }
 
 // Ajouter un élément à la liste dans AsyncStorage
-export const addItemToList = async (key, item) => {
+export const addItemToList = async (key:string, item) => {
   try {
     const existingList = await readList(key);
     existingList.push(item);
@@ -36,7 +51,7 @@ export const addItemToList = async (key, item) => {
 };
 
 // Mettre à jour un élément dans la liste dans AsyncStorage
-export const updateItemInList = async (key, index, newItem) => {
+export const updateItemInList = async (key:string, index, newItem) => {
   try {
     const existingList = await readList(key);
     if (index >= 0 && index < existingList.length) {
@@ -52,7 +67,7 @@ export const updateItemInList = async (key, index, newItem) => {
 };
 
 // Supprimer un élément de la liste dans AsyncStorage
-export const removeItemFromList = async (key, index) => {
+export const removeItemFromList = async (key:string, index) => {
   try {
     const existingList = await readList(key);
     if (index >= 0 && index < existingList.length) {
