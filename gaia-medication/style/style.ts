@@ -100,3 +100,15 @@ export const styles = StyleSheet.create({
     }
   });
   
+  listItem: {
+    backgroundColor: '#ffffff', // Couleur de fond pour chaque élément de la liste
+    padding: 15, // Espace intérieur pour chaque élément
+    borderBottomWidth: 1, // Ligne de séparation
+    borderBottomColor: '#dddddd', // Couleur de la ligne de séparation
+  },
+  listItemText: {
+    fontSize: 18, // Taille de la police
+    color: '#333333', // Couleur de la police
+    // Autres styles pour le texte...
+  },
+});

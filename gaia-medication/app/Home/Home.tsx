@@ -6,33 +6,31 @@ import { useIsFocused } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
 import callGoogleVisionAsync from "../../OCR/helperFunctions";
 import { styles } from "../../style/style";
-import AvatarButton from "../component/Avatar";
-import { getUser } from "../../dao/User";
+import AvatarButton from "../component/Avatar"; 
+import { readList } from "../../dao/Storage";
 import {  getAllMed } from "../../dao/Meds";
 import { searchMed } from "../../dao/Search";
 import { Bell } from "react-native-feather";
+import { Input } from "react-native-elements";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
-interface IHomeProps {
-  navigation: NavigationProp<ParamListBase>;
-}
-export default function Home({ navigation }: IHomeProps) {
+export default function Home({ navigation }) {
   const isFocused = useIsFocused();
 
   const [user, setUser] = useState<User | null>(null);
-  const [search, setSearch] = useState("");
   const [header, setHeader] = useState(true);
 
   const eventHandler = async () => {
-    //const isTutoComplete = await AsyncStorage.getItem("tutoComplete");
-    const isConnected = await AsyncStorage.getItem("users");
-    if (isConnected === null) {
+    //const isConnected = await AsyncStorage.getItem("users");
+    const userList=await readList("users")
+    console.log(userList)
+    if (userList.length<1) {
       // L'utilisateur se connecte pour la première fois
       navigation.navigate("CreateProfile");
     } /*else if(isTutoComplete === null){
         alert("Va falloir faire le tuto bro");
-  
       }*/ else {
-      setUser(JSON.parse(isConnected));
+      setUser(userList[0])
     }
   };
 
@@ -86,17 +84,28 @@ export default function Home({ navigation }: IHomeProps) {
             <Text style={styles.title2}>Recherche d’un médicament</Text>
             <View style={styles.searchBarwQR}>
               <View style={styles.searchBar}>
-                <TextInput
+                <Input
                   style={styles.searchBarInput}
                   placeholder="Doliprane, Aspirine ..."
+                  placeholderTextColor="#9CDE00"
+                  leftIcon={{
+                    type: "feathers",
+                    name: "search",
+                    color: "#9CDE00",
+                  }}
                   value={""}
-                  onPressIn={() => navigation.navigate("Search", { focusSearchInput: true })}
+                  inputContainerStyle={styles.searchBarContainer}
+                  onPressIn={() =>
+                    navigation.navigate("Search", { focusSearchInput: true })
+                  }
                 />
               </View>
               <TouchableOpacity
                 onPress={pickImage}
                 style={styles.searchQR}
-              ></TouchableOpacity>
+              >
+                <MaterialIcons name="qr-code-scanner" size={35} color="#9CDE00"/>
+              </TouchableOpacity>
             </View>
           </View>
           <View style={styles.traitementContainer}>

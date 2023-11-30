@@ -47,6 +47,7 @@ export default function Navigation() {
         <Stack.Screen
           name="Search"
           component={Search}
+          options={{ headerShown: false }}
         />
       </Stack.Navigator>
     </NavigationContainer>
