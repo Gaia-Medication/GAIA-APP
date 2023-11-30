@@ -1,15 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, TextInput, TouchableOpacity } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { NavigationProp, ParamListBase } from "@react-navigation/native";
 import { useIsFocused } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
 import callGoogleVisionAsync from "../../OCR/helperFunctions";
 import { styles } from "../../style/style";
 import AvatarButton from "../component/Avatar"; 
 import { readList } from "../../dao/Storage";
-import {  getAllMed } from "../../dao/Meds";
-import { searchMed } from "../../dao/Search";
 import { Bell } from "react-native-feather";
 import { Input } from "react-native-elements";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";

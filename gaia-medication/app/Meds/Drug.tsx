@@ -1,6 +1,6 @@
 import { useIsFocused } from "@react-navigation/native";
 import React, { useEffect } from "react";
-import { View, Text, Button } from "react-native";
+import { View, Text, Button, FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getMedbyCIS } from "../../dao/Meds";
 
@@ -13,7 +13,7 @@ export default function Drug({ route }) {
   useEffect(() => {
     if (isFocused) {
       console.log("Nav on Drug Page CIS :", drugCIS);
-      console.log(drug);
+      //console.log(drug);
     }
   }, [isFocused]);
   return (
@@ -23,14 +23,30 @@ export default function Drug({ route }) {
           <Text>Name : {drug.Name}</Text>
           <Text>Administration : {drug.Administration_way}</Text>
           <Text>Type : {drug.Shape}</Text>
-          <Text>Description : {drug.Values[0].Denomination}</Text>
           <Text>Commerce : {drug.Marketed}</Text>
-          {drug.Marketed == "Commercialisée"&& drug.Values[0].Price_with_taxes && (
-            <>
-              <Text>Prix : {drug.Values[0].Price_with_taxes}€</Text>
-              <Text>Remboursement : {drug.Values[0].Remboursement}</Text>
-            </>
-          )}
+          <FlatList
+            data={drug.Values}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item }) => (
+              <>
+                <Text>Produit :</Text>
+                <Text>CIP : {item.CIP}</Text>
+                <Text>Description : {item.Denomination}</Text>
+                {drug.Marketed == "Commercialisée" &&
+                  (item.Price_with_taxes ? (
+                    <>
+                      <Text>Prix : {item.Price_with_taxes}€</Text>
+                      <Text>Remboursement : {item.Remboursement}</Text>
+                    </>
+                  ) : (
+                    <>
+                      <Text>Prix : Prix libre</Text>
+                      <Text>Remboursement : Non remboursable</Text>
+                    </>
+                  ))}
+              </>
+            )}
+          />
         </>
       )}
     </View>
