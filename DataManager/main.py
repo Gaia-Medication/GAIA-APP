@@ -56,12 +56,14 @@ s=str(string_data)
 
 
 
-
+index=0
 for description in string_data:
+    
     product = []
     quantity = []
     description = description.lower()
     description = replace_accents(description)
+    re.sub("\s+"," ",description)
     description = description.split(" ")
     flag=False
     if has_number(description):
@@ -75,12 +77,17 @@ for description in string_data:
                     if w_index < len(description)-1:
                         if has_number(description[w_index]) and re.search(reg, description[w_index + 1]):
                             flag=True
-                            description[w_index] = description[w_index] + " " + description[w_index + 1]
-                            description.pop(w_index + 1)
+                            if description[w_index -1]=="de":
+                                description[w_index -1] = description[w_index -1] + " " + description[w_index] + " " + description[w_index + 1]
+                                description.pop(w_index+1)
+                                description.pop(w_index)
+                            else:                                    
+                                description[w_index] = description[w_index] + " " + description[w_index + 1]
+                                description.pop(w_index + 1)
                             break
         #print(description)
 
-    for word in range(0,len(description)):
+    for word in description:
         for category, regex in dictionnary.items():
             for reg in regex:
                 if re.search(reg,word):
@@ -89,11 +96,12 @@ for description in string_data:
                         product.append(w)
                     if category=="quantity":
                         quantity.append(w)
-                    print(product,quantity)
-                if len(product)==3:
-                    print(description) 
-    if len(product)==0:
-        print("ERROR product :", description)
+    if quantity==['g']:
+        print(index,product,quantity,"\n",description,"\n")
+    index+=1
+    # if len(product)==0:
+    #     print("ERROR product :", description)
+    #print(description)
 
 
 
