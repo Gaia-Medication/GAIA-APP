@@ -11,6 +11,8 @@ import { readList } from "../../dao/Storage";
 import {  getAllMed } from "../../dao/Meds";
 import { searchMed } from "../../dao/Search";
 import { Bell } from "react-native-feather";
+import { Input } from "react-native-elements";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
 export default function Home({ navigation }) {
   const isFocused = useIsFocused();
@@ -79,17 +81,28 @@ export default function Home({ navigation }) {
             <Text style={styles.title2}>Recherche d’un médicament</Text>
             <View style={styles.searchBarwQR}>
               <View style={styles.searchBar}>
-                <TextInput
+                <Input
                   style={styles.searchBarInput}
                   placeholder="Doliprane, Aspirine ..."
+                  placeholderTextColor="#9CDE00"
+                  leftIcon={{
+                    type: "feathers",
+                    name: "search",
+                    color: "#9CDE00",
+                  }}
                   value={""}
-                  onPressIn={() => navigation.navigate("Search", { focusSearchInput: true })}
+                  inputContainerStyle={styles.searchBarContainer}
+                  onPressIn={() =>
+                    navigation.navigate("Search", { focusSearchInput: true })
+                  }
                 />
               </View>
               <TouchableOpacity
                 onPress={pickImage}
                 style={styles.searchQR}
-              ></TouchableOpacity>
+              >
+                <MaterialIcons name="qr-code-scanner" size={35} color="#9CDE00"/>
+              </TouchableOpacity>
             </View>
           </View>
           <View style={styles.traitementContainer}>
