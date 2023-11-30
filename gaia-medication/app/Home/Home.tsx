@@ -4,8 +4,10 @@ import { useIsFocused } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
 import callGoogleVisionAsync from "../../OCR/helperFunctions";
 import { styles } from "../../style/style";
-import AvatarButton from "../component/Avatar"; 
+import AvatarButton from "../component/Avatar";
 import { readList } from "../../dao/Storage";
+import { getAllMed } from "../../dao/Meds";
+import { searchMed } from "../../dao/Search";
 import { Bell } from "react-native-feather";
 import { Input } from "react-native-elements";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
@@ -14,19 +16,21 @@ export default function Home({ navigation }) {
   const isFocused = useIsFocused();
 
   const [user, setUser] = useState<User | null>(null);
+  const [users, setUsers] = useState<User[]>([]);
   const [header, setHeader] = useState(true);
 
   const eventHandler = async () => {
     //const isConnected = await AsyncStorage.getItem("users");
-    const userList=await readList("users")
-    console.log(userList)
-    if (userList.length<1) {
+    const userList = await readList("users");
+    setUsers(userList);
+    console.log(userList);
+    if (userList.length < 1) {
       // L'utilisateur se connecte pour la première fois
       navigation.navigate("CreateProfile");
     } /*else if(isTutoComplete === null){
         alert("Va falloir faire le tuto bro");
       }*/ else {
-      setUser(userList[0])
+      setUser(userList[0]);
     }
   };
 
@@ -62,17 +66,25 @@ export default function Home({ navigation }) {
       {user && (
         <>
           <View style={styles.header}>
-            <AvatarButton onPress={handleAvatarButton}></AvatarButton>
+            <AvatarButton
+              onPress={handleAvatarButton}
+              users={users}
+            ></AvatarButton>
             {header && (
               <>
                 <View style={styles.titleContainer}>
                   <Text style={styles.subtitle}>Welcome back</Text>
                   <Text style={styles.title}>{user?.firstname}</Text>
                 </View>
-                <Bell stroke="#242424" width={24} height={24} style={{
-                  marginLeft: 13,
-                  marginRight: 13,
-                }}></Bell>
+                <Bell
+                  stroke="#242424"
+                  width={24}
+                  height={24}
+                  style={{
+                    marginLeft: 13,
+                    marginRight: 13,
+                  }}
+                ></Bell>
               </>
             )}
           </View>
@@ -96,11 +108,12 @@ export default function Home({ navigation }) {
                   }
                 />
               </View>
-              <TouchableOpacity
-                onPress={pickImage}
-                style={styles.searchQR}
-              >
-                <MaterialIcons name="qr-code-scanner" size={35} color="#9CDE00"/>
+              <TouchableOpacity onPress={pickImage} style={styles.searchQR}>
+                <MaterialIcons
+                  name="qr-code-scanner"
+                  size={35}
+                  color="#9CDE00"
+                />
               </TouchableOpacity>
             </View>
           </View>
