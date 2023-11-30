@@ -4,6 +4,7 @@ import { View, Text, Button, TextInput, FlatList, TouchableOpacity } from "react
 import { SafeAreaView } from "react-native-safe-area-context";
 import { searchMed } from "../../dao/Search";
 import { styles } from "../../style/style";
+import { Input } from "react-native-elements";
 
 export default function Search({ route,navigation }) {
   const searchInputRef = useRef(null);
@@ -26,10 +27,13 @@ export default function Search({ route,navigation }) {
     <View style={styles.container}>
       <View style={styles.searchBarwQR}>
         <View style={styles.searchBar}>
-          <TextInput
+          <Input
             ref={searchInputRef}
             style={styles.searchBarInput}
             placeholder="Doliprane, Aspirine ..."
+            placeholderTextColor="#9CDE00"
+            leftIcon={{ type:"feathers", name:"search", color: "#9CDE00"}}
+            inputContainerStyle={styles.searchBarContainer}
             onChangeText={text =>setSearch(searchMed(text))}
           />
         </View>
