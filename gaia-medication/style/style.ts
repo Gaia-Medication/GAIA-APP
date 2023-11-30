@@ -52,6 +52,9 @@ export const styles = StyleSheet.create({
       flexDirection: "row",
       height: 50,
     },
+    searchBarContainer: {
+      borderBottomWidth: 0,
+    },
     searchBar: {
       display: "flex",
       flex: 1,
@@ -97,8 +100,7 @@ export const styles = StyleSheet.create({
       marginVertical: 30,
       height: 1,
       width: "80%",
-    }
-  });
+    },
   
   listItem: {
     backgroundColor: '#ffffff', // Couleur de fond pour chaque élément de la liste
