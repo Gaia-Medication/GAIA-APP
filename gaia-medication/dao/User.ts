@@ -1,92 +1,98 @@
-import {
-  enablePromise,
-  openDatabase,
-  SQLiteDatabase,
-} from "react-native-sqlite-storage";
+import * as SQLite from "expo-sqlite";
 
-const tableName = "users";
-
-enablePromise(true);
-export const getDBConnection = async () => {
-  const db = openDatabase(
-    {
-      name: "mydb",
-      location: "default",
+export const createUser = (db:SQLite.SQLiteDatabase,user: User) => {
+  
+  db.transaction(
+    (tx) => {
+      tx.executeSql(
+        "INSERT INTO users (firstname, lastname, birthdate, gender, preference) values (?, ?, ?, ?, ?);",
+        [
+          user.firstname,
+          user.lastname,
+          user.birthdate,
+          user.gender,
+          user.preference,
+        ]
+      );
     },
-    () => {
-      console.log("Database connected!");
-    }, //on success
-    (error) => console.log("Database error", error) //on error
+    (error) => console.log("Error inserting", error)
   );
-  return db
+  console.log("user created :",user)
 };
 
-export const createUser = async (user: User) => {
-  const db = await openDatabase(
-    {
-      name: "mydb",
-      location: "default",
+export function getUser(db:SQLite.SQLiteDatabase,userId: number, setUser: (user: User | null) => void) {
+  db.transaction(
+    (tx) => {
+      tx.executeSql(
+        "SELECT * FROM users WHERE id = ?;",
+        [userId],
+        (_, { rows: { _array } }) => {
+          if (_array.length > 0) {
+            setUser(_array[0]);
+          } else {
+            setUser(null); // or handle the user not found case
+          }
+        }
+      );
     },
-    () => {
-      console.log("Database connected!");
-    }, //on success
-    (error) => console.log("Database error", error) //on error
-  );
-  const query = `INSERT INTO ${tableName} (firstname, lastname, birthdate, gender, preference) VALUES (?, ?, ?, ?, ?)`;
-  console.log(query);
-  await db.executeSql(query, [
-    user.firstname,
-    user.lastname,
-    user.birthdate,
-    user.gender,
-    user.preference,
-  ]);
-};
-
-export const getUsers = async (db: SQLiteDatabase) => {
-  try {
-    const users = [];
-    const results = await db.executeSql(`SELECT * FROM ${tableName}`);
-    results.forEach((result) => {
-      for (let i = 0; i < result.rows.length; i++) {
-        users.push(result.rows.item(i));
-      }
-    });
-    return users;
-  } catch (error) {
-    console.error(error);
-    throw Error("Failed to get users from the database");
-  }
-};
-
-export const getUser = async (db: SQLiteDatabase, userId: number) => {
-  try {
-    const query = `SELECT * FROM ${tableName} WHERE id = ?`;
-    const results = await db.executeSql(query, [userId]);
-    if (results.length > 0) {
-      return results[0].rows.item(0);
+    (error) => {
+      console.log("Error fetching user", error);
+      setUser(null); // handle error case
     }
-    return null; // ou vous pouvez lancer une erreur si l'utilisateur n'est pas trouvé
-  } catch (error) {
-    console.error(error);
-    throw Error("Failed to get user from the database");
-  }
-};
+  );
+}
 
-export const updateUser = async (db: SQLiteDatabase, user: User) => {
-  const { id, firstname, lastname, birthdate, gender, preference } = user;
-  const query = `UPDATE ${tableName} SET firstname = ?, lastname = ?, birthdate = ?, gender = ?, preference = ? WHERE id = ?`;
-  await db.executeSql(query, [
-    firstname,
-    lastname,
-    birthdate,
-    gender,
-    preference,
-    id,
-  ]);
-};
+export function getAllUsers(db:SQLite.SQLiteDatabase,setUsers) {
+  db.transaction(
+    (tx) => {
+      tx.executeSql("SELECT * FROM users;", [], (_, { rows: { _array } }) => {
+        setUsers(_array);
+      });
+    },
+    (error) => console.log("Error fetching", error)
+  );
+}
 
-export const deleteUser = async (db: SQLiteDatabase, userId: number) => {
-  const query = `DELETE FROM ${tableName} WHERE id = ?`;
-  await db.executeSql(query, [userId]);
-};
+export function updateUser(db:SQLite.SQLiteDatabase,user: User, userId: number) {
+  db.transaction(
+    (tx) => {
+      tx.executeSql(
+        "UPDATE users SET firstname = ?, lastname = ?, birthdate = ?, gender = ?, preference = ? WHERE id = ?;",
+        [
+          user.firstname,
+          user.lastname,
+          user.birthdate,
+          user.gender,
+          user.preference,
+          userId,
+        ]
+      );
+    },
+    (error) => console.log("Error updating", error)
+  );
+}
+
+export function deleteUser(db:SQLite.SQLiteDatabase,userId: number) {
+  db.transaction(
+    (tx) => {
+      tx.executeSql("DELETE FROM users WHERE id = ?;", [userId]);
+    },
+    (error) => console.log("Error deleting", error)
+  );
+}
+
+export function deleteAllUsers(db:SQLite.SQLiteDatabase) {
+  db.transaction(tx => {
+    tx.executeSql(
+      "DELETE FROM users;",
+      [],
+      (_, result) => {
+        console.log("All users deleted", result);
+      },
+      (_, error) => {
+        console.log("Error deleting all users", error);
+        return false; // Return false to rollback the transaction
+      }
+    );
+  });
+}

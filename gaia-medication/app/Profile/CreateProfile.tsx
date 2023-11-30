@@ -6,7 +6,7 @@ import { Input } from "react-native-elements";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Link, NavigationProp, ParamListBase } from "@react-navigation/native";
-import { createUser, getDBConnection } from "../../dao/User";
+import { createUser } from "../../dao/User";
 
 interface ICreateProps {
   navigation: NavigationProp<ParamListBase>;
@@ -40,7 +40,7 @@ export default function CreateProfile({ navigation }: ICreateProps) {
       //Empecher le redirection, on reste sur la page creation de profile tant qu'il y a 0 Users -> a finir 
       navigation.addListener('beforeRemove', (e) => {
         e.preventDefault();
-        /*Alert.alert(
+        Alert.alert(
           'Discard changes?',
           'You have unsaved changes. Are you sure to discard them and leave the screen?',
           [
@@ -53,7 +53,7 @@ export default function CreateProfile({ navigation }: ICreateProps) {
               onPress: () => navigation.dispatch(e.data.action),
             },
           ]
-        );*/
+        );
       })
   },[]); 
 
@@ -74,7 +74,7 @@ export default function CreateProfile({ navigation }: ICreateProps) {
         //await createUser(user)
         // Convert the user object to JSON
         const userJSON = JSON.stringify(user);
-        AsyncStorage.setItem("users", userJSON);
+        await AsyncStorage.setItem("users", userJSON);
         navigation.navigate('Home');
       } catch (e) {
         console.log(e);

@@ -6,22 +6,31 @@ import { getMedbyCIS } from "../../dao/Meds";
 
 export default function Drug({ route }) {
   const isFocused = useIsFocused();
+
+  const { drugCIS } = route.params;
+  const drug = getMedbyCIS(drugCIS);
+
   useEffect(() => {
     if (isFocused) {
-      console.log("Nav on Drug Page");
+      console.log("Nav on Drug Page CIS :", drugCIS);
+      console.log(drug);
     }
   }, [isFocused]);
-  const { drugCIS } = route.params;
-  console.log(drugCIS);
-  const drug = getMedbyCIS(drugCIS);
   return (
     <View>
       {drug && (
         <>
           <Text>Name : {drug.Name}</Text>
           <Text>Administration : {drug.Administration_way}</Text>
-          <Text>Description : {drug.Values.Denomination}</Text>
-          <Text>Remboursement : {drug.Values.Remboursement}</Text>
+          <Text>Type : {drug.Shape}</Text>
+          <Text>Description : {drug.Values[0].Denomination}</Text>
+          <Text>Commerce : {drug.Marketed}</Text>
+          {drug.Marketed == "Commercialisée"&& drug.Values[0].Price_with_taxes && (
+            <>
+              <Text>Prix : {drug.Values[0].Price_with_taxes}€</Text>
+              <Text>Remboursement : {drug.Values[0].Remboursement}</Text>
+            </>
+          )}
         </>
       )}
     </View>

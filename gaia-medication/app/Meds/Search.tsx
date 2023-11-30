@@ -41,7 +41,7 @@ export default function Search({ route,navigation }) {
         <TouchableOpacity
         style={styles.listItem}
         onPress={() => navigation.navigate("Drug", { drugCIS: item.CIS })}
-        ><Text>{item.Name}</Text></TouchableOpacity>}
+        ><Text>{item.Name} {item.score} </Text></TouchableOpacity>}
       />
     </View>
   );
