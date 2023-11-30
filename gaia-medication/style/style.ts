@@ -72,6 +72,8 @@ export const styles = StyleSheet.create({
       display: "flex",
       backgroundColor: "#A0DB3050",
       borderRadius: 10,
+      justifyContent: "center",
+      alignItems: "center",
     },
     traitementContainer: {
       display: "flex",
