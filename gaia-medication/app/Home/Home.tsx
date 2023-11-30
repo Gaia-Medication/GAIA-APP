@@ -73,7 +73,10 @@ export default function Home({ navigation }) {
                   <Text style={styles.subtitle}>Welcome back</Text>
                   <Text style={styles.title}>{user?.firstname}</Text>
                 </View>
-                <Bell stroke="#242424" width={24} height={24}></Bell>
+                <Bell stroke="#242424" width={24} height={24} style={{
+                  marginLeft: 13,
+                  marginRight: 13,
+                }}></Bell>
               </>
             )}
           </View>
