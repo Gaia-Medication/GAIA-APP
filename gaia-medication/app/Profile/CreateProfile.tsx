@@ -73,6 +73,7 @@ export default function CreateProfile({ navigation }: ICreateProps) {
         console.log(user);
 
         await addItemToList("users",user)
+        await AsyncStorage.setItem("currentUser", user.firstname);
         navigation.navigate('Home');
       } catch (e) {
         console.log(e);

@@ -12,6 +12,17 @@ export const readList = async (key) => {
   }
 };
 
+// Lire un user 
+export const getItemByID = async (user) => {
+  try {
+    const jsonValue = await AsyncStorage.getItem(user);
+    return jsonValue != null ? JSON.parse(jsonValue) : [];
+  } catch (error) {
+    console.error(`Erreur lors de la lecture de l'user ${user}:`, error);
+    return [];
+  }
+}
+
 // Ajouter un élément à la liste dans AsyncStorage
 export const addItemToList = async (key, item) => {
   try {

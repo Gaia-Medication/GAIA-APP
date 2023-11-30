@@ -6,14 +6,16 @@ import { ChevronDown } from "react-native-feather";
 
 interface AvatarButtonProps {
   onPress: () => void;
+  users: User[];
 }
 
-const AvatarButton: React.FC<AvatarButtonProps> = ({ onPress }) => {
+const AvatarButton: React.FC<AvatarButtonProps> = ({ onPress, users }) => {
   const [expanded, setExpanded] = useState(false);
   const animation = useMemo(() => new Animated.Value(60), []);
   const textOpacity = useMemo(() => new Animated.Value(0), []);
 
   useEffect(() => {
+    console.log(users)
     Animated.timing(textOpacity, {
       toValue: expanded ? 1 : 0,
       duration: 400,
