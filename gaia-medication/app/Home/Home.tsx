@@ -18,10 +18,10 @@ export default function Home({ navigation }) {
   const [users, setUsers] = useState<User[]>([]);
   const [header, setHeader] = useState(true);
 
-  const eventHandler = async () => {
+  const init = async () => {
     const userList = await readList("users");
     setUsers(userList);
-    console.log(userList);
+    console.log("userlist: ",userList);
     const currentId =await AsyncStorage.getItem("currentUser");
     if (userList.length < 1 && currentId) {
       // L'utilisateur se connecte pour la première fois
@@ -57,7 +57,7 @@ export default function Home({ navigation }) {
   useEffect(() => {
     if (isFocused) {
       console.log("Nav on Home Page");
-      eventHandler();
+      init();
     }
   }, [isFocused]);
 

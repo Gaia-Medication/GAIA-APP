@@ -15,8 +15,8 @@ export default function Settings({ navigation: Navigation }) {
     <View>
       <Text>Settings</Text>
       <Button
-        title="CLEAR USERS DATA"
-        onPress={() => AsyncStorage.removeItem("users")}
+        title="CLEAR DATA"
+        onPress={() =>( AsyncStorage.removeItem("users"),AsyncStorage.removeItem("stock"))}
       />
       <Button
         title="ADD PROFILE"
