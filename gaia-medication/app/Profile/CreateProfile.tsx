@@ -6,7 +6,7 @@ import { Input } from "react-native-elements";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Link, NavigationProp, ParamListBase } from "@react-navigation/native";
-import { createUser } from "../../dao/User";
+import { addItemToList } from "../../dao/Storage";
 
 interface ICreateProps {
   navigation: NavigationProp<ParamListBase>;
@@ -71,10 +71,8 @@ export default function CreateProfile({ navigation }: ICreateProps) {
           preference,
         };
         console.log(user);
-        //await createUser(user)
-        // Convert the user object to JSON
-        const userJSON = JSON.stringify(user);
-        await AsyncStorage.setItem("users", userJSON);
+
+        await addItemToList("users",user)
         navigation.navigate('Home');
       } catch (e) {
         console.log(e);
