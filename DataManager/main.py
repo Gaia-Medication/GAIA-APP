@@ -63,7 +63,9 @@ for description in string_data:
     quantity = []
     description = description.lower()
     description = replace_accents(description)
-    re.sub("\s+"," ",description)
+    description=description.replace("  "," ")
+    if index==13818:
+        print(description)
     description = description.split(" ")
     flag=False
     if has_number(description):
