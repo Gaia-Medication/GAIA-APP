@@ -21,8 +21,8 @@ export default function Home({ navigation }) {
   const init = async () => {
     const userList = await readList("users");
     setUsers(userList);
-    console.log("userlist: ",userList);
-    const currentId =await AsyncStorage.getItem("currentUser");
+    console.log("userlist: ", userList);
+    const currentId = await AsyncStorage.getItem("currentUser");
     if (userList.length < 1 && currentId) {
       // L'utilisateur se connecte pour la première fois
       navigation.navigate("CreateProfile");
@@ -69,6 +69,7 @@ export default function Home({ navigation }) {
             <AvatarButton
               onPress={handleAvatarButton}
               users={users}
+              current={user}
             ></AvatarButton>
             {header && (
               <>

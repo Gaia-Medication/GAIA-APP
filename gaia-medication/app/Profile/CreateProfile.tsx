@@ -87,7 +87,7 @@ export default function CreateProfile({ navigation }: ICreateProps) {
         label="Prenom"
         placeholder="Entrez votre prenom"
         leftIcon={{ type: "font-awesome", name: "user" }}
-        onChangeText={(text) => setFirstname(text)}
+        onChangeText={(text) => setFirstname(text.charAt(0).toUpperCase() + text.slice(1))}
         onBlur={validateFirstname}
         value={firstname}
         renderErrorMessage={isValidFirstname}
@@ -100,7 +100,7 @@ export default function CreateProfile({ navigation }: ICreateProps) {
         label="Nom"
         placeholder="Entrez votre nom"
         leftIcon={{ type: "font-awesome", name: "user" }}
-        onChangeText={(text) => setLastname(text)}
+        onChangeText={(text) => setLastname(text.charAt(0).toUpperCase() + text.slice(1))}
         onBlur={validateLastname}
         value={lastname}
         renderErrorMessage={isValidLastname}

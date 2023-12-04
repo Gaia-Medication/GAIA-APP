@@ -1,15 +1,18 @@
-import React, { useState, useMemo, useEffect } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, { useEffect, useMemo, useState } from "react";
 import { Animated, Pressable, TouchableOpacity, View } from "react-native";
 import { Text } from "react-native-elements";
-import { styles } from "../../style/style";
 import { ChevronDown } from "react-native-feather";
+import { getUserByID } from "../../dao/Storage";
+import { styles } from "../../style/style";
 
 interface AvatarButtonProps {
   onPress: () => void;
   users: User[];
+  current: User;
 }
 
-const AvatarButton: React.FC<AvatarButtonProps> = ({ onPress, users }) => {
+const AvatarButton: React.FC<AvatarButtonProps> = ({ onPress, users, current }) => {
   const [expanded, setExpanded] = useState(false);
   const animation = useMemo(() => new Animated.Value(60), []);
   const textOpacity = useMemo(() => new Animated.Value(0), []);
@@ -53,7 +56,7 @@ const AvatarButton: React.FC<AvatarButtonProps> = ({ onPress, users }) => {
             paddingRight: 10,
           }}
         >
-          <Text style={styles.AvatarIcon}>AC</Text>
+          <Text style={styles.AvatarIcon}>{current.firstname.charAt(0) + current.lastname.charAt(0)}</Text>
           {expanded && (
             <TouchableOpacity
               style={{
@@ -77,9 +80,9 @@ const AvatarButton: React.FC<AvatarButtonProps> = ({ onPress, users }) => {
                     fontSize: 20,
                   }}
                 >
-                  Alexandre
+                  {current.firstname}
                 </Text>
-                <Text>Clenet</Text>
+                <Text>{current.lastname}</Text>
               </Animated.View>
               <ChevronDown
                 stroke="#B9B9B9"
@@ -98,7 +101,7 @@ const AvatarButton: React.FC<AvatarButtonProps> = ({ onPress, users }) => {
                   paddingRight: 6,
                 }}
               >
-                #profile 1
+                #profile {current.id}
               </Text>
             </TouchableOpacity>
           )}
