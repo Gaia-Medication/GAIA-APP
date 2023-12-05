@@ -27,7 +27,7 @@ YELLOW = '\033[93m' # INFORMATIONS
 # INITIALISATION
 dataManager = DataManager(url, params)
 
-#files = dataManager.getFiles()
+files = dataManager.getFiles()
 
 from utils import is_convertible_to_number, has_number, replace_accents, lecture_base, create_regex_from_dictionnary
 
@@ -58,8 +58,8 @@ def date_format(date): #return the date format et l'implémenter dans le datafra
 brut_data = lecture_base("data/CIS_CIP_bdpm.txt").iloc[:,2:3].values[:,0]
 string_data = brut_data.astype(str)
 all_desciption = np.char.split(string_data) # split les strings en array de string
-s=str(string_data)
 
+all_dict=[]
 P_error=0
 P=0
 SP=0
@@ -70,6 +70,12 @@ P_SP_Q=0
 index=0
 for description in string_data:
     
+    return_dict = {
+        "product":[],
+        "second_product":[],
+        "quantity":[],
+        "description":[description]
+    }
     product = []
     second_product = []
     quantity = []
@@ -99,14 +105,15 @@ for description in string_data:
             for reg in regex:
                 if re.search(reg,word):
                     w=re.search(reg,word).group()
-                    if category=="product" and product==[]:
-                        product.append(w)
+                    if category=="product" and return_dict["product"]==[]:
+                        return_dict["product"].append(w)
                     if category=="quantity":
-                        quantity.append(w)
+                        return_dict["quantity"].append(w)
                     if category=="second_product":
-                        second_product.append(w)
+                        return_dict["second_product"].append(w)
     #print(GREEN,index,product,second_product,quantity,"\n",description,"\n",RESET)
     
+    all_dict.append(return_dict)
 
     if len(product)==1 and len(second_product)==0 and len(quantity)==0:
         P+=1
@@ -122,6 +129,8 @@ for description in string_data:
         P_error+=1
     index+=1
 
+
+print(len(all_dict))
 print(GREEN,"Produit seul : ",P,"\nProduit + Second produit : ",P_SP,"\nProduit + Quantité : ",P_Q,"\nProduit + Second produit + Quantité : ",P_SP_Q,"\nProduit error : ",P_error,"\n",RESET)
 
 
@@ -238,10 +247,11 @@ dfMedication.columns = [
     'Authorization',#4
     'Marketed', #6
     'Stock', #8
-    'Warning', #11 
+    'Warning' #11 
     #'Important_informations', 
 ]
-
+dfMedication["Description"] = string_data
+# dfMedication["Product"]=
 dfInformation = dfInformation[dfInformation['CIS'].isin(dfMedication['CIS'])]
 
 dfInformation = dfInformation.groupby('CIS').apply(group_by_cis)
@@ -260,5 +270,5 @@ dfMedication = dfMedication.merge(dfInformation, on='CIS', how='outer')
 dfMedication = dfMedication.merge(dfPresentation, on='CIS', how='outer')
 
 #print(dfMedication.sort_values(by=['CIS']))
-#jsonMedication = dfMedication.to_json('out/medication.json', orient="records")
+jsonMedication = dfMedication.to_json('out/medication.json', orient="records")
 #print(jsonMedication)
