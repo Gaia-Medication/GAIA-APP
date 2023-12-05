@@ -17,6 +17,13 @@ params = np.array([
     'HAS_LiensPageCT_bdpm'
 ])
 
+BOLD = '\033[1m' # ACTIONS
+BLUE = '\033[94m' # ACTIONS
+RESET = '\033[0m'
+RED = '\033[91m' # ERRORS
+GREEN = '\033[92m' # SUCCESS
+YELLOW = '\033[93m' # INFORMATIONS
+
 # INITIALISATION
 dataManager = DataManager(url, params)
 
@@ -32,9 +39,9 @@ date=[
 
 
 dictionnary={
-    "product":["plaquette","kit","dose","comprimé","gélule","pastille","lyophilisat","capsule","suppositoire","conditionnement","bande","poudre","générateur","distributeur","flacon","tube","ampoule","pilulier","sachet","pot","seringue","stylo","spray","bouteille","récipient","film","boite","boite","poche","inhalateur","cartouche","evaporateur","dispositif","enveloppe","applicateur","sac"],
-    "quantity":["l","ml","mg","g","litre","ui"]
-    # "material":['pvdc','aluminium','pvc','polyamide','polyéthylène','papier','thermoformée',"verre","acier","polypropylène"]
+    "second_product":["plaquette","kit","dose","comprimé","gélule","pastille","lyophilisat","sachetspolyterephtalate","capsule","suppositoire","distributeur journalier","conditionnement","bande","poudre","générateur","flacon","tube","applicateur","ampoule","pilulier","sachet","pot","seringue","stylo","spray","bouteille","récipient","film","boite","boite","poche","inhalateur","cartouche","evaporateur","dispositif","enveloppe","fut","sac"],
+    "product":['plaquette', 'tube', 'recipient', 'flacon', 'ampoule',"sachetspolyterephtalate", 'pilulier', 'sachet', 'dose', 'seringue', 'bouteille', 'pot', 'film', 'evaporateur', 'poche', 'stylo',"applicateur", 'generateur', 'inhalateur', 'dispositif','enveloppe', 'sac', 'conditionnement', 'bande', 'comprime', 'poudre','kit', 'gelule', 'boite', 'cartouche', 'fut'],
+    "quantity":["l","ml","mg","g","litre","ui","u"]
 }
 dictionnary=create_regex_from_dictionnary(dictionnary)
 
@@ -53,32 +60,31 @@ string_data = brut_data.astype(str)
 all_desciption = np.char.split(string_data) # split les strings en array de string
 s=str(string_data)
 
-
-
-
+P_error=0
+P=0
+SP=0
+Q=0
+P_SP=0
+P_Q=0
+P_SP_Q=0
 index=0
 for description in string_data:
     
     product = []
+    second_product = []
     quantity = []
     description = description.lower()
     description = replace_accents(description)
     description=description.replace("  "," ")
-    if index==13818:
-        print(description)
     description = description.split(" ")
-    flag=False
     if has_number(description):
         n = 0
         for w_index in range (0,len(description)-1):
             #print(w_index)
             for category, regex in dictionnary.items():
                 for reg in regex:
-                    # if category=="quantity":
-                    #     print(w_index,category," : ", len(description),w_index)
                     if w_index < len(description)-1:
                         if has_number(description[w_index]) and re.search(reg, description[w_index + 1]):
-                            flag=True
                             if description[w_index -1]=="de":
                                 description[w_index -1] = description[w_index -1] + " " + description[w_index] + " " + description[w_index + 1]
                                 description.pop(w_index+1)
@@ -87,23 +93,38 @@ for description in string_data:
                                 description[w_index] = description[w_index] + " " + description[w_index + 1]
                                 description.pop(w_index + 1)
                             break
-        #print(description)
-
+    
     for word in description:
         for category, regex in dictionnary.items():
             for reg in regex:
                 if re.search(reg,word):
                     w=re.search(reg,word).group()
-                    if category=="product":
+                    if category=="product" and product==[]:
                         product.append(w)
                     if category=="quantity":
                         quantity.append(w)
-    if quantity==['g']:
-        print(index,product,quantity,"\n",description,"\n")
+                    if category=="second_product":
+                        second_product.append(w)
+    #print(GREEN,index,product,second_product,quantity,"\n",description,"\n",RESET)
+    
+
+    if len(product)==1 and len(second_product)==0 and len(quantity)==0:
+        P+=1
+    elif len(product)==1 and len(second_product)==1 and len(quantity)==0:
+        P_SP+=1
+    elif len(product)==1 and len(second_product)==0 and len(quantity)==1:
+        P_Q+=1
+    elif len(product)==1 and len(second_product)==1 and len(quantity)==1:
+        P_SP_Q+=1
+    elif len(product)==0 and len(second_product)==1 and len(quantity)==0:
+        print(RED,"ERROR product :", description,"\n",RESET)
+    elif len(product)>1:
+        P_error+=1
     index+=1
-    # if len(product)==0:
-    #     print("ERROR product :", description)
-    #print(description)
+
+print(GREEN,"Produit seul : ",P,"\nProduit + Second produit : ",P_SP,"\nProduit + Quantité : ",P_Q,"\nProduit + Second produit + Quantité : ",P_SP_Q,"\nProduit error : ",P_error,"\n",RESET)
+
+
 
 
 

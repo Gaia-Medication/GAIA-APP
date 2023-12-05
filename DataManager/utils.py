@@ -45,7 +45,14 @@ def create_regex_from_dictionnary(dictionnary):
         for word in dictionnary[category]:
             word=word.lower()
             word=replace_accents(word)
-            regex_dict[category].append(fr"\b(de\s)?([0-9]*(\.|,)?[0-9]*)(\s*){word}(\(s\)|s)?\b")
+            if category=="product":
+                regex_dict[category].append(fr"\b([0-9]*(\.|,)?[0-9]*)(\s*){word}(\(s\)|s)?\b")
+            if category=="second_product":
+                regex_dict[category].append(fr"\b(de\s)([0-9]+(\.|,)?[0-9]*)(\s+){word}(\(s\)|s)?\b")
+            elif category=="quantity":
+                regex_dict[category].append(fr"\b(de\s)?([0-9]*(\.|,)?[0-9]*)(\s*){word}\b")
+            elif category=="special":
+                regex_dict[category].append(fr"\b([0-9]+(\.|,)?[0-9]*)(\s){word}\b")
     return regex_dict
 
 
