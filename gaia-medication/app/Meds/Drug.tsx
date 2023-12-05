@@ -9,7 +9,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 export default function Drug({ route }) {
   const isFocused = useIsFocused();
   const [user, setUser] = useState<User | null>(null);
-  const [stock, setStock] = useState([]);
+  const [stock, setStock] = useState(null);
 
   const { drugCIS } = route.params;
   const drug = getMedbyCIS(drugCIS);
@@ -20,9 +20,7 @@ export default function Drug({ route }) {
     setUser(current);
     const stockList = await readList("stock");
     setStock(
-      stockList
-        .filter((item) => item.idUser == currentId)
-        .filter((item) => item.CIS == drugCIS)
+      stockList.filter((item) => item.idUser == currentId && item.CIS == drugCIS)
     );
   };
 
@@ -51,7 +49,7 @@ export default function Drug({ route }) {
   };
   return (
     <View>
-      {drug && stock.length > 0 && user && (
+      {drug && stock && user && (
         <>
           <Text>Name : {drug.Name}</Text>
           <Text>Administration : {drug.Administration_way}</Text>
