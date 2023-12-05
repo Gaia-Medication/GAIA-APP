@@ -10,6 +10,7 @@ import { Bell } from "react-native-feather";
 import { Input } from "react-native-elements";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { trouverNomMedicament } from "../../dao/Search";
 
 export default function Home({ navigation }) {
   const isFocused = useIsFocused();
@@ -50,7 +51,7 @@ export default function Home({ navigation }) {
       //run the onSubmit handler and pass in the image data.
       const googleText = await callGoogleVisionAsync(result.assets[0].base64);
       console.log("OCR :", googleText.text);
-      alert(googleText.text);
+      console.log("Meds finded :",trouverNomMedicament(googleText.text))
     }
   };
 
