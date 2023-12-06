@@ -60,14 +60,6 @@ string_data = brut_data.astype(str)
 all_desciption = np.char.split(string_data) # split les strings en array de string
 
 all_dict=[]
-P_error=0
-P=0
-SP=0
-Q=0
-P_SP=0
-P_Q=0
-P_SP_Q=0
-index=0
 for description in string_data:
     
     return_dict = {
@@ -113,63 +105,6 @@ for description in string_data:
                         return_dict["second_product"].append(w)
     #print(GREEN,index,product,second_product,quantity,"\n",description,"\n",RESET)
     
-    all_dict.append(return_dict)
-
-    if len(product)==1 and len(second_product)==0 and len(quantity)==0:
-        P+=1
-    elif len(product)==1 and len(second_product)==1 and len(quantity)==0:
-        P_SP+=1
-    elif len(product)==1 and len(second_product)==0 and len(quantity)==1:
-        P_Q+=1
-    elif len(product)==1 and len(second_product)==1 and len(quantity)==1:
-        P_SP_Q+=1
-    elif len(product)==0 and len(second_product)==1 and len(quantity)==0:
-        print(RED,"ERROR product :", description,"\n",RESET)
-    elif len(product)>1:
-        P_error+=1
-    index+=1
-
-
-print(len(all_dict))
-print(GREEN,"Produit seul : ",P,"\nProduit + Second produit : ",P_SP,"\nProduit + Quantité : ",P_Q,"\nProduit + Second produit + Quantité : ",P_SP_Q,"\nProduit error : ",P_error,"\n",RESET)
-
-
-
-
-
-
-
-########################################################################################
-########################################################################################
-################################## ANALYSE DES DONNEES #################################
-########################################################################################
-########################################################################################
-
-# Créer une liste de longueurs et une liste d'occurences
-liste_occ = {"longueur":[],"occurence":[]}
-for description in all_desciption:    
-    if len(description) not in liste_occ["longueur"]:
-        liste_occ["longueur"].append(len(description))
-        liste_occ["occurence"].append(1)
-    elif len(description) in liste_occ["longueur"]:
-        for i in range(0,len(liste_occ["longueur"])-1):
-            if liste_occ["longueur"][i] == len(description):
-                liste_occ["occurence"][i]+=1
-
-
-# Regrouper les longueurs et occurrences ensemble
-grouped_data = list(zip(liste_occ["longueur"], liste_occ["occurence"]))
-
-# Trier en fonction des occurrences
-sorted_data = sorted(grouped_data, key=lambda x: x[1], reverse=True)
-
-# Afficher les longueurs triées en fonction des occurrences
-sorted_longueurs = [x[0] for x in sorted_data]
-sorted_occ=[x[1] for x in sorted_data]
-#print("Longueurs : \n",sorted_longueurs,"\n Occurences : \n",sorted_occ)
-
-
-
 
 
 ########################################################################################
@@ -196,6 +131,10 @@ dfInformation.columns = [
 
 #print(dfInformation)
 
+
+dfDescription= pd.DataFrame(columns=["CIS","Description"])
+dfDescription["CIS"]=lecture_base("data/CIS_CIP_bdpm.txt").iloc[:,0:1]
+dfDescription["Description"]=all_dict
 
 # ######### PrescriptionConditions
 dfPrescription = pd.read_csv("data/CIS_CPD_bdpm.txt", sep="\t", header=None, encoding="latin1")
@@ -250,7 +189,6 @@ dfMedication.columns = [
     'Warning' #11 
     #'Important_informations', 
 ]
-dfMedication["Description"] = string_data
 # dfMedication["Product"]=
 dfInformation = dfInformation[dfInformation['CIS'].isin(dfMedication['CIS'])]
 
@@ -261,7 +199,6 @@ dfInformation = pd.DataFrame({'CIS': dfInformation.index, 'infos': dfInformation
 
 # Reset the index if needed
 dfInformation.reset_index(drop=True, inplace=True)
-
 
 
 dfMedication = dfMedication.merge(dfPrescription, on='CIS', how='outer')
