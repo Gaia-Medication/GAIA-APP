@@ -34,21 +34,23 @@ export function searchMed(inputText: string, maxResults = 50) {
 
 export function trouverNomMedicament(texte: string) {
   const medicaments = getAllMed();
-  const firstFilter = [];
+  var firstFilter = [];
   for (const medicament of medicaments) {
-    if (texte.includes(medicament.Name.split(" ")[0])||texte.includes(medicament.Name.split(",")[0])) {
+    if (texte.toLowerCase().includes(medicament.Name.split(" ")[0].toLowerCase())||texte.toLowerCase().includes(medicament.Name.split(",")[0].toLowerCase())) {
       firstFilter.push(medicament.Name);
     }
   }
-  const secFilter = [];
-  for (const medicament of firstFilter) {
-    secFilter.push(calculateScore(texte, medicament));
-  }
-  for (let i = 0; i < secFilter.length; i++) {
-    console.log(`Index ${i}: firstFilter - ${firstFilter[i]}, secFilter - ${secFilter[i]}`);
-  }
-
-  return secFilter
+  firstFilter=firstFilter.map((medicament)=>{
+    return {
+      med:medicament,
+      score:calculateScore(texte, medicament)
+    }
+  })
+  firstFilter=firstFilter.sort(
+    (a: { score: number }, b: { score: number }) => b.score - a.score
+  );
+  console.log(firstFilter)
+  return firstFilter.slice(0,10)
 }
 
 function calculateScore(text: string, searchText: string): number {
@@ -69,15 +71,6 @@ function calculateScore(text: string, searchText: string): number {
     }
   });
 
-  return score;
+  return (score/words.length*100);
 }
 
-function sortByNumberOrder(words: string[], numbers: number[]): string[] {
-  // Créez un tableau d'indices triés en fonction des nombres
-  const indices = Array.from(numbers.keys()).sort((a, b) => numbers[a] - numbers[b]);
-
-  // Triez le tableau de mots en fonction de ces indices
-  const sortedWords = indices.map(index => words[index]);
-
-  return sortedWords;
-}

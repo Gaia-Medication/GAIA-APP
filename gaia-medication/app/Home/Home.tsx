@@ -51,7 +51,12 @@ export default function Home({ navigation }) {
       //run the onSubmit handler and pass in the image data.
       const googleText = await callGoogleVisionAsync(result.assets[0].base64);
       console.log("OCR :", googleText.text);
-      console.log("Meds finded :",trouverNomMedicament(googleText.text))
+      const list=trouverNomMedicament(googleText.text)
+      console.log(list)
+      let msg:string=""
+      for (const med of list){msg+=med.med+'\n'}
+      console.log(msg)
+      alert(msg)
     }
   };
 
