@@ -104,6 +104,7 @@ for description in string_data:
                     if category=="second_product":
                         return_dict["second_product"].append(w)
     #print(GREEN,index,product,second_product,quantity,"\n",description,"\n",RESET)
+    all_dict.append(return_dict)
     
 
 
@@ -135,6 +136,9 @@ dfInformation.columns = [
 dfDescription= pd.DataFrame(columns=["CIS","Description"])
 dfDescription["CIS"]=lecture_base("data/CIS_CIP_bdpm.txt").iloc[:,0:1]
 dfDescription["Description"]=all_dict
+
+dfDescription = dfDescription.groupby('CIS').apply(group_by_cis)
+
 
 # ######### PrescriptionConditions
 dfPrescription = pd.read_csv("data/CIS_CPD_bdpm.txt", sep="\t", header=None, encoding="latin1")
@@ -189,7 +193,7 @@ dfMedication.columns = [
     'Warning' #11 
     #'Important_informations', 
 ]
-# dfMedication["Product"]=
+
 dfInformation = dfInformation[dfInformation['CIS'].isin(dfMedication['CIS'])]
 
 dfInformation = dfInformation.groupby('CIS').apply(group_by_cis)
