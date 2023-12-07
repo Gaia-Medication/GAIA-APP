@@ -70,6 +70,7 @@ export default function Home({ navigation }) {
               onPress={handleAvatarButton}
               users={users}
               current={user}
+              setUser={setUser}
             ></AvatarButton>
             {header && (
               <>
