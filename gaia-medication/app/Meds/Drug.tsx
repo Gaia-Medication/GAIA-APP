@@ -43,6 +43,7 @@ export default function Drug({ route }) {
       console.log(stock);
 
       await addItemToList("stock", stock);
+      init()
     } catch (e) {
       console.log(e);
     }
