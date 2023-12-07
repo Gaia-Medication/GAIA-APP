@@ -197,9 +197,7 @@ dfMedication.iloc[0,0:][9][0] = dict_to_modify
 
 for row in range(0,dfMedication.shape[0]):
     CISinInfoToDel = dfMedication.iloc[row,0:][9]
-    print(len(CISinInfoToDel))
     for i in range(0,len(CISinInfoToDel)):
-        print('index',i)
         if "CIS" in CISinInfoToDel[i]:
             del CISinInfoToDel[i]["CIS"]
             dfMedication.iloc[row,0:][9][i] = CISinInfoToDel[i]
