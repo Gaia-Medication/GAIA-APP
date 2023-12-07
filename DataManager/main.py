@@ -1,7 +1,6 @@
 from dataManager import DataManager
 import pandas as pd
 import numpy as np
-from text_to_num import text2num
 import re
 
 # DATA
@@ -27,9 +26,9 @@ YELLOW = '\033[93m' # INFORMATIONS
 # INITIALISATION
 dataManager = DataManager(url, params)
 
-files = dataManager.getFiles()
+#files = dataManager.getFiles()
 
-from utils import is_convertible_to_number, has_number, replace_accents, lecture_base, create_regex_from_dictionnary
+from utils import has_number, replace_accents, lecture_base, create_regex_from_dictionnary
 
 date=[
     ['data/CIS_InfoImportantes.txt'],
@@ -46,18 +45,11 @@ dictionnary={
 dictionnary=create_regex_from_dictionnary(dictionnary)
 
 
-
-
-def date_format(date): #return the date format et l'implémenter dans le dataframe
-    for i in range(len(date[0])):
-        data=pd.read_csv(date[0][i], sep="\t", header=None, encoding="latin1").iloc[:,date[1][i][0]:date[1][i][1]]
-        print("Colone 1  :   \n",data.iloc[:,0].str.split('-').apply(lambda x: f"{x[2]}/{x[1]}/{x[0]}"))
-        print("Colone 2  :   \n",data.iloc[:,1].str.split('-').apply(lambda x: f"{x[2]}/{x[1]}/{x[0]}"))
-
-
 brut_data = lecture_base("data/CIS_CIP_bdpm.txt").iloc[:,2:3].values[:,0]
 string_data = brut_data.astype(str)
-all_desciption = np.char.split(string_data) # split les strings en array de string
+
+
+print(BOLD,YELLOW,"\n\n##########################################################\n############### Création des dictionnaires ###############\n##########################################################",RESET,'\n\n')
 
 all_dict=[]
 for description in string_data:
@@ -65,8 +57,7 @@ for description in string_data:
     return_dict = {
         "product":[],
         "second_product":[],
-        "quantity":[],
-        "description":[description]
+        "quantity":[]
     }
     product = []
     second_product = []
@@ -114,6 +105,9 @@ for description in string_data:
 ########################################################################################
 ########################################################################################
 
+print(BOLD,YELLOW,"\n\n##########################################################\n################# Création des dataframes ################\n##########################################################",RESET,'\n\n')
+
+
 def group_by_cis(group):
     return group.to_dict(orient='records')
 # ######### Importantes informations
@@ -125,20 +119,12 @@ dfInformation.columns = [
     'dateFin', #2
     'Important_informations', #1
 ]
-#print(dfInformation.shape)
-# Group the DataFrame by 'Category'
-
-
-
-#print(dfInformation)
-
 
 dfDescription= pd.DataFrame(columns=["CIS","Description"])
 dfDescription["CIS"]=lecture_base("data/CIS_CIP_bdpm.txt").iloc[:,0:1]
-dfDescription["Description"]=all_dict
-
-dfDescription = dfDescription.groupby('CIS').apply(group_by_cis)
-
+dfDescription["Quantity"]=all_dict
+dfDescription=dfDescription.drop(columns=["Description"])
+#print(dfDescription.head)
 
 # ######### PrescriptionConditions
 dfPrescription = pd.read_csv("data/CIS_CPD_bdpm.txt", sep="\t", header=None, encoding="latin1")
@@ -146,12 +132,8 @@ dfPrescription.columns = [
     'CIS', #0
     'Prescription_conditions', #1
 ]
-# Group the DataFrame by 'Category'
 dfPrescription = dfPrescription.groupby('CIS')
-# Concatenate the string values in 'Value' for each category
 dfPrescription = dfPrescription['Prescription_conditions'].agg(', '.join)
-# Display the result
-#print(dfPrescription)
 
 # ######### Presentation
 dfPresentation = pd.read_csv("data/CIS_CIP_bdpm.txt", sep="\t", header=None, encoding="latin1")
@@ -165,10 +147,12 @@ dfPresentation.columns = [
     'Price_with_taxes', #10-
     'Infos_remboursement',#12
 ]
+dfDescription.name="Quantity"
+dfPresentation=dfPresentation.merge(dfDescription, on='CIS', how='inner')
+# print(dfPresentation.iloc[0,6:])
 dfPresentation = dfPresentation.sort_values(by=['CIS'])
 actCIS = dfPresentation.iloc[0,0]
 
-# Group the DataFrame by 'CIS' and apply the custom function
 dfPresentation = dfPresentation.groupby('CIS').apply(group_by_cis)
 
 # Create a new DataFrame from the grouped data
@@ -177,7 +161,7 @@ dfPresentation = pd.DataFrame({'CIS': dfPresentation.index, 'Values': dfPresenta
 # Reset the index if needed
 dfPresentation.reset_index(drop=True, inplace=True)
         
-#print(dfPresentation)
+# print(dfPresentation)
 
 # ######### Medication
 dfMedication = pd.read_csv("data/CIS_bdpm.txt", sep="\t", header=None, encoding="latin1")
@@ -195,21 +179,39 @@ dfMedication.columns = [
 ]
 
 dfInformation = dfInformation[dfInformation['CIS'].isin(dfMedication['CIS'])]
-
 dfInformation = dfInformation.groupby('CIS').apply(group_by_cis)
-
-# Create a new DataFrame from the grouped data
 dfInformation = pd.DataFrame({'CIS': dfInformation.index, 'infos': dfInformation.values})
 
-# Reset the index if needed
 dfInformation.reset_index(drop=True, inplace=True)
 
 
-dfMedication = dfMedication.merge(dfPrescription, on='CIS', how='outer')
-dfMedication = dfMedication.merge(dfInformation, on='CIS', how='outer')
+dfMedication = dfMedication.merge(dfPrescription, on='CIS', how='inner')
+dfMedication = dfMedication.merge(dfInformation, on='CIS', how='inner')
 ## DEUX ENREGISTREMENTS EN TROP
-dfMedication = dfMedication.merge(dfPresentation, on='CIS', how='outer')
+dfMedication = dfMedication.merge(dfPresentation, on='CIS', how='inner')
 
-#print(dfMedication.sort_values(by=['CIS']))
-jsonMedication = dfMedication.to_json('out/medication.json', orient="records")
+dict_to_modify = dfMedication.iloc[0,0:][9][0]
+if "CIS" in dict_to_modify:
+    del dict_to_modify["CIS"]
+dfMedication.iloc[0,0:][9][0] = dict_to_modify
+
+for row in range(0,dfMedication.shape[0]):
+    CISinInfoToDel = dfMedication.iloc[row,0:][9]
+    print(len(CISinInfoToDel))
+    for i in range(0,len(CISinInfoToDel)):
+        print('index',i)
+        if "CIS" in CISinInfoToDel[i]:
+            del CISinInfoToDel[i]["CIS"]
+            dfMedication.iloc[row,0:][9][i] = CISinInfoToDel[i]
+    CISinValueToDel = dfMedication.iloc[row,0:][10]
+    for i in range(0,len(CISinValueToDel)):
+        if "CIS" in CISinValueToDel[i]:
+            del CISinValueToDel[i]["CIS"]
+            dfMedication.iloc[row,0:][10][i] = CISinValueToDel[i]
+
+# print(dfMedication.iloc[0,0:][9:])
+
+print(BOLD,YELLOW,"\n\n##########################################################\n################### Conversion en JSON ###################\n##########################################################",RESET,'\n\n')
+
+jsonMedication = dfMedication.to_json('out/medication.json', orient="records", indent=4)
 #print(jsonMedication)
