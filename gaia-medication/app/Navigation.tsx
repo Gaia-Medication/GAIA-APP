@@ -106,7 +106,7 @@ function HomeHandler() {
         name="Messager"
         component={Messager}
         options={{
-          tabBarIcon: ({ color }) => <Icon.Mail color={color} />,
+          tabBarIcon: ({ color }) => <Icon.Map color={color} />,
         }}
       />
       <BottomTab.Screen
