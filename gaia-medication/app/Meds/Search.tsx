@@ -18,7 +18,7 @@ export default function Search({ route, navigation }) {
       setTimeout(() => textInputRef.current.focus(), 200);
     }
   }, []);
-  const [search, setSearch] = useState([]);
+  const [search, setSearch] = useState(searchMed("E"));
   const isFocused = useIsFocused();
   useEffect(() => {
     if (isFocused) {
@@ -37,7 +37,14 @@ export default function Search({ route, navigation }) {
             placeholderTextColor="#9CDE00"
             leftIcon={{ type: "feathers", name: "search", color: "#9CDE00" }}
             inputContainerStyle={styles.searchBarContainer}
-            onChangeText={(text) => setSearch(searchMed(text))}
+            onChangeText={(text) => {
+              const newSearch=searchMed(text)
+              if (newSearch.length>0) {
+                setSearch(newSearch)
+              } else {
+                setSearch(searchMed("E"))
+              }
+            }}
           />
         </View>
       </View>
