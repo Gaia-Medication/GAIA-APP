@@ -17,10 +17,6 @@ export default function Map() {
           console.log("Permission to access location was denied");
           return;
         }
-        const newLocation = {
-          latitude: 2.0469,
-          longitude: 45.3182,
-        };
         let location = await Location.getCurrentPositionAsync({});
         setCurrentLocation(location.coords);
         const animateToCoordinat = (lat, long) => {
@@ -30,8 +26,6 @@ export default function Map() {
               longitude: long,
             },
             duration: 1000,
-            heading: 0,
-            pitch: 0,
           });
         };
         animateToCoordinat(currentLocation.latitude, currentLocation.longitude);
@@ -52,7 +46,7 @@ export default function Map() {
           longitude: -1.5608386136591434,
           longitudeDelta: 0.18985044211149216,
         }}
-        showsUserLocation={true}
+        showsUserLocation={currentLocation}
       ></MapView>
     </View>
   );

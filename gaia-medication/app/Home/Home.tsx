@@ -42,13 +42,9 @@ export default function Home({ navigation }) {
   const pickImage = async () => {
     let result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      base64: true, //return base64 data.
-      //this will allow the Vision API to read this image.
+      base64: true,
     });
     if (!result.canceled) {
-      //if the user submits an image,
-      //setImage(result.assets[0].uri);
-      //run the onSubmit handler and pass in the image data.
       const googleText = await callGoogleVisionAsync(result.assets[0].base64);
       console.log("OCR :", googleText.text);
       const list=trouverNomMedicament(googleText.text)
@@ -109,8 +105,9 @@ export default function Home({ navigation }) {
                   }}
                   value={""}
                   inputContainerStyle={styles.searchBarContainer}
+                  //editable={false}
                   onPressIn={() =>
-                    navigation.navigate("Search", { focusSearchInput: true })
+                    navigation.navigate("Search")
                   }
                 />
               </View>

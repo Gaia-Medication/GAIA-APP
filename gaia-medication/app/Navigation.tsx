@@ -70,7 +70,7 @@ function HomeHandler() {
           right: 20,
           height: 80,
           borderTopWidth: 0,
-          backgroundColor: "#GGGGGG",
+          backgroundColor: "#FFFFFFAA",
           justifyContent: "space-between",
           width: "90%",
           borderRadius: 30,
