@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TextInput, TouchableOpacity } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Linking } from "react-native";
 import { useIsFocused } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
 import callGoogleVisionAsync from "../../OCR/helperFunctions";
@@ -7,9 +7,11 @@ import { styles } from "../../style/style";
 import AvatarButton from "../component/Avatar";
 import { getUserByID, readList } from "../../dao/Storage";
 import { Bell } from "react-native-feather";
-import { Input } from "react-native-elements";
+import { Button, Input } from "react-native-elements";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { requestNotificationPermissions, notificationDaily, notificationNow, notificationForgot } from './../Handlers/NotificationsHandler';
+import * as Notifications from 'expo-notifications';
 
 export default function Home({ navigation }) {
   const isFocused = useIsFocused();
@@ -32,11 +34,15 @@ export default function Home({ navigation }) {
       const current = await getUserByID(JSON.parse(currentId));
       setUser(current);
     }
+    Notifications.addNotificationResponseReceivedListener((notification) => {
+      console.log("Action notification => ", notification.actionIdentifier);
+    });
   };
 
   const handleAvatarButton = () => {
     setHeader(!header);
   };
+    
 
   const pickImage = async () => {
     let result = await ImagePicker.launchCameraAsync({
@@ -120,6 +126,9 @@ export default function Home({ navigation }) {
           <View style={styles.traitementContainer}>
             <Text style={styles.title2}>Suivis d'un traitement</Text>
           </View>
+          <Button onPress={notificationDaily} title="Notification quotidienne"/>
+          <Button onPress={notificationForgot} title="Notification oubli"/>
+
         </>
       )}
     </View>

@@ -34,7 +34,9 @@
     "react-native-sqlite-storage": "^6.0.1",
     "react-native-web": "^0.19.9",
     "react-navigation": "^5.0.0",
-    "react-transition-group": "^4.4.5"
+    "react-transition-group": "^4.4.5",
+    "expo-notifications": "~0.20.1",
+    "expo-permissions": "~14.2.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
