@@ -35,7 +35,7 @@ export function searchMed(inputText: string, maxResults = 50) {
 export function trouverNomMedicament(texte: string) {
   var firstFilter = [];
   for (const medicament of medicaments) {
-    if (texte.toLowerCase().includes(medicament.Name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').split(" ")[0].toLowerCase())&&texte.toLowerCase().includes(medicament.Name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').split(" ")[1].toLowerCase())) {
+    if (texte.toLowerCase().includes(medicament.Name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(',', '').split(" ")[0].toLowerCase())&&texte.toLowerCase().includes(medicament.Name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(',', '').split(" ")[1].toLowerCase())) {
       firstFilter.push(medicament.Name.normalize('NFD').replace(/[\u0300-\u036f]/g, ''));
     }
   }

@@ -49,12 +49,12 @@ export default function Home({ navigation }) {
     
 
   const pickImage = async () => {
-    setLoading(true)
     let result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       base64: true,
     });
     if (!result.canceled) {
+      setLoading(true)
       const googleText = await callGoogleVisionAsync(result.assets[0].base64);
       //console.log("OCR :", googleText.text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace('Ⓡ',''));
       const list=trouverNomMedicament(googleText.text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace('Ⓡ',''))
