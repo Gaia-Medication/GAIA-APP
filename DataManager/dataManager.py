@@ -5,6 +5,10 @@ from bs4 import BeautifulSoup
 from urllib.parse import urljoin, urlparse, parse_qs
 from tqdm import tqdm
 
+
+
+BOLD = '\033[1m' # ACTIONS
+BLUE = '\033[94m' # ACTIONS
 class DataManager :
     def __init__(self, url, filesNames) -> None:
         self.url = url
@@ -26,7 +30,7 @@ class DataManager :
     def getFiles(self):
         urls = self.getUrls()
         validUrls = [url for url in urls if any(param in url for param in self.filesNames)]
-        progress_bar = tqdm(total=len(validUrls), desc="Écriture des fichiers")
+        progress_bar = tqdm(total=len(validUrls), desc=f"{BOLD}{BLUE}Écriture des fichiers")
         for url in validUrls:
             try:
                 response = requests.get(url)
