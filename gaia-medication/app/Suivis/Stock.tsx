@@ -6,11 +6,11 @@ import { getUserByID, readList, removeItemFromStock } from "../../dao/Storage";
 import { styles } from "../../style/style";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getMedbyCIS } from "../../dao/Meds";
+import Loading from "../component/Loading";
 
 export default function Stock({ navigation }) {
   const isFocused = useIsFocused();
   const [stock, setStock] = useState([]);
-  console.log(stock);
 
   const init = async () => {
     const currentId = JSON.parse(await AsyncStorage.getItem("currentUser"));
@@ -23,39 +23,48 @@ export default function Stock({ navigation }) {
       init();
     }
   }, [isFocused]);
-  const deleteFromStock = async (cis,cip,idUser) => {
+
+  const deleteFromStock = async (cis, cip, idUser) => {
     try {
-      //stock.splice(stock.findIndex(item => item.CIS == cis && item.CIP == cip && item.idUser == idUser), 1);
-      await removeItemFromStock(cis,cip,idUser)
-      init();
+      await removeItemFromStock(cis, cip, idUser);
+      init()
     } catch (e) {
       console.log(e);
     }
-  }
+  };
   return (
-    <SafeAreaView edges={["top"]}>
-      <FlatList
-        data={stock}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => {
-          const drug = getMedbyCIS(item.CIS);
-          const product = drug.Values.find((drug) => drug.CIP === item.CIP);
-          return (
-            <TouchableOpacity
-              style={styles.listItem}
-              onPress={() => navigation.navigate("Drug", { drugCIS: drug.CIS })}
-            >
-              <View>
-                <Text>{drug.Name}</Text>
-                <Text>{product.Denomination}</Text>
-              </View>
-              <TouchableOpacity onPress={()=>deleteFromStock(product.CIS,product.CIP,item.idUser)}>
-                <Text>🚮</Text>
+    <View style={styles.container}>
+      {stock && (
+        <FlatList
+          data={stock}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item }) => {
+            const drug = getMedbyCIS(item.CIS);
+            const product = drug.Values.find((drug) => drug.CIP === item.CIP);
+            return (
+              <TouchableOpacity
+                style={styles.listItem}
+                onPress={() =>
+                  navigation.navigate("Drug", { drugCIS: drug.CIS })
+                }
+              >
+                <View>
+                  <Text>{drug.Name}</Text>
+                  <Text>{product.Denomination}</Text>
+                </View>
+                <TouchableOpacity
+                  onPress={() =>
+                    deleteFromStock(product.CIS, product.CIP, item.idUser)
+                  }
+                >
+                  <Text>🚮</Text>
+                </TouchableOpacity>
               </TouchableOpacity>
-            </TouchableOpacity>
-          );
-        }}
-      />
-    </SafeAreaView>
+            );
+          }}
+        />
+      )}
+      {!stock && <Loading />}
+    </View>
   );
 }

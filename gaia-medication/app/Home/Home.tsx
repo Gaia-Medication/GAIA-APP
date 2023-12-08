@@ -25,15 +25,15 @@ export default function Home({ navigation }) {
   const init = async () => {
     const userList = await readList("users");
     setUsers(userList);
-    console.log("userlist: ", userList);
     const currentId = await AsyncStorage.getItem("currentUser");
-    if (userList.length < 1 && currentId) {
+    if (userList.length < 1) {
       // L'utilisateur se connecte pour la première fois
       navigation.navigate("CreateProfile");
     } /*else if(isTutoComplete === null){
         alert("Va falloir faire le tuto bro");
       }*/ else {
       const current = await getUserByID(JSON.parse(currentId));
+      console.log(current)
       setUser(current);
     }
     Notifications.addNotificationResponseReceivedListener((notification) => {

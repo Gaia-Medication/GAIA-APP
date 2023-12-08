@@ -12,7 +12,6 @@ export default function Drug({ route }) {
   const isFocused = useIsFocused();
   const [user, setUser] = useState<User | null>(null);
   const [stock, setStock] = useState(null);
-  const [loading, setLoading] = useState(true);
 
   const { drugCIS } = route.params;
   const drug = getMedbyCIS(drugCIS);
@@ -25,7 +24,6 @@ export default function Drug({ route }) {
     setStock(
       stockList.filter((item) => item.idUser == currentId && item.CIS == drugCIS)
     );
-    setLoading(false)
   };
 
   useEffect(() => {
@@ -38,17 +36,16 @@ export default function Drug({ route }) {
 
   const addToStock = async (item) => {
     try {
-      setLoading(true)
-      const stock: Stock = {
+      const addstock: Stock = {
         idUser: user.id,
         CIP: item.CIP,
         CIS: item.CIS,
         qte: 0,
       };
-      console.log(stock);
+      console.log(addstock);
 
-      await addItemToList("stock", stock);
-      init()
+      await addItemToList("stock", addstock);
+      setStock([...stock,addstock])
     } catch (e) {
       console.log(e);
     }
@@ -98,7 +95,7 @@ export default function Drug({ route }) {
           />
         </>
       )}
-      {(!drug || !stock || !user || loading) && (
+      {(!drug || !stock || !user) && (
         <Loading/>
       )}
     </View>
