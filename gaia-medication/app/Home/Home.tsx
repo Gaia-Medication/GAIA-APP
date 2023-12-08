@@ -12,6 +12,8 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { requestNotificationPermissions, notificationDaily, notificationNow, notificationForgot } from './../Handlers/NotificationsHandler';
 import * as Notifications from 'expo-notifications';
+import { trouverNomMedicament } from "../../dao/Search";
+
 
 export default function Home({ navigation }) {
   const isFocused = useIsFocused();
@@ -20,11 +22,11 @@ export default function Home({ navigation }) {
   const [users, setUsers] = useState<User[]>([]);
   const [header, setHeader] = useState(true);
 
-  const eventHandler = async () => {
+  const init = async () => {
     const userList = await readList("users");
     setUsers(userList);
-    console.log(userList);
-    const currentId =await AsyncStorage.getItem("currentUser");
+    console.log("userlist: ", userList);
+    const currentId = await AsyncStorage.getItem("currentUser");
     if (userList.length < 1 && currentId) {
       // L'utilisateur se connecte pour la première fois
       navigation.navigate("CreateProfile");
@@ -47,23 +49,24 @@ export default function Home({ navigation }) {
   const pickImage = async () => {
     let result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      base64: true, //return base64 data.
-      //this will allow the Vision API to read this image.
+      base64: true,
     });
     if (!result.canceled) {
-      //if the user submits an image,
-      //setImage(result.assets[0].uri);
-      //run the onSubmit handler and pass in the image data.
       const googleText = await callGoogleVisionAsync(result.assets[0].base64);
       console.log("OCR :", googleText.text);
-      alert(googleText.text);
+      const list=trouverNomMedicament(googleText.text)
+      console.log(list)
+      let msg:string=""
+      for (const med of list){msg+=med.med+'\n'}
+      console.log(msg)
+      alert(msg)
     }
   };
 
   useEffect(() => {
     if (isFocused) {
       console.log("Nav on Home Page");
-      eventHandler();
+      init();
     }
   }, [isFocused]);
 
@@ -75,6 +78,9 @@ export default function Home({ navigation }) {
             <AvatarButton
               onPress={handleAvatarButton}
               users={users}
+              current={user}
+              setUser={setUser}
+              navigation={navigation}
             ></AvatarButton>
             {header && (
               <>
@@ -109,8 +115,9 @@ export default function Home({ navigation }) {
                   }}
                   value={""}
                   inputContainerStyle={styles.searchBarContainer}
+                  //editable={false}
                   onPressIn={() =>
-                    navigation.navigate("Search", { focusSearchInput: true })
+                    navigation.navigate("Search")
                   }
                 />
               </View>

@@ -1,3 +1,4 @@
 DataManager/data/*
+DataManager/out/*
 .DS_Store
 DataManager/__pycache__

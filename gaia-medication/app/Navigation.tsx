@@ -4,11 +4,10 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { StyleSheet, Text } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import Home from "./Home/Home";
 import Settings from "./Home/Settings";
 import Suivis from "./Suivis/Suivis";
-import Messager from "./Home/Messager";
 import CreateProfile from "./Profile/CreateProfile";
 import Stock from "./Suivis/Stock";
 import Journal from "./Suivis/Journal";
@@ -16,34 +15,24 @@ import Profile from "./Profile/Profile";
 import * as Icon from "react-native-feather";
 import Search from "./Meds/Search";
 import Drug from "./Meds/Drug";
+import Map from "./Home/Map";
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
 const TopTab = createMaterialTopTabNavigator();
 
-
-
 export default function Navigation() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home" >
+      <Stack.Navigator initialRouteName="Home">
         <Stack.Screen
           name="HomeHandler"
           component={HomeHandler}
           options={{ headerShown: false }}
         />
-        <Stack.Screen
-          name="CreateProfile"
-          component={CreateProfile}
-        />
-        <Stack.Screen
-          name="Profile"
-          component={Profile}
-        />
-        <Stack.Screen
-          name="Drug"
-          component={Drug}
-        />
+        <Stack.Screen name="CreateProfile" component={CreateProfile} />
+        <Stack.Screen name="Profile" component={Profile} />
+        <Stack.Screen name="Drug" component={Drug} />
         <Stack.Screen
           name="Search"
           component={Search}
@@ -70,7 +59,7 @@ function HomeHandler() {
           right: 20,
           height: 80,
           borderTopWidth: 0,
-          backgroundColor: "#GGGGGG",
+          backgroundColor: "#FFFFFFAA",
           justifyContent: "space-between",
           width: "90%",
           borderRadius: 30,
@@ -80,12 +69,11 @@ function HomeHandler() {
           color: "#fff",
         },
         tabBarItemStyle: {
-          top: 20,
-          bottom: 20,
-          height: "65%",
+          top: 15,
+          bottom: 15,
+          height: "61%",
           borderRadius: 50,
         },
-
       }}
     >
       <BottomTab.Screen
@@ -103,10 +91,10 @@ function HomeHandler() {
         }}
       />
       <BottomTab.Screen
-        name="Messager"
-        component={Messager}
+        name="Map"
+        component={Map}
         options={{
-          tabBarIcon: ({ color }) => <Icon.Mail color={color} />,
+          tabBarIcon: ({ color }) => <Icon.Map color={color} />,
         }}
       />
       <BottomTab.Screen
@@ -125,8 +113,6 @@ function SuivisHandler() {
     <TopTab.Navigator>
       <TopTab.Screen name="Suivis" component={Suivis} />
       <TopTab.Screen name="Stock" component={Stock} />
-      <TopTab.Screen name="Journal" component={Journal} />
     </TopTab.Navigator>
   );
 }
-

@@ -16,7 +16,11 @@ export default function Settings({ navigation: Navigation }) {
       <Text>Settings</Text>
       <Button
         title="CLEAR USERS DATA"
-        onPress={() => AsyncStorage.removeItem("users")}
+        onPress={() =>( AsyncStorage.removeItem("users"),AsyncStorage.removeItem("stock"))}
+      />
+      <Button
+        title="CLEAR STOCK DATA"
+        onPress={() =>( AsyncStorage.removeItem("stock"))}
       />
       <Button
         title="ADD PROFILE"
