@@ -125,6 +125,10 @@ export const styles = StyleSheet.create({
     padding: 15, // Espace intérieur pour chaque élément
     borderBottomWidth: 1, // Ligne de séparation
     borderBottomColor: '#dddddd', // Couleur de la ligne de séparation
+    display:"flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems:"center"
   },
   listItemText: {
     fontSize: 18, // Taille de la police

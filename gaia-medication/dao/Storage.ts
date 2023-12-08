@@ -81,3 +81,21 @@ export const removeItemFromList = async (key:string, index) => {
     console.error(`Erreur lors de la suppression dans la liste ${key}:`, error);
   }
 };
+
+export const removeItemFromStock = async (cis, cip, idUser) => {
+  const key="stock"
+  try {
+    const existingList = await readList(key);
+    // Trouvez l'indice de l'élément à supprimer en fonction du CIS, CIP et idUser
+    const indexToRemove = existingList.findIndex(item => item.CIS == cis && item.CIP == cip && item.idUser == idUser);
+    if (indexToRemove !== -1) {
+      existingList.splice(indexToRemove, 1);
+      await AsyncStorage.setItem(key, JSON.stringify(existingList));
+      console.log(`Élément supprimé de la liste ${key}.`);
+    } else {
+      console.error(`Élément non trouvé dans la liste ${key}.`);
+    }
+  } catch (error) {
+    console.error(`Erreur lors de la suppression dans la liste ${key}:`, error);
+  }
+};

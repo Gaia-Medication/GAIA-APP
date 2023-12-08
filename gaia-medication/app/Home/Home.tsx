@@ -10,6 +10,7 @@ import { Bell } from "react-native-feather";
 import { Input } from "react-native-elements";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { trouverNomMedicament } from "../../dao/Search";
 
 export default function Home({ navigation }) {
   const isFocused = useIsFocused();
@@ -41,16 +42,17 @@ export default function Home({ navigation }) {
   const pickImage = async () => {
     let result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      base64: true, //return base64 data.
-      //this will allow the Vision API to read this image.
+      base64: true,
     });
     if (!result.canceled) {
-      //if the user submits an image,
-      //setImage(result.assets[0].uri);
-      //run the onSubmit handler and pass in the image data.
       const googleText = await callGoogleVisionAsync(result.assets[0].base64);
       console.log("OCR :", googleText.text);
-      alert(googleText.text);
+      const list=trouverNomMedicament(googleText.text)
+      console.log(list)
+      let msg:string=""
+      for (const med of list){msg+=med.med+'\n'}
+      console.log(msg)
+      alert(msg)
     }
   };
 
@@ -106,8 +108,9 @@ export default function Home({ navigation }) {
                   }}
                   value={""}
                   inputContainerStyle={styles.searchBarContainer}
+                  //editable={false}
                   onPressIn={() =>
-                    navigation.navigate("Search", { focusSearchInput: true })
+                    navigation.navigate("Search")
                   }
                 />
               </View>

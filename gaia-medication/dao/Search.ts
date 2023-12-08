@@ -23,11 +23,54 @@ function findMostAccurateMed(meds: any[], search: string) {
   const sortedMeds = medScores.sort(
     (a: { score: number }, b: { score: number }) => b.score - a.score
   );
-  return sortedMeds.filter(med=>med.score>0)//.map((med: { Name: any }) => med.Name);
+  return sortedMeds.filter((med) => med.score > 0); //.map((med: { Name: any }) => med.Name);
 }
 
-export function searchMed(inputText: string, maxResults = 20) {
+export function searchMed(inputText: string, maxResults = 50) {
   const medicaments = getAllMed();
   // Calcul de la distance pour chaque médicament et tri par proximité
   return findMostAccurateMed(medicaments, inputText).slice(0, maxResults);
 }
+
+export function trouverNomMedicament(texte: string) {
+  const medicaments = getAllMed();
+  var firstFilter = [];
+  for (const medicament of medicaments) {
+    if (texte.toLowerCase().includes(medicament.Name.split(" ")[0].toLowerCase())||texte.toLowerCase().includes(medicament.Name.split(",")[0].toLowerCase())) {
+      firstFilter.push(medicament.Name);
+    }
+  }
+  firstFilter=firstFilter.map((medicament)=>{
+    return {
+      med:medicament,
+      score:calculateScore(texte, medicament)
+    }
+  })
+  firstFilter=firstFilter.sort(
+    (a: { score: number }, b: { score: number }) => b.score - a.score
+  );
+  console.log(firstFilter)
+  return firstFilter.slice(0,10)
+}
+
+function calculateScore(text: string, searchText: string): number {
+  const textLowerCase = text.toLowerCase();
+  const searchTextLowerCase = searchText.toLowerCase();
+
+  // Split the text into words
+  const words = searchTextLowerCase.split(" ");
+
+  // Initialize a score
+  let score = 0;
+
+  // Loop through the words and calculate the score
+  words.forEach((word) => {
+    if (textLowerCase.includes(word)) {
+      // You can adjust the scoring logic based on your requirements
+      score += 1;
+    }
+  });
+
+  return (score/words.length*100);
+}
+

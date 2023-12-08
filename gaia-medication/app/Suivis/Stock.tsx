@@ -2,7 +2,7 @@ import { useIsFocused } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
 import { View, Text, Button, FlatList, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { getUserByID, readList } from "../../dao/Storage";
+import { getUserByID, readList, removeItemFromStock } from "../../dao/Storage";
 import { styles } from "../../style/style";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getMedbyCIS } from "../../dao/Meds";
@@ -10,6 +10,7 @@ import { getMedbyCIS } from "../../dao/Meds";
 export default function Stock({ navigation }) {
   const isFocused = useIsFocused();
   const [stock, setStock] = useState([]);
+  console.log(stock);
 
   const init = async () => {
     const currentId = JSON.parse(await AsyncStorage.getItem("currentUser"));
@@ -22,6 +23,15 @@ export default function Stock({ navigation }) {
       init();
     }
   }, [isFocused]);
+  const deleteFromStock = async (cis,cip,idUser) => {
+    try {
+      //stock.splice(stock.findIndex(item => item.CIS == cis && item.CIP == cip && item.idUser == idUser), 1);
+      await removeItemFromStock(cis,cip,idUser)
+      init();
+    } catch (e) {
+      console.log(e);
+    }
+  }
   return (
     <SafeAreaView edges={["top"]}>
       <FlatList
@@ -33,10 +43,15 @@ export default function Stock({ navigation }) {
           return (
             <TouchableOpacity
               style={styles.listItem}
-              onPress={() => navigation.navigate("Drug", { drugCIS: item.CIS })}
+              onPress={() => navigation.navigate("Drug", { drugCIS: drug.CIS })}
             >
-              <Text>{drug.Name}</Text>
-              <Text>{product.Denomination}</Text>
+              <View>
+                <Text>{drug.Name}</Text>
+                <Text>{product.Denomination}</Text>
+              </View>
+              <TouchableOpacity onPress={()=>deleteFromStock(product.CIS,product.CIP,item.idUser)}>
+                <Text>🚮</Text>
+              </TouchableOpacity>
             </TouchableOpacity>
           );
         }}

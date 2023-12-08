@@ -8,7 +8,6 @@ import { createMaterialTopTabNavigator } from "@react-navigation/material-top-ta
 import Home from "./Home/Home";
 import Settings from "./Home/Settings";
 import Suivis from "./Suivis/Suivis";
-import Messager from "./Home/Messager";
 import CreateProfile from "./Profile/CreateProfile";
 import Stock from "./Suivis/Stock";
 import Journal from "./Suivis/Journal";
@@ -16,6 +15,7 @@ import Profile from "./Profile/Profile";
 import * as Icon from "react-native-feather";
 import Search from "./Meds/Search";
 import Drug from "./Meds/Drug";
+import Map from "./Home/Map";
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -59,7 +59,7 @@ function HomeHandler() {
           right: 20,
           height: 80,
           borderTopWidth: 0,
-          backgroundColor: "#GGGGGG",
+          backgroundColor: "#FFFFFFAA",
           justifyContent: "space-between",
           width: "90%",
           borderRadius: 30,
@@ -69,9 +69,9 @@ function HomeHandler() {
           color: "#fff",
         },
         tabBarItemStyle: {
-          top: 20,
-          bottom: 20,
-          height: "65%",
+          top: 15,
+          bottom: 15,
+          height: "61%",
           borderRadius: 50,
         },
       }}
@@ -91,10 +91,10 @@ function HomeHandler() {
         }}
       />
       <BottomTab.Screen
-        name="Messager"
-        component={Messager}
+        name="Map"
+        component={Map}
         options={{
-          tabBarIcon: ({ color }) => <Icon.Mail color={color} />,
+          tabBarIcon: ({ color }) => <Icon.Map color={color} />,
         }}
       />
       <BottomTab.Screen
@@ -113,7 +113,6 @@ function SuivisHandler() {
     <TopTab.Navigator>
       <TopTab.Screen name="Suivis" component={Suivis} />
       <TopTab.Screen name="Stock" component={Stock} />
-      <TopTab.Screen name="Journal" component={Journal} />
     </TopTab.Navigator>
   );
 }
