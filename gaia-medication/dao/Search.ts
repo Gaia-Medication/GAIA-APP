@@ -3,8 +3,8 @@ import { getAllMed } from "./Meds";
 const medicaments = getAllMed();
 function findMostAccurateMed(meds: any[], search: string) {
   const scores = meds.map((med) => {
-    const name = med.Name.toLowerCase();
-    const s = search.toLowerCase();
+    const name = med.Name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    const s = search.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
     const index = name.indexOf(s);
     if (index === -1) {
       return 0;
@@ -35,20 +35,19 @@ export function searchMed(inputText: string, maxResults = 50) {
 export function trouverNomMedicament(texte: string) {
   var firstFilter = [];
   for (const medicament of medicaments) {
-    if (texte.toLowerCase().includes(medicament.Name.split(" ")[0].toLowerCase())||texte.toLowerCase().includes(medicament.Name.split(",")[0].toLowerCase())) {
-      firstFilter.push(medicament.Name);
+    if (texte.toLowerCase().includes(medicament.Name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').split(" ")[0].toLowerCase())&&texte.toLowerCase().includes(medicament.Name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').split(" ")[1].toLowerCase())) {
+      firstFilter.push(medicament.Name.normalize('NFD').replace(/[\u0300-\u036f]/g, ''));
     }
   }
   firstFilter=firstFilter.map((medicament)=>{
     return {
       med:medicament,
-      score:calculateScore(texte, medicament)
+      score:calculateScore(texte, medicament).toFixed(2)
     }
   })
   firstFilter=firstFilter.sort(
     (a: { score: number }, b: { score: number }) => b.score - a.score
   );
-  console.log(firstFilter)
   return firstFilter.slice(0,10)
 }
 
@@ -57,7 +56,7 @@ function calculateScore(text: string, searchText: string): number {
   const searchTextLowerCase = searchText.toLowerCase();
 
   // Split the text into words
-  const words = searchTextLowerCase.split(" ");
+  const words = searchTextLowerCase.replace(',', '').replace('-','').split(" ");
 
   // Initialize a score
   let score = 0;

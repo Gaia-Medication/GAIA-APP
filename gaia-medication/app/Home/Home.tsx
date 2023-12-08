@@ -13,11 +13,13 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { requestNotificationPermissions, notificationDaily, notificationNow, notificationForgot } from './../Handlers/NotificationsHandler';
 import * as Notifications from 'expo-notifications';
 import { trouverNomMedicament } from "../../dao/Search";
+import Loading from "../component/Loading";
 
 
 export default function Home({ navigation }) {
   const isFocused = useIsFocused();
-
+  const [loading, setLoading] = useState(false);
+  
   const [user, setUser] = useState<User | null>(null);
   const [users, setUsers] = useState<User[]>([]);
   const [header, setHeader] = useState(true);
@@ -47,19 +49,23 @@ export default function Home({ navigation }) {
     
 
   const pickImage = async () => {
+    setLoading(true)
     let result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       base64: true,
     });
     if (!result.canceled) {
       const googleText = await callGoogleVisionAsync(result.assets[0].base64);
-      console.log("OCR :", googleText.text);
-      const list=trouverNomMedicament(googleText.text)
-      console.log(list)
-      let msg:string=""
-      for (const med of list){msg+=med.med+'\n'}
-      console.log(msg)
-      alert(msg)
+      //console.log("OCR :", googleText.text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace('Ⓡ',''));
+      const list=trouverNomMedicament(googleText.text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace('Ⓡ',''))
+      if(list.length>0){
+        let msg:string=""
+        for (const med of list){msg+=med.med+'\nAcc : '+med.score+'%\n\n'}
+        setLoading(false)
+        alert(msg)
+      } else{
+        alert("Rien")
+      }
     }
   };
 
@@ -138,6 +144,7 @@ export default function Home({ navigation }) {
 
         </>
       )}
+      {loading&&<Loading/>}
     </View>
   );
 }
