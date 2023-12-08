@@ -2,6 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useEffect, useMemo, useState } from "react";
 import {
   Animated,
+  Dimensions,
   FlatList,
   Pressable,
   TouchableOpacity,
@@ -16,6 +17,7 @@ interface AvatarButtonProps {
   users: User[];
   current: User;
   setUser: any;
+  navigation;
 }
 
 const AvatarButton: React.FC<AvatarButtonProps> = ({
@@ -23,11 +25,29 @@ const AvatarButton: React.FC<AvatarButtonProps> = ({
   users,
   current,
   setUser,
+  navigation,
 }) => {
   const [expanded, setExpanded] = useState(false);
   const [dropdownListVisible, setDropdownListVisible] = useState(false);
+  const usersNoCurrent = users.filter((user) => user.id !== current.id);
+  const [isLastItem, setisLastItem] = useState(false);
+  // const pour le style
   const animation = useMemo(() => new Animated.Value(60), []);
   const textOpacity = useMemo(() => new Animated.Value(0), []);
+  const windowWidth = Dimensions.get("window").width;
+  const avatarColors = [
+    "#FFCF26",
+    "#268AFF",
+    "#1FD13C",
+    "#FF4D26",
+    "#FF8E26",
+    "#C7FF26",
+    "#276A0F",
+    "#41D0D9",
+    "#343ADD",
+    "#9234DD",
+    "#EA5CCA",
+  ];
 
   useEffect(() => {
     console.log(users);
@@ -50,14 +70,44 @@ const AvatarButton: React.FC<AvatarButtonProps> = ({
     onPress();
   };
 
-  const renderItem = ({ item }) => (
-    <TouchableOpacity onPress={() => handleSelect(item)}>
-      <Text>
-        #profile {item.id}
-        {item.firstname}
-        {item.lastname}
-      </Text>
-    </TouchableOpacity>
+  const renderItem = (item: User, isLast: boolean) => (
+    <>
+      <TouchableOpacity
+        onPress={() => handleSelect(item)}
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+          paddingHorizontal: 5,
+          paddingVertical: 8,
+          borderTopWidth: 1,
+          borderTopColor: "#F6F6F6",
+        }}
+      >
+        <Text
+          style={[
+            styles.AvatarIcon,
+            item.id
+              ? { backgroundColor: avatarColors[item.id - 1] }
+              : { backgroundColor: "#8E8E8E" },
+          ]}
+        >
+          {item.firstname.charAt(0) + item.lastname.charAt(0)}
+        </Text>
+        <Text style={styles.avatarText}>
+          {item.firstname} {item.lastname}
+        </Text>
+        <Text style={styles.profileNoHighlight}>#profil {item.id}</Text>
+      </TouchableOpacity>
+      {isLast && (
+        <TouchableOpacity onPress={() => navigation.navigate("CreateProfile")}>
+          <Text style={{ textAlign: "center", padding: 10, color: "#8E8E8E"}}>
+            + Ajouter un profil
+          </Text>
+        </TouchableOpacity>
+      )}
+    </>
   );
 
   const handleSelect = async (item) => {
@@ -67,7 +117,7 @@ const AvatarButton: React.FC<AvatarButtonProps> = ({
   };
 
   return (
-    <View style={{ alignItems: "center" }}>
+    <View style={{ alignItems: "center", zIndex: 1 }}>
       <Pressable onPress={toggleExpansion}>
         <Animated.View
           style={{
@@ -81,15 +131,22 @@ const AvatarButton: React.FC<AvatarButtonProps> = ({
             padding: 8,
           }}
         >
-          <Text style={styles.AvatarIcon}>
+          <Text
+            style={[
+              styles.AvatarIcon,
+              current.id
+                ? { backgroundColor: avatarColors[current.id - 1] }
+                : { backgroundColor: "#8E8E8E" },
+            ]}
+          >
             {current.firstname.charAt(0) + current.lastname.charAt(0)}
           </Text>
           <View
             style={{
               display: "flex",
-              borderWidth: 1,
               justifyContent: "center",
-              alignItems: "flex-end"
+              alignItems: "flex-start",
+              paddingLeft: 14,
             }}
           >
             {expanded && (
@@ -97,12 +154,11 @@ const AvatarButton: React.FC<AvatarButtonProps> = ({
                 <TouchableOpacity
                   onPress={() => setDropdownListVisible(!dropdownListVisible)}
                   style={{
-                    width: "80%",
+                    width: "85%",
                     display: "flex",
                     flexDirection: "row",
                     alignItems: "center",
                     justifyContent: "space-between",
-                    borderWidth: 1,
                   }}
                 >
                   <Animated.View
@@ -128,27 +184,25 @@ const AvatarButton: React.FC<AvatarButtonProps> = ({
                     style={styles.chevron}
                   />
                   <View style={styles.bar}></View>
-                  <Text
-                    style={{
-                      color: "#4296E4",
-                      backgroundColor: "#4296E450",
-                      borderRadius: 15,
-                      padding: 4,
-                      paddingLeft: 6,
-                      paddingRight: 6,
-                    }}
-                  >
-                    #profile {current.id}
+                  <Text style={styles.profileHighlight}>
+                    #profil {current.id}
                   </Text>
                 </TouchableOpacity>
                 {dropdownListVisible && (
                   <FlatList
                     style={{
-                      width: "80%",
-                      backgroundColor: "#4296E4",
+                      width: windowWidth,
+                      backgroundColor: "#fff",
+                      position: "absolute",
+                      top: 55,
+                      left: -50,
+                      paddingRight: "18%",
                     }}
-                    data={users}
-                    renderItem={renderItem}
+                    data={usersNoCurrent}
+                    renderItem={({ item, index }) => {
+                      const isLast = index === usersNoCurrent.length - 1;
+                      return renderItem(item, isLast);
+                    }}
                     keyExtractor={(item) => item.id.toString()}
                   ></FlatList>
                 )}

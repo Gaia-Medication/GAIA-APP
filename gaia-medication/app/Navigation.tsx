@@ -4,7 +4,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { StyleSheet, Text } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import Home from "./Home/Home";
 import Settings from "./Home/Settings";
 import Suivis from "./Suivis/Suivis";
@@ -21,29 +21,18 @@ const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
 const TopTab = createMaterialTopTabNavigator();
 
-
-
 export default function Navigation() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home" >
+      <Stack.Navigator initialRouteName="Home">
         <Stack.Screen
           name="HomeHandler"
           component={HomeHandler}
           options={{ headerShown: false }}
         />
-        <Stack.Screen
-          name="CreateProfile"
-          component={CreateProfile}
-        />
-        <Stack.Screen
-          name="Profile"
-          component={Profile}
-        />
-        <Stack.Screen
-          name="Drug"
-          component={Drug}
-        />
+        <Stack.Screen name="CreateProfile" component={CreateProfile} />
+        <Stack.Screen name="Profile" component={Profile} />
+        <Stack.Screen name="Drug" component={Drug} />
         <Stack.Screen
           name="Search"
           component={Search}
@@ -85,7 +74,6 @@ function HomeHandler() {
           height: "65%",
           borderRadius: 50,
         },
-
       }}
     >
       <BottomTab.Screen
@@ -129,4 +117,3 @@ function SuivisHandler() {
     </TopTab.Navigator>
   );
 }
-

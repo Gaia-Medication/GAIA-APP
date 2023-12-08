@@ -71,6 +71,7 @@ export default function Home({ navigation }) {
               users={users}
               current={user}
               setUser={setUser}
+              navigation={navigation}
             ></AvatarButton>
             {header && (
               <>
