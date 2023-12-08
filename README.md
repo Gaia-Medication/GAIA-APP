@@ -4,11 +4,11 @@
 Dans le dossier du projet /SAE-5
 ```
 npm i -g expo-cli
-cd App
 ```
-Dans le dossier /App
+Dans le dossier /gaia-medication
 ```
-npm install
+cd gaia-medication
+npm i
 ```
 
 https://reactnative.dev/docs/environment-setup
