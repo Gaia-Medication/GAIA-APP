@@ -30,7 +30,6 @@ const AvatarButton: React.FC<AvatarButtonProps> = ({
   const [expanded, setExpanded] = useState(false);
   const [dropdownListVisible, setDropdownListVisible] = useState(false);
   const usersNoCurrent = users.filter((user) => user.id !== current.id);
-  const [isLastItem, setisLastItem] = useState(false);
   // const pour le style
   const animation = useMemo(() => new Animated.Value(60), []);
   const textOpacity = useMemo(() => new Animated.Value(0), []);
@@ -102,7 +101,7 @@ const AvatarButton: React.FC<AvatarButtonProps> = ({
       </TouchableOpacity>
       {isLast && (
         <TouchableOpacity onPress={() => navigation.navigate("CreateProfile")}>
-          <Text style={{ textAlign: "center", padding: 10, color: "#8E8E8E"}}>
+          <Text style={{ textAlign: "center", padding: 10, color: "#8E8E8E" }}>
             + Ajouter un profil
           </Text>
         </TouchableOpacity>
@@ -201,9 +200,28 @@ const AvatarButton: React.FC<AvatarButtonProps> = ({
                     data={usersNoCurrent}
                     renderItem={({ item, index }) => {
                       const isLast = index === usersNoCurrent.length - 1;
-                      return renderItem(item, isLast);
+                      return (
+                        <React.Fragment key={item.id}>
+                          {renderItem(item, isLast)}
+                        </React.Fragment>
+                      );
                     }}
                     keyExtractor={(item) => item.id.toString()}
+                    ListEmptyComponent={
+                      <TouchableOpacity
+                        onPress={() => navigation.navigate("CreateProfile")}
+                      >
+                        <Text
+                          style={{
+                            textAlign: "center",
+                            padding: 10,
+                            color: "#8E8E8E",
+                          }}
+                        >
+                          + Ajouter un profil
+                        </Text>
+                      </TouchableOpacity>
+                    }
                   ></FlatList>
                 )}
               </>
