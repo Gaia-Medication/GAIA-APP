@@ -26,7 +26,7 @@ YELLOW = '\033[93m' # INFORMATIONS
 # INITIALISATION
 dataManager = DataManager(url, params)
 
-#files = dataManager.getFiles()
+files = dataManager.getFiles()
 
 from utils import has_number, replace_accents, lecture_base, create_regex_from_dictionnary
 
