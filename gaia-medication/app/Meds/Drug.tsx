@@ -5,11 +5,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { getMedbyCIS } from "../../dao/Meds";
 import { addItemToList, getUserByID, readList } from "../../dao/Storage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Loading from "../component/Loading";
+import { styles } from "../../style/style";
 
 export default function Drug({ route }) {
   const isFocused = useIsFocused();
   const [user, setUser] = useState<User | null>(null);
   const [stock, setStock] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const { drugCIS } = route.params;
   const drug = getMedbyCIS(drugCIS);
@@ -22,6 +25,7 @@ export default function Drug({ route }) {
     setStock(
       stockList.filter((item) => item.idUser == currentId && item.CIS == drugCIS)
     );
+    setLoading(false)
   };
 
   useEffect(() => {
@@ -34,6 +38,7 @@ export default function Drug({ route }) {
 
   const addToStock = async (item) => {
     try {
+      setLoading(true)
       const stock: Stock = {
         idUser: user.id,
         CIP: item.CIP,
@@ -49,7 +54,7 @@ export default function Drug({ route }) {
     }
   };
   return (
-    <View>
+    <View style={styles.container}>
       {drug && stock && user && (
         <>
           <Text>Name : {drug.Name}</Text>
@@ -92,6 +97,9 @@ export default function Drug({ route }) {
             }}
           />
         </>
+      )}
+      {(!drug || !stock || !user || loading) && (
+        <Loading/>
       )}
     </View>
   );

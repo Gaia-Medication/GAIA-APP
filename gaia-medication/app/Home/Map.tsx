@@ -28,7 +28,7 @@ export default function Map() {
             duration: 1000,
           });
         };
-        animateToCoordinat(currentLocation.latitude, currentLocation.longitude);
+        animateToCoordinat(location.coords.latitude, location.coords.longitude);
       };
 
       getLocation();
@@ -46,7 +46,7 @@ export default function Map() {
           longitude: -1.5608386136591434,
           longitudeDelta: 0.18985044211149216,
         }}
-        showsUserLocation={currentLocation}
+        //showsUserLocation={currentLocation}
       ></MapView>
     </View>
   );
