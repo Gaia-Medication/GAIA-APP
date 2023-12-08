@@ -1,5 +1,6 @@
 import { getAllMed } from "./Meds";
 
+const medicaments = getAllMed();
 function findMostAccurateMed(meds: any[], search: string) {
   const scores = meds.map((med) => {
     const name = med.Name.toLowerCase();
@@ -27,13 +28,11 @@ function findMostAccurateMed(meds: any[], search: string) {
 }
 
 export function searchMed(inputText: string, maxResults = 50) {
-  const medicaments = getAllMed();
   // Calcul de la distance pour chaque médicament et tri par proximité
   return findMostAccurateMed(medicaments, inputText).slice(0, maxResults);
 }
 
 export function trouverNomMedicament(texte: string) {
-  const medicaments = getAllMed();
   var firstFilter = [];
   for (const medicament of medicaments) {
     if (texte.toLowerCase().includes(medicament.Name.split(" ")[0].toLowerCase())||texte.toLowerCase().includes(medicament.Name.split(",")[0].toLowerCase())) {

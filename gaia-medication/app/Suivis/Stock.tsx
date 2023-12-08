@@ -10,7 +10,7 @@ import Loading from "../component/Loading";
 
 export default function Stock({ navigation }) {
   const isFocused = useIsFocused();
-  const [stock, setStock] = useState([]);
+  const [stock, setStock] = useState(null);
 
   const init = async () => {
     const currentId = JSON.parse(await AsyncStorage.getItem("currentUser"));
