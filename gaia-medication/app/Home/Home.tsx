@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Linking } from "react-native";
+import { View, Text, TouchableOpacity, Linking } from "react-native";
 import { useIsFocused } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
 import callGoogleVisionAsync from "../../OCR/helperFunctions";

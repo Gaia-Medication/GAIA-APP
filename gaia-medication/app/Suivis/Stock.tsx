@@ -57,7 +57,7 @@ export default function Stock({ navigation }) {
                     deleteFromStock(product.CIS, product.CIP, item.idUser)
                   }
                 >
-                  <Text>🚮</Text>
+                  <Text>❌</Text>
                 </TouchableOpacity>
               </TouchableOpacity>
             );

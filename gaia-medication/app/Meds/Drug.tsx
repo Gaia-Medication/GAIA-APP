@@ -1,11 +1,12 @@
 import { useIsFocused } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
-import { View, Text, Button, FlatList, TouchableOpacity } from "react-native";
+import { View, Text, FlatList, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getMedbyCIS } from "../../dao/Meds";
 import { addItemToList, getUserByID, readList } from "../../dao/Storage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Loading from "../component/Loading";
+import { Button, Input } from "react-native-elements";
 import { styles } from "../../style/style";
 
 export default function Drug({ route }) {
@@ -22,7 +23,9 @@ export default function Drug({ route }) {
     setUser(current);
     const stockList = await readList("stock");
     setStock(
-      stockList.filter((item) => item.idUser == currentId && item.CIS == drugCIS)
+      stockList.filter(
+        (item) => item.idUser == currentId && item.CIS == drugCIS
+      )
     );
   };
 
@@ -45,7 +48,7 @@ export default function Drug({ route }) {
       console.log(addstock);
 
       await addItemToList("stock", addstock);
-      setStock([...stock,addstock])
+      setStock([...stock, addstock]);
     } catch (e) {
       console.log(e);
     }
@@ -83,10 +86,12 @@ export default function Drug({ route }) {
                     ))}
 
                   {alreadyStocked ? (
-                    <Text>✅</Text>
+                    <TouchableOpacity className=" bg-green-400 text-center">
+                      <Text className="text-center">Already added</Text>
+                    </TouchableOpacity>
                   ) : (
-                    <TouchableOpacity onPress={() => addToStock(item)}>
-                      <Text>🆗</Text>
+                    <TouchableOpacity className=" bg-blue-400" onPress={() => addToStock(item)}>
+                      <Text className="text-center">Add</Text>
                     </TouchableOpacity>
                   )}
                 </>
@@ -95,9 +100,7 @@ export default function Drug({ route }) {
           />
         </>
       )}
-      {(!drug || !stock || !user) && (
-        <Loading/>
-      )}
+      {(!drug || !stock || !user) && <Loading />}
     </View>
   );
 }
