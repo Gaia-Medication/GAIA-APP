@@ -15,6 +15,7 @@ export default function Stock({ navigation }) {
   const init = async () => {
     const currentId = JSON.parse(await AsyncStorage.getItem("currentUser"));
     const stockList = await readList("stock");
+    console.log(stockList.filter((item) => item.idUser == currentId))
     setStock(stockList.filter((item) => item.idUser == currentId));
   };
   useEffect(() => {

@@ -9,6 +9,7 @@ import {
 import { searchMed } from "../../dao/Search";
 import { styles } from "../../style/style";
 import { Input } from "react-native-elements";
+import MedIconByType from "../component/MedIconByType";
 
 export default function Search({ route, navigation }) {
   const textInputRef = React.useRef(null);
@@ -54,8 +55,10 @@ export default function Search({ route, navigation }) {
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.listItem}
+            className="flex justify-items-start"
             onPress={() => navigation.navigate("Drug", { drugCIS: item.CIS })}
           >
+            <MedIconByType type={item.type}/>
             <Text>{item.Name}</Text>
           </TouchableOpacity>
         )}

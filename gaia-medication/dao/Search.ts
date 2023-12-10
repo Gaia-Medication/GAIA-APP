@@ -18,6 +18,7 @@ function findMostAccurateMed(meds: any[], search: string) {
     return {
       Name: med.Name,
       CIS: med.CIS,
+      type: med.Shape,
       score: scores[index],
     };
   });
@@ -33,22 +34,30 @@ export function searchMed(inputText: string, maxResults = 50) {
 }
 
 export function trouverNomMedicament(texte: string) {
-  var firstFilter = [];
+  console.log(texte)
+  var Filter = [];
+  var ordonnanceBool=false
+  if (texte.toLowerCase().includes("ordo")||texte.toLowerCase().includes("doct")||texte.toLowerCase().includes("presc")||texte.toLowerCase().includes("medec"))ordonnanceBool=true
   for (const medicament of medicaments) {
     if (texte.toLowerCase().includes(medicament.Name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(',', '').split(" ")[0].toLowerCase())&&texte.toLowerCase().includes(medicament.Name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(',', '').split(" ")[1].toLowerCase())) {
-      firstFilter.push(medicament.Name.normalize('NFD').replace(/[\u0300-\u036f]/g, ''));
+      Filter.push(medicament.Name.normalize('NFD').replace(/[\u0300-\u036f]/g, ''));
     }
   }
-  firstFilter=firstFilter.map((medicament)=>{
+  Filter=Filter.map((medicament)=>{
     return {
       med:medicament,
       score:calculateScore(texte, medicament).toFixed(2)
     }
   })
-  firstFilter=firstFilter.sort(
+  Filter=Filter.sort(
     (a: { score: number }, b: { score: number }) => b.score - a.score
   );
-  return firstFilter.slice(0,10)
+  console.log(ordonnanceBool)
+  console.log(Filter)
+  if(ordonnanceBool)Filter.slice(0,10)
+  const highScoreMeds = Filter.filter(medicament => medicament.score > 99);
+  if (highScoreMeds.length>0)return highScoreMeds
+  return Filter.slice(0,3)
 }
 
 function calculateScore(text: string, searchText: string): number {

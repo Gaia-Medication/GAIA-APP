@@ -31,7 +31,7 @@ export default function Drug({ route }) {
 
   useEffect(() => {
     if (isFocused) {
-      console.log("Nav on Drug Page CIS :", drugCIS);
+      console.log("Nav on Drug Page :", drug);
       init();
       //console.log(drug);
     }

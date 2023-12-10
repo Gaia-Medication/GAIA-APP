@@ -64,6 +64,7 @@ export default function Home({ navigation }) {
         setLoading(false)
         alert(msg)
       } else{
+        setLoading(false)
         alert("Rien")
       }
     }

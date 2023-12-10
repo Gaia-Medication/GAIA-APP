@@ -121,18 +121,16 @@ export const styles = StyleSheet.create({
     paddingRight: 6,
   },
   listItem: {
-    backgroundColor: '#ffffff', // Couleur de fond pour chaque élément de la liste
-    padding: 15, // Espace intérieur pour chaque élément
-    borderBottomWidth: 1, // Ligne de séparation
-    borderBottomColor: '#dddddd', // Couleur de la ligne de séparation
+    backgroundColor: '#ffffff', 
+    padding: 15,
+    borderBottomWidth: 1, 
+    borderBottomColor: '#dddddd', 
     display:"flex",
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems:"center"
   },
   listItemText: {
-    fontSize: 18, // Taille de la police
-    color: '#333333', // Couleur de la police
-    // Autres styles pour le texte...
+    fontSize: 18, 
+    color: '#333333', 
   },
 });
