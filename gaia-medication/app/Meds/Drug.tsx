@@ -13,6 +13,7 @@ import ModalComponent from "../component/Modal";
 
 export default function Drug({ route }) {
   const [drugModalVisible, setDrugModalVisible] = useState(false);
+  const [drugsToAdd, setDrugsToAdd] = useState(null);
   const isFocused = useIsFocused();
   const [user, setUser] = useState<User | null>(null);
   const [stock, setStock] = useState(null);
@@ -93,7 +94,10 @@ export default function Drug({ route }) {
                       <Text className="text-center">Already added</Text>
                     </TouchableOpacity>
                   ) : (
-                    <TouchableOpacity className=" bg-blue-400" onPress={() => setDrugModalVisible(true)}>
+                    <TouchableOpacity className=" bg-blue-400" onPress={() => {
+                      setDrugsToAdd(item)
+                      setDrugModalVisible(true)
+                    }}>
                       <Text className="text-center">Add</Text>
                     </TouchableOpacity>
                   )}
@@ -102,7 +106,13 @@ export default function Drug({ route }) {
             }}
           />
           <ModalComponent visible={drugModalVisible} onClose={()=>setDrugModalVisible(!drugModalVisible)}>
-            <Text>Contenu de votre modal</Text>
+            <Text>Ajouter un Medicament</Text>
+            <TouchableOpacity className=" bg-blue-400" onPress={() => {
+              addToStock(drugsToAdd)
+              setDrugModalVisible(!drugModalVisible)
+            }}>
+              <Text className="text-center">Add</Text>
+            </TouchableOpacity>
           </ModalComponent>
         </>
       )}
