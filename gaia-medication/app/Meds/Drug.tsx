@@ -1,6 +1,6 @@
 import { useIsFocused } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, TouchableOpacity } from "react-native";
+import { View, Text, FlatList, TouchableOpacity, Modal, Pressable,StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getMedbyCIS } from "../../dao/Meds";
 import { addItemToList, getUserByID, readList } from "../../dao/Storage";
@@ -8,8 +8,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Loading from "../component/Loading";
 import { Button, Input } from "react-native-elements";
 import { styles } from "../../style/style";
+import DrugModal from "../component/Modal";
+import ModalComponent from "../component/Modal";
 
 export default function Drug({ route }) {
+  const [drugModalVisible, setDrugModalVisible] = useState(false);
   const isFocused = useIsFocused();
   const [user, setUser] = useState<User | null>(null);
   const [stock, setStock] = useState(null);
@@ -90,7 +93,7 @@ export default function Drug({ route }) {
                       <Text className="text-center">Already added</Text>
                     </TouchableOpacity>
                   ) : (
-                    <TouchableOpacity className=" bg-blue-400" onPress={() => addToStock(item)}>
+                    <TouchableOpacity className=" bg-blue-400" onPress={() => setDrugModalVisible(true)}>
                       <Text className="text-center">Add</Text>
                     </TouchableOpacity>
                   )}
@@ -98,9 +101,13 @@ export default function Drug({ route }) {
               );
             }}
           />
+          <ModalComponent visible={drugModalVisible} onClose={()=>setDrugModalVisible(!drugModalVisible)}>
+            <Text>Contenu de votre modal</Text>
+          </ModalComponent>
         </>
       )}
       {(!drug || !stock || !user) && <Loading />}
     </View>
   );
 }
+
