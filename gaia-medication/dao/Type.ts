@@ -2,7 +2,8 @@ type User = {
     id:number,
     firstname: string;
     lastname: string;
-    birthdate: string;
+    age: number;
+    weight: number;
     gender: string;
     preference: string;
   };
