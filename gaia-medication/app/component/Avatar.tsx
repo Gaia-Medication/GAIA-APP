@@ -17,7 +17,7 @@ interface AvatarButtonProps {
   users: User[];
   current: User;
   setUser: any;
-  navigation;
+  navigation: any;
 }
 
 const AvatarButton: React.FC<AvatarButtonProps> = ({
