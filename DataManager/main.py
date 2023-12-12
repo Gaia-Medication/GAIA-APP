@@ -61,7 +61,7 @@ for description in string_data:
     }
     product = []
     second_product = []
-    quantity = []
+    quantity = []   
     description = description.lower()
     description = replace_accents(description)
     description=description.replace("  "," ")
@@ -95,6 +95,11 @@ for description in string_data:
                     if category=="second_product":
                         return_dict["second_product"].append(w)
     #print(GREEN,index,product,second_product,quantity,"\n",description,"\n",RESET)
+    for i in return_dict["product"]:    
+        if has_number(i)==False and return_dict["second_product"]==[] and return_dict["quantity"]==[]:
+            print(RED,description)
+    #kit join then regex 
+    #conditionnement
     all_dict.append(return_dict)
     
 
