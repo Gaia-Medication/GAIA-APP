@@ -86,7 +86,6 @@ export const removeItemFromStock = async (cis, cip, idUser) => {
   const key="stock"
   try {
     const existingList = await readList(key);
-    // Trouvez l'indice de l'élément à supprimer en fonction du CIS, CIP et idUser
     const indexToRemove = existingList.findIndex(item => item.CIS == cis && item.CIP == cip && item.idUser == idUser);
     if (indexToRemove !== -1) {
       existingList.splice(indexToRemove, 1);

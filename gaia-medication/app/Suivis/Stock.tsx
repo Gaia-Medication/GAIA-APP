@@ -1,8 +1,7 @@
 import { useIsFocused } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
-import { View, Text, Button, FlatList, TouchableOpacity } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { getUserByID, readList, removeItemFromStock } from "../../dao/Storage";
+import { View, Text, FlatList, TouchableOpacity } from "react-native";
+import { readList } from "../../dao/Storage";
 import { styles } from "../../style/style";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getMedbyCIS } from "../../dao/Meds";
@@ -25,14 +24,6 @@ export default function Stock({ navigation }) {
     }
   }, [isFocused]);
 
-  const deleteFromStock = async (cis, cip, idUser) => {
-    try {
-      await removeItemFromStock(cis, cip, idUser);
-      init()
-    } catch (e) {
-      console.log(e);
-    }
-  };
   return (
     <View style={styles.container}>
       {stock && (
@@ -53,13 +44,6 @@ export default function Stock({ navigation }) {
                   <Text>{drug.Name}</Text>
                   <Text>{product.Denomination}</Text>
                 </View>
-                <TouchableOpacity
-                  onPress={() =>
-                    deleteFromStock(product.CIS, product.CIP, item.idUser)
-                  }
-                >
-                  <Text>❌</Text>
-                </TouchableOpacity>
               </TouchableOpacity>
             );
           }}

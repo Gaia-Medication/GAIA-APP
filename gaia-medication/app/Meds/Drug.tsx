@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, TouchableOpacity, Modal, Pressable,StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getMedbyCIS } from "../../dao/Meds";
-import { addItemToList, getUserByID, readList } from "../../dao/Storage";
+import { addItemToList, getUserByID, readList, removeItemFromStock } from "../../dao/Storage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Loading from "../component/Loading";
 import { Button, Input } from "react-native-elements";
@@ -35,9 +35,8 @@ export default function Drug({ route }) {
 
   useEffect(() => {
     if (isFocused) {
-      console.log("Nav on Drug Page :", drug);
+      console.log("Nav on Drug Page :", drug.CIS);
       init();
-      //console.log(drug);
     }
   }, [isFocused]);
 
@@ -53,6 +52,15 @@ export default function Drug({ route }) {
 
       await addItemToList("stock", addstock);
       setStock([...stock, addstock]);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  
+  const deleteFromStock = async (cis, cip, idUser) => {
+    try {
+      await removeItemFromStock(cis, cip, idUser);
+      init()
     } catch (e) {
       console.log(e);
     }
@@ -90,9 +98,14 @@ export default function Drug({ route }) {
                     ))}
 
                   {alreadyStocked ? (
-                    <TouchableOpacity className=" bg-green-400 text-center">
-                      <Text className="text-center">Already added</Text>
+                    <><TouchableOpacity className=" bg-green-400 text-center">
+                      <Text className="text-center">In stock</Text>
                     </TouchableOpacity>
+                    <TouchableOpacity className=" bg-red-400 text-center"
+                      onPress={() => deleteFromStock(item.CIS, item.CIP, user.id)}
+                    >
+                        <Text className="text-center">❌</Text>
+                      </TouchableOpacity></>
                   ) : (
                     <TouchableOpacity className=" bg-blue-400" onPress={() => {
                       setDrugsToAdd(item)
