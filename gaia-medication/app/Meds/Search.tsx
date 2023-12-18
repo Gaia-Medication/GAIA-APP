@@ -29,7 +29,7 @@ export default function Search({ route, navigation }) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.searchBarwQR}>
+      <View style={styles.searchBarwQR} className="mt-3">
         <View style={styles.searchBar}>
           <Input
             style={styles.searchBarInput}
@@ -55,7 +55,7 @@ export default function Search({ route, navigation }) {
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.listItem}
-            className="flex justify-items-start"
+            className="flex justify-start align-middle"
             onPress={() => navigation.navigate("Drug", { drugCIS: item.CIS })}
           >
             <MedIconByType type={item.type}/>

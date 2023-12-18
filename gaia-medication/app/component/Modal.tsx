@@ -10,7 +10,7 @@ const ModalComponent = ({ visible, onClose, children }) => {
       onRequestClose={onClose}
     >
       <TouchableOpacity
-        style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+        style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0)' }}
         activeOpacity={1}
         onPress={onClose}
       >
