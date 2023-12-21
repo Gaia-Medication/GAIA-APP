@@ -7,10 +7,16 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { getAllPoints, getPointsbyRegion } from "../../dao/MapPoint";
 
 export default function Map() {
+  const initialRegion={
+    latitude: 47.200819319828305,
+    latitudeDelta: 0.2705200915647197,
+    longitude: -1.5608386136591434,
+    longitudeDelta: 0.18985044211149216,
+  }
   const isFocused = useIsFocused();
   const [currentLocation, setCurrentLocation] = useState(null);
-  const [region, setRegion] = useState(null);
-  const [points, setPoints] = useState(getAllPoints());
+  const [region, setRegion] = useState(initialRegion);
+  const [points, setPoints] = useState(getPointsbyRegion(region));
   useEffect(() => {
     if (isFocused) {
       console.log("Nav on Map Page");
@@ -40,7 +46,6 @@ export default function Map() {
 
   useEffect(() => {
     const newPoints = getPointsbyRegion(region);
-    console.log(newPoints);
     setPoints(newPoints);
   }, [region]);
 
@@ -49,17 +54,13 @@ export default function Map() {
       <MapView
         ref={(map) => (this.map = map)}
         style={{ width: "100%", height: "100%" }}
-        initialRegion={{
-          latitude: 47.200819319828305,
-          latitudeDelta: 0.2705200915647197,
-          longitude: -1.5608386136591434,
-          longitudeDelta: 0.18985044211149216,
-        }}
+        initialRegion={initialRegion}
         onRegionChangeComplete={(region) => setRegion(region)}
         //showsUserLocation={currentLocation}
       >
         {points &&
           points.map((point) => {
+            console.log(point.Name);
             return (
               <Marker
                 key={point.id}
