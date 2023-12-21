@@ -33,7 +33,7 @@ class DataManager :
         except Exception as e:
             print(f"An error occurred: {e}")
 
-        with open('data/pharmacies', 'wb') as f:
+        with open('data/pharmacies.csv', 'wb') as f:
             f.write(response.content)
         return True
     
