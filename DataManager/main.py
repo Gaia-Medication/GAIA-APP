@@ -272,6 +272,9 @@ dfMedication = dfMedication.merge(dfInformation, on='CIS', how='outer')
 ## DEUX ENREGISTREMENTS EN TROP
 dfMedication = dfMedication.merge(dfPresentation, on='CIS', how='outer')
 
+dfMedication.dropna(subset=['Name'], inplace=True)
+
+
 print(BOLD,YELLOW,"\n\n##########################################################\n################### Conversion en JSON ###################\n##########################################################",RESET,'\n\n')
 
 jsonMedication = dfMedication.to_json('out/medication.json', orient="records", indent=4)
