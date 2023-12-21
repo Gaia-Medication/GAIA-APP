@@ -26,7 +26,7 @@ YELLOW = '\033[93m' # INFORMATIONS
 # INITIALISATION
 dataManager = DataManager(url, params)
 
-files = dataManager.getFiles()
+#files = dataManager.getFiles()
 
 from utils import has_number, replace_accents, lecture_base, create_regex_from_dictionnary
 
@@ -39,7 +39,7 @@ date=[
 
 dictionnary={
     "second_product":["plaquette","kit","dose","comprimé","gomme","gélule","pastille","lyophilisat","sachetspolyterephtalate","capsule","suppositoire","distributeur journalier","conditionnement","bande","poudre","générateur","flacon","tube","applicateur","ampoule","pilulier","sachet","pot","seringue","stylo","spray","bouteille","récipient","film","boite","boite","poche","inhalateur","cartouche","evaporateur","dispositif","enveloppe","fut","sac"],
-    "product":['plaquette', 'tube', 'recipient', 'flacon', 'ampoule',"sachetspolyterephtalate", 'pilulier', 'sachet', 'dose', 'seringue', 'bouteille', 'pot', 'film', 'evaporateur', 'poche', 'stylo',"applicateur", 'generateur', 'inhalateur', 'dispositif','enveloppe', 'sac', 'conditionnement', 'bande', 'comprime', 'poudre','kit', 'gelule', 'boite', 'cartouche', 'fut'],
+    "product":['plaquette', 'tube','éponge', 'recipient', 'flacon', 'ampoule',"sachetspolyterephtalate", 'pilulier', 'sachet', 'dose', 'seringue', 'bouteille', 'pot', 'film', 'evaporateur', 'poche', 'stylo',"applicateur", 'generateur', 'inhalateur', 'dispositif','enveloppe', 'sac', 'conditionnement', 'bande', 'comprime', 'poudre','kit', 'gelule', 'boite', 'cartouche', 'fut'],
     "quantity":["l","ml","mg","g","litre","ui","u"]
 }
 dictionnary=create_regex_from_dictionnary(dictionnary)
@@ -48,8 +48,68 @@ dictionnary=create_regex_from_dictionnary(dictionnary)
 brut_data = lecture_base("data/CIS_CIP_bdpm.txt").iloc[:,2:3].values[:,0]
 string_data = brut_data.astype(str)
 
+compo=lecture_base("data/CIS_COMPO_bdpm.txt")
+compo.columns=["CIS","type","IDPA","Principe actif","Dosage", "Quantité","SA/FT","ID SA/FT","?"]
+compo=compo.drop(columns=["IDPA","?"])
+compostr=compo.astype(str)
+print(compostr.head)
 
 print(BOLD,YELLOW,"\n\n##########################################################\n############### Création des dictionnaires ###############\n##########################################################",RESET,'\n\n')
+
+all_compo=[]
+return_compo={
+    "CIS":[],
+    "type":[],
+    "Principe actif":[],
+    "Dosage":[],
+    "Quantité":[],
+    "SA/FT":[],
+    "ID SA/FT":[],
+}
+for row in range(compostr.shape[0]-1):
+    cis=compostr['CIS'][row]
+    id_sa_ft=compostr['ID SA/FT'][row]
+    if return_compo["CIS"]==[]:
+        return_compo["CIS"]=cis
+        return_compo["type"].append(compostr['type'][row])
+        return_compo["Principe actif"].append(compostr['Principe actif'][row])
+        return_compo["Dosage"].append(compostr['Dosage'][row])
+        return_compo["Quantité"].append(compostr['Quantité'][row])
+        return_compo["SA/FT"].append(compostr['SA/FT'][row])
+        return_compo["ID SA/FT"].append(id_sa_ft)
+    if cis==return_compo["CIS"][-1] and id_sa_ft==return_compo["ID SA/FT"][-1]:
+        return_compo["type"].append(compostr['type'][row])
+        return_compo["Principe actif"].append(compostr['Principe actif'][row])
+        return_compo["Dosage"].append(compostr['Dosage'][row])
+        return_compo["Quantité"].append(compostr['Quantité'][row])
+        return_compo["SA/FT"].append(compostr['SA/FT'][row])
+
+
+        if (return_compo["SA/FT"]=="SA" and return_compo["SA/FT"][-1]=="FT") or (return_compo["SA/FT"]=="FT" and return_compo["SA/FT"][-1]=="SA"):
+            return_compo["ID SA/FT"].append(id_sa_ft)
+
+
+    else:
+        all_compo.append(return_compo)
+        return_compo={
+            "CIS":[],
+            "type":[],
+            "Principe actif":[],
+            "Dosage":[],
+            "Quantité":[],
+            "SA/FT":[],
+            "ID SA/FT":[],
+        }
+        return_compo["CIS"]=cis
+        return_compo["type"].append(compostr['type'][row])
+        return_compo["Principe actif"].append(compostr['Principe actif'][row])
+        return_compo["Dosage"].append(compostr['Dosage'][row])
+        return_compo["Quantité"].append(compostr['Quantité'][row])
+        return_compo["SA/FT"].append(compostr['SA/FT'][row])
+        return_compo["ID SA/FT"].append(id_sa_ft)
+    
+print(BLUE,all_compo,RESET)
+
 
 all_dict=[]
 for description in string_data:
@@ -95,9 +155,9 @@ for description in string_data:
                     if category=="second_product":
                         return_dict["second_product"].append(w)
     #print(GREEN,index,product,second_product,quantity,"\n",description,"\n",RESET)
-    for i in return_dict["product"]:    
-        if has_number(i)==False and return_dict["second_product"]==[] and return_dict["quantity"]==[]:
-            print(RED,description)
+    # for i in return_dict["product"]:    
+    #     if has_number(i)==False and return_dict["second_product"]==[] and return_dict["quantity"]==[]:
+    #         print(RED,description)
     #kit join then regex 
     #conditionnement
     all_dict.append(return_dict)
@@ -124,6 +184,20 @@ dfInformation.columns = [
     'dateFin', #2
     'Important_informations', #1
 ]
+
+dfGener = pd.read_csv("data/CIS_GENER_bdpm.txt", sep="\t", header=None, encoding="latin1")
+dfGener = dfGener.drop([0], axis=1)
+dfGener = dfGener.drop([3], axis=1)
+dfGener = dfGener.drop([4], axis=1)
+dfGener = dfGener.drop([5], axis=1) 
+dfGener.columns = [
+    'Generique', #1
+    'CIS', #2
+]
+
+dfCompo=pd.DataFrame(all_compo)
+dfCompo=dfCompo.groupby('CIS').apply(group_by_cis)
+print(dfCompo.head)
 
 dfDescription= pd.DataFrame(columns=["CIS","Description"])
 dfDescription["CIS"]=lecture_base("data/CIS_CIP_bdpm.txt").iloc[:,0:1]
@@ -160,8 +234,7 @@ actCIS = dfPresentation.iloc[0,0]
 
 dfPresentation = dfPresentation.groupby('CIS').apply(group_by_cis)
 
-# Create a new DataFrame from the grouped data
-dfPresentation = pd.DataFrame({'CIS': dfPresentation.index, 'Values': dfPresentation.values})
+dfPresentation = pd.DataFrame({'CIS': dfPresentation.index, 'Values': dfPresentation.values}) 
 
 # Reset the index if needed
 dfPresentation.reset_index(drop=True, inplace=True)
@@ -190,29 +263,28 @@ dfInformation = pd.DataFrame({'CIS': dfInformation.index, 'infos': dfInformation
 dfInformation.reset_index(drop=True, inplace=True)
 
 
+# dfMedication = dfMedication.merge(dfGener, on='CIS', how='inner')
 dfMedication = dfMedication.merge(dfPrescription, on='CIS', how='inner')
 dfMedication = dfMedication.merge(dfInformation, on='CIS', how='inner')
 ## DEUX ENREGISTREMENTS EN TROP
 dfMedication = dfMedication.merge(dfPresentation, on='CIS', how='inner')
 
-dict_to_modify = dfMedication.iloc[0,0:][9][0]
+dict_to_modify = dfMedication.iloc[1,0:][10][0]
 if "CIS" in dict_to_modify:
     del dict_to_modify["CIS"]
-dfMedication.iloc[0,0:][9][0] = dict_to_modify
+dfMedication.iloc[0,0:][10][0] = dict_to_modify
 
 for row in range(0,dfMedication.shape[0]):
-    CISinInfoToDel = dfMedication.iloc[row,0:][9]
+    CISinInfoToDel = dfMedication.iloc[row,0:][10]
     for i in range(0,len(CISinInfoToDel)):
         if "CIS" in CISinInfoToDel[i]:
             del CISinInfoToDel[i]["CIS"]
-            dfMedication.iloc[row,0:][9][i] = CISinInfoToDel[i]
-    CISinValueToDel = dfMedication.iloc[row,0:][10]
+            dfMedication.iloc[row,0:][10][i] = CISinInfoToDel[i]
+    CISinValueToDel = dfMedication.iloc[row,0:][11]
     for i in range(0,len(CISinValueToDel)):
         if "CIS" in CISinValueToDel[i]:
             del CISinValueToDel[i]["CIS"]
-            dfMedication.iloc[row,0:][10][i] = CISinValueToDel[i]
-
-# print(dfMedication.iloc[0,0:][9:])
+            dfMedication.iloc[row,0:][11][i] = CISinValueToDel[i]
 
 print(BOLD,YELLOW,"\n\n##########################################################\n################### Conversion en JSON ###################\n##########################################################",RESET,'\n\n')
 
