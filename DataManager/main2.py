@@ -12,7 +12,7 @@ dataManager = DataManager(url)
 
 #files = dataManager.getPharmacyFile()
 
-df = pd.read_csv('data/pharmacies', sep=';', encoding='latin-1') 
+df = pd.read_csv('data/pharmacies.csv', sep=';', encoding='latin-1', skiprows=[0]) 
 new_column_names = [str(i) for i in range(32)]
 df.columns = new_column_names
 
