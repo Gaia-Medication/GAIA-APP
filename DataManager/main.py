@@ -202,11 +202,11 @@ dfCompo=pd.DataFrame(all_compo)
 dfCompo=dfCompo.groupby('CIS').apply(group_by_cis)
 j = dfCompo.to_json('out/compo.json', orient="records", indent=4)
 
-dfDescription= pd.DataFrame(columns=["CIS","Description"])
-dfDescription["CIS"]=lecture_base("data/CIS_CIP_bdpm.txt").iloc[:,0:1]
+dfDescription= pd.DataFrame(columns=["CIP","Description"])
+dfDescription["CIP"]=lecture_base("data/CIS_CIP_bdpm.txt").iloc[:,1:2]
 dfDescription["Quantity"]=all_dict
 dfDescription=dfDescription.drop(columns=["Description"])
-#print(dfDescription.head)
+#print(dfDescription[dfDescription['CIS'] == 68948481])
 
 # ######### PrescriptionConditions
 dfPrescription = pd.read_csv("data/CIS_CPD_bdpm.txt", sep="\t", header=None, encoding="latin1")
@@ -230,7 +230,7 @@ dfPresentation.columns = [
     'Infos_remboursement',#12
 ]
 dfDescription.name="Quantity"
-dfPresentation=dfPresentation.merge(dfDescription, on='CIS', how='inner')
+dfPresentation=dfPresentation.merge(dfDescription, on='CIP', how='inner')
 # print(dfPresentation.iloc[0,6:])
 dfPresentation = dfPresentation.sort_values(by=['CIS'])
 actCIS = dfPresentation.iloc[0,0]
@@ -266,28 +266,11 @@ dfInformation = pd.DataFrame({'CIS': dfInformation.index, 'infos': dfInformation
 dfInformation.reset_index(drop=True, inplace=True)
 
 
-dfMedication = dfMedication.merge(dfGener, on='CIS', how='inner')
-dfMedication = dfMedication.merge(dfPrescription, on='CIS', how='inner')
-dfMedication = dfMedication.merge(dfInformation, on='CIS', how='inner')
+dfMedication = dfMedication.merge(dfGener, on='CIS', how='outer')
+dfMedication = dfMedication.merge(dfPrescription, on='CIS', how='outer')
+dfMedication = dfMedication.merge(dfInformation, on='CIS', how='outer')
 ## DEUX ENREGISTREMENTS EN TROP
-dfMedication = dfMedication.merge(dfPresentation, on='CIS', how='inner')
-
-dict_to_modify = dfMedication.iloc[1,0:][10][0]
-if "CIS" in dict_to_modify:
-    del dict_to_modify["CIS"]
-dfMedication.iloc[0,0:][10][0] = dict_to_modify
-
-for row in range(0,dfMedication.shape[0]):
-    CISinInfoToDel = dfMedication.iloc[row,0:][10]
-    for i in range(0,len(CISinInfoToDel)):
-        if "CIS" in CISinInfoToDel[i]:
-            del CISinInfoToDel[i]["CIS"]
-            dfMedication.iloc[row,0:][10][i] = CISinInfoToDel[i]
-    CISinValueToDel = dfMedication.iloc[row,0:][11]
-    for i in range(0,len(CISinValueToDel)):
-        if "CIS" in CISinValueToDel[i]:
-            del CISinValueToDel[i]["CIS"]
-            dfMedication.iloc[row,0:][11][i] = CISinValueToDel[i]
+dfMedication = dfMedication.merge(dfPresentation, on='CIS', how='outer')
 
 print(BOLD,YELLOW,"\n\n##########################################################\n################### Conversion en JSON ###################\n##########################################################",RESET,'\n\n')
 
