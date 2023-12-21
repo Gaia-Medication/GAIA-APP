@@ -52,7 +52,6 @@ compo=lecture_base("data/CIS_COMPO_bdpm.txt")
 compo.columns=["CIS","type","IDPA","Principe actif","Dosage", "Quantité","SA/FT","ID SA/FT","?"]
 compo=compo.drop(columns=["IDPA","?"])
 compostr=compo.astype(str)
-print(compostr.head)
 
 print(BOLD,YELLOW,"\n\n##########################################################\n############### Création des dictionnaires ###############\n##########################################################",RESET,'\n\n')
 
@@ -77,18 +76,22 @@ for row in range(compostr.shape[0]-1):
         return_compo["Quantité"].append(compostr['Quantité'][row])
         return_compo["SA/FT"].append(compostr['SA/FT'][row])
         return_compo["ID SA/FT"].append(id_sa_ft)
-    if cis==return_compo["CIS"][-1] and id_sa_ft==return_compo["ID SA/FT"][-1]:
+    
+    if cis==return_compo["CIS"] and id_sa_ft in return_compo["ID SA/FT"] : # tous les id sont split mais SA et FT parfois split
         return_compo["type"].append(compostr['type'][row])
         return_compo["Principe actif"].append(compostr['Principe actif'][row])
         return_compo["Dosage"].append(compostr['Dosage'][row])
         return_compo["Quantité"].append(compostr['Quantité'][row])
         return_compo["SA/FT"].append(compostr['SA/FT'][row])
-
-
-        if (return_compo["SA/FT"]=="SA" and return_compo["SA/FT"][-1]=="FT") or (return_compo["SA/FT"]=="FT" and return_compo["SA/FT"][-1]=="SA"):
-            return_compo["ID SA/FT"].append(id_sa_ft)
-
-
+        return_compo["ID SA/FT"].append(id_sa_ft)
+    # for r in range(len(all_compo)-1):
+    #     if cis==all_compo[r]["CIS"]:
+    #         if id_sa_ft in all_compo[r]["ID SA/FT"]:
+    #             if len(all_compo[r]["SA/FT"])==1 and (compostr["SA/FT"][row]=="FT"and "SA" in all_compo[r]["SA/FT"])or (compostr["SA/FT"][row]=="SA" and "FT" in all_compo[r]["SA/FT"]):
+    #         #if (id_sa_ft in all_compo[r]["ID SA/FT"]) and ((all_compo[r]["SA/FT"]=="SA" and compostr["SA/FT"][row]=="FT")or(all_compo[r]["SA/FT"]=="FT" and compostr["SA/FT"][row]=="SA")):
+    #                 print(all_compo[r]["SA/FT"],compostr["SA/FT"][row],"\n")
+        
+    
     else:
         all_compo.append(return_compo)
         return_compo={
@@ -107,8 +110,8 @@ for row in range(compostr.shape[0]-1):
         return_compo["Quantité"].append(compostr['Quantité'][row])
         return_compo["SA/FT"].append(compostr['SA/FT'][row])
         return_compo["ID SA/FT"].append(id_sa_ft)
-    
-print(BLUE,all_compo,RESET)
+        
+
 
 
 all_dict=[]
@@ -197,7 +200,7 @@ dfGener.columns = [
 
 dfCompo=pd.DataFrame(all_compo)
 dfCompo=dfCompo.groupby('CIS').apply(group_by_cis)
-print(dfCompo.head)
+j = dfCompo.to_json('out/compo.json', orient="records", indent=4)
 
 dfDescription= pd.DataFrame(columns=["CIS","Description"])
 dfDescription["CIS"]=lecture_base("data/CIS_CIP_bdpm.txt").iloc[:,0:1]
@@ -263,7 +266,7 @@ dfInformation = pd.DataFrame({'CIS': dfInformation.index, 'infos': dfInformation
 dfInformation.reset_index(drop=True, inplace=True)
 
 
-# dfMedication = dfMedication.merge(dfGener, on='CIS', how='inner')
+dfMedication = dfMedication.merge(dfGener, on='CIS', how='inner')
 dfMedication = dfMedication.merge(dfPrescription, on='CIS', how='inner')
 dfMedication = dfMedication.merge(dfInformation, on='CIS', how='inner')
 ## DEUX ENREGISTREMENTS EN TROP
