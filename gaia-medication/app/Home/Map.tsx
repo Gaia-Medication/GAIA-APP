@@ -33,6 +33,7 @@ export default function Map() {
     Pharmacie: require("./../../assets/map-icons/pharma.png"),
     Centre: require("./../../assets/map-icons/hopital.png"),
     Etablissement: require("./../../assets/map-icons/clinique.png"),
+    Maison: require("./../../assets/map-icons/maison_de_sante.png"),
     satelite: require("./../../assets/map-icons/satelite.png"),
     map: require("./../../assets/map-icons/map.png")
   }
@@ -88,6 +89,7 @@ export default function Map() {
         initialRegion={initialRegion}
         onRegionChangeComplete={(region) => setRegion(region)}
         customMapStyle={standardMapType}
+        toolbarEnabled={false}
         //showsUserLocation={currentLocation}
       >
         {points &&

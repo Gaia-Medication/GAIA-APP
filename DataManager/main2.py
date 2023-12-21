@@ -91,7 +91,8 @@ specific_values = [
     'Centre Hospitalier (C.H.)',
     'Centre Hospitalier Régional (C.H.R.)',
     'Centre Hospitalier Universitaire (C.H.U.)',
-    'Etablissement de Soins Pluridisciplinaire'
+    'Etablissement de Soins Pluridisciplinaire',
+    'Maison de santé (L.6223-3)'
 ]
 
 print(df[df["type"] == "Centre Hospitalier Régional (C.H.R.)"])
