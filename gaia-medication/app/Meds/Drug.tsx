@@ -1,9 +1,22 @@
 import { useIsFocused } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, TouchableOpacity, Modal, Pressable,StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  Modal,
+  Pressable,
+  StyleSheet,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getMedbyCIS } from "../../dao/Meds";
-import { addItemToList, getUserByID, readList, removeItemFromStock } from "../../dao/Storage";
+import {
+  addItemToList,
+  getUserByID,
+  readList,
+  removeItemFromStock,
+} from "../../dao/Storage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Loading from "../component/Loading";
 import { Button, Input } from "react-native-elements";
@@ -56,11 +69,11 @@ export default function Drug({ route }) {
       console.log(e);
     }
   };
-  
+
   const deleteFromStock = async (cis, cip, idUser) => {
     try {
       await removeItemFromStock(cis, cip, idUser);
-      init()
+      init();
     } catch (e) {
       console.log(e);
     }
@@ -98,19 +111,27 @@ export default function Drug({ route }) {
                     ))}
 
                   {alreadyStocked ? (
-                    <><TouchableOpacity className=" bg-green-400 text-center">
-                      <Text className="text-center">In stock</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity className=" bg-red-400 text-center"
-                      onPress={() => deleteFromStock(item.CIS, item.CIP, user.id)}
-                    >
+                    <>
+                      <TouchableOpacity className=" bg-green-400 text-center">
+                        <Text className="text-center">In stock</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        className=" bg-red-400 text-center"
+                        onPress={() =>
+                          deleteFromStock(item.CIS, item.CIP, user.id)
+                        }
+                      >
                         <Text className="text-center">❌</Text>
-                      </TouchableOpacity></>
+                      </TouchableOpacity>
+                    </>
                   ) : (
-                    <TouchableOpacity className=" bg-blue-400" onPress={() => {
-                      setDrugsToAdd(item)
-                      setDrugModalVisible(true)
-                    }}>
+                    <TouchableOpacity
+                      className=" bg-blue-400"
+                      onPress={() => {
+                        setDrugsToAdd(item);
+                        setDrugModalVisible(true);
+                      }}
+                    >
                       <Text className="text-center">Add</Text>
                     </TouchableOpacity>
                   )}
@@ -118,12 +139,24 @@ export default function Drug({ route }) {
               );
             }}
           />
-          <ModalComponent visible={drugModalVisible} onClose={()=>setDrugModalVisible(!drugModalVisible)}>
+          <ModalComponent
+            styleAdded={{
+              backgroundColor: "white",
+              borderRadius: 10,
+              padding: 20,
+              minWidth: 300,
+            }}
+            visible={drugModalVisible}
+            onClose={() => setDrugModalVisible(!drugModalVisible)}
+          >
             <Text>Ajouter un Medicament</Text>
-            <TouchableOpacity className=" bg-blue-400" onPress={() => {
-              addToStock(drugsToAdd)
-              setDrugModalVisible(!drugModalVisible)
-            }}>
+            <TouchableOpacity
+              className=" bg-blue-400"
+              onPress={() => {
+                addToStock(drugsToAdd);
+                setDrugModalVisible(!drugModalVisible);
+              }}
+            >
               <Text className="text-center">Add</Text>
             </TouchableOpacity>
           </ModalComponent>
@@ -133,4 +166,3 @@ export default function Drug({ route }) {
     </View>
   );
 }
-
