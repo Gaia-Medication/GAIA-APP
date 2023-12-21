@@ -4,10 +4,13 @@ import { View, Text, Button } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { getAllPoints, getPointsbyRegion } from "../../dao/MapPoint";
 
 export default function Map() {
   const isFocused = useIsFocused();
   const [currentLocation, setCurrentLocation] = useState(null);
+  const [region, setRegion] = useState(null);
+  const [points, setPoints] = useState(getAllPoints());
   useEffect(() => {
     if (isFocused) {
       console.log("Nav on Map Page");
@@ -35,6 +38,12 @@ export default function Map() {
     }
   }, [isFocused]);
 
+  useEffect(() => {
+    const newPoints = getPointsbyRegion(region);
+    console.log(newPoints);
+    setPoints(newPoints);
+  }, [region]);
+
   return (
     <View>
       <MapView
@@ -46,8 +55,24 @@ export default function Map() {
           longitude: -1.5608386136591434,
           longitudeDelta: 0.18985044211149216,
         }}
+        onRegionChangeComplete={(region) => setRegion(region)}
         //showsUserLocation={currentLocation}
-      ></MapView>
+      >
+        {points &&
+          points.map((point) => {
+            return (
+              <Marker
+                key={point.id}
+                coordinate={{
+                  latitude: point.latitude,
+                  longitude: point.longitude,
+                }}
+                title={point.Name}
+                description={"description"}
+              />
+            );
+          })}
+      </MapView>
     </View>
   );
 }
