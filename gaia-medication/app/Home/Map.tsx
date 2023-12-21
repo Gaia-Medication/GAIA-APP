@@ -13,6 +13,16 @@ export default function Map() {
     longitude: -1.5608386136591434,
     longitudeDelta: 0.18985044211149216,
   }
+  const standardMapType=[
+  {
+    "featureType": "poi",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  }
+]
   const isFocused = useIsFocused();
   const [currentLocation, setCurrentLocation] = useState(null);
   const [region, setRegion] = useState(initialRegion);
@@ -76,7 +86,7 @@ export default function Map() {
         style={{ width: "100%", height: "100%" }}
         initialRegion={initialRegion}
         onRegionChangeComplete={(region) => setRegion(region)}
-        mapType={mapType}
+        customMapStyle={standardMapType}
         //showsUserLocation={currentLocation}
       >
         {points &&
@@ -98,7 +108,7 @@ export default function Map() {
                 );
           })}
       </MapView>
-      <TouchableOpacity onPress={toggleMapType} style={{ position: 'absolute', top: 20, right: 20 }}>
+      <TouchableOpacity style={{ position: 'absolute', top: 20, right: 20 }}>
         <View style={{ backgroundColor: 'white', padding: 10, borderRadius: 5 }}>
           <Image source={satelliteButtonIcon}  style={{ width: 40, height: 40 }} />
         </View>
