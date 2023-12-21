@@ -1,7 +1,7 @@
 import { useIsFocused } from "@react-navigation/native";
 import React, { useEffect, useRef, useState } from "react";
-import { View, Text, Button } from "react-native";
-import MapView, { Marker } from "react-native-maps";
+import { View, Text, Button, Image, TouchableOpacity } from "react-native";
+import MapView, { MapType, Marker } from "react-native-maps";
 import * as Location from "expo-location";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getAllPoints, getPointsbyRegion } from "../../dao/MapPoint";
@@ -17,6 +17,11 @@ export default function Map() {
   const [currentLocation, setCurrentLocation] = useState(null);
   const [region, setRegion] = useState(initialRegion);
   const [points, setPoints] = useState(getPointsbyRegion(region));
+  const [mapType, setMapType] = useState<MapType>('standard');
+  const toggleMapType = () => {
+    // Toggle between 'standard' and 'satellite' view modes
+    setMapType(mapType === 'standard' ? 'satellite' : 'standard');
+  };
   useEffect(() => {
     if (isFocused) {
       console.log("Nav on Map Page");
@@ -56,10 +61,26 @@ export default function Map() {
         style={{ width: "100%", height: "100%" }}
         initialRegion={initialRegion}
         onRegionChangeComplete={(region) => setRegion(region)}
+        mapType={mapType}
         //showsUserLocation={currentLocation}
       >
         {points &&
           points.map((point) => {
+            if (point.type == "Pharmacie d'Officine" || point.type == "Pharmacie Mutualiste") {
+                return (
+                  <Marker
+                    key={point.id}
+                    coordinate={{
+                      latitude: point.latitude,
+                      longitude: point.longitude,
+                    }}
+                    title={point.Name}
+                    description={"description"}
+                  >
+                    <Image source={require("./../../assets/map-icons/pharma.png")} style={{ width: 25, height: 25 }} />
+                  </Marker>
+                );
+            }
             console.log(point.Name);
             return (
               <Marker
@@ -74,6 +95,15 @@ export default function Map() {
             );
           })}
       </MapView>
+      <TouchableOpacity onPress={toggleMapType} style={{ position: 'absolute', top: 20, right: 20 }}>
+        <View style={{ backgroundColor: 'white', padding: 10, borderRadius: 5 }}>
+          <Image source={require('./../../assets/map-icons/satelite.png')} style={{ width: 40, height: 40 }} />
+        </View>
+      </TouchableOpacity>
     </View>
   );
 }
+function setMapType(arg0: string) {
+  throw new Error("Function not implemented.");
+}
+
