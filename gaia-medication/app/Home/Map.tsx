@@ -94,7 +94,6 @@ export default function Map() {
       >
         {points &&
           points.map((point) => {
-            console.log(point.type.split(' ')[0])
             const getIcon = markerIcons[point.type.split(' ')[0]]
                 return (
                   <Marker
