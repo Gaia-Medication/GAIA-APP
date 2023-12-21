@@ -90,7 +90,8 @@ specific_values = [
     'Pharmacie Mutualiste',
     'Centre Hospitalier (C.H.)',
     'Centre Hospitalier Régional (C.H.R.)',
-    'Centre Hospitalier Universitaire (C.H.U.)'
+    'Centre Hospitalier Universitaire (C.H.U.)',
+    'Etablissement de Soins Pluridisciplinaire'
 ]
 
 print(df[df["type"] == "Centre Hospitalier Régional (C.H.R.)"])

@@ -32,6 +32,7 @@ export default function Map() {
   const markerIcons = {
     Pharmacie: require("./../../assets/map-icons/pharma.png"),
     Centre: require("./../../assets/map-icons/hopital.png"),
+    Etablissement: require("./../../assets/map-icons/clinique.png"),
     satelite: require("./../../assets/map-icons/satelite.png"),
     map: require("./../../assets/map-icons/map.png")
   }
