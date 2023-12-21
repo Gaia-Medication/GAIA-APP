@@ -22,7 +22,7 @@ export function getPointsbyRegion(region) {
       }
     });
     points.sort((a, b) => a.distance - b.distance);
-    return points.slice(0, 25);
+    return points.slice(0, 10);
   } catch (error) {
     console.error("Error reading JSON file", error);
   }

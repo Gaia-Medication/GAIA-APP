@@ -18,9 +18,24 @@ export default function Map() {
   const [region, setRegion] = useState(initialRegion);
   const [points, setPoints] = useState(getPointsbyRegion(region));
   const [mapType, setMapType] = useState<MapType>('standard');
+  
+  const markerIcons = {
+    Pharmacie: require("./../../assets/map-icons/pharma.png"),
+    Centre: require("./../../assets/map-icons/hopital.png"),
+    satelite: require("./../../assets/map-icons/satelite.png"),
+    map: require("./../../assets/map-icons/map.png")
+  }
+  const [satelliteButtonIcon, setSatelliteButtonIcon] = useState(markerIcons.satelite);
+
   const toggleMapType = () => {
     // Toggle between 'standard' and 'satellite' view modes
-    setMapType(mapType === 'standard' ? 'satellite' : 'standard');
+    if (mapType === 'standard') {
+      setMapType('satellite');
+      setSatelliteButtonIcon(markerIcons.map); // Change button icon to 'map.png'
+    } else {
+      setMapType('standard');
+      setSatelliteButtonIcon(markerIcons.satelite); // Change button icon back to 'satelite.png'
+    }
   };
   useEffect(() => {
     if (isFocused) {
@@ -66,7 +81,8 @@ export default function Map() {
       >
         {points &&
           points.map((point) => {
-            if (point.type == "Pharmacie d'Officine" || point.type == "Pharmacie Mutualiste") {
+            console.log(point.type.split(' ')[0])
+            const getIcon = markerIcons[point.type.split(' ')[0]]
                 return (
                   <Marker
                     key={point.id}
@@ -77,27 +93,14 @@ export default function Map() {
                     title={point.Name}
                     description={"description"}
                   >
-                    <Image source={require("./../../assets/map-icons/pharma.png")} style={{ width: 25, height: 25 }} />
+                    <Image source={getIcon} style={{ width: 25, height: 25 }} />
                   </Marker>
                 );
-            }
-            console.log(point.Name);
-            return (
-              <Marker
-                key={point.id}
-                coordinate={{
-                  latitude: point.latitude,
-                  longitude: point.longitude,
-                }}
-                title={point.Name}
-                description={"description"}
-              />
-            );
           })}
       </MapView>
       <TouchableOpacity onPress={toggleMapType} style={{ position: 'absolute', top: 20, right: 20 }}>
         <View style={{ backgroundColor: 'white', padding: 10, borderRadius: 5 }}>
-          <Image source={require('./../../assets/map-icons/satelite.png')} style={{ width: 40, height: 40 }} />
+          <Image source={satelliteButtonIcon}  style={{ width: 40, height: 40 }} />
         </View>
       </TouchableOpacity>
     </View>

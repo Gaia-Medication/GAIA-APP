@@ -12,7 +12,7 @@ dataManager = DataManager(url)
 
 #files = dataManager.getPharmacyFile()
 
-df = pd.read_csv('data/pharmacies.csv', sep=';', encoding='latin-1', skiprows=[0]) 
+df = pd.read_csv('data/pharmacies.csv', sep=';', skiprows=[0]) 
 new_column_names = [str(i) for i in range(32)]
 df.columns = new_column_names
 
@@ -88,7 +88,12 @@ value_counts = df['type'].value_counts()
 specific_values = [
     "Pharmacie d'Officine",
     'Pharmacie Mutualiste',
+    'Centre Hospitalier (C.H.)',
+    'Centre Hospitalier Régional (C.H.R.)',
+    'Centre Hospitalier Universitaire (C.H.U.)'
 ]
+
+print(df[df["type"] == "Centre Hospitalier Régional (C.H.R.)"])
 
 mask = df['type'].isin(specific_values)
 
