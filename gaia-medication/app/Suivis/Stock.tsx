@@ -6,6 +6,7 @@ import { styles } from "../../style/style";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getMedbyCIS } from "../../dao/Meds";
 import Loading from "../component/Loading";
+import MedIconByType from "../component/MedIconByType";
 
 export default function Stock({ navigation }) {
   const isFocused = useIsFocused();
@@ -41,6 +42,7 @@ export default function Stock({ navigation }) {
                 }
               >
                 <View>
+                  <MedIconByType type={drug.Shape}/>
                   <Text>{drug.Name}</Text>
                   <Text>{product.Denomination}</Text>
                 </View>
