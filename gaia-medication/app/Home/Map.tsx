@@ -1,10 +1,12 @@
 import { useIsFocused } from "@react-navigation/native";
 import React, { useEffect, useRef, useState } from "react";
-import { View, Text, Button, Image, TouchableOpacity } from "react-native";
+import { View, Text, Button, Image, TouchableOpacity, Linking } from "react-native";
 import MapView, { MapType, Marker } from "react-native-maps";
 import * as Location from "expo-location";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getAllPoints, getPointsbyRegion } from "../../dao/MapPoint";
+import ModalComponent from "../component/Modal";
+import { styles } from "../../style/style";
 
 export default function Map() {
   const initialRegion={
@@ -28,6 +30,8 @@ export default function Map() {
   const [region, setRegion] = useState(initialRegion);
   const [points, setPoints] = useState(getPointsbyRegion(region));
   const [mapType, setMapType] = useState<MapType>('standard');
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedPoint, setSelectedpoint] = useState(null);
   
   const markerIcons = {
     Pharmacie: require("./../../assets/map-icons/pharma.png"),
@@ -49,6 +53,31 @@ export default function Map() {
       setSatelliteButtonIcon(markerIcons.satelite); // Change button icon back to 'satelite.png'
     }
   };
+
+  const openModal = (point: any) => {
+    setIsModalVisible(true);
+    setSelectedpoint(point);
+  };
+  const closeModal = () => {
+    setIsModalVisible(false);
+  };
+  const contact = () => {
+    if(selectedPoint.phone) {
+      Linking.openURL(`tel:${selectedPoint.phone}`);
+    } else {
+      console.log("No phone number");
+    }
+  };
+  const modalContent = selectedPoint?(
+    <View style={styles.modal}>
+      <Text>{selectedPoint.Name}</Text>
+      <Text>{selectedPoint.type}</Text>
+      <Text>{selectedPoint.adress1} {selectedPoint.adress2} {selectedPoint.adress3}</Text>
+      <Text>{selectedPoint.city}</Text>
+      <Button title="Contacter" onPress={contact}/>
+    </View>
+  ):null;
+
   useEffect(() => {
     if (isFocused) {
       console.log("Nav on Map Page");
@@ -93,7 +122,7 @@ export default function Map() {
         //showsUserLocation={currentLocation}
       >
         {points &&
-          points.map((point) => {
+          points.map((point: any) => {
             console.log(point.type.split(' ')[0])
             const getIcon = markerIcons[point.type.split(' ')[0]]
                 return (
@@ -104,7 +133,7 @@ export default function Map() {
                       longitude: point.longitude,
                     }}
                     title={point.Name}
-                    description={"description"}
+                    onPress={() => openModal(point)}
                   >
                     <Image source={getIcon} style={{ width: 25, height: 25 }} />
                   </Marker>
@@ -116,6 +145,7 @@ export default function Map() {
           <Image source={satelliteButtonIcon}  style={{ width: 40, height: 40 }} />
         </View>
       </TouchableOpacity>
+      <ModalComponent visible={isModalVisible} onClose={closeModal} children={modalContent}/>
     </View>
   );
 }

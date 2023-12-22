@@ -133,4 +133,9 @@ export const styles = StyleSheet.create({
     fontSize: 18, 
     color: '#333333', 
   },
+  modal: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
 });
