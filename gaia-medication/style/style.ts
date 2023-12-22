@@ -135,7 +135,21 @@ export const styles = StyleSheet.create({
   },
   modal: {
     display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
+    flexDirection: "column",
   },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  modalType: {
+    fontSize: 16,
+    fontStyle: "italic",
+    marginBottom: 10,
+  },
+  modalButton: {
+    backgroundColor: "#4296E4",
+    borderRadius: 20,
+    padding: 10,
+    paddingHorizontal: 20,
+  },  
 });

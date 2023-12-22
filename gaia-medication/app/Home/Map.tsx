@@ -1,6 +1,6 @@
 import { useIsFocused } from "@react-navigation/native";
 import React, { useEffect, useRef, useState } from "react";
-import { View, Text, Button, Image, TouchableOpacity, Linking } from "react-native";
+import { View, Text, Button, Image, TouchableOpacity, Linking, Pressable } from "react-native";
 import MapView, { MapType, Marker } from "react-native-maps";
 import * as Location from "expo-location";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -68,15 +68,18 @@ export default function Map() {
       console.log("No phone number");
     }
   };
-  const modalContent = selectedPoint?(
+  const modalContent = selectedPoint ? (
     <View style={styles.modal}>
-      <Text>{selectedPoint.Name}</Text>
-      <Text>{selectedPoint.type}</Text>
+      <Text numberOfLines={2} ellipsizeMode="tail" style={styles.modalTitle}>{selectedPoint.Name}</Text>
+      <Text style={styles.modalType}>{selectedPoint.type}</Text>
       <Text>{selectedPoint.adress1} {selectedPoint.adress2} {selectedPoint.adress3}</Text>
       <Text>{selectedPoint.city}</Text>
-      <Button title="Contacter" onPress={contact}/>
+      {selectedPoint.phone != null ? (
+        <Button title="Contacter" onPress={contact}/>
+      ): <Text>No phone number available here... 🙁</Text>}
     </View>
-  ):null;
+  ) : null;
+  
 
   useEffect(() => {
     if (isFocused) {
@@ -152,4 +155,3 @@ export default function Map() {
 function setMapType(arg0: string) {
   throw new Error("Function not implemented.");
 }
-
