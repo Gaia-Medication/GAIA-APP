@@ -56,60 +56,39 @@ compostr=compo.astype(str)
 print(BOLD,YELLOW,"\n\n##########################################################\n############### Création des dictionnaires ###############\n##########################################################",RESET,'\n\n')
 
 all_compo=[]
-return_compo={
-    "CIS":[],
-    "type":[],
-    "Principe actif":[],
-    "Dosage":[],
-    "Quantité":[],
-    "SA/FT":[],
-    "ID SA/FT":[],
-}
 for row in range(compostr.shape[0]-1):
+    return_compo={
+        "CIS":[],
+        "type":[],
+        "Principe actif":[],
+        "Dosage":[],
+        "Quantité":[],
+        "SA/FT":[],
+        "ID SA/FT":[],
+    }
     cis=compostr['CIS'][row]
     id_sa_ft=compostr['ID SA/FT'][row]
-    if return_compo["CIS"]==[]:
-        return_compo["CIS"]=cis
-        return_compo["type"].append(compostr['type'][row])
-        return_compo["Principe actif"].append(compostr['Principe actif'][row])
-        return_compo["Dosage"].append(compostr['Dosage'][row])
-        return_compo["Quantité"].append(compostr['Quantité'][row])
-        return_compo["SA/FT"].append(compostr['SA/FT'][row])
-        return_compo["ID SA/FT"].append(id_sa_ft)
-    
-    if cis==return_compo["CIS"] and id_sa_ft in return_compo["ID SA/FT"] : # tous les id sont split mais SA et FT parfois split
-        return_compo["type"].append(compostr['type'][row])
-        return_compo["Principe actif"].append(compostr['Principe actif'][row])
-        return_compo["Dosage"].append(compostr['Dosage'][row])
-        return_compo["Quantité"].append(compostr['Quantité'][row])
-        return_compo["SA/FT"].append(compostr['SA/FT'][row])
-        return_compo["ID SA/FT"].append(id_sa_ft)
-    # for r in range(len(all_compo)-1):
-    #     if cis==all_compo[r]["CIS"]:
-    #         if id_sa_ft in all_compo[r]["ID SA/FT"]:
-    #             if len(all_compo[r]["SA/FT"])==1 and (compostr["SA/FT"][row]=="FT"and "SA" in all_compo[r]["SA/FT"])or (compostr["SA/FT"][row]=="SA" and "FT" in all_compo[r]["SA/FT"]):
-    #         #if (id_sa_ft in all_compo[r]["ID SA/FT"]) and ((all_compo[r]["SA/FT"]=="SA" and compostr["SA/FT"][row]=="FT")or(all_compo[r]["SA/FT"]=="FT" and compostr["SA/FT"][row]=="SA")):
-    #                 print(all_compo[r]["SA/FT"],compostr["SA/FT"][row],"\n")
-        
-    
+    sa_ft=compostr['SA/FT'][row]
+    for r in range(len(all_compo)-1):
+        if cis==all_compo[r]["CIS"]:
+            if sa_ft != all_compo[r]["SA/FT"][0]:
+                if id_sa_ft == all_compo[r]["ID SA/FT"][0]:
+                    all_compo[r]["type"].append(compostr["type"][row])
+                    all_compo[r]["Principe actif"].append(compostr["Principe actif"][row])
+                    all_compo[r]["Dosage"].append(compostr["Dosage"][row])
+                    all_compo[r]["Quantité"].append(compostr["Quantité"][row])
+                    all_compo[r]["SA/FT"].append(compostr["SA/FT"][row])
+                    all_compo[r]["ID SA/FT"].append(id_sa_ft)
     else:
-        all_compo.append(return_compo)
-        return_compo={
-            "CIS":[],
-            "type":[],
-            "Principe actif":[],
-            "Dosage":[],
-            "Quantité":[],
-            "SA/FT":[],
-            "ID SA/FT":[],
-        }
-        return_compo["CIS"]=cis
-        return_compo["type"].append(compostr['type'][row])
-        return_compo["Principe actif"].append(compostr['Principe actif'][row])
-        return_compo["Dosage"].append(compostr['Dosage'][row])
-        return_compo["Quantité"].append(compostr['Quantité'][row])
-        return_compo["SA/FT"].append(compostr['SA/FT'][row])
-        return_compo["ID SA/FT"].append(id_sa_ft)
+        if return_compo["CIS"]==[]:
+            return_compo["CIS"]=cis
+            return_compo["type"].append(compostr['type'][row])
+            return_compo["Principe actif"].append(compostr['Principe actif'][row])
+            return_compo["Dosage"].append(compostr['Dosage'][row])
+            return_compo["Quantité"].append(compostr['Quantité'][row])
+            return_compo["SA/FT"].append(compostr['SA/FT'][row])
+            return_compo["ID SA/FT"].append(id_sa_ft)
+            all_compo.append(return_compo)
         
 
 
@@ -157,7 +136,6 @@ for description in string_data:
                         return_dict["quantity"].append(w)
                     if category=="second_product":
                         return_dict["second_product"].append(w)
-    #print(GREEN,index,product,second_product,quantity,"\n",description,"\n",RESET)
     # for i in return_dict["product"]:    
     #     if has_number(i)==False and return_dict["second_product"]==[] and return_dict["quantity"]==[]:
     #         print(RED,description)
