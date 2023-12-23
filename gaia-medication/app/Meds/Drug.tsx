@@ -1,5 +1,6 @@
 import { useIsFocused } from "@react-navigation/native";
-import React, { useEffect, useState } from "react";
+import * as Icon from "react-native-feather";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -8,6 +9,7 @@ import {
   Modal,
   Pressable,
   StyleSheet,
+  Linking,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getMedbyCIS } from "../../dao/Meds";
@@ -23,8 +25,9 @@ import { Button, Input } from "react-native-elements";
 import { styles } from "../../style/style";
 import DrugModal from "../component/Modal";
 import ModalComponent from "../component/Modal";
+import MedIconByType from "../component/MedIconByType";
 
-export default function Drug({ route }) {
+export default function Drug({ route,navigation }) {
   const [drugModalVisible, setDrugModalVisible] = useState(false);
   const [drugsToAdd, setDrugsToAdd] = useState(null);
   const isFocused = useIsFocused();
@@ -78,14 +81,35 @@ export default function Drug({ route }) {
       console.log(e);
     }
   };
+  const handlePress = useCallback(async () => {
+    await Linking.openURL("https://base-donnees-publique.medicaments.gouv.fr/affichageDoc.php?specid=69411153&typedoc=N");
+  }, []);
   return (
-    <View style={styles.container}>
+    <View style={styles.container} className=" px-6">
       {drug && stock && user && (
         <>
-          <Text>Name : {drug.Name}</Text>
+          <View className="flex-row justify-between mt-4">
+            <Icon.ArrowLeft color={"#363636"} onPress={() => navigation.goBack()}/>
+            <Icon.AlertCircle color={"#363636"} onPress={handlePress}/>
+          </View>
+          <View className="flex-row justify-center">
+            <MedIconByType type={drug.Shape} size={"h-24 w-24"}/>
+          </View>
+          <View className=" mt-10 flex">
+            <View className="flex-row justify-between">
+              <Text className="text-base font-light">{drug.CIS}</Text>
+              {drug.Marketed == "Commercialisée"?(
+              <Text className="text-base font-bold text-[#9BEA8E]">Disponible</Text>
+
+              ):(
+                <Text className="text-base font-bold text-[#EE5E5E]">Indisponible</Text>
+
+              )}
+            </View>
+            <Text className="text-5xl font-bold">{drug.Name.split(',')[0].charAt(0).toUpperCase() + drug.Name.split(',')[0].slice(1).toLowerCase()}</Text>
+            <Text className="text-lg">{drug.Name.split(',')[1]}</Text>
+          </View>
           <Text>Administration : {drug.Administration_way}</Text>
-          <Text>Type : {drug.Shape}</Text>
-          <Text>Commerce : {drug.Marketed}</Text>
           <FlatList
             data={drug.Values}
             keyExtractor={(item, index) => index.toString()}

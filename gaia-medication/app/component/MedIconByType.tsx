@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Image, Text, ActivityIndicator } from "react-native";
 
-const MedIconByType = ({ type }) => {
+const MedIconByType = ({ type,size="h-5 w-5" }) => {
   const typeToImage = {
     gélule: require("../../assets/drug-icon/gélule.png"),
     comprimé: require("../../assets/drug-icon/comprimé.png"),
@@ -30,7 +30,7 @@ const MedIconByType = ({ type }) => {
 
   return (
     <View>
-      <Image className="h-5 w-5 mr-4" source={imageUrl} />
+      <Image className={size} source={imageUrl} />
     </View>
   );
 };

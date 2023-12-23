@@ -29,14 +29,15 @@ export default function Search({ route, navigation }) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.searchBarwQR} className="mt-3">
+      <View style={styles.searchBarwQR} className="mt-3 px-4">
         <View style={styles.searchBar}>
           <Input
             style={styles.searchBarInput}
             ref={textInputRef}
             placeholder="Doliprane, Aspirine ..."
             placeholderTextColor="#9CDE00"
-            leftIcon={{ type: "feathers", name: "search", color: "#9CDE00" }}
+            leftIcon={{ type: "feathers", name: "close", color: "#9CDE00" }}
+            rightIcon={{ type: "feathers", name: "search", color: "#9CDE00" }}
             inputContainerStyle={styles.searchBarContainer}
             onChangeText={(text) => {
               const newSearch=searchMed(text)
@@ -59,7 +60,7 @@ export default function Search({ route, navigation }) {
             onPress={() => navigation.navigate("Drug", { drugCIS: item.CIS })}
           >
             <MedIconByType type={item.type}/>
-            <Text>{item.Name}</Text>
+            <Text className="ml-4">{item.Name}</Text>
           </TouchableOpacity>
         )}
       />
