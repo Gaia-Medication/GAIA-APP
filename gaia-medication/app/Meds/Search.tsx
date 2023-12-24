@@ -39,7 +39,7 @@ export default function Search({ route, navigation }) {
             placeholderTextColor="#9CDE00"
             leftIcon={
               <Icon
-                name="arrow-left" // Change to your icon's name
+                name="arrow-right" // Change to your icon's name
                 type='feather'
                 size={24}
                 color='#9CDE00'
