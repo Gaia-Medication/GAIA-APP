@@ -8,8 +8,9 @@ import {
 } from "react-native";
 import { searchMed } from "../../dao/Search";
 import { styles } from "../../style/style";
-import { Input } from "react-native-elements";
+import { Icon, Input } from "react-native-elements";
 import MedIconByType from "../component/MedIconByType";
+import { Navigation } from "react-native-feather";
 
 export default function Search({ route, navigation }) {
   const textInputRef = React.useRef(null);
@@ -36,7 +37,15 @@ export default function Search({ route, navigation }) {
             ref={textInputRef}
             placeholder="Doliprane, Aspirine ..."
             placeholderTextColor="#9CDE00"
-            leftIcon={{ type: "feathers", name: "close", color: "#9CDE00" }}
+            leftIcon={
+              <Icon
+                name="arrow-left" // Change to your icon's name
+                type='feather'
+                size={24}
+                color='#9CDE00'
+                onPress={() => {navigation.goBack()}}
+              />
+            }
             rightIcon={{ type: "feathers", name: "search", color: "#9CDE00" }}
             inputContainerStyle={styles.searchBarContainer}
             onChangeText={(text) => {
