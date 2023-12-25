@@ -32,7 +32,11 @@ export default function Navigation() {
         />
         <Stack.Screen name="CreateProfile" component={CreateProfile} />
         <Stack.Screen name="Profile" component={Profile} />
-        <Stack.Screen name="Drug" component={Drug} />
+        <Stack.Screen
+          name="Drug"
+          component={Drug}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen
           name="Search"
           component={Search}

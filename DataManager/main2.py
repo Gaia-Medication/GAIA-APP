@@ -8,11 +8,12 @@ url = 'https://www.data.gouv.fr/fr/datasets/r/98f3161f-79ff-4f16-8f6a-6d571a80fe
 
 # INITIALISATION
 dataManager = DataManager(url)
-#files = dataManager.getPharmacyFile()
+files = dataManager.getPharmacyFile()
 df = pd.read_csv('data/pharmacies', sep=';', encoding='latin-1', header=None, skiprows=1, low_memory=False) 
 print("COLONNES => ", df.columns, "\n")
 
 # --------  DATAFRAME  ----------#
+df = pd.read_csv('data/pharmacies.csv', sep=';', skiprows=[0]) 
 new_column_names = [str(i) for i in range(32)]
 
 df.columns = new_column_names
@@ -157,6 +158,23 @@ def join_address(row):
 
 df = df.apply(lambda row: join_address(row), axis=1)
 print(df.head())
+specific_values = [
+    "Pharmacie d'Officine",
+    'Pharmacie Mutualiste',
+    'Centre Hospitalier (C.H.)',
+    'Centre Hospitalier Régional (C.H.R.)',
+    'Centre Hospitalier Universitaire (C.H.U.)',
+    'Etablissement de Soins Pluridisciplinaire',
+    'Maison de santé (L.6223-3)'
+]
+
+print(df[df["type"] == "Centre Hospitalier Régional (C.H.R.)"])
+
+mask = df['type'].isin(specific_values)
+
+filtered_df = df[mask]
+filtered_df.sort_values(by=['type'], inplace=True)
+df = filtered_df
 
 #--------  LAMBERT 93 => WGS 84  ----------#
 lambert93 = pyproj.Proj(init='epsg:2154')
