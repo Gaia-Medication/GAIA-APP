@@ -7,6 +7,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { getAllPoints, getPointsbyRegion } from "../../dao/MapPoint";
 import ModalComponent from "../component/Modal";
 import { styles } from "../../style/style";
+import MapModalComponent from "../component/MapModal";
 
 export default function Map() {
   const initialRegion={
@@ -41,6 +42,12 @@ export default function Map() {
     satelite: require("./../../assets/map-icons/satelite.png"),
     map: require("./../../assets/map-icons/map.png")
   }
+  const colorOf = {
+    Pharmacie: "25, 170, 147",
+    Centre: "254, 135, 88",
+    Etablissement: "1, 94, 210",
+    Maison: "0, 236, 156",
+  };
   const [satelliteButtonIcon, setSatelliteButtonIcon] = useState(markerIcons.satelite);
 
   const toggleMapType = () => {
@@ -69,7 +76,7 @@ export default function Map() {
     }
   };
   const modalContent = selectedPoint ? (
-    <View style={styles.modal}>
+    <View>
       <Text numberOfLines={2} ellipsizeMode="tail" style={styles.modalTitle}>{selectedPoint.Name}</Text>
       <Text style={styles.modalType}>{selectedPoint.type}</Text>
       <Text>{selectedPoint.adress1} {selectedPoint.adress2} {selectedPoint.adress3}</Text>
@@ -119,7 +126,7 @@ export default function Map() {
         ref={(map) => (this.map = map)}
         style={{ width: "100%", height: "100%" }}
         initialRegion={initialRegion}
-        onRegionChangeComplete={(region) => setRegion(region)}
+        onRegionChangeComplete={(region, gesture) => (gesture.isGesture)? setRegion(region):null}
         customMapStyle={standardMapType}
         toolbarEnabled={false}
         //showsUserLocation={currentLocation}
@@ -148,7 +155,13 @@ export default function Map() {
           <Image source={satelliteButtonIcon}  style={{ width: 40, height: 40 }} />
         </View>
       </TouchableOpacity>
-      <ModalComponent visible={isModalVisible} onClose={closeModal} children={modalContent}/>
+      <MapModalComponent 
+        visible={isModalVisible} 
+        onClose={closeModal} 
+        children={modalContent} 
+        icon={markerIcons[selectedPoint?.type.split(' ')[0]]} 
+        color={colorOf[selectedPoint?.type.split(' ')[0]]}
+      />
     </View>
   );
 }
