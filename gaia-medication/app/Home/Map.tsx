@@ -132,8 +132,9 @@ export default function Map() {
         //showsUserLocation={currentLocation}
       >
         {points &&
-          points.map((point: any) => {
-            console.log(point.type.split(' ')[0])
+
+          points.map((point) => {
+
             const getIcon = markerIcons[point.type.split(' ')[0]]
                 return (
                   <Marker

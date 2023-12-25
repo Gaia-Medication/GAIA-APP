@@ -1,17 +1,33 @@
 import { useIsFocused } from "@react-navigation/native";
-import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, TouchableOpacity, Modal, Pressable,StyleSheet } from "react-native";
+import * as Icon from "react-native-feather";
+import React, { useCallback, useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  Modal,
+  Pressable,
+  StyleSheet,
+  Linking,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getMedbyCIS } from "../../dao/Meds";
-import { addItemToList, getUserByID, readList, removeItemFromStock } from "../../dao/Storage";
+import {
+  addItemToList,
+  getUserByID,
+  readList,
+  removeItemFromStock,
+} from "../../dao/Storage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Loading from "../component/Loading";
 import { Button, Input } from "react-native-elements";
 import { styles } from "../../style/style";
 import DrugModal from "../component/Modal";
 import ModalComponent from "../component/Modal";
+import MedIconByType from "../component/MedIconByType";
 
-export default function Drug({ route }) {
+export default function Drug({ route,navigation }) {
   const [drugModalVisible, setDrugModalVisible] = useState(false);
   const [drugsToAdd, setDrugsToAdd] = useState(null);
   const isFocused = useIsFocused();
@@ -56,23 +72,44 @@ export default function Drug({ route }) {
       console.log(e);
     }
   };
-  
+
   const deleteFromStock = async (cis, cip, idUser) => {
     try {
       await removeItemFromStock(cis, cip, idUser);
-      init()
+      init();
     } catch (e) {
       console.log(e);
     }
   };
+  const handlePress = useCallback(async () => {
+    await Linking.openURL("https://base-donnees-publique.medicaments.gouv.fr/affichageDoc.php?specid=69411153&typedoc=N");
+  }, []);
   return (
-    <View style={styles.container}>
+    <View style={styles.container} className=" px-6">
       {drug && stock && user && (
         <>
-          <Text>Name : {drug.Name}</Text>
+          <View className="flex-row justify-between mt-4">
+            <Icon.ArrowLeft color={"#363636"} onPress={() => navigation.goBack()}/>
+            <Icon.AlertCircle color={"#363636"} onPress={handlePress}/>
+          </View>
+          <View className="flex-row justify-center">
+            <MedIconByType type={drug.Shape} size={"h-24 w-24"}/>
+          </View>
+          <View className=" mt-10 flex">
+            <View className="flex-row justify-between">
+              <Text className="text-base font-light">{drug.CIS}</Text>
+              {drug.Marketed == "Commercialisée"?(
+              <Text className="text-base font-bold text-[#9BEA8E]">Disponible</Text>
+
+              ):(
+                <Text className="text-base font-bold text-[#EE5E5E]">Indisponible</Text>
+
+              )}
+            </View>
+            <Text className="text-5xl font-bold">{drug.Name.split(',')[0].charAt(0).toUpperCase() + drug.Name.split(',')[0].slice(1).toLowerCase()}</Text>
+            <Text className="text-lg">{drug.Name.split(',')[1]}</Text>
+          </View>
           <Text>Administration : {drug.Administration_way}</Text>
-          <Text>Type : {drug.Shape}</Text>
-          <Text>Commerce : {drug.Marketed}</Text>
           <FlatList
             data={drug.Values}
             keyExtractor={(item, index) => index.toString()}
@@ -98,19 +135,27 @@ export default function Drug({ route }) {
                     ))}
 
                   {alreadyStocked ? (
-                    <><TouchableOpacity className=" bg-green-400 text-center">
-                      <Text className="text-center">In stock</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity className=" bg-red-400 text-center"
-                      onPress={() => deleteFromStock(item.CIS, item.CIP, user.id)}
-                    >
+                    <>
+                      <TouchableOpacity className=" bg-green-400 text-center">
+                        <Text className="text-center">In stock</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        className=" bg-red-400 text-center"
+                        onPress={() =>
+                          deleteFromStock(item.CIS, item.CIP, user.id)
+                        }
+                      >
                         <Text className="text-center">❌</Text>
-                      </TouchableOpacity></>
+                      </TouchableOpacity>
+                    </>
                   ) : (
-                    <TouchableOpacity className=" bg-blue-400" onPress={() => {
-                      setDrugsToAdd(item)
-                      setDrugModalVisible(true)
-                    }}>
+                    <TouchableOpacity
+                      className=" bg-blue-400"
+                      onPress={() => {
+                        setDrugsToAdd(item);
+                        setDrugModalVisible(true);
+                      }}
+                    >
                       <Text className="text-center">Add</Text>
                     </TouchableOpacity>
                   )}
@@ -118,12 +163,24 @@ export default function Drug({ route }) {
               );
             }}
           />
-          <ModalComponent visible={drugModalVisible} onClose={()=>setDrugModalVisible(!drugModalVisible)}>
+          <ModalComponent
+            styleAdded={{
+              backgroundColor: "white",
+              borderRadius: 10,
+              padding: 20,
+              minWidth: 300,
+            }}
+            visible={drugModalVisible}
+            onClose={() => setDrugModalVisible(!drugModalVisible)}
+          >
             <Text>Ajouter un Medicament</Text>
-            <TouchableOpacity className=" bg-blue-400" onPress={() => {
-              addToStock(drugsToAdd)
-              setDrugModalVisible(!drugModalVisible)
-            }}>
+            <TouchableOpacity
+              className=" bg-blue-400"
+              onPress={() => {
+                addToStock(drugsToAdd);
+                setDrugModalVisible(!drugModalVisible);
+              }}
+            >
               <Text className="text-center">Add</Text>
             </TouchableOpacity>
           </ModalComponent>
@@ -133,4 +190,3 @@ export default function Drug({ route }) {
     </View>
   );
 }
-
