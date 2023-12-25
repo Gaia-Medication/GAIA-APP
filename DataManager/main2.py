@@ -96,7 +96,15 @@ df = df.astype(data_types)
 df = df.merge(dfLoc, on='id', how='inner')
 
 # --------  FILTER TYPE  ----------#
-specific_values = ["Pharmacie d'Officine", 'Pharmacie Mutualiste']
+specific_values = [
+    "Pharmacie d'Officine",
+    'Pharmacie Mutualiste',
+    'Centre Hospitalier (C.H.)',
+    'Centre Hospitalier Régional (C.H.R.)',
+    'Centre Hospitalier Universitaire (C.H.U.)',
+    'Etablissement de Soins Pluridisciplinaire',
+    'Maison de santé (L.6223-3)'
+]
 df = df[df['type'].isin(specific_values)]
 df.sort_values(by=['type'], inplace=True)
 
@@ -199,7 +207,7 @@ def format_with_zeros(value):
 df['phone'] = df['phone'].apply(format_with_zeros)
 
 # --------  FORMAT GPS  ----------#
-#df[['latitude', 'longitude']] = df.apply(lambda x: convert_coordinates(x['latitude'], x['longitude']), axis=1)
+df[['latitude', 'longitude']] = df.apply(lambda x: convert_coordinates(x['latitude'], x['longitude']), axis=1)
 
 # --------  EXPORT  ----------#
 df.to_json('data/out/pharmacies.json', orient='records')
