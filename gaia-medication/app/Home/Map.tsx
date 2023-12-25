@@ -1,10 +1,13 @@
 import { useIsFocused } from "@react-navigation/native";
 import React, { useEffect, useRef, useState } from "react";
-import { View, Text, Button, Image, TouchableOpacity } from "react-native";
+import { View, Text, Button, Image, TouchableOpacity, Linking, Pressable } from "react-native";
 import MapView, { MapType, Marker } from "react-native-maps";
 import * as Location from "expo-location";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getAllPoints, getPointsbyRegion } from "../../dao/MapPoint";
+import ModalComponent from "../component/Modal";
+import { styles } from "../../style/style";
+import MapModalComponent from "../component/MapModal";
 
 export default function Map() {
   const initialRegion={
@@ -28,6 +31,8 @@ export default function Map() {
   const [region, setRegion] = useState(initialRegion);
   const [points, setPoints] = useState(getPointsbyRegion(region));
   const [mapType, setMapType] = useState<MapType>('standard');
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedPoint, setSelectedpoint] = useState(null);
   
   const markerIcons = {
     Pharmacie: require("./../../assets/map-icons/pharma.png"),
@@ -37,6 +42,12 @@ export default function Map() {
     satelite: require("./../../assets/map-icons/satelite.png"),
     map: require("./../../assets/map-icons/map.png")
   }
+  const colorOf = {
+    Pharmacie: "25, 170, 147",
+    Centre: "254, 135, 88",
+    Etablissement: "1, 94, 210",
+    Maison: "0, 236, 156",
+  };
   const [satelliteButtonIcon, setSatelliteButtonIcon] = useState(markerIcons.satelite);
 
   const toggleMapType = () => {
@@ -49,6 +60,34 @@ export default function Map() {
       setSatelliteButtonIcon(markerIcons.satelite); // Change button icon back to 'satelite.png'
     }
   };
+
+  const openModal = (point: any) => {
+    setIsModalVisible(true);
+    setSelectedpoint(point);
+  };
+  const closeModal = () => {
+    setIsModalVisible(false);
+  };
+  const contact = () => {
+    if(selectedPoint.phone) {
+      Linking.openURL(`tel:${selectedPoint.phone}`);
+    } else {
+      console.log("No phone number");
+    }
+  };
+  const modalContent = selectedPoint ? (
+    <View>
+      <Text numberOfLines={2} ellipsizeMode="tail" style={styles.modalTitle}>{selectedPoint.Name}</Text>
+      <Text style={styles.modalType}>{selectedPoint.type}</Text>
+      <Text>{selectedPoint.adress1} {selectedPoint.adress2} {selectedPoint.adress3}</Text>
+      <Text>{selectedPoint.city}</Text>
+      {selectedPoint.phone != null ? (
+        <Button title="Contacter" onPress={contact}/>
+      ): <Text>No phone number available here... 🙁</Text>}
+    </View>
+  ) : null;
+  
+
   useEffect(() => {
     if (isFocused) {
       console.log("Nav on Map Page");
@@ -87,13 +126,15 @@ export default function Map() {
         ref={(map) => (this.map = map)}
         style={{ width: "100%", height: "100%" }}
         initialRegion={initialRegion}
-        onRegionChangeComplete={(region) => setRegion(region)}
+        onRegionChangeComplete={(region, gesture) => (gesture.isGesture)? setRegion(region):null}
         customMapStyle={standardMapType}
         toolbarEnabled={false}
         //showsUserLocation={currentLocation}
       >
         {points &&
+
           points.map((point) => {
+
             const getIcon = markerIcons[point.type.split(' ')[0]]
                 return (
                   <Marker
@@ -103,7 +144,7 @@ export default function Map() {
                       longitude: point.longitude,
                     }}
                     title={point.Name}
-                    description={"description"}
+                    onPress={() => openModal(point)}
                   >
                     <Image source={getIcon} style={{ width: 25, height: 25 }} />
                   </Marker>
@@ -115,10 +156,16 @@ export default function Map() {
           <Image source={satelliteButtonIcon}  style={{ width: 40, height: 40 }} />
         </View>
       </TouchableOpacity>
+      <MapModalComponent 
+        visible={isModalVisible} 
+        onClose={closeModal} 
+        children={modalContent} 
+        icon={markerIcons[selectedPoint?.type.split(' ')[0]]} 
+        color={colorOf[selectedPoint?.type.split(' ')[0]]}
+      />
     </View>
   );
 }
 function setMapType(arg0: string) {
   throw new Error("Function not implemented.");
 }
-
