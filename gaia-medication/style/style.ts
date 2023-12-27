@@ -121,19 +121,40 @@ export const styles = StyleSheet.create({
     paddingRight: 6,
   },
   listItem: {
-    backgroundColor: '#ffffff', 
+    backgroundColor: '#ffffff',
     padding: 15,
-    borderBottomWidth: 1, 
-    borderBottomColor: '#dddddd', 
-    display:"flex",
+    borderBottomWidth: 1,
+    borderBottomColor: '#dddddd',
+    display: "flex",
     flexDirection: "row",
-    alignItems:"center"
+    alignItems: "center"
   },
   listItemText: {
-    fontSize: 18, 
-    color: '#333333', 
+    fontSize: 18,
+    color: '#333333',
   },
-
+  dropdownInput: {
+    height: 40,
+    borderColor: "gray",
+    borderWidth: 1,
+    padding: 10,
+    marginBottom: 5,
+  },
+  dropdownList: {
+    maxHeight: 200,
+    borderColor: "gray",
+    borderWidth: 1,
+  },
+  dropdownItem: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "gray",
+  },
+  medItems: {
+    backgroundColor: "#4296E450",
+    borderRadius: 100,
+    padding: 10,    
+  }
 
   // -------------- MODAL ---------------//
 

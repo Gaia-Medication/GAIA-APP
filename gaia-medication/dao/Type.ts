@@ -12,17 +12,14 @@ type Treatment = {
   name: string,
   description: string,
   startDate: Date,
-  medic: [],
-  instructions: instruction[],
+  instruction: Instruction[],
 };
 
-type instruction = {
+type Instruction = {
   CIS: number,
   CIP: number,
   qty: number,
-  description: string,
-  recurrence: number, // seleciton par rapport à une liste ex: tous les jours ...
-  duration: Date,
+  frequency: string, // seleciton par rapport à une liste ex: tous les jours ...
   endDate: Date,
 }
 
