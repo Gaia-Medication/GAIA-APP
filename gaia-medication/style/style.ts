@@ -155,4 +155,26 @@ export const styles = StyleSheet.create({
     borderRadius: 100,
     padding: 10,    
   }
+
+  // -------------- MODAL ---------------//
+
+  modalTitle: {
+    marginTop: 25,
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  modalType: {
+    fontSize: 16,
+    fontStyle: "italic",
+    marginBottom: 30,
+    opacity: 0.5
+  },
+  modalButton: {
+    backgroundColor: "#4296E4",
+    borderRadius: 20,
+    padding: 10,
+    paddingHorizontal: 20,
+    marginBottom: 25
+    
+  },  
 });

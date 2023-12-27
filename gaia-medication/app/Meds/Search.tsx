@@ -8,8 +8,9 @@ import {
 } from "react-native";
 import { searchMed } from "../../dao/Search";
 import { styles } from "../../style/style";
-import { Input } from "react-native-elements";
+import { Icon, Input } from "react-native-elements";
 import MedIconByType from "../component/MedIconByType";
+import { Navigation } from "react-native-feather";
 
 export default function Search({ route, navigation }) {
   const textInputRef = React.useRef(null);
@@ -29,14 +30,23 @@ export default function Search({ route, navigation }) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.searchBarwQR} className="mt-3">
+      <View style={styles.searchBarwQR} className="mt-3 px-4">
         <View style={styles.searchBar}>
           <Input
             style={styles.searchBarInput}
             ref={textInputRef}
             placeholder="Doliprane, Aspirine ..."
             placeholderTextColor="#9CDE00"
-            leftIcon={{ type: "feathers", name: "search", color: "#9CDE00" }}
+            leftIcon={
+              <Icon
+                name="arrow-left" // Change to your icon's name
+                type='feather'
+                size={24}
+                color='#9CDE00'
+                onPress={() => {navigation.goBack()}}
+              />
+            }
+            rightIcon={{ type: "feathers", name: "search", color: "#9CDE00" }}
             inputContainerStyle={styles.searchBarContainer}
             onChangeText={(text) => {
               const newSearch=searchMed(text)
@@ -59,7 +69,7 @@ export default function Search({ route, navigation }) {
             onPress={() => navigation.navigate("Drug", { drugCIS: item.CIS })}
           >
             <MedIconByType type={item.type}/>
-            <Text>{item.Name}</Text>
+            <Text className="ml-4">{item.Name}</Text>
           </TouchableOpacity>
         )}
       />
