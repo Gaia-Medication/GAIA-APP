@@ -2,11 +2,14 @@ import React, { useState } from "react";
 import { View} from "react-native";
 import MultiSelect from "react-native-multiple-select";
 
-const MultiSelectComponent = ({ items }) => {
+const MultiSelectComponent = ({ items, onSelectionChange }) => {
   const [selectedItems, setSelectedItems] = useState([]);
 
   const onSelectedItemsChange = (selectedItems) => {
     setSelectedItems(selectedItems);
+    if (onSelectionChange) {
+      onSelectionChange(selectedItems);
+    }
   };
 
   return (
