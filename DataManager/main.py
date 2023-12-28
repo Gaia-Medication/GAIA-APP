@@ -169,9 +169,9 @@ dfCompo.drop(columns=["IDPA","?"], inplace=True)
 def aggregate_as_list(series):
     return sorted(series.dropna().unique(), key=lambda x: (x != 'SA', x))
 
-grouped_df = dfCompo.groupby(['CIS', 'ID SA/FT'])
+dfCompo = dfCompo.groupby(['CIS', 'ID SA/FT'])
 
-products_df = grouped_df.agg({
+dfCompo = dfCompo.agg({
     'type': aggregate_as_list,
     'Principe actif': aggregate_as_list,
     'Dosage': aggregate_as_list,
@@ -179,13 +179,13 @@ products_df = grouped_df.agg({
     'SA/FT': aggregate_as_list
 }).reset_index()
 
-final_grouped = products_df.groupby('CIS')
+dfCompo = dfCompo.groupby('CIS')
 result = [{
     "CIS": int(cis),
-    "product": group.drop(columns='CIS').to_dict(orient='records')
-} for cis, group in final_grouped]
+    "Composition": group.drop(columns='CIS').to_dict(orient='records')
+} for cis, group in dfCompo]
 
-result_df = pd.DataFrame(result)
+dfCompo = pd.DataFrame(result)
 
 
 ########################################
@@ -260,6 +260,7 @@ dfMedication = dfMedication.merge(dfGener, on='CIS', how='outer')
 dfMedication = dfMedication.merge(dfPrescription, on='CIS', how='outer')
 dfMedication = dfMedication.merge(dfInformation, on='CIS', how='outer')
 dfMedication = dfMedication.merge(dfPresentation, on='CIS', how='outer')
+dfMedication = dfMedication.merge(dfCompo, on='CIS', how='outer')
 dfMedication.dropna(subset=['Name'], inplace=True)
 
 
@@ -272,5 +273,3 @@ dfMedication.dropna(subset=['Name'], inplace=True)
 print(BOLD,YELLOW,"\n\n##########################################################\n################### Conversion en JSON ###################\n##########################################################",RESET,'\n\n')
 
 jsonMedication = dfMedication.to_json('out/medication.json', orient="records", indent=4)
-
-compo_json =result_df.to_json('out/compo.json', orient="records", indent=4)
