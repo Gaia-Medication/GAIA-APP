@@ -154,7 +154,7 @@ export const styles = StyleSheet.create({
     backgroundColor: "#4296E450",
     borderRadius: 100,
     padding: 10,    
-  }
+  },
 
   // -------------- MODAL ---------------//
 
@@ -177,4 +177,14 @@ export const styles = StyleSheet.create({
     marginBottom: 25
     
   },  
+
+  // -------------- INSTRUCTION ---------------//
+
+  selectAllButton: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginVertical: 10,
+  },
+
 });
