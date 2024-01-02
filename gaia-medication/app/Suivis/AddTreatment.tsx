@@ -204,7 +204,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
         let array = [];
         let startDateObj = new Date(startDate);
         const daysDifference = checkLast === 'last' ? Math.floor((Number(endDate) - Number(startDateObj)) / (24 * 60 * 60 * 1000)) : null
-        const numberOfTimes = checkLast === 'last' ? parseInt(customPeriodicityNumber) * daysDifference : quantity;
+        const numberOfTimes = checkLast === 'last' ? (frequencyMode === "regular" ? (parseInt(customPeriodicityNumber) * daysDifference) : (parseInt(customPeriodicityBisNumber) * daysDifference)) : quantity;
         const currentDate = new Date(startDateObj);
         const intervalDays = parseInt(customPeriodicityBisNumber);
     
@@ -238,14 +238,21 @@ export default function AddTreatment({ navigation }: ICreateProps) {
                     }
                 }
             } else if (frequencyMode === 'bis') {
-                while (array.length < numberOfTimes && (!endDate || currentDate <= endDate)) {
-                    hoursAssociations.forEach(hour => {
+                console.log("BIS")
+                console.log(customPeriodicityNumber)
+                console.log("INTERVAL DAYS ", intervalDays)
+                console.log("DAYS DIFFERENCE ", daysDifference)
+                console.log("NB OF TIMES ", numberOfTimes)
+                console.log(endDate)
+                console.log(array.length < numberOfTimes)
+                console.log(hoursAssociations)
+                while (array.length < numberOfTimes) {
+                    console.log("bbb")
                         if (array.length < numberOfTimes) {
                             const newDate = new Date(currentDate);
-                            newDate.setHours(hour.getHours(), hour.getMinutes(), 0, 0);
+                            newDate.setHours(selectedHourBis.getHours(), selectedHourBis.getMinutes(), 0, 0);
                             array.push(newDate);
-                        }
-                    });
+                        };
     
                     // Move to the next medication date by adding the interval days
                     currentDate.setDate(currentDate.getDate() + intervalDays);
@@ -632,7 +639,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
                 <Text style={[styles.selectAllButton, { color: selectAllColor }]}>{selectAllText}</Text>
             </TouchableOpacity>
             {arrayOfDates.map((date, index) => (
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <View key={index} style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <Checkbox
                         status={checkedDates.includes(date) ? 'checked' : 'unchecked'}
                         onPress={() => toggleDate(date)}
@@ -691,6 +698,44 @@ export default function AddTreatment({ navigation }: ICreateProps) {
         </View>
     ) : null;
 
+    const addInstruction = async () => {
+        const newInstruction = {
+            CIS: selectedMedCIS,
+            regularFrequency: checkFrequency === 'regular', // CE MÉDICAMENT EST-IL À PRENDRE RÉGULIÈREMENT ?
+
+            // REGULIER
+            regularFrequencyMode: frequencyMode? frequencyMode : null, // COMMENT ? (X FOIS PAR JOUR/SEMAINE/MOIS OU TOUS LES X JOURS)
+            regularFrequencyNumber: frequencyMode? (customPeriodicityNumber? customPeriodicityNumber : customPeriodicityBisNumber) : null, // X ?
+            regularFrequencyPeriods: frequencyMode === "regular"? (customPeriodicity? customPeriodicity : "day") : null, // SI X FOIS PAR (JOUR/SEMAINE/MOIS), PÉRIODICITÉ
+            regularFrequencyContinuity: checkDaily? checkLast : null, // EST-CE QUOTIDIEN OU SEULEMENT CERTAINS JOURS ? (DAILY/CUSTOM) 
+            regularFrequencyDays: checkDaily === "custom"? weekDays.filter(day => day.checked).map(day => day.day) : null, // SI CERTAINS JOURS, LESQUELS ?
+
+            // PERSONNALISÉ
+
+
+            endModality: checkLast, // COMMENT S'ARRÊTE LE TRAITEMENT ? (NOMBRE DE PRIS OU DATE DE FIN)
+            endDate: checkLast === 'last' ? endDate : null, // DATE DE FIN SI FIN À UNE DATE PRÉCISE
+            endQuantity: checkLast === 'number' ? quantity : null, // NOMBRE DE PRIS SI FIN AU BOUT D'UN CERTAIN NOMBRE DE PRIS
+            quantity: checkQty === 'regular' ? quantity : null, // QUANTITÉ À PRENDRE À CHAQUE PRISE SI QUANTITÉ RÉGULIÈRE
+            datesAndQuantities: dateDigitAssociations,
+        };
+        const instructionsJson = await AsyncStorage.getItem('instructions');
+        let instructions = instructionsJson ? JSON.parse(instructionsJson) : [];
+
+        instructions.push(newInstruction);
+
+    };
+    const addTreatment = async () => {
+        let instructions = AsyncStorage.getItem("instructions");
+        const treatment = {
+            name: treatmentName,
+            description: treatmentDescription,
+            startDate: startDate,
+            instructions: instructions,
+        };
+        navigation.navigate("Suivis");
+    }
+
     const modalContent = selectedMed ? (
         <View className="flex justify-center gap-4 p-2">
             <Text className="text-center text-xl font-bold text-blue-400">
@@ -716,7 +761,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
             {periodicityForm}
             {customQuantities}
             <View style={{ marginTop: 50 }}>
-                <Button title="VALIDER" color={"green"} />
+                <Button title="VALIDER" color={"green"} onPress={addInstruction}/>
             </View>
         </View>
     ) : null;
