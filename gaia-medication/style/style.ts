@@ -186,5 +186,14 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
     marginVertical: 10,
   },
+  frequencyPicker: {
+    backgroundColor: "#4296E450",
+    margin: 10,
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginVertical: 10,
+  },
 
 });
