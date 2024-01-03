@@ -586,18 +586,14 @@ export default function AddTreatment({ navigation }: ICreateProps) {
         </View>
     ) : checkFrequency === 'custom' ? (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-            <FlatList
-                data={arrayOfDates}
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={({ item, index }) => (
-                    <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 10 }}>
-                        <Text style={{ marginRight: 10 }}>{item.toLocaleString()}</Text>
+            {arrayOfDates.map((date, index) => (
+                    <View key={index} style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 10 }}>
+                        <Text style={{ marginRight: 10 }}>{date.toLocaleString()}</Text>
                         <TouchableOpacity onPress={() => removeDate(index)} style={{ backgroundColor: 'red', padding: 10, borderRadius: 5 }}>
                             <Text style={{ color: 'white' }}>Delete</Text>
                         </TouchableOpacity>
                     </View>
-                )}
-            />
+                ))}
             <Button title="Add New Date + Hour" onPress={() => setShowDatePicker(true)} />
             {showDatePicker && (
                 <DateTimePicker
@@ -648,7 +644,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
                     <Text style={{ textAlignVertical: "center" }}>{formatHour(date)}</Text>
                     <TextInput
                         style={{ borderWidth: 1, borderColor: 'gray', borderRadius: 5, paddingHorizontal: 8, paddingVertical: 6, fontSize: 16 }}
-                        placeholder="Enter Digit"
+                        placeholder={dateDigitAssociations[date.toISOString()] || "Enter Digit"}
                         value={dateDigitAssociations[date.toISOString()] || ""} // Display the associated digit for the date
                         onChangeText={(text) => {
                             // Update the dateDigitAssociations state with the new value for the date
@@ -699,6 +695,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
     ) : null;
 
     const addInstruction = async () => {
+        console.log("ADD INSTRUCTION")
         const newInstruction = {
             CIS: selectedMedCIS,
             regularFrequency: checkFrequency === 'regular', // CE MÉDICAMENT EST-IL À PRENDRE RÉGULIÈREMENT ?
@@ -726,14 +723,28 @@ export default function AddTreatment({ navigation }: ICreateProps) {
 
     };
     const addTreatment = async () => {
+        console.log("ADD TREATMENT")
+        await addInstruction();
         let instructions = AsyncStorage.getItem("instructions");
-        const treatment = {
+        const newTreatment = {
             name: treatmentName,
             description: treatmentDescription,
             startDate: startDate,
             instructions: instructions,
         };
-        navigation.navigate("Suivis");
+        try {
+            let treatmentsJson = await AsyncStorage.getItem('treatments');
+            let treatments = treatmentsJson ? JSON.parse(treatmentsJson) : [];
+
+            treatments.push(newTreatment);
+        } catch (e) {
+            console.log(e)
+        } finally {
+            let treatmentsJson = await AsyncStorage.getItem('treatments');
+            console.log(treatmentsJson)
+        }
+        
+        
     }
 
     const modalContent = selectedMed ? (
@@ -761,7 +772,9 @@ export default function AddTreatment({ navigation }: ICreateProps) {
             {periodicityForm}
             {customQuantities}
             <View style={{ marginTop: 50 }}>
-                <Button title="VALIDER" color={"green"} onPress={addInstruction}/>
+                <Button title="VALIDER" color={"green"} onPress={() => {
+                    addTreatment
+                }}/>
             </View>
         </View>
     ) : null;
