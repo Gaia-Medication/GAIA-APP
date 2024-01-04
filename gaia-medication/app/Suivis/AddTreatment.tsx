@@ -716,11 +716,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
             quantity: checkQty === 'regular' ? quantity : null, // QUANTITÉ À PRENDRE À CHAQUE PRISE SI QUANTITÉ RÉGULIÈRE
             datesAndQuantities: dateDigitAssociations,
         };
-        const instructionsJson = await AsyncStorage.getItem('instructions');
-        let instructions = instructionsJson ? JSON.parse(instructionsJson) : [];
-
-        instructions.push(newInstruction);
-
+        await addItemToList('instructions', newInstruction);
     };
     const addTreatment = async () => {
         console.log("ADD TREATMENT")
@@ -732,19 +728,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
             startDate: startDate,
             instructions: instructions,
         };
-        try {
-            let treatmentsJson = await AsyncStorage.getItem('treatments');
-            let treatments = treatmentsJson ? JSON.parse(treatmentsJson) : [];
-
-            treatments.push(newTreatment);
-        } catch (e) {
-            console.log(e)
-        } finally {
-            let treatmentsJson = await AsyncStorage.getItem('treatments');
-            console.log(treatmentsJson)
-        }
-        
-        
+        await addItemToList('treatments', newTreatment);
     }
 
     const modalContent = selectedMed ? (
@@ -772,9 +756,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
             {periodicityForm}
             {customQuantities}
             <View style={{ marginTop: 50 }}>
-                <Button title="VALIDER" color={"green"} onPress={() => {
-                    addTreatment
-                }}/>
+                <Button title="VALIDER" color={"green"} onPress={addTreatment}/>
             </View>
         </View>
     ) : null;

@@ -23,6 +23,7 @@ export default function Home({ navigation }) {
   const [user, setUser] = useState<User | null>(null);
   const [users, setUsers] = useState<User[]>([]);
   const [header, setHeader] = useState(true);
+  const [treatments, setTreatments] = useState("null");
 
   const init = async () => {
     const userList = await readList("users");
@@ -69,6 +70,45 @@ export default function Home({ navigation }) {
       }
     }
   };
+
+  const showTreatments = async () => {
+    const treatments = await AsyncStorage.getItem("treatments");
+    const treatmentsJson = JSON.parse(treatments)
+    treatmentsJson.map((treatment) => {
+      const instructions= JSON.parse(treatment.instructions._j)
+      const instructionsArray = []
+      instructions.map((instr) => {
+        let daqDict = {};
+        Object.entries(instr.datesAndQuantities).forEach(([date, quantity]) => {
+          daqDict[date] = Number(quantity);
+        })
+        const instruction : Instruction = {
+          CIS: instr.CIS,
+          regularFrequency: instr.regularFrequency,
+          regularFrequencyMode: instr.regularFrequencyMode,
+          regularFrequencyNumber: instr.regularFrequencyNumber,
+          regularFrequencyPeriods: instr.regularFrequencyPeriods,
+          regularFrequencyContinuity: instr.regularFrequencyContinuity,
+          regularFrequencyDays: instr.regularFrequencyDays,
+          endModality: instr.endModality,
+          endDate: instr.endDate,
+          endQuantity: instr.endQuantity,
+          quantity: instr.quantity,
+          datesAndQuantities: daqDict,
+        }
+        instructionsArray.push(instruction)
+      })
+      const treatmentObject : Treatment = {
+        name: treatment.name,
+        description: treatment.description,
+        startDate: new Date(treatment.startDate), 
+        instruction: instructionsArray
+      }
+      console.log(treatmentObject.instruction)
+    })
+    
+    setTreatments(treatments.toString());
+  }
 
   useEffect(() => {
     if (isFocused) {
@@ -142,6 +182,8 @@ export default function Home({ navigation }) {
           </View>
           <Button onPress={notificationDaily} title="Notification quotidienne"/>
           <Button onPress={notificationForgot} title="Notification oubli"/>
+          <Button onPress={showTreatments} title="Liste des traitements"/>
+          <Text>{treatments}</Text>
 
         </>
       )}
