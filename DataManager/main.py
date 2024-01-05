@@ -38,7 +38,7 @@ params = np.array([
 dataManager = DataManager(url, params)
 
 # DOWNLOAD FILES
-files = dataManager.getFiles()
+#files = dataManager.getFiles()
 
 
 ########################################################################################
@@ -58,63 +58,96 @@ date=[
 
 
 dictionnary={
-    "second_product":["plaquette","kit","dose","comprimé","gomme","gélule","pastille","lyophilisat","sachetspolyterephtalate","capsule","suppositoire","distributeur journalier","conditionnement","bande","poudre","générateur","flacon","tube","applicateur","ampoule","pilulier","sachet","pot","seringue","stylo","spray","bouteille","récipient","film","boite","boite","poche","inhalateur","cartouche","evaporateur","dispositif","enveloppe","fut","sac"],
     "product":['plaquette', 'tube','éponge', 'recipient', 'flacon', 'ampoule',"sachetspolyterephtalate", 'pilulier', 'sachet', 'dose', 'seringue', 'bouteille', 'pot', 'film', 'evaporateur', 'poche', 'stylo',"applicateur", 'generateur', 'inhalateur', 'dispositif','enveloppe', 'sac', 'conditionnement', 'bande', 'comprime', 'poudre','kit', 'gelule', 'boite', 'cartouche', 'fut'],
-    "quantity":["l","ml","mg","g","litre","ui","u"]
+    "second_product":["plaquette","bâton","gobelet doseur","ovule","kit","dose","comprimé","gomme","gélule","pastille","lyophilisat","sachetspolyterephtalate","capsule","suppositoire","distributeur journalier","conditionnement","bande","poudre","générateur","flacon","tube","applicateur","ampoule","pilulier","sachet","pot","seringue","stylo","spray","bouteille","récipient","film","boite","boite","poche","inhalateur","cartouche","evaporateur","dispositif","enveloppe","fut","sac"],
+    "quantity":["l","ml","mg","g","kg","litre","litres","ui","u"]
 }
 dictionnary=create_regex_from_dictionnary(dictionnary)
-
 brut_data = lecture_base("data/CIS_CIP_bdpm.txt").iloc[:,2:3].values[:,0]
 string_data = brut_data.astype(str)
 all_dict=[]
 for description in string_data:
-    
-    return_dict = {
-        "product":[],
-        "second_product":[],
-        "quantity":[]
-    }
-    product = []
-    second_product = []
-    quantity = []   
     description = description.lower()
     description = replace_accents(description)
     description=description.replace("  "," ")
     description = description.split(" ")
     if has_number(description):
-        n = 0
+        bracket_flag=False
         for w_index in range (0,len(description)-1):
-            #print(w_index)
+            if re.search(fr"[0-9]+,", description[w_index]) and description[w_index+1].isdigit():
+                description[w_index+1]=re.search(fr"[0-9]+,", description[w_index]).group()+description[w_index+1]
+                description[w_index]=""
+                description[w_index+1]=description[w_index+1].replace(" ","")
+                
             for category, regex in dictionnary.items():
                 for reg in regex:
                     if w_index < len(description)-1:
-                        if has_number(description[w_index]) and re.search(reg, description[w_index + 1]):
-                            if description[w_index -1]=="de":
+                        if description[w_index] !="":
+                            if description[w_index][0]=="(":
+                                bracket_flag=True
+                            if description[w_index][-1]==")":
+                                bracket_flag=False
+                                     
+                        if has_number(description[w_index]) and re.search(reg, description[w_index + 1]) and bracket_flag==False:
+                            if "de" in description[w_index]:
+                                description[w_index]=description[w_index].replace("de","de ")
+                            if description[w_index -1]=='de' :
                                 description[w_index -1] = description[w_index -1] + " " + description[w_index] + " " + description[w_index + 1]
-                                description.pop(w_index+1)
-                                description.pop(w_index)
-                            else:                                    
+                                description[w_index + 1]=""
+                                description[w_index]=""
+                            else:
                                 description[w_index] = description[w_index] + " " + description[w_index + 1]
-                                description.pop(w_index + 1)
-                            break
-    
-    for word in description:
+                                description[w_index + 1]=""
+
+    list_str_meds=[]
+    pflag=False
+    for i_word in range (0,len(description)-1):
         for category, regex in dictionnary.items():
             for reg in regex:
-                if re.search(reg,word):
-                    w=re.search(reg,word).group()
-                    if category=="product" and return_dict["product"]==[]:
-                        return_dict["product"].append(w)
-                    if category=="quantity":
-                        return_dict["quantity"].append(w)
+                if re.search(reg,description[i_word]):
+                    w=re.search(reg,description[i_word]).group()
+                    if category=="product" and pflag==False:
+                        p_index=i_word
+                        pflag=True
+                        list_str_meds.append(w)
                     if category=="second_product":
-                        return_dict["second_product"].append(w)
-    # for i in return_dict["product"]:    
-    #     if has_number(i)==False and return_dict["second_product"]==[] and return_dict["quantity"]==[]:
-    #         print(RED,description)
-    #kit join then regex 
-    #conditionnement
-    all_dict.append(return_dict)
+                        if p_index!=i_word:
+                            list_str_meds.append(w)
+                    if category=="quantity":
+                        list_str_meds.append(w)
+    nbr=0
+    deter='sdfqsfqsfqsdf'
+    deter_index=-1
+    pop_index=[]
+    nbr_index=-1
+    for wi in range(0,len(list_str_meds)):        
+        split_w=list_str_meds[wi].split(" ")
+        if split_w[0]=="de":
+            deter_index=wi
+            deter=split_w[2]
+            for s in range(0,len(split_w)):
+                if split_w[s].isdigit():
+                    nbr_index=s
+                    nbr=int(split_w[s])
+                    
+        if deter in list_str_meds[wi] and "de" not in list_str_meds[wi]:
+            pop_index.append(wi)
+            for s in split_w:
+                if s.isdigit():
+                    nbr+=int(s)
+            
+    split_w=list_str_meds[deter_index].split(" ")
+    for s in split_w:
+        if s.isdigit():
+            s=nbr
+    if nbr_index>0 and deter_index>=0:
+        list_str_meds[deter_index]=list_str_meds[deter_index].replace(split_w[nbr_index],str(nbr))
+    pop_index.sort(reverse=True)
+    for p in pop_index:
+        list_str_meds.pop(p)
+        
+        
+    all_dict.append(list_str_meds)
 
 
 ########################################################################################
@@ -163,7 +196,17 @@ dfGener.columns = [
 ########################################
 
 dfCompo =lecture_base("data/CIS_COMPO_bdpm.txt")
-dfCompo.columns=["CIS","type","IDPA","Principe actif","Dosage", "Quantité","SA/FT","ID SA/FT","?"]
+dfCompo.columns=[
+    "CIS",
+    "type",
+    "IDPA",
+    "Principe actif",
+    "Dosage", 
+    "Quantité",
+    "SA/FT",
+    "ID SA/FT",
+    "?"
+]
 dfCompo.drop(columns=["IDPA","?"], inplace=True)
 
 def aggregate_as_list(series):
