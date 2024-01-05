@@ -154,7 +154,7 @@ export const styles = StyleSheet.create({
     backgroundColor: "#4296E450",
     borderRadius: 100,
     padding: 10,    
-  }
+  },
 
   // -------------- MODAL ---------------//
 

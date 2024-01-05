@@ -51,7 +51,7 @@ export default function Drug({ route,navigation }) {
 
   useEffect(() => {
     if (isFocused) {
-      console.log("Nav on Drug Page :", drug.CIS);
+      console.log("Nav on Drug Page :", drugCIS);
       init();
     }
   }, [isFocused]);
@@ -82,7 +82,7 @@ export default function Drug({ route,navigation }) {
     }
   };
   const handlePress = useCallback(async () => {
-    await Linking.openURL("https://base-donnees-publique.medicaments.gouv.fr/affichageDoc.php?specid=69411153&typedoc=N");
+    await Linking.openURL("https://base-donnees-publique.medicaments.gouv.fr/affichageDoc.php?specid="+drugCIS+"&typedoc=N");
   }, []);
   return (
     <View style={styles.container} className=" px-6">
@@ -106,8 +106,8 @@ export default function Drug({ route,navigation }) {
 
               )}
             </View>
-            <Text className="text-5xl font-bold">{drug.Name.split(',')[0].charAt(0).toUpperCase() + drug.Name.split(',')[0].slice(1).toLowerCase()}</Text>
-            <Text className="text-lg">{drug.Name.split(',')[1]}</Text>
+            <Text className="text-5xl font-bold">{drug.Name.split(' ')[0].charAt(0).toUpperCase() + drug.Name.split(' ')[0].slice(1).toLowerCase()}</Text>
+            <Text className="text-lg">{drug.Name.split(' ').slice(1).join(' ')}</Text>
           </View>
           <Text>Administration : {drug.Administration_way}</Text>
           <FlatList
@@ -119,18 +119,18 @@ export default function Drug({ route,navigation }) {
               return (
                 <>
                   <Text>Produit :</Text>
-                  <Text>CIP : {item.CIP}</Text>
-                  <Text>Description : {item.Denomination}</Text>
+                  <Text>{item.CIP}</Text>
+                  <Text>{item.Denomination}</Text>
                   {drug.Marketed == "Commercialisée" &&
                     (item.Price_with_taxes ? (
                       <>
-                        <Text>Prix : {item.Price_with_taxes}€</Text>
-                        <Text>Remboursement : {item.Remboursement}</Text>
+                        <Text>{item.Price_with_taxes}€</Text>
+                        <Text>{item.Remboursement}</Text>
                       </>
                     ) : (
                       <>
-                        <Text>Prix : Prix libre</Text>
-                        <Text>Remboursement : Non remboursable</Text>
+                        <Text>Prix libre</Text>
+                        <Text>Non remboursable</Text>
                       </>
                     ))}
 

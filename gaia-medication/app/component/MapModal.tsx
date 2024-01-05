@@ -15,7 +15,7 @@ const MapModalComponent = ({ visible, onClose, children, icon, color }) => {
         activeOpacity={1}
         onPress={onClose}
       >
-        <View style={{backgroundColor: "white", width: "80%"}}>
+        <View className=' rounded-[20px]' style={{backgroundColor: "white", width: "80%"}}>
           <View
             style={{
               backgroundColor: "rgba("+color+",0.8)",
