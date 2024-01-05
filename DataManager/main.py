@@ -59,7 +59,8 @@ date=[
 
 dictionnary={
     "product":['plaquette', 'tube','éponge', 'recipient', 'flacon', 'ampoule',"sachetspolyterephtalate", 'pilulier', 'sachet', 'dose', 'seringue', 'bouteille', 'pot', 'film', 'evaporateur', 'poche', 'stylo',"applicateur", 'generateur', 'inhalateur', 'dispositif','enveloppe', 'sac', 'conditionnement', 'bande', 'comprime', 'poudre','kit', 'gelule', 'boite', 'cartouche', 'fut'],
-    "second_product":["plaquette","bâton","gobelet doseur","ovule","kit","dose","comprimé","gomme","gélule","pastille","lyophilisat","sachetspolyterephtalate","capsule","suppositoire","distributeur journalier","conditionnement","bande","poudre","générateur","flacon","tube","applicateur","ampoule","pilulier","sachet","pot","seringue","stylo","spray","bouteille","récipient","film","boite","boite","poche","inhalateur","cartouche","evaporateur","dispositif","enveloppe","fut","sac"],
+    "second_product":["plaquette",'éponge',"bâton","gobelet doseur","ovule","kit","dose","comprimé","gomme","gélule","pastille","lyophilisat","sachetspolyterephtalate","capsule","suppositoire","distributeur journalier","conditionnement","bande","poudre","générateur","flacon","tube","applicateur","ampoule","pilulier","sachet","pot","seringue","stylo","spray","bouteille","récipient","film","boite","boite","poche","inhalateur","cartouche","evaporateur","dispositif","enveloppe","fut","sac"],
+    "basic_product":["plaquette",'éponge',"bâton","gobelet doseur","ovule","kit","dose","comprimé","gomme","gélule","pastille","lyophilisat","sachetspolyterephtalate","capsule","suppositoire","distributeur journalier","conditionnement","bande","poudre","générateur","flacon","tube","applicateur","ampoule","pilulier","sachet","pot","seringue","stylo","spray","bouteille","récipient","film","boite","boite","poche","inhalateur","cartouche","evaporateur","dispositif","enveloppe","fut","sac"],
     "quantity":["l","ml","mg","g","kg","litre","litres","ui","u"]
 }
 dictionnary=create_regex_from_dictionnary(dictionnary)
@@ -113,38 +114,38 @@ for description in string_data:
                     if category=="second_product":
                         if p_index!=i_word:
                             list_str_meds.append(w)
-                    if category=="quantity":
+                    if category=="quantity" and pflag==True:
                         list_str_meds.append(w)
-    nbr=0
-    deter='sdfqsfqsfqsdf'
-    deter_index=-1
-    pop_index=[]
-    nbr_index=-1
-    for wi in range(0,len(list_str_meds)):        
-        split_w=list_str_meds[wi].split(" ")
-        if split_w[0]=="de":
-            deter_index=wi
-            deter=split_w[2]
-            for s in range(0,len(split_w)):
-                if split_w[s].isdigit():
-                    nbr_index=s
-                    nbr=int(split_w[s])
+    # nbr=0
+    # deter='sdfqsfqsfqsdf'
+    # deter_index=-1
+    # pop_index=[]
+    # nbr_index=-1
+    # for wi in range(0,len(list_str_meds)):        
+    #     split_w=list_str_meds[wi].split(" ")
+    #     if split_w[0]=="de":
+    #         deter_index=wi
+    #         deter=split_w[2]
+    #         for s in range(0,len(split_w)):
+    #             if split_w[s].isdigit():
+    #                 nbr_index=s
+    #                 nbr=int(split_w[s])
                     
-        if deter in list_str_meds[wi] and "de" not in list_str_meds[wi]:
-            pop_index.append(wi)
-            for s in split_w:
-                if s.isdigit():
-                    nbr+=int(s)
+    #     if deter in list_str_meds[wi] and "de" not in list_str_meds[wi]:
+    #         pop_index.append(wi)
+    #         for s in split_w:
+    #             if s.isdigit():
+    #                 nbr+=int(s)
             
-    split_w=list_str_meds[deter_index].split(" ")
-    for s in split_w:
-        if s.isdigit():
-            s=nbr
-    if nbr_index>0 and deter_index>=0:
-        list_str_meds[deter_index]=list_str_meds[deter_index].replace(split_w[nbr_index],str(nbr))
-    pop_index.sort(reverse=True)
-    for p in pop_index:
-        list_str_meds.pop(p)
+    # split_w=list_str_meds[deter_index].split(" ")
+    # for s in split_w:
+    #     if s.isdigit():
+    #         s=nbr
+    # if nbr_index>0 and deter_index>=0:
+    #     list_str_meds[deter_index]=list_str_meds[deter_index].replace(split_w[nbr_index],str(nbr))
+    # pop_index.sort(reverse=True)
+    # for p in pop_index:
+    #     list_str_meds.pop(p)
         
         
     all_dict.append(list_str_meds)
