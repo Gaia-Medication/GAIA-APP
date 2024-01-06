@@ -98,3 +98,53 @@ export const removeItemFromStock = async (cis, cip, idUser) => {
     console.error(`Erreur lors de la suppression dans la liste ${key}:`, error);
   }
 };
+
+export const getAllTreatments = async (): Promise<Treatment[]> => {
+  const key="treatments"
+  try {
+
+    const treatments = await AsyncStorage.getItem(key);
+    if (treatments == null) {
+      return []
+    }
+
+    const treatmentsJson = JSON.parse(treatments)
+    const arrayOfTreatments = []
+    treatmentsJson.map((treatment) => {
+      const instructions= JSON.parse(treatment.instructions._j)
+      const instructionsArray = []
+      instructions.map((instr) => {
+        let daqDict = {};
+        Object.entries(instr.datesAndQuantities).forEach(([date, quantity]) => {
+          daqDict[date] = Number(quantity);
+        })
+        const instruction : Instruction = {
+          CIS: instr.CIS,
+          name: instr.name,
+          regularFrequency: instr.regularFrequency,
+          regularFrequencyMode: instr.regularFrequencyMode,
+          regularFrequencyNumber: instr.regularFrequencyNumber,
+          regularFrequencyPeriods: instr.regularFrequencyPeriods,
+          regularFrequencyContinuity: instr.regularFrequencyContinuity,
+          regularFrequencyDays: instr.regularFrequencyDays,
+          endModality: instr.endModality,
+          endDate: instr.endDate,
+          endQuantity: instr.endQuantity,
+          quantity: instr.quantity,
+          datesAndQuantities: daqDict,
+        }
+        instructionsArray.push(instruction)
+      })
+      const treatmentObject : Treatment = {
+        name: treatment.name,
+        description: treatment.description,
+        startDate: new Date(treatment.startDate), 
+        instruction: instructionsArray
+      }
+      arrayOfTreatments.push(treatmentObject)
+    })
+    return arrayOfTreatments
+  } catch (error) {
+    console.error(error);
+  }
+}

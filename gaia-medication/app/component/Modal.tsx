@@ -16,11 +16,6 @@ const ModalComponent = ({ visible, onClose, children, styleAdded }) => {
         >
           <ScrollView style={styleAdded}>
             {children}
-            <TouchableOpacity onPress={onClose}>
-             <Text style={{ width: "100%", backgroundColor: "white", textAlign: "center", color: "blue" }}>
-                Fermer
-              </Text>
-            </TouchableOpacity>
           </ScrollView>
           
         </TouchableOpacity>

@@ -34,7 +34,7 @@ export default function Drug({ route,navigation }) {
   const [user, setUser] = useState<User | null>(null);
   const [stock, setStock] = useState(null);
 
-  const { drugCIS } = route.params;
+  const { drugCIS, context } = route.params;
   const drug = getMedbyCIS(drugCIS);
 
   const init = async () => {
@@ -149,15 +149,28 @@ export default function Drug({ route,navigation }) {
                       </TouchableOpacity>
                     </>
                   ) : (
-                    <TouchableOpacity
-                      className=" bg-blue-400"
-                      onPress={() => {
-                        setDrugsToAdd(item);
-                        setDrugModalVisible(true);
-                      }}
-                    >
-                      <Text className="text-center">Add</Text>
-                    </TouchableOpacity>
+                    context && context === "addTreatment" ? (
+                      <TouchableOpacity
+                        className=" bg-blue-400"
+                        onPress={() => {
+                          navigation.navigate("AddTreatment", {
+                            routeCIS: item.CIS,
+                          });
+                        }}
+                      >
+                        <Text className="text-center">Sélectionner</Text>
+                      </TouchableOpacity>
+                    ) : (
+                      <TouchableOpacity
+                        className=" bg-blue-400"
+                        onPress={() => {
+                          setDrugsToAdd(item);
+                          setDrugModalVisible(true);
+                        }}
+                      >
+                        <Text className="text-center">Ajouter au stock</Text>
+                      </TouchableOpacity>
+                    )
                   )}
                 </>
               );

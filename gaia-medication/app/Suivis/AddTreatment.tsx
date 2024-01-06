@@ -1,6 +1,6 @@
 import { NavigationProp, ParamListBase, useIsFocused } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
-import { addItemToList, readList } from "../../dao/Storage";
+import { addItemToList, getAllTreatments, readList } from "../../dao/Storage";
 import { View, Text, TextInput, FlatList, TouchableOpacity, Button } from "react-native";
 import { Input } from "react-native-elements";
 import MultipleSelect from "../component/MultipleSelect";
@@ -12,6 +12,10 @@ import RNPickerSelect from "react-native-picker-select";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { RadioButton, Checkbox } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
+import * as Icon from "react-native-feather";
+import MedIconByType from "../component/MedIconByType";
+import { searchMed } from "../../dao/Search";
+
 
 interface ICreateProps {
     navigation: NavigationProp<ParamListBase>;
@@ -19,16 +23,20 @@ interface ICreateProps {
 
 export default function AddTreatment({ navigation }: ICreateProps) {
     const isFocused = useIsFocused();
+    const [search, setSearch] = useState(searchMed("E"));
     const [allMeds, setAllMeds] = useState([]);
     const [isVisible, setIsVisible] = useState(false);
-    const [selectedMed, setSelectedMed] = useState("");
+    const [selectedMed, setSelectedMed] = useState({});
     const [selectedMedCIS, setSelectedMedCIS] = useState("");
+    const [selectedMedName, setSelectedMedName] = useState("");
     const [searchText, setSearchText] = useState("");
     const [treatmentModalVisible, setTreatmentModalVisible] = useState(false);
     const [instructionModalVisible, setInstructionModalVisible] = useState(false);
     const [treatmentName, setTreatmentName] = useState("");
     const [treatmentDescription, setTreatmentDescription] = useState("");
     const [instructions, setInstructions] = useState([]);
+    const [instructionsDetailModal, setInstructionsDetailModal] = useState(false);
+    const [selectedInstruction, setSelectedInstruction] = useState<Instruction>(null);
     const [frequency, setFrequency] = useState("");
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
@@ -43,9 +51,11 @@ export default function AddTreatment({ navigation }: ICreateProps) {
     const [selectAllText, setSelectAllText] = useState('Select All');
     const [selectAllColor, setSelectAllColor] = useState('red');
     const [quantity, setQuantity] = useState(0);
+    const [endNumber, setEndNumber] = useState(0);
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [showNewTimePicker, setShowNewTimePicker] = useState(false);
     const [tempDate, setTempDate] = useState(new Date());
+    const [instructionsList, setInstructionsList] = useState([]);
     const options = {
         day: 'numeric',
         month: 'short',
@@ -56,6 +66,12 @@ export default function AddTreatment({ navigation }: ICreateProps) {
         { label: "JOUR", value: "day" },
         { label: "SEMAINE", value: "week" },
     ]
+    const trad = {
+        "day": "jour",
+        "week": "semaine",
+        "month": "mois",
+        "year": "année",
+    }
     // const periodicityBis = [
     //     { label: "MINUTE(S)", value: "min" },
     //     { label: "HEURE(S)", value: "hour" },
@@ -187,11 +203,14 @@ export default function AddTreatment({ navigation }: ICreateProps) {
             : allMeds.filter((item) => item.label.toLowerCase().includes(searchText.toLowerCase())
             );
 
-    const handleMedSelect = (med, CIS) => {
+    const handleMedSelect = (CIS) => {
+        const med = getMedbyCIS(CIS);
+        console.log(med);
         setSelectedMed(med);
-        setIsVisible(false);
-        setSearchText("");
         setSelectedMedCIS(CIS);
+        setSelectedMedName(med.Name);
+        setIsVisible(false);
+        setSearch(searchMed("E"));
         setInstructionModalVisible(true);
     };
 
@@ -200,14 +219,14 @@ export default function AddTreatment({ navigation }: ICreateProps) {
         return date.toLocaleDateString();
     };
 
-    const addDates = () => {
+    const addDates = async () => {
         let array = [];
         let startDateObj = new Date(startDate);
         const daysDifference = checkLast === 'last' ? Math.floor((Number(endDate) - Number(startDateObj)) / (24 * 60 * 60 * 1000)) : null
-        const numberOfTimes = checkLast === 'last' ? (frequencyMode === "regular" ? (parseInt(customPeriodicityNumber) * daysDifference) : (parseInt(customPeriodicityBisNumber) * daysDifference)) : quantity;
+        const numberOfTimes = checkLast === 'last' ? (frequencyMode === "regular" ? (parseInt(customPeriodicityNumber) * daysDifference) : (parseInt(customPeriodicityBisNumber) * daysDifference)) : endNumber;
         const currentDate = new Date(startDateObj);
         const intervalDays = parseInt(customPeriodicityBisNumber);
-    
+
         if (checkFrequency === 'regular') {
             if (frequencyMode === 'regular') {
                 if (checkDaily === 'daily') {
@@ -248,47 +267,40 @@ export default function AddTreatment({ navigation }: ICreateProps) {
                 console.log(hoursAssociations)
                 while (array.length < numberOfTimes) {
                     console.log("bbb")
-                        if (array.length < numberOfTimes) {
-                            const newDate = new Date(currentDate);
-                            newDate.setHours(selectedHourBis.getHours(), selectedHourBis.getMinutes(), 0, 0);
-                            array.push(newDate);
-                        };
-    
+                    if (array.length < numberOfTimes) {
+                        const newDate = new Date(currentDate);
+                        newDate.setHours(selectedHourBis.getHours(), selectedHourBis.getMinutes(), 0, 0);
+                        array.push(newDate);
+                    };
+
                     // Move to the next medication date by adding the interval days
                     currentDate.setDate(currentDate.getDate() + intervalDays);
                 }
             }
             setArrayOfDates(array);
         }
-        
+
         console.log("Generated Dates => ", array);
         console.log("END DATE => ", endDate)
-    };
-    
-    
-
-    const renderItem = ({ item }) => {
-        return (
-            <TouchableOpacity
-                style={styles.dropdownItem}
-                onPress={() => handleMedSelect(item.label, item.id)}
-                key={item.id}
-            >
-                <Text>{item.label}</Text>
-            </TouchableOpacity>
-        );
     };
 
     const lastTakeForm = checkLast === 'number' ? (
         <View>
             <Text>Selectioner le nombre de prises</Text>
-            <Input
-                placeholder="Selectioner la quantité de médicament"
-                leftIcon={{}}
-                onChangeText={(text) => setQuantity(parseInt(text))}
-                value={quantity ? quantity.toString() : ""}
+            <TextInput
+                style={{
+                    borderWidth: 2,
+                    borderColor: 'gray',
+                    borderRadius: 5,
+                    paddingHorizontal: 8,
+                    paddingVertical: 6,
+                    fontSize: 16,
+                    marginBottom: 10
+                }}
+                onChangeText={(text) => setEndNumber(parseInt(text))}
+                value={endNumber ? endNumber.toString() : ""}
                 keyboardType="numeric"
-            ></Input>
+            ></TextInput>
         </View>
     ) : checkLast === 'last' ? (
         <View>
@@ -298,7 +310,15 @@ export default function AddTreatment({ navigation }: ICreateProps) {
                 style={{ marginBottom: 20 }}
             >
                 <TextInput
-                    style={{ height: 40, borderColor: "gray", borderWidth: 1 }}
+                    style={{
+                        borderWidth: 2,
+                        borderColor: 'gray',
+                        borderRadius: 5,
+                        paddingHorizontal: 8,
+                        paddingVertical: 6,
+                        fontSize: 16,
+                        marginBottom: 10
+                    }}
                     editable={false}
                     value={formatDate(endDate)}
                     placeholder="Selectionner une date"
@@ -338,21 +358,21 @@ export default function AddTreatment({ navigation }: ICreateProps) {
 
     const toggleCheckbox = (index) => {
         const updatedWeekDays = [...weekDays];
-        if (updatedWeekDays[index].checked ){
+        if (updatedWeekDays[index].checked) {
             updatedWeekDays[index].checked = !updatedWeekDays[index].checked;
             setWeekDays(updatedWeekDays);
         } else {
-            if (customPeriodicity != "week"){
+            if (customPeriodicity != "week") {
                 updatedWeekDays[index].checked = !updatedWeekDays[index].checked;
                 setWeekDays(updatedWeekDays);
-            } else if (weekDays.filter(day => day.checked).length < parseInt(customPeriodicityNumber)){
+            } else if (weekDays.filter(day => day.checked).length < parseInt(customPeriodicityNumber)) {
                 updatedWeekDays[index].checked = !updatedWeekDays[index].checked;
                 setWeekDays(updatedWeekDays);
             }
         }
-        
-        
-        
+
+
+
     };
     const frequencyForm = frequencyMode === 'regular' ? (
         customPeriodicity === 'day' ? (
@@ -368,12 +388,25 @@ export default function AddTreatment({ navigation }: ICreateProps) {
                 />
                 {Array.from({ length: parseInt(customPeriodicityNumber) }, (_, index) => (
                     <View key={index}>
-                        <Button title={`${index + 1}`} onPress={() => {
-                            toggleShowHourPicker(index)
-                        }} />
                         {hoursAssociations[index] ? (
-                            <Text style={{ color: "green", marginBottom: 10 }}>Heure de prise : {formatHour(hoursAssociations[index])}</Text>
-                        ) : <Text style={{ color: "red", marginBottom: 10 }}>Renseigner l'heure</Text>}
+
+                            <View style={{ display: "flex", flexDirection: "row", justifyContent: "flex-start", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                                <TouchableOpacity onPress={() => toggleShowHourPicker(index)} style={{ backgroundColor: '#9CDE00', padding: 10, borderRadius: 5 }}>
+                                    <Icon.Clock color={"white"} />
+                                </TouchableOpacity>
+
+                                <Text style={{ color: "green", marginBottom: 10 }}>Heure de prise : {formatHour(hoursAssociations[index])}</Text>
+                            </View>
+
+                        ) : (
+                            <View style={{ display: "flex", flexDirection: "row", justifyContent: "flex-start", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                                <TouchableOpacity onPress={() => toggleShowHourPicker(index)} style={{ backgroundColor: '#FF0000', padding: 10, borderRadius: 5 }}>
+                                    <Icon.Clock color={"white"} />
+                                </TouchableOpacity>
+
+                                <Text style={{ color: "red", marginBottom: 10 }}>Renseigner l'heure</Text>
+                            </View>
+                        )}
                         {showHourPicker[index] ? (
                             <DateTimePicker
                                 testID="timePicker"
@@ -426,24 +459,24 @@ export default function AddTreatment({ navigation }: ICreateProps) {
                     </View>
                 ) : null}
             </View>
-        ) : customPeriodicity=="week" ? (
+        ) : customPeriodicity == "week" ? (
             <View>
                 <View>
-                        <Text>Selectionner les jours de prises</Text>
-                        <View>
-                            {weekDays.map((day, index) => (
-                                <View key={index} style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                    <Checkbox
-                                        status={day.checked ? 'checked' : 'unchecked'}
-                                        onPress={() => { 
-                                            toggleCheckbox(index) 
-                                        }}
-                                    />
-                                    <Text>{day.day}</Text>
-                                </View>
-                            ))}
-                        </View>
+                    <Text>Selectionner les jours de prises</Text>
+                    <View>
+                        {weekDays.map((day, index) => (
+                            <View key={index} style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <Checkbox
+                                    status={day.checked ? 'checked' : 'unchecked'}
+                                    onPress={() => {
+                                        toggleCheckbox(index)
+                                    }}
+                                />
+                                <Text>{day.day}</Text>
+                            </View>
+                        ))}
                     </View>
+                </View>
             </View>
         ) : null
     ) : frequencyMode === 'bis' ? (
@@ -451,7 +484,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
             <Button title="Heure de prise" onPress={() => {
                 setShowHourPickerBis(true)
             }} />
-            {selectedHourBis  ? (
+            {selectedHourBis ? (
                 <Text style={{ color: "green", marginBottom: 10 }}>Heure de prise : {formatHour(selectedHourBis)}</Text>
             ) : <Text style={{ color: "red", marginBottom: 10 }}>Renseigner l'heure</Text>}
             {showHourPickerBis ? (
@@ -571,7 +604,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
             </View>
             {checkLast === 'number' ? (
                 lastTakeForm
-            ):null}
+            ) : null}
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <RadioButton
                     value="last"
@@ -582,19 +615,28 @@ export default function AddTreatment({ navigation }: ICreateProps) {
             </View>
             {checkLast === 'last' ? (
                 lastTakeForm
-            ):null}
+            ) : null}
         </View>
     ) : checkFrequency === 'custom' ? (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
             {arrayOfDates.map((date, index) => (
-                    <View key={index} style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 10 }}>
-                        <Text style={{ marginRight: 10 }}>{date.toLocaleString()}</Text>
-                        <TouchableOpacity onPress={() => removeDate(index)} style={{ backgroundColor: 'red', padding: 10, borderRadius: 5 }}>
-                            <Text style={{ color: 'white' }}>Delete</Text>
-                        </TouchableOpacity>
-                    </View>
-                ))}
-            <Button title="Add New Date + Hour" onPress={() => setShowDatePicker(true)} />
+                <View key={index} style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 10 }}>
+                    <Text style={{ marginRight: 10 }}>{formatDate(date)}</Text>
+                    <Text style={{ marginRight: 10 }}>{formatHour(date)}</Text>
+                    <TouchableOpacity onPress={() => removeDate(index)} style={{ backgroundColor: '#FF000030', padding: 10, borderRadius: 5 }}>
+                        <Icon.Trash color={"red"} />
+                    </TouchableOpacity>
+                </View>
+            ))}
+            <TouchableOpacity
+                className=" flex items-center justify-center"
+                onPress={() => setShowDatePicker(true)}
+                style={{ backgroundColor: "#6721ec30", padding: 10, borderRadius: 5 }}
+            >
+                <Text className=" text-[#363636] text-lg">
+                    Ajouter une échéance
+                </Text>
+            </TouchableOpacity>
             {showDatePicker && (
                 <DateTimePicker
                     testID="datePicker"
@@ -620,14 +662,14 @@ export default function AddTreatment({ navigation }: ICreateProps) {
 
     const quantityForm = checkQty === 'regular' ? (
         <View>
-            <Text>Selectioner la quantité</Text>
-            <Input
-                placeholder="Selectioner la quantité de médicament"
-                leftIcon={{}}
+            <Text>Selectionner la quantité</Text>
+            <TextInput
+                style={{ borderWidth: 1, borderColor: 'gray', borderRadius: 5, paddingHorizontal: 8, paddingVertical: 6, fontSize: 16 }}
                 onChangeText={(text) => setQuantity(parseInt(text))}
                 value={quantity ? quantity.toString() : ""}
                 keyboardType="numeric"
-            ></Input>
+            ></TextInput>
+            <Button title="Associate Digit" onPress={associateDigitWithDates} />
         </View>
     ) : checkQty === 'custom' && arrayOfDates.length != 0 ? (
         <View>
@@ -670,12 +712,15 @@ export default function AddTreatment({ navigation }: ICreateProps) {
             <Text className="text-center text-xl font-bold text-blue-400">
                 {"Quantities"}
             </Text>
-            <Text>Selectionner la fréquence</Text>
+            <Text>Selectionner la régularité des quantitées</Text>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <RadioButton
                     value="regular"
                     status={checkQty === 'regular' ? 'checked' : 'unchecked'}
-                    onPress={() => setCheckQty('regular')}
+                    onPress={() => {
+                        addDates()
+                        setCheckQty('regular')
+                    }}
                 />
                 <Text>Régulière</Text>
             </View>
@@ -695,46 +740,79 @@ export default function AddTreatment({ navigation }: ICreateProps) {
     ) : null;
 
     const addInstruction = async () => {
+        addDates();
         console.log("ADD INSTRUCTION")
+        console.log("DATES DIGIT ASS", dateDigitAssociations)
         const newInstruction = {
             CIS: selectedMedCIS,
+            name: selectedMedName,
             regularFrequency: checkFrequency === 'regular', // CE MÉDICAMENT EST-IL À PRENDRE RÉGULIÈREMENT ?
 
             // REGULIER
-            regularFrequencyMode: frequencyMode? frequencyMode : null, // COMMENT ? (X FOIS PAR JOUR/SEMAINE/MOIS OU TOUS LES X JOURS)
-            regularFrequencyNumber: frequencyMode? (customPeriodicityNumber? customPeriodicityNumber : customPeriodicityBisNumber) : null, // X ?
-            regularFrequencyPeriods: frequencyMode === "regular"? (customPeriodicity? customPeriodicity : "day") : null, // SI X FOIS PAR (JOUR/SEMAINE/MOIS), PÉRIODICITÉ
-            regularFrequencyContinuity: checkDaily? checkLast : null, // EST-CE QUOTIDIEN OU SEULEMENT CERTAINS JOURS ? (DAILY/CUSTOM) 
-            regularFrequencyDays: checkDaily === "custom"? weekDays.filter(day => day.checked).map(day => day.day) : null, // SI CERTAINS JOURS, LESQUELS ?
+            regularFrequencyMode: frequencyMode ? frequencyMode : null, // COMMENT ? (X FOIS PAR JOUR/SEMAINE/MOIS OU TOUS LES X JOURS)
+            regularFrequencyNumber: frequencyMode ? (customPeriodicityNumber ? customPeriodicityNumber : customPeriodicityBisNumber) : null, // X ?
+            regularFrequencyPeriods: frequencyMode === "regular" ? (customPeriodicity ? customPeriodicity : "day") : null, // SI X FOIS PAR (JOUR/SEMAINE/MOIS), PÉRIODICITÉ
+            regularFrequencyContinuity: checkDaily ? checkDaily : null, // EST-CE QUOTIDIEN OU SEULEMENT CERTAINS JOURS ? (DAILY/CUSTOM) 
+            regularFrequencyDays: checkDaily === "custom" ? weekDays.filter(day => day.checked).map(day => day.day) : null, // SI CERTAINS JOURS, LESQUELS ?
 
             // PERSONNALISÉ
 
 
             endModality: checkLast, // COMMENT S'ARRÊTE LE TRAITEMENT ? (NOMBRE DE PRIS OU DATE DE FIN)
             endDate: checkLast === 'last' ? endDate : null, // DATE DE FIN SI FIN À UNE DATE PRÉCISE
-            endQuantity: checkLast === 'number' ? quantity : null, // NOMBRE DE PRIS SI FIN AU BOUT D'UN CERTAIN NOMBRE DE PRIS
+            endQuantity: checkLast === 'number' ? endNumber : null, // NOMBRE DE PRIS SI FIN AU BOUT D'UN CERTAIN NOMBRE DE PRIS
             quantity: checkQty === 'regular' ? quantity : null, // QUANTITÉ À PRENDRE À CHAQUE PRISE SI QUANTITÉ RÉGULIÈRE
             datesAndQuantities: dateDigitAssociations,
         };
+        console.log("NEW INSTRUCTION => ", newInstruction)
         await addItemToList('instructions', newInstruction);
+        setInstructionsList([...instructionsList, newInstruction]);
+        setInstructionModalVisible(false);
     };
+
     const addTreatment = async () => {
+
+        // VERIFICATION DES INFORMATION RENTREES
+        const allTreatments = await getAllTreatments();
+        allTreatments.find(treatment => treatment.name === treatmentName)
+        console.log("TREATMENT NAME => ", treatmentName)
+        console.log("ALL TREATMENTS => ", allTreatments)
+        console.log("FIND TREATMENT => ", allTreatments.find(treatment => treatment.name === treatmentName))
+
+        if (treatmentName === "") {
+            alert("Veuillez renseigner le nom du traitement")
+            return
+        } else if (allTreatments.find(treatment => treatment.name === treatmentName)) {
+            alert("Ce nom de traitement est déjà utilisé")
+            return
+        }
+
+        const now = new Date();
+        if (startDate < now) {
+            alert("La date de début ne peut pas être passée")
+            return
+        }
+        // ------------------------------
+
         console.log("ADD TREATMENT")
-        await addInstruction();
-        let instructions = AsyncStorage.getItem("instructions");
+        let asyncInstructions = AsyncStorage.getItem("instructions");
+        AsyncStorage.setItem("instructions", JSON.stringify([]));
         const newTreatment = {
             name: treatmentName,
             description: treatmentDescription,
             startDate: startDate,
-            instructions: instructions,
+            instructions: asyncInstructions,
         };
         await addItemToList('treatments', newTreatment);
+        setInstructionModalVisible(false);
+        navigation.navigate("Home");
+
     }
 
     const modalContent = selectedMed ? (
         <View className="flex justify-center gap-4 p-2">
             <Text className="text-center text-xl font-bold text-blue-400">
-                {selectedMed}
+                {selectedMedName}
             </Text>
             <Text>Selectionner la fréquence</Text>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -755,11 +833,64 @@ export default function AddTreatment({ navigation }: ICreateProps) {
             </View>
             {periodicityForm}
             {customQuantities}
-            <View style={{ marginTop: 50 }}>
-                <Button title="VALIDER" color={"green"} onPress={addTreatment}/>
+            <View style={{
+                display: "flex",
+                flexDirection: "row-reverse",
+                justifyContent: "space-around",
+                alignItems: "center",
+                marginVertical: 60
+
+            }}>
+                <TouchableOpacity onPress={() => { addInstruction() }} style={{ backgroundColor: '#9CDE00', padding: 10, borderRadius: 5 }}>
+                    <Text style={{ color: "white", fontWeight: "bold" }}>VALIDER</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => setInstructionModalVisible(false)} style={{ backgroundColor: '#FF0000', padding: 10, borderRadius: 5 }}>
+                    <Text style={{ color: "white", fontWeight: "bold" }}>ANNULER</Text>
+                </TouchableOpacity>
             </View>
+
         </View>
     ) : null;
+
+    const modalDescriptionContent = 
+        selectedInstruction ? (
+            <View className="flex justify-center gap-4 p-2">
+                <Text className="text-center text-xl font-bold text-blue-400">
+                    {selectedInstruction.name}
+                </Text>
+                <Text>Ce médicament est à prendre de façon {selectedInstruction.regularFrequency === true ? "régulière" : "irrégulière"}</Text>
+                {selectedInstruction.regularFrequency === true ? (
+                    <View>
+                        <Text>Il est à prendre {selectedInstruction.regularFrequencyMode === "regular" ? selectedInstruction.regularFrequencyNumber + " fois par " + trad[selectedInstruction.regularFrequencyPeriods] : "tous les " + selectedInstruction.regularFrequencyNumber + " jours"}</Text>
+                        {selectedInstruction.regularFrequencyMode === "regular" && selectedInstruction.regularFrequencyPeriods === "week" ? (
+                            <Text>Il est à prendre les {selectedInstruction.regularFrequencyDays.join(", ")}</Text>
+                        ) :
+                            selectedInstruction.regularFrequencyMode === "regular" && selectedInstruction.regularFrequencyPeriods === "day" ? (
+                                selectedInstruction.regularFrequencyContinuity === "daily" ? (
+                                    <Text>Il est à prendre tous les jours</Text>
+                                ) : (
+                                    null
+                                )
+                            ) : null}
+                        {selectedInstruction.endModality === "number" ? (
+                            <Text>Il est à prendre {selectedInstruction.endQuantity} fois, jusqu'au {Object.keys(selectedInstruction.datesAndQuantities)[Object.keys(selectedInstruction.datesAndQuantities).length - 1]}</Text>
+                        ) : selectedInstruction.regularFrequencyContinuity === "number" ? (
+                            <Text>Il est à prendre {selectedInstruction.endQuantity} fois</Text>
+                        ) : null}
+                        {selectedInstruction.regularFrequencyDays ? (
+                            <Text>Il est à prendre les {selectedInstruction.regularFrequencyDays.join(", ")}</Text>
+                        ) : null}
+                    </View>
+                ) : (
+                    <View>
+                        <Text>Il est à prendre {selectedInstruction.endQuantity} fois</Text>
+                        <Text>Il est à prendre les {selectedInstruction.regularFrequencyDays.join(", ")}</Text>
+                    </View>
+                )}
+
+            </View>
+        ) : null
+    
 
     useEffect(() => {
         console.log("Nav on AddTreatment Page");
@@ -771,13 +902,21 @@ export default function AddTreatment({ navigation }: ICreateProps) {
     }, []);
 
     return (
-        <View style={styles.modalTitle}>
+        <View style={styles.container}>
             <Text className=" text-3xl">Ajouter un Traitement</Text>
             <View className=" flex justify-center pt-8">
                 <Text>Nom du traitement*</Text>
-                <Input
+                <TextInput
+                    style={{
+                        borderWidth: 2,
+                        borderColor: 'gray',
+                        borderRadius: 5,
+                        paddingHorizontal: 8,
+                        paddingVertical: 6,
+                        fontSize: 16,
+                        marginBottom: 10
+                    }}
                     placeholder="Entrez le nom du traitement"
-                    leftIcon={{}}
                     onChangeText={(text) =>
                         setTreatmentName(text.charAt(0).toUpperCase() + text.slice(1))
                     }
@@ -785,9 +924,17 @@ export default function AddTreatment({ navigation }: ICreateProps) {
                 />
 
                 <Text>Description du traitement</Text>
-                <Input
+                <TextInput
+                    style={{
+                        borderWidth: 2,
+                        borderColor: 'gray',
+                        borderRadius: 5,
+                        paddingHorizontal: 8,
+                        paddingVertical: 6,
+                        fontSize: 16,
+                        marginBottom: 10
+                    }}
                     placeholder="Entrez la description du traitement"
-                    leftIcon={{}}
                     onChangeText={(text) =>
                         setTreatmentDescription(
                             text.charAt(0).toUpperCase() + text.slice(1)
@@ -799,10 +946,22 @@ export default function AddTreatment({ navigation }: ICreateProps) {
                 <Text>Date de début</Text>
                 <TouchableOpacity
                     onPress={() => setShowStartPicker(true)}
-                    style={{ marginBottom: 20 }}
+                    style={{
+                        paddingHorizontal: 8,
+                        paddingVertical: 6,
+                    }}
                 >
                     <TextInput
-                        style={{ height: 40, borderColor: "gray", borderWidth: 1 }}
+                        style={{
+                            borderWidth: 2,
+                            borderColor: 'gray',
+                            borderRadius: 5,
+                            paddingHorizontal: 8,
+                            paddingVertical: 6,
+                            fontSize: 16,
+                            marginBottom: 10
+                        }}
+
                         editable={false}
                         value={formatDate(startDate)}
                         placeholder="Selectionner une date"
@@ -821,29 +980,89 @@ export default function AddTreatment({ navigation }: ICreateProps) {
                         }}
                     />
                 )}
-
-                <Text>Médicament à ajouter</Text>
-                <TextInput
-                    style={styles.dropdownInput}
-                    onFocus={() => {
-                        setIsVisible(true);
-                        console.log("Focus");
-                    }}
-                    onChangeText={(text) => {
-                        setSearchText(text);
-                        setIsVisible(true);
-                    }}
-                    value={searchText}
-                    placeholder="Selectioner vos médicaments..."
-                />
+                <TouchableOpacity
+                    className=" flex items-center justify-center"
+                    onPress={() => setShowDatePicker(true)}
+                    style={{ backgroundColor: "#6721ec30", padding: 10, borderRadius: 5, width: "80%" }}
+                >
+                    <TextInput
+                        className=" text-[#363636] text-lg"
+                        style={{ fontSize: 16 }}
+                        onFocus={() => {
+                            setIsVisible(true);
+                            console.log("Focus");
+                        }}
+                        onChangeText={(text) => {
+                            setSearch(searchMed(text));
+                            setIsVisible(true);
+                        }}
+                        value={searchText}
+                        placeholder="Selectioner vos médicaments..."
+                    />
+                </TouchableOpacity>
                 {isVisible && (
                     <FlatList
-                        data={filteredData}
-                        renderItem={renderItem}
-                        keyExtractor={(item) => item.id.toString()}
+                        data={search}
+                        keyExtractor={(_item, index) => index.toString()}
+                        renderItem={({ item }) => (
+                            <TouchableOpacity
+                                style={styles.listItem}
+                                className="flex justify-start align-middle"
+                                onPress={() => handleMedSelect(item.CIS)}
+                            >
+                                <MedIconByType type={item.type} />
+                                <Text className="ml-4">{item.Name}</Text>
+                            </TouchableOpacity>
+                        )}
                         style={styles.dropdownList}
                     />
                 )}
+
+                {instructionsList.length > 0 ? instructionsList.map((instruction, index) => (
+                    <View key={index} style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", marginHorizontal: 30, marginVertical: 10 }}>
+                        <TouchableOpacity
+                            className=" flex items-center justify-center"
+                            onPress={() => {
+                                setSelectedInstruction(instruction);
+                                setInstructionsDetailModal(true)
+                            }}
+                            style={{ backgroundColor: "#01A9F580", padding: 10, borderRadius: 5 }}
+                        >
+                            <Text className=" text-[#363636] text-lg" ellipsizeMode="tail" numberOfLines={1}>
+                                {instruction.name}
+                            </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            className=" flex items-center justify-center"
+                            onPress={() => setShowDatePicker(true)}
+                            style={{ backgroundColor: "#FF0000", padding: 10, borderRadius: 5 }}
+                        >
+                            <Icon.Trash color={"white"} />
+                        </TouchableOpacity>
+                        <ModalComponent
+                            visible={instructionsDetailModal}
+                            onClose={() => {
+                                setInstructionsDetailModal(false);
+                            }}
+                            styleAdded={{
+                                backgroundColor: "white",
+                                borderRadius: 10,
+                                padding: 20,
+                                maxHeight: "80%",
+                            }}
+                            children={modalDescriptionContent}
+                        />
+
+                    </View>
+                )) : null}
+
+                <TouchableOpacity
+                    className=" flex items-center justify-center"
+                    onPress={() => addTreatment()}
+                    style={{ backgroundColor: "#00FFFF80", padding: 10, borderRadius: 5 }}
+                >
+                    <Text>AJOUTER LE TRAITEMENT</Text>
+                </TouchableOpacity>
             </View>
             <ModalComponent
                 visible={instructionModalVisible}

@@ -5,7 +5,7 @@ import * as ImagePicker from "expo-image-picker";
 import callGoogleVisionAsync from "../../OCR/helperFunctions";
 import { styles } from "../../style/style";
 import AvatarButton from "../component/Avatar";
-import { getUserByID, readList } from "../../dao/Storage";
+import { getAllTreatments, getUserByID, readList } from "../../dao/Storage";
 import { Bell } from "react-native-feather";
 import { Button, Input } from "react-native-elements";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
@@ -23,7 +23,7 @@ export default function Home({ navigation }) {
   const [user, setUser] = useState<User | null>(null);
   const [users, setUsers] = useState<User[]>([]);
   const [header, setHeader] = useState(true);
-  const [treatments, setTreatments] = useState("null");
+  const [treatments, setTreatments] = useState<Treatment[]>([]);
 
   const init = async () => {
     const userList = await readList("users");
@@ -72,42 +72,12 @@ export default function Home({ navigation }) {
   };
 
   const showTreatments = async () => {
-    const treatments = await AsyncStorage.getItem("treatments");
-    const treatmentsJson = JSON.parse(treatments)
-    treatmentsJson.map((treatment) => {
-      const instructions= JSON.parse(treatment.instructions._j)
-      const instructionsArray = []
-      instructions.map((instr) => {
-        let daqDict = {};
-        Object.entries(instr.datesAndQuantities).forEach(([date, quantity]) => {
-          daqDict[date] = Number(quantity);
-        })
-        const instruction : Instruction = {
-          CIS: instr.CIS,
-          regularFrequency: instr.regularFrequency,
-          regularFrequencyMode: instr.regularFrequencyMode,
-          regularFrequencyNumber: instr.regularFrequencyNumber,
-          regularFrequencyPeriods: instr.regularFrequencyPeriods,
-          regularFrequencyContinuity: instr.regularFrequencyContinuity,
-          regularFrequencyDays: instr.regularFrequencyDays,
-          endModality: instr.endModality,
-          endDate: instr.endDate,
-          endQuantity: instr.endQuantity,
-          quantity: instr.quantity,
-          datesAndQuantities: daqDict,
-        }
-        instructionsArray.push(instruction)
-      })
-      const treatmentObject : Treatment = {
-        name: treatment.name,
-        description: treatment.description,
-        startDate: new Date(treatment.startDate), 
-        instruction: instructionsArray
-      }
-      console.log(treatmentObject.instruction)
-    })
-    
-    setTreatments(treatments.toString());
+    const treatments = await getAllTreatments();
+    console.log(treatments[0]);
+    setTreatments(treatments);
+  }
+  const deleteTreatments = async () => {
+    AsyncStorage.removeItem("treatments");
   }
 
   useEffect(() => {
@@ -183,8 +153,18 @@ export default function Home({ navigation }) {
           <Button onPress={notificationDaily} title="Notification quotidienne"/>
           <Button onPress={notificationForgot} title="Notification oubli"/>
           <Button onPress={showTreatments} title="Liste des traitements"/>
-          <Text>{treatments}</Text>
-
+          <Button onPress={deleteTreatments} title="Supprimer traitements"/>
+          {treatments && treatments.map((treatment) => { return (
+            <View key={treatment.name}>
+              <Text>{treatment.name}</Text>
+              <Text>{treatment.instruction.length}</Text>
+              </View>
+         )})}
+          {!treatments ? (
+            <Text>PAS DE VARIABLE ASYNC TREATMENT</Text>
+          ) : treatments.length == 0 ? (
+            <Text>TREATMENTS VIDE</Text>
+          ) :null }
         </>
       )}
       {loading&&<Loading/>}

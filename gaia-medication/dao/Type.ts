@@ -17,7 +17,8 @@ type Treatment = {
 
 type Instruction = {
   CIS: string,
-  regularFrequency: string, // CE MÉDICAMENT EST-IL À PRENDRE RÉGULIÈREMENT ?
+  name: string,
+  regularFrequency: boolean, // CE MÉDICAMENT EST-IL À PRENDRE RÉGULIÈREMENT ?
 
   // REGULIER
   regularFrequencyMode: string, // COMMENT ? (X FOIS PAR JOUR/SEMAINE/MOIS OU TOUS LES X JOURS)
@@ -40,6 +41,15 @@ type Stock = {
   CIS: number;
   CIP: number;
   qte: number
+};
+
+type Med = {
+  CIS: number,
+  name: string,
+  infos: string,
+  Marketed: string,
+  administration_way: string,
+  authorization: string,
 };
 
 type Journal = {
