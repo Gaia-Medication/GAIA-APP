@@ -128,6 +128,7 @@ export default function Drug({ route, navigation }) {
               </Text>
               <Text>Administration : {drug.Administration_way}</Text>
             </View>
+            <Text>Boite(s) disponible(s) :</Text>
             <View>
               {drug.Values.map((item, index) => {
                 const alreadyStocked =
@@ -190,7 +191,7 @@ export default function Drug({ route, navigation }) {
                   style={styles.listItem}
                   className="flex justify-start align-middle"
                   onPress={() =>
-                    navigation.navigate("Drug", { drugCIS: item.CIS })
+                    navigation.push("Drug", { drugCIS: item.CIS })
                   }
                 >
                   <MedIconByType type={item.Shape} />

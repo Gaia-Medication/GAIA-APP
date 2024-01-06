@@ -15,8 +15,21 @@ export default function Stock({ navigation }) {
   const init = async () => {
     const currentId = JSON.parse(await AsyncStorage.getItem("currentUser"));
     const stockList = await readList("stock");
-    console.log(stockList.filter((item) => item.idUser == currentId))
-    setStock(stockList.filter((item) => item.idUser == currentId));
+    const stockListFilter=stockList.filter((item) => item.idUser == currentId);
+    console.log(stockListFilter);
+    const stockListFilterGrouped = stockListFilter.reduce((result, current) => {
+      const key = current.CIS;
+      if (!result[key]) {
+        result[key] = { ...current };
+      } else {
+        result[key].qte += current.qte;
+      }
+      return result;
+    }, {});
+    
+    // Conversion de l'objet regroupé en tableau
+    const actualStock = Object.values(stockListFilterGrouped);
+    setStock(actualStock)
   };
   useEffect(() => {
     if (isFocused) {
@@ -33,18 +46,18 @@ export default function Stock({ navigation }) {
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => {
             const drug = getMedbyCIS(item.CIS);
-            const product = drug.Values.find((drug) => drug.CIP === item.CIP);
             return (
               <TouchableOpacity
                 style={styles.listItem}
+                className="flex justify-start align-middle"
                 onPress={() =>
                   navigation.navigate("Drug", { drugCIS: drug.CIS })
                 }
               >
-                <View>
-                  <MedIconByType type={drug.Shape}/>
-                  <Text>{drug.Name}</Text>
-                  <Text>{product.Denomination}</Text>
+                <MedIconByType type={drug.Shape}/>
+                <View className="ml-4 flex-1 flex-row justify-between items-center">
+                  <Text className="flex-1">{drug.Name}</Text>
+                  <Text className=" text-[#7B7B7B]">{item.qte} restant(e)(s)</Text>
                 </View>
               </TouchableOpacity>
             );
