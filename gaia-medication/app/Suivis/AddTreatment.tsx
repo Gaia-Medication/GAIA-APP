@@ -23,45 +23,73 @@ interface ICreateProps {
 
 export default function AddTreatment({ navigation }: ICreateProps) {
     const isFocused = useIsFocused();
+
+    // INPUTS
+    const [treatmentName, setTreatmentName] = useState("");
+    const [treatmentDescription, setTreatmentDescription] = useState("");
+    const [startDate, setStartDate] = useState(new Date());
     const [search, setSearch] = useState(searchMed("E"));
-    const [allMeds, setAllMeds] = useState([]);
+    const [searchText, setSearchText] = useState("");
+    const [endDate, setEndDate] = useState(new Date());
+    const [endNumber, setEndNumber] = useState(0);
+    const [quantity, setQuantity] = useState(0);
+    const [digitInput, setDigitInput] = useState("0");
+    const [customPeriodicityBisNumber, setCustomPeriodicityBisNumber] = useState("0");
+    const [customPeriodicityNumber, setCustomPeriodicityNumber] = useState("0");
+
+    // CHECKBOXES, RADIO BUTTONS, PICKERS
+    const [checkFrequency, setCheckFrequency] = useState('');
+    const [frequencyMode, setFrequencyMode] = useState('regular');
+    const [customPeriodicity, setCustomPeriodicity] = useState("week");
+    const [weekDays, setWeekDays] = useState([
+        { day: 'Dimanche', checked: false },
+        { day: 'Lundi', checked: false },
+        { day: 'Mardi', checked: false },
+        { day: 'Mercredi', checked: false },
+        { day: 'Jeudi', checked: false },
+        { day: 'Vendredi', checked: false },
+        { day: 'Samedi', checked: false },
+    ])
+    const [checkDaily, setCheckDaily] = useState('');
+    const [checkLast, setCheckLast] = useState('');
+    const [checkQty, setCheckQty] = useState('');
+    const [checkedDates, setCheckedDates] = useState([]);
+
+    // VISIBILITY
     const [isVisible, setIsVisible] = useState(false);
+    const [treatmentModalVisible, setTreatmentModalVisible] = useState(false);
+    const [instructionModalVisible, setInstructionModalVisible] = useState(false);
+    const [instructionsDetailModal, setInstructionsDetailModal] = useState(false);
+    const [showStartPicker, setShowStartPicker] = useState(false);
+    const [showEndPicker, setShowEndPicker] = useState(false);
+    const [showDatePicker, setShowDatePicker] = useState(false);
+    const [showNewTimePicker, setShowNewTimePicker] = useState(false);
+    const [showHourPickerBis, setShowHourPickerBis] = useState(false);
+
+    const [allMeds, setAllMeds] = useState([]);
+    const [showHourPicker, setShowHourPicker] = useState([]);
+
+    // DATA
+    const [hoursAssociations, setHoursAssociations] = useState([]);
+    const [selectedHourBis, setSelectedHourBis] = useState(new Date());
+    const [selectedHour, setSelectedHour] = useState(new Date());
+    const [selectAllText, setSelectAllText] = useState('Select All');
+    const [selectAllColor, setSelectAllColor] = useState('red');
     const [selectedMed, setSelectedMed] = useState({});
     const [selectedMedCIS, setSelectedMedCIS] = useState("");
     const [selectedMedName, setSelectedMedName] = useState("");
-    const [searchText, setSearchText] = useState("");
-    const [treatmentModalVisible, setTreatmentModalVisible] = useState(false);
-    const [instructionModalVisible, setInstructionModalVisible] = useState(false);
-    const [treatmentName, setTreatmentName] = useState("");
-    const [treatmentDescription, setTreatmentDescription] = useState("");
-    const [instructions, setInstructions] = useState([]);
-    const [instructionsDetailModal, setInstructionsDetailModal] = useState(false);
-    const [selectedInstruction, setSelectedInstruction] = useState<Instruction>(null);
-    const [frequency, setFrequency] = useState("");
-    const [startDate, setStartDate] = useState(new Date());
-    const [endDate, setEndDate] = useState(new Date());
-    const [showStartPicker, setShowStartPicker] = useState(false);
-    const [showEndPicker, setShowEndPicker] = useState(false);
-    const [checkFrequency, setCheckFrequency] = useState('');
-    const [checkQty, setCheckQty] = useState('');
-    const [checkLast, setCheckLast] = useState('');
-    const [arrayOfDates, setArrayOfDates] = useState([]);
-    const [digitInput, setDigitInput] = useState("0");
-    const [dateDigitAssociations, setDateDigitAssociations] = useState({});
-    const [selectAllText, setSelectAllText] = useState('Select All');
-    const [selectAllColor, setSelectAllColor] = useState('red');
-    const [quantity, setQuantity] = useState(0);
-    const [endNumber, setEndNumber] = useState(0);
-    const [showDatePicker, setShowDatePicker] = useState(false);
-    const [showNewTimePicker, setShowNewTimePicker] = useState(false);
     const [tempDate, setTempDate] = useState(new Date());
     const [instructionsList, setInstructionsList] = useState([]);
+    const [selectedInstruction, setSelectedInstruction] = useState<Instruction>(null);
+    const [arrayOfDates, setArrayOfDates] = useState([]);
+    const [dateDigitAssociations, setDateDigitAssociations] = useState({});
+
+    // DATA ARRAYS
     const options = {
         day: 'numeric',
         month: 'short',
         year: 'numeric',
     };
-    const [checkedDates, setCheckedDates] = useState([]);
     const periodicity = [
         { label: "JOUR", value: "day" },
         { label: "SEMAINE", value: "week" },
@@ -72,84 +100,54 @@ export default function AddTreatment({ navigation }: ICreateProps) {
         "month": "mois",
         "year": "année",
     }
-    // const periodicityBis = [
-    //     { label: "MINUTE(S)", value: "min" },
-    //     { label: "HEURE(S)", value: "hour" },
-    //     { label: "JOUR(S)", value: "day" },
-    // ]
-    const [weekDays, setWeekDays] = useState([
-        { day: 'Dimanche', checked: false },
-        { day: 'Lundi', checked: false },
-        { day: 'Mardi', checked: false },
-        { day: 'Mercredi', checked: false },
-        { day: 'Jeudi', checked: false },
-        { day: 'Vendredi', checked: false },
-        { day: 'Samedi', checked: false },
-    ]);
-    const [customPeriodicity, setCustomPeriodicity] = useState("week");
-    const [customPeriodicityBisNumber, setCustomPeriodicityBisNumber] = useState("0");
-    const [frequencyMode, setFrequencyMode] = useState("regular");
-    const [customPeriodicityNumber, setCustomPeriodicityNumber] = useState("0");
-    const [selectedHour, setSelectedHour] = useState(new Date());
-    const [showHourPicker, setShowHourPicker] = useState([]);
-    const [selectedHourBis, setSelectedHourBis] = useState(new Date());
-    const [showHourPickerBis, setShowHourPickerBis] = useState(false);
-    const [hoursAssociations, setHoursAssociations] = useState([]);
-    const [checkDaily, setCheckDaily] = useState('');
 
+    // FUNCTIONS
     const onTimeChange = (event, selectedTime) => {
-        setShowNewTimePicker(false); // Hide the time picker
+        setShowNewTimePicker(false);
         if (selectedTime) {
             const newDateTime = new Date(tempDate);
             newDateTime.setHours(selectedTime.getHours());
             newDateTime.setMinutes(selectedTime.getMinutes());
-            setArrayOfDates([...arrayOfDates, newDateTime]); // Add the new date and time to the list
+            setArrayOfDates([...arrayOfDates, newDateTime]);
         }
     };
 
     const onDateChange = (event, selectedDate) => {
         if (selectedDate) {
-            setTempDate(new Date(selectedDate)); // Set the selected date into tempDate
-            setShowDatePicker(false); // Hide the date picker
-            setShowNewTimePicker(true); // Show the time picker
+            setTempDate(new Date(selectedDate));
+            setShowDatePicker(false);
+            setShowNewTimePicker(true);
         } else {
-            setShowDatePicker(false); // User cancelled, hide the picker
+            setShowDatePicker(false);
         }
     };
 
-    // Function to remove a date
+    // SUPPRIMER UNE DATE DE PRISE DU TABLEAU ARRAYOFDATES
     const removeDate = (index) => {
         const newDates = [...arrayOfDates];
         newDates.splice(index, 1);
         setArrayOfDates(newDates);
     };
 
+    // AJOUTER UNE DATE AU TABLEAU DES DATES SELECTIONNEES AFIN DE MODIFIER SA QUANTITE
     const toggleDate = (date) => {
         if (checkedDates.includes(date)) {
-            // If date is already in the checkedDates array, remove it
+            // ENLEVER LA DATE SI ELLE EST DEJA DANS LE TABLEAU
             setCheckedDates(checkedDates.filter((d) => d !== date));
         } else {
-            // If date is not in the checkedDates array, add it
+            // SINON AJOUTER LA DATE AU TABLEAU
             setCheckedDates([...checkedDates, date]);
         }
     }
 
+    // AJOUTE / MODIFIE DATE DE PRISE
     const handleHourChange = (selectedDate, index) => {
         const updatedHourAssociations = [...hoursAssociations];
         updatedHourAssociations[index] = selectedDate;
         setHoursAssociations(updatedHourAssociations);
-        console.log(updatedHourAssociations);
     };
 
-    const init = async () => {
-        const allMeds = getAllMed();
-        const medsWithKey = allMeds.map((med) => ({
-            id: med.CIS,
-            label: med.Name,
-        }));
-        setAllMeds(medsWithKey);
-    };
-
+    // MODIFIE LE BOUTON DE SELECTION DE TOUTES LES DATES
     const toggleSelectAll = () => {
         if (selectAllText === 'Select All') {
             setCheckedDates([...arrayOfDates]);
@@ -162,6 +160,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
         }
     };
 
+    // ASSOCIATE UN DIGIT (QUANTITE) A UNE DATE
     const associateDigitWithDates = () => {
         if (checkQty === "custom") {
             const updatedAssociations = { ...dateDigitAssociations };
@@ -183,12 +182,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
         }
     };
 
-    const filteredData =
-        searchText === ""
-            ? allMeds
-            : allMeds.filter((item) => item.label.toLowerCase().includes(searchText.toLowerCase())
-            );
-
+    // SETUP UN MEDICAMENT
     const handleMedSelect = (CIS) => {
         const med = getMedbyCIS(CIS);
         console.log(med);
@@ -200,11 +194,47 @@ export default function AddTreatment({ navigation }: ICreateProps) {
         setInstructionModalVisible(true);
     };
 
-    // Formatte la date pour l'affichage
+    // FORMATTE LA DATE
     const formatDate = (date) => {
         return date.toLocaleDateString();
     };
 
+    // FORMATTE L'HEURE
+    const formatHour = (hour) => {
+        if (hour instanceof Date) {
+            const hours = hour.getHours();
+            const minutes = hour.getMinutes();
+            const formattedTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+            return formattedTime;
+        }
+        return "";
+    };
+
+    // AFFICHE UN SATETIMEPICKER SPECIFIQUE
+    const toggleShowHourPicker = (index) => {
+        const updatedShowHourPickers = [...showHourPicker];
+        updatedShowHourPickers[index] = !updatedShowHourPickers[index];
+        setShowHourPicker(updatedShowHourPickers);
+    };
+
+    // GERE LES CHECKBOXES DS JOURS DE PRISES
+    const toggleCheckbox = (index) => {
+        const updatedWeekDays = [...weekDays];
+        if (updatedWeekDays[index].checked) {
+            updatedWeekDays[index].checked = !updatedWeekDays[index].checked;
+            setWeekDays(updatedWeekDays);
+        } else {
+            if (customPeriodicity != "week") {
+                updatedWeekDays[index].checked = !updatedWeekDays[index].checked;
+                setWeekDays(updatedWeekDays);
+            } else if (weekDays.filter(day => day.checked).length < parseInt(customPeriodicityNumber)) {
+                updatedWeekDays[index].checked = !updatedWeekDays[index].checked;
+                setWeekDays(updatedWeekDays);
+            }
+        }
+    };
+
+    // LIT TOUS LES INPUTS? CHECKBOXES ETC POUR RECUPERER UN TABLEAU DE DATES SANS QUANTITE
     const addDates = async () => {
         let array = [];
         let startDateObj = new Date(startDate);
@@ -326,52 +356,11 @@ export default function AddTreatment({ navigation }: ICreateProps) {
         </View>
     ) : null;
 
-    // Function to toggle the visibility of a specific DateTimePicker
-    const toggleShowHourPicker = (index) => {
-        const updatedShowHourPickers = [...showHourPicker];
-        updatedShowHourPickers[index] = !updatedShowHourPickers[index];
-        setShowHourPicker(updatedShowHourPickers);
-    };
-    const formatHour = (hour) => {
-        if (hour instanceof Date) {
-            const hours = hour.getHours();
-            const minutes = hour.getMinutes();
-            const formattedTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-            return formattedTime;
-        }
-        return "";
-    };
-
-    const toggleCheckbox = (index) => {
-        const updatedWeekDays = [...weekDays];
-        if (updatedWeekDays[index].checked) {
-            updatedWeekDays[index].checked = !updatedWeekDays[index].checked;
-            setWeekDays(updatedWeekDays);
-        } else {
-            if (customPeriodicity != "week") {
-                updatedWeekDays[index].checked = !updatedWeekDays[index].checked;
-                setWeekDays(updatedWeekDays);
-            } else if (weekDays.filter(day => day.checked).length < parseInt(customPeriodicityNumber)) {
-                updatedWeekDays[index].checked = !updatedWeekDays[index].checked;
-                setWeekDays(updatedWeekDays);
-            }
-        }
-
-
-
-    };
+    
     const frequencyForm = frequencyMode === 'regular' ? (
         customPeriodicity === 'day' ? (
             <View>
                 <Text>Renseignez l'heure de chaque prise</Text>
-                <TextInput
-                    placeholder="Enter a number"
-                    keyboardType='default'
-                    value={customPeriodicityNumber}
-                    onChangeText={(text) => {
-                        setCustomPeriodicityNumber(text)
-                    }}
-                />
                 {Array.from({ length: parseInt(customPeriodicityNumber) }, (_, index) => (
                     <View key={index}>
                         {hoursAssociations[index] ? (
@@ -401,8 +390,8 @@ export default function AddTreatment({ navigation }: ICreateProps) {
                                 is24Hour={true}
                                 display="default"
                                 onChange={(event, selectedDate) => {
-                                    toggleShowHourPicker(index); // Close the time picker
-                                    handleHourChange(selectedDate, index); // Handle hour selection
+                                    toggleShowHourPicker(index);
+                                    handleHourChange(selectedDate, index);
                                 }}
                             />
                         ) : null}
@@ -833,7 +822,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
         </View>
     ) : null;
 
-    const modalDescriptionContent = 
+    const modalDescriptionContent =
         selectedInstruction ? (
             <View className="flex justify-center gap-4 p-2">
                 <Text className="text-center text-xl font-bold text-blue-400">
@@ -871,7 +860,15 @@ export default function AddTreatment({ navigation }: ICreateProps) {
 
             </View>
         ) : null
-    
+
+    const init = async () => {
+        const allMeds = getAllMed();
+        const medsWithKey = allMeds.map((med) => ({
+            id: med.CIS,
+            label: med.Name,
+        }));
+        setAllMeds(medsWithKey);
+    };
 
     useEffect(() => {
         console.log("Nav on AddTreatment Page");
