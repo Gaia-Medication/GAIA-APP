@@ -113,6 +113,7 @@ const AvatarButton: React.FC<AvatarButtonProps> = ({
     setUser(item);
     await AsyncStorage.setItem("currentUser", JSON.stringify(item.id));
     setDropdownListVisible(false);
+    toggleExpansion()
   };
 
   return (
