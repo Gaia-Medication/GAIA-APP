@@ -15,6 +15,7 @@ import { getAllTreatments } from "../../dao/Storage";
 import { styles } from "../../style/style";
 import ModalComponent from "../component/Modal";
 import Treatment from "../component/Treatment";
+import { notificationDaily, scheduleLocalNotification } from "../Handlers/NotificationsHandler";
 
 export default function Suivis({ navigation }) {
   const isFocused = useIsFocused();
@@ -61,6 +62,7 @@ export default function Suivis({ navigation }) {
     setDatesDict(futureDatesDict);
     console.log("futureDatesKeys => ", futureDateKeys);
     setDatesKeys(futureDateKeys);
+    notificationDaily(new Date(new Date().getTime() + 10000));
   };
 
   const init = () => {
