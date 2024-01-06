@@ -10,7 +10,7 @@ from tqdm import tqdm
 BOLD = '\033[1m' # ACTIONS
 BLUE = '\033[94m' # ACTIONS
 class DataManager :
-    def __init__(self, url, filesNames) -> None:
+    def __init__(self, url, filesNames=None) -> None:
         self.url = url
         self.filesNames = filesNames
     
@@ -26,6 +26,16 @@ class DataManager :
             file_links.append(file_url)
 
         return file_links
+    
+    def getPharmacyFile(self):
+        try:
+            response = requests.get(self.url)
+        except Exception as e:
+            print(f"An error occurred: {e}")
+
+        with open('data/pharmacies.csv', 'wb') as f:
+            f.write(response.content)
+        return True
     
     def getFiles(self):
         urls = self.getUrls()
