@@ -124,12 +124,6 @@ export default function AddTreatment({ navigation }: ICreateProps) {
         setArrayOfDates(newDates);
     };
 
-    // Function to add a new date and hour (modify as needed)
-    const addNewDate = () => {
-        const newDate = new Date(); // Replace with the actual new date and hour you want to add
-        setArrayOfDates([...arrayOfDates, newDate]);
-    };
-
     const toggleDate = (date) => {
         if (checkedDates.includes(date)) {
             // If date is already in the checkedDates array, remove it
@@ -139,21 +133,6 @@ export default function AddTreatment({ navigation }: ICreateProps) {
             setCheckedDates([...checkedDates, date]);
         }
     }
-
-    const showHourPickerMethod = (index) => {
-        // Create a copy of showHourPicker to modify
-        const updatedShowHourPicker = [...showHourPicker];
-        // Toggle the visibility for the specified index
-        updatedShowHourPicker[index] = !updatedShowHourPicker[index];
-        // Update the state
-        setShowHourPicker(updatedShowHourPicker);
-    };
-
-    const showTimePicker = (index) => {
-        const updatedShowHourPicker = [...showHourPicker];
-        updatedShowHourPicker[index] = !showHourPicker[index];
-        setShowHourPicker(updatedShowHourPicker);
-    };
 
     const handleHourChange = (selectedDate, index) => {
         const updatedHourAssociations = [...hoursAssociations];
@@ -184,17 +163,24 @@ export default function AddTreatment({ navigation }: ICreateProps) {
     };
 
     const associateDigitWithDates = () => {
-        const updatedAssociations = { ...dateDigitAssociations };
+        if (checkQty === "custom") {
+            const updatedAssociations = { ...dateDigitAssociations };
 
-        checkedDates.forEach((date) => {
-            updatedAssociations[date.toISOString()] = digitInput;
-        });
+            checkedDates.forEach((date) => {
+                updatedAssociations[date.toISOString()] = digitInput;
+            });
 
-        setDateDigitAssociations(updatedAssociations);
-        console.log(updatedAssociations);
+            setDateDigitAssociations(updatedAssociations);
+            setDigitInput("0");
+        } else {
+            const updatedAssociations = { ...dateDigitAssociations };
 
-        // Reset digitInput to "0" after associating with selected dates
-        setDigitInput("0");
+            arrayOfDates.forEach((date) => {
+                updatedAssociations[date.toISOString()] = quantity;
+            });
+
+            setDateDigitAssociations(updatedAssociations);
+        }
     };
 
     const filteredData =
@@ -787,11 +773,6 @@ export default function AddTreatment({ navigation }: ICreateProps) {
             return
         }
 
-        const now = new Date();
-        if (startDate < now) {
-            alert("La date de début ne peut pas être passée")
-            return
-        }
         // ------------------------------
 
         console.log("ADD TREATMENT")
