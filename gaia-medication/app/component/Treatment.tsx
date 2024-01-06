@@ -26,11 +26,9 @@ const Treatment = ({
   const [dateObj, setDate] = useState<Date>(new Date());
 
   const init = () => {
-    if (status === "actual") {
+    if (status === "actual" || status === "next") {
       setBgColor("#9CDE0010");
-    } else if (status === "next") {
-      setBgColor("#FFC70010");
-    } else if (status === "previous") {
+    } else {
       setBgColor("#BCBCBC10");
     }
 
@@ -60,7 +58,7 @@ const Treatment = ({
     let dayOfMonth = date.getDate();
     let month = months[date.getMonth()];
   
-    return `${dayOfWeek} ${dayOfMonth} \n ${month}`;
+    return [dayOfWeek, dayOfMonth, month];
   };
 
   useEffect(() => {
@@ -69,7 +67,11 @@ const Treatment = ({
 
   return (
     <View style={{display: "flex", flexDirection: "row", justifyContent: "flex-start", gap: 10, maxHeight: "auto", marginBottom: 7, marginTop: 7}}>
-      <Text>{formatDate(dateObj)}</Text>
+      <View style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "20%" }}>
+        <Text style={{fontWeight: "800", fontSize: 20, color: status === "previous" ? "#BCBCBC" : status === "actual" ? "#9CDE00" : "#00000099"}}>{formatDate(dateObj)[0]}</Text>
+        <Text style={{fontWeight: "800", fontSize: 20, color: status === "previous" ? "#BCBCBC" : status === "actual" ? "#9CDE00" : "#00000099"}}>{formatDate(dateObj)[1]}</Text>
+        <Text style={{fontWeight: "800", fontSize: 20, color: status === "previous" ? "#BCBCBC" : status === "actual" ? "#9CDE00" : "#00000099"}}>{formatDate(dateObj)[2]}</Text>
+      </View>
       <View style= {{ display: "flex", flexDirection: "column", gap: 15, alignItems: "center" }}>
         <View style={{ 
           width: 15,
@@ -107,7 +109,6 @@ const Treatment = ({
           <Text style={{ color: status === "previous" ? "#D0D0D0" : "black", fontWeight: "700" }}>{formatHour(dateObj)}</Text>
         </View>
 
-        { status !=="next" ? (
         <View style={{ padding: 30, display: "flex", flexDirection: "row", gap: 15 }} >
           <View style={{
             backgroundColor: status === "previous" ? "#BCBCBC90" : "#9CDE00",
@@ -117,11 +118,10 @@ const Treatment = ({
           }} />
           <View>
             <Text style={{ color: status === "previous" ? "#7B7B7B" : "black", fontWeight: "bold" }}>Description :</Text>
-            <Text style={{ color: "#C9C9C9", fontWeight: "700" }} numberOfLines={3} ellipsizeMode="tail">{treatment ? treatment.description : null || "1 Doliprane toutes les 4h pendant 5 jours"}</Text>
+            <Text style={{ color: "#C9C9C9", fontWeight: "700" }} numberOfLines={3} ellipsizeMode="tail">{treatment.description ? treatment.description : "1 Doliprane toutes les 4h pendant 5 jours"}</Text>
           </View>
 
         </View>
-        ) : null }
 
       </View>
     </View>

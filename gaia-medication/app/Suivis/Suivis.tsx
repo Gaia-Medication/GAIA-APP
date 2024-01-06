@@ -1,7 +1,6 @@
 import { useIsFocused } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
 import {
-  FlatList,
   Text,
   TextInput,
   TouchableOpacity,
@@ -10,11 +9,9 @@ import {
   Button,
   Image
 } from "react-native";
-import { Input } from "react-native-elements";
 import * as Icon from "react-native-feather";
-import RNPickerSelect from "react-native-picker-select";
-import { getAllMed, getMedbyCIS } from "../../dao/Meds";
-import { addItemToList, getAllTreatments } from "../../dao/Storage";
+import { getAllMed } from "../../dao/Meds";
+import { getAllTreatments } from "../../dao/Storage";
 import { styles } from "../../style/style";
 import ModalComponent from "../component/Modal";
 import Treatment from "../component/Treatment";
@@ -56,7 +53,7 @@ export default function Suivis({ navigation }) {
       .map(dateStr => new Date(dateStr))
     console.log("dictWithDates => ", dictWithDates);
     const nextDateIndex = dictWithDates.findIndex(dateObj => dateObj > new Date());
-    const futureDateKeys = nextDateIndex == 0 ? (sortedKeys) : (nextDateIndex === -1 ? (sortedKeys.slice(-1)): (sortedKeys.slice(nextDateIndex - 1))) ;
+    const futureDateKeys = nextDateIndex == 0 ? (sortedKeys) : (nextDateIndex === -1 ? (sortedKeys.slice(-1)) : (sortedKeys.slice(nextDateIndex - 1)));
     const futureDatesDict = {};
     futureDateKeys.forEach(date => {
       futureDatesDict[date] = dict[date];
@@ -103,8 +100,7 @@ export default function Suivis({ navigation }) {
       ) : (
         <View className=" flex border-1 p-5">
           <Text className=" text-[#363636] text-lg">À venir...</Text>
-          <ScrollView>
-            <TouchableOpacity
+          <TouchableOpacity
               className=" flex flex-row items-center gap-3 justify-end"
               onPress={() => navigation.navigate("AddTreatment")}
               style={{ position: "relative", right: 0, top: 0 }}
@@ -115,6 +111,8 @@ export default function Suivis({ navigation }) {
               </Text>
               <Icon.Plus color="#363636" width={35} height={35} />
             </TouchableOpacity>
+          <ScrollView>
+            <View style={{paddingBottom: 200, paddingTop: 50}}>
             {datesKeys.length <= 1 ? (
               new Date(datesKeys[0]) < new Date() ? (
                 <View>
@@ -169,7 +167,8 @@ export default function Suivis({ navigation }) {
                 })}
               </View>
             )}
-            </ScrollView>
+            </View>
+          </ScrollView>
         </View>
       )}
     </View >

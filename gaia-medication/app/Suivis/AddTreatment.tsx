@@ -2,13 +2,10 @@ import { NavigationProp, ParamListBase, useIsFocused } from "@react-navigation/n
 import React, { useEffect, useState } from "react";
 import { addItemToList, getAllTreatments, readList } from "../../dao/Storage";
 import { View, Text, TextInput, FlatList, TouchableOpacity, Button } from "react-native";
-import { Input } from "react-native-elements";
-import MultipleSelect from "../component/MultipleSelect";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { styles } from "../../style/style";
 import { getAllMed, getMedbyCIS } from "../../dao/Meds";
 import ModalComponent from "../component/Modal";
-import RNPickerSelect from "react-native-picker-select";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { RadioButton, Checkbox } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
