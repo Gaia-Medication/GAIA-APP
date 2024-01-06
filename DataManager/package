@@ -3,3 +3,4 @@ pip install numpy
 pip install requests
 pip install bs4
 pip install tqdm
+pip install pyproj
