@@ -54,7 +54,7 @@ export default function Drug({ route, navigation }) {
 
   useEffect(() => {
     if (isFocused) {
-      console.log("Nav on Drug Page :", drugCIS);
+      console.log("Nav on Drug Page :", drugCIS, "-", drug.Name);
       init();
     }
   }, [isFocused && drug]);
@@ -95,51 +95,50 @@ export default function Drug({ route, navigation }) {
     <View style={styles.container} className=" px-6">
       {drug && stock && user && (
         <>
-          <View className="flex-row justify-between mt-4">
+          <View className="flex-row justify-between pt-4">
             <Icon.ArrowLeft
               color={"#363636"}
               onPress={() => navigation.goBack()}
             />
             <Icon.AlertCircle color={"#363636"} onPress={handlePress} />
           </View>
-          <View className="flex-row justify-center">
-            <MedIconByType type={drug.Shape} size={"h-24 w-24"} />
-          </View>
-          <View className=" mt-10 flex">
-            <View className="flex-row justify-between">
-              <Text className="text-base font-light">{drug.CIS}</Text>
-              {drug.Marketed == "Commercialisée" ? (
-                <Text className="text-base font-bold text-[#9BEA8E]">
-                  Disponible
-                </Text>
-              ) : (
-                <Text className="text-base font-bold text-[#EE5E5E]">
-                  Indisponible
-                </Text>
-              )}
+          <ScrollView className="gap-2" showsVerticalScrollIndicator={false}>
+            <View className="flex-row justify-center">
+              <MedIconByType type={drug.Shape} size={"h-24 w-24"} />
             </View>
-            <Text className="text-5xl font-bold">
-              {drug.Name.split(" ")[0].charAt(0).toUpperCase() +
-                drug.Name.split(" ")[0].slice(1).toLowerCase()}
-            </Text>
-            <Text className="text-lg">
-              {drug.Name.split(" ").slice(1).join(" ")}
-            </Text>
-            <Text>Administration : {drug.Administration_way}</Text>
-          </View>
-          <ScrollView>
-            <FlatList
-              data={drug.Values}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={({ item }) => {
+            <View className="pt-10 flex">
+              <View className="flex-row justify-between">
+                <Text className="text-base font-light">{drug.CIS}</Text>
+                {drug.Marketed == "Commercialisée" ? (
+                  <Text className="text-base font-bold text-[#9BEA8E]">
+                    Disponible
+                  </Text>
+                ) : (
+                  <Text className="text-base font-bold text-[#EE5E5E]">
+                    Indisponible
+                  </Text>
+                )}
+              </View>
+              <Text className="text-5xl font-bold">
+                {drug.Name.split(" ")[0].charAt(0).toUpperCase() +
+                  drug.Name.split(" ")[0].slice(1).toLowerCase()}
+              </Text>
+              <Text className="text-lg">
+                {drug.Name.split(" ").slice(1).join(" ")}
+              </Text>
+              <Text>Administration : {drug.Administration_way}</Text>
+            </View>
+            <View>
+              {drug.Values.map((item, index) => {
                 const alreadyStocked =
-                  stock.find((stock) => stock.CIP === item.CIP) != null;
+                  stock.find((stockItem) => stockItem.CIP === item.CIP) != null;
+
                 return (
-                  <>
+                  <View key={index}>
                     <Text>{item.CIP}</Text>
                     <Text>{item.Denomination}</Text>
-                    {drug.Marketed == "Commercialisée" &&
-                      (item.Price_with_taxes ? (
+                    {drug.Marketed == "Commercialisée" ? (
+                      item.Price_with_taxes ? (
                         <>
                           <Text>{item.Price_with_taxes}€</Text>
                           <Text>{item.Remboursement}</Text>
@@ -149,15 +148,16 @@ export default function Drug({ route, navigation }) {
                           <Text>Prix libre</Text>
                           <Text>Non remboursable</Text>
                         </>
-                      ))}
+                      )
+                    ) : null}
 
                     {alreadyStocked ? (
                       <>
-                        <TouchableOpacity className=" bg-green-400 text-center">
+                        <TouchableOpacity className="bg-green-400 text-center">
                           <Text className="text-center">In stock</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
-                          className=" bg-red-400 text-center"
+                          className="bg-red-400 text-center"
                           onPress={() =>
                             deleteFromStock(item.CIS, item.CIP, user.id)
                           }
@@ -167,7 +167,7 @@ export default function Drug({ route, navigation }) {
                       </>
                     ) : (
                       <TouchableOpacity
-                        className=" bg-blue-400"
+                        className="bg-blue-400"
                         onPress={() => {
                           setDrugsToAdd(item);
                           setDrugModalVisible(true);
@@ -176,20 +176,17 @@ export default function Drug({ route, navigation }) {
                         <Text className="text-center">Add</Text>
                       </TouchableOpacity>
                     )}
-                  </>
+                  </View>
                 );
-              }}
-            />
+              })}
+            </View>
+            <Text>Composition :</Text>
 
             <Text>Groupe Générique :</Text>
-            <FlatList
-              data={gens}
-              keyExtractor={(_item, index) => index.toString()}
-              ListEmptyComponent={
-                <Text>Aucun</Text>
-              }
-              renderItem={({ item }) => (
+            <View>
+              {gens.map((item, index) => (
                 <TouchableOpacity
+                  key={index}
                   style={styles.listItem}
                   className="flex justify-start align-middle"
                   onPress={() =>
@@ -199,8 +196,8 @@ export default function Drug({ route, navigation }) {
                   <MedIconByType type={item.Shape} />
                   <Text className="ml-4">{item.Name}</Text>
                 </TouchableOpacity>
-              )}
-            />
+              ))}
+            </View>
           </ScrollView>
 
           <TouchableOpacity
