@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import re
 from utils import has_number, replace_accents, lecture_base, create_regex_from_dictionnary
-
+from export import Export
 
 ###################################################################
 ###################################################################
@@ -38,7 +38,7 @@ params = np.array([
 dataManager = DataManager(url, params)
 
 # DOWNLOAD FILES
-#files = dataManager.getFiles()
+files = dataManager.getFiles()
 
 
 ########################################################################################
@@ -292,10 +292,13 @@ dfMedication.dropna(subset=['Name'], inplace=True)
 
 ########################################################################################
 ########################################################################################
-################################  CONVERTION EN JSON ###################################
+################################## JSON CONVERTION #####################################
 ########################################################################################
 ########################################################################################
 
 print(BOLD,YELLOW,"\n\n##########################################################\n################### Conversion en JSON ###################\n##########################################################",RESET,'\n\n')
 
 jsonMedication = dfMedication.to_json('out/medication.json', orient="records", indent=4)
+
+# export=Export("out/medication.json", "localhost", 27017, "medication", "medication")
+# export.export_json()
