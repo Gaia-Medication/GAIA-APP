@@ -58,96 +58,78 @@ date=[
 
 
 dictionnary={
-    "product":['plaquette', 'tube','éponge', 'recipient', 'flacon', 'ampoule',"sachetspolyterephtalate", 'pilulier', 'sachet', 'dose', 'seringue', 'bouteille', 'pot', 'film', 'evaporateur', 'poche', 'stylo',"applicateur", 'generateur', 'inhalateur', 'dispositif','enveloppe', 'sac', 'conditionnement', 'bande', 'comprime', 'poudre','kit', 'gelule', 'boite', 'cartouche', 'fut'],
-    "second_product":["plaquette",'éponge',"bâton","gobelet doseur","ovule","kit","dose","comprimé","gomme","gélule","pastille","lyophilisat","sachetspolyterephtalate","capsule","suppositoire","distributeur journalier","conditionnement","bande","poudre","générateur","flacon","tube","applicateur","ampoule","pilulier","sachet","pot","seringue","stylo","spray","bouteille","récipient","film","boite","boite","poche","inhalateur","cartouche","evaporateur","dispositif","enveloppe","fut","sac"],
-    "basic_product":["plaquette",'éponge',"bâton","gobelet doseur","ovule","kit","dose","comprimé","gomme","gélule","pastille","lyophilisat","sachetspolyterephtalate","capsule","suppositoire","distributeur journalier","conditionnement","bande","poudre","générateur","flacon","tube","applicateur","ampoule","pilulier","sachet","pot","seringue","stylo","spray","bouteille","récipient","film","boite","boite","poche","inhalateur","cartouche","evaporateur","dispositif","enveloppe","fut","sac"],
-    "quantity":["l","ml","mg","g","kg","litre","litres","ui","u"]
+    "product":['plaquette', 'tube','éponge', 'recipient', 'flacon', 'ampoule',"sachetspolyterephtalate", 'pilulier', 'sachet', 'dose', 'seringue', 'bouteille', 'pot', 'film', 'evaporateur', 'poche', 'stylo',"applicateur", 'generateur', 'inhalateur', 'dispositif','enveloppe', 'sac', 'conditionnement', 'bande', 'comprime', 'kit', 'gelule', 'boite', 'cartouche', 'fut'],
+    "word_wo_um":["plaquette",'eponge',"bâton","gobelet doseur","ovule","kit","dose","comprime","gomme","gelule","pastille","lyophilisat","sachetspolyterephtalate","capsule","suppositoire","distributeur journalier","conditionnement","bande","générateur","flacon","tube","applicateur","ampoule","pilulier","sachet","pot","seringue","stylo","spray","bouteille","récipient","film","boite","boite","poche","inhalateur","cartouche","evaporateur","dispositif","enveloppe","fut","sac"],
+    "second_product":[fr"\bl\b",fr"\bml\b",fr"\bmg\b",fr"\bg\b",fr"\bkg\b","litre","litres",fr"\bui\b",fr"\bu\b","plaquette",'eponge',"bâton","gobelet doseur","ovule","kit","dose","comprime","gomme","gelule","pastille","lyophilisat","sachetspolyterephtalate","capsule","suppositoire","distributeur journalier","conditionnement","bande","générateur","flacon","tube","applicateur","ampoule","pilulier","sachet","pot","seringue","stylo","spray","bouteille","récipient","film","boite","boite","poche","inhalateur","cartouche","evaporateur","dispositif","enveloppe","fut","sac"]
 }
 dictionnary=create_regex_from_dictionnary(dictionnary)
 brut_data = lecture_base("data/CIS_CIP_bdpm.txt").iloc[:,2:3].values[:,0]
 string_data = brut_data.astype(str)
 all_dict=[]
 for description in string_data:
-    description = description.lower()
-    description = replace_accents(description)
-    description=description.replace("  "," ")
-    description = description.split(" ")
-    if has_number(description):
+    pop_index=[]
+    list_str_meds=[]
+    low_descript = description.lower()
+    no_acc_descript = replace_accents(low_descript)
+    no_dbspace_descript=no_acc_descript.replace("  "," ")
+    descript = no_dbspace_descript.split(" ")
+    if has_number(descript):
         bracket_flag=False
-        for w_index in range (0,len(description)-1):
-            if re.search(fr"[0-9]+,", description[w_index]) and description[w_index+1].isdigit():
-                description[w_index+1]=re.search(fr"[0-9]+,", description[w_index]).group()+description[w_index+1]
-                description[w_index]=""
-                description[w_index+1]=description[w_index+1].replace(" ","")
+        for w_index in range (0,len(descript)-1):
+            if re.search(fr"[0-9]+,", descript[w_index]) and descript[w_index+1].isdigit():
+                descript[w_index+1]=re.search(fr"[0-9]+,", descript[w_index]).group()+descript[w_index+1]
+                descript[w_index]=""
+                descript[w_index+1]=descript[w_index+1].replace(" ","")
                 
             for category, regex in dictionnary.items():
                 for reg in regex:
-                    if w_index < len(description)-1:
-                        if description[w_index] !="":
-                            if description[w_index][0]=="(":
-                                bracket_flag=True
-                            if description[w_index][-1]==")":
-                                bracket_flag=False
-                                     
-                        if has_number(description[w_index]) and re.search(reg, description[w_index + 1]) and bracket_flag==False:
-                            if "de" in description[w_index]:
-                                description[w_index]=description[w_index].replace("de","de ")
-                            if description[w_index -1]=='de' :
-                                description[w_index -1] = description[w_index -1] + " " + description[w_index] + " " + description[w_index + 1]
-                                description[w_index + 1]=""
-                                description[w_index]=""
+                    pflag=False
+                    if descript[w_index] !="":
+                        if descript[w_index][0]=="(":
+                            bracket_flag=True
+                        if descript[w_index][-1]==")":
+                            bracket_flag=False         
+                    if w_index+1<len(descript) and has_number(descript[w_index]) and re.search(reg, descript[w_index+1]) and bracket_flag==False:
+                        if "de" in descript[w_index-2]:
+                            descript[w_index]=descript[w_index].replace("de","de ")
+                            
+                    if descript[w_index]=="de" and category=="second_product":
+                        if w_index+1<len(descript) and has_number(descript[w_index+1]):
+                            number="".join([caractere for caractere in descript[w_index+1] if caractere.isdigit()])
+                            if w_index+2<len(descript) and re.search(reg,descript[w_index+2]) and bracket_flag==False:
+                                word=re.search(reg,descript[w_index+2]).group()
+                                if w_index+3<len(descript) and re.search(fr"(blanc|noir|bleu|rouge|vert|jaune|orange|violet|rose|gris|beige|marron)",descript[w_index+3]):
+                                    color=re.search(fr"(blanc|noir|bleu|rouge|vert|jaune|orange|violet|rose|gris|beige|marron)",descript[w_index+3]).group()
+                                    descript[w_index]="de "+number+" "+word+" "+color
+                                    list_str_meds.append(descript[w_index])
+                                    descript[w_index+1]=""
+                                    descript[w_index+2]=""
+                                    descript[w_index+3]=""
+                                else:
+                                    descript[w_index]="de "+number+" "+word
+                                    list_str_meds.append(descript[w_index])
+                                    descript[w_index+1]=""
+                                    descript[w_index+2]=""
+                                    
+                    if has_number(descript[w_index]) and category=="word_wo_um" and bracket_flag==False:
+                        number="".join([caractere for caractere in descript[w_index] if caractere.isdigit()])
+                        if w_index+1<len(descript) and re.search(reg,descript[w_index+1]):
+                            word=re.search(reg,descript[w_index+1]).group()
+                            if w_index+2<len(descript) and re.search(fr"(blanc|noir|bleu|rouge|vert|jaune|orange|violet|rose|gris|beige|marron)",descript[w_index+2]):
+                                color=re.search(fr"(blanc|noir|bleu|rouge|vert|jaune|orange|violet|rose|gris|beige|marron)",descript[w_index+2]).group()
+                                descript[w_index]=number+" "+word+" "+color
+                                list_str_meds.append(descript[w_index])
+                                descript[w_index+1]=""
+                                descript[w_index+2]=""
                             else:
-                                description[w_index] = description[w_index] + " " + description[w_index + 1]
-                                description[w_index + 1]=""
-
-    list_str_meds=[]
-    pflag=False
-    for i_word in range (0,len(description)-1):
-        for category, regex in dictionnary.items():
-            for reg in regex:
-                if re.search(reg,description[i_word]):
-                    w=re.search(reg,description[i_word]).group()
-                    if category=="product" and pflag==False:
-                        p_index=i_word
-                        pflag=True
-                        list_str_meds.append(w)
-                    if category=="second_product":
-                        if p_index!=i_word:
-                            list_str_meds.append(w)
-                    if category=="quantity" and pflag==True:
-                        list_str_meds.append(w)
-    # nbr=0
-    # deter='sdfqsfqsfqsdf'
-    # deter_index=-1
-    # pop_index=[]
-    # nbr_index=-1
-    # for wi in range(0,len(list_str_meds)):        
-    #     split_w=list_str_meds[wi].split(" ")
-    #     if split_w[0]=="de":
-    #         deter_index=wi
-    #         deter=split_w[2]
-    #         for s in range(0,len(split_w)):
-    #             if split_w[s].isdigit():
-    #                 nbr_index=s
-    #                 nbr=int(split_w[s])
-                    
-    #     if deter in list_str_meds[wi] and "de" not in list_str_meds[wi]:
-    #         pop_index.append(wi)
-    #         for s in split_w:
-    #             if s.isdigit():
-    #                 nbr+=int(s)
-            
-    # split_w=list_str_meds[deter_index].split(" ")
-    # for s in split_w:
-    #     if s.isdigit():
-    #         s=nbr
-    # if nbr_index>0 and deter_index>=0:
-    #     list_str_meds[deter_index]=list_str_meds[deter_index].replace(split_w[nbr_index],str(nbr))
-    # pop_index.sort(reverse=True)
-    # for p in pop_index:
-    #     list_str_meds.pop(p)
-        
-        
+                                descript[w_index]=number+" "+word
+                                list_str_meds.append(descript[w_index])
+                                descript[w_index+1]=""
+                                
+                    elif category=="product" and re.search(reg, descript[w_index]) and bracket_flag==False:
+                        word=re.search(reg, descript[w_index]).group()
+                        list_str_meds.append(word)
+                            
     all_dict.append(list_str_meds)
 
 

@@ -32,17 +32,16 @@ def replace_accents(chaine):
 
 def create_regex_from_dictionnary(dictionnary):
     regex_dict={}
+    colors="blanc|noir|bleu|rouge|vert|jaune|orange|violet|rose|gris|beige|marron"
     for category in dictionnary:
         regex_dict[category]=[]
         for word in dictionnary[category]:
             word=word.lower()
             word=replace_accents(word)
             if category=="product":
-                regex_dict[category].append(fr"\b([0-9]*(\.|,)?[0-9]*)(\s*){word}(\(s\)|s)?\b")
+                regex_dict[category].append(fr"\b([0-9]*(\.|,)?[0-9]*)(\s*){word}\b")
+            if category=="word_wo_um":
+                regex_dict[category].append(fr"{word}")
             if category=="second_product":
-                regex_dict[category].append(fr"\b(de\s)?([0-9]+(\.|,)?[0-9]*)(\s+){word}(\(s\)|s)?\b")
-            if category=="basic_product":
-                regex_dict[category].append(fr"\b{word}(\(s\)|s)?\b")
-            if category=="quantity":
-                regex_dict[category].append(fr"\b(de\s)?([0-9]*(\.|,)?\s?[0-9]*)(\s*){word}\b")
+                regex_dict[category].append(fr"{word}")
     return regex_dict
