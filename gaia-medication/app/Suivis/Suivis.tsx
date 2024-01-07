@@ -50,7 +50,9 @@ export default function Suivis({ navigation }) {
   };
 
   const init = async () => {
-    const allMeds = await getAllMed();
+    await getAllMed().then((meds) => {
+      setAllMeds(meds);
+    });
     const medsWithKey = allMeds.map((med) => ({
       id: med.CIS,
       label: med.Name,
