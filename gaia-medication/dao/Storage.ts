@@ -18,11 +18,10 @@ export const UserIdAutoIncrement = async () => {
 // Lire la liste depuis AsyncStorage
 export const readList = async (key: string) => {
   try {
-    const jsonValue = await AsyncStorage.getItem(key);
-    return jsonValue != null ? JSON.parse(jsonValue) : [];
+    const val = await AsyncStorage.getItem(key);
+    return val != null ? JSON.parse(val) : [];
   } catch (error) {
     console.error(`Erreur lors de la lecture de la liste ${key}:`, error);
-    return [];
   }
 };
 
@@ -41,8 +40,8 @@ export const getUserByID = async (id: number) => {
 // Ajouter un élément à la liste dans AsyncStorage
 export const addItemToList = async (key: string, item) => {
   try {
-    const existingList = await readList(key);
-    existingList.push(item);
+    let existingList = await readList(key);
+    existingList.push(item)
     await AsyncStorage.setItem(key, JSON.stringify(existingList));
     console.log(`Élément ajouté à la liste ${key}.`);
   } catch (error) {
@@ -104,16 +103,17 @@ export const getAllTreatments = async (): Promise<Treatment[]> => {
   try {
 
     const treatments = await AsyncStorage.getItem(key);
+    console.log("treatments => ", treatments)
     if (treatments == null) {
       return []
     }
 
-    const treatmentsJson = JSON.parse(treatments)
+    const treatmentsJson: [] = JSON.parse(treatments)
     const arrayOfTreatments = []
-    treatmentsJson.map((treatment) => {
-      const instructions = JSON.parse(treatment.instructions._j)
+    treatmentsJson && treatments.length != 0 ? treatmentsJson.map((treatment: Treatment) => {
+      console.log("Treatment => ", treatment.instructions)
       const instructionsArray = []
-      instructions.map((instr) => {
+      treatment.instructions ? treatment.instructions.map((instr) => {
         let daqDict = {};
         Object.entries(instr.datesAndQuantities).forEach(([date, quantity]) => {
           daqDict[date] = Number(quantity);
@@ -134,15 +134,15 @@ export const getAllTreatments = async (): Promise<Treatment[]> => {
           datesAndQuantities: daqDict,
         }
         instructionsArray.push(instruction)
-      })
+      }): null
       const treatmentObject: Treatment = {
         name: treatment.name,
         description: treatment.description,
         startDate: new Date(treatment.startDate),
-        instruction: instructionsArray
+        instructions: instructionsArray
       }
       arrayOfTreatments.push(treatmentObject)
-    })
+    }): null
     return arrayOfTreatments
   } catch (error) {
     console.error(error);
@@ -157,7 +157,7 @@ export const initTreatments = async () => {
 
   allTreatments ? allTreatments.forEach((treatment) => {
     console.log(treatment.name)
-    treatment.instruction?.forEach((instr) => {
+    treatment.instructions?.forEach((instr) => {
       Object.keys(instr.datesAndQuantities || {}).forEach((date) => {
         console.log(date)
         if (dict[date]) {

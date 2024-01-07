@@ -12,7 +12,7 @@ type Treatment = {
   name: string,
   description: string,
   startDate: Date,
-  instruction: Instruction[] | undefined,
+  instructions: Instruction[] | undefined,
 };
 
 type Instruction = {
