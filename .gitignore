@@ -1,4 +1,4 @@
 DataManager/data/*
 DataManager/out/*
 .DS_Store
-DataManager/__pycache__
+DataManager/__pycache__/*

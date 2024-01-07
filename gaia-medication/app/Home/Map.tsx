@@ -143,7 +143,6 @@ export default function Map() {
                       latitude: point.latitude,
                       longitude: point.longitude,
                     }}
-                    title={point.Name}
                     onPress={() => openModal(point)}
                   >
                     <Image source={getIcon} style={{ width: 25, height: 25 }} />

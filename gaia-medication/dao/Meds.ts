@@ -17,3 +17,14 @@ export function getMedbyCIS(CIS){
     console.error('Error reading JSON file', error);
   }
 }
+
+export function getAllGenOfCIS(CIS){   
+  try {
+    const medicament = medicaments.find(med => med.CIS === CIS);
+    if(medicament.Generique===null)return []
+    const gens = medicaments.filter(med => med.Generique === medicament.Generique && med.CIS !== CIS);
+    return gens
+  } catch (error) {
+    console.error('Error reading JSON file', error);
+  }
+}
