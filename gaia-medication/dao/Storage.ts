@@ -155,7 +155,7 @@ export const initTreatments = async () => {
 
   const treatmentDates: Record<string, string[]> = {};
 
-  allTreatments.forEach((treatment) => {
+  allTreatments ? allTreatments.forEach((treatment) => {
     console.log(treatment.name)
     treatment.instruction?.forEach((instr) => {
       Object.keys(instr.datesAndQuantities || {}).forEach((date) => {
@@ -169,7 +169,7 @@ export const initTreatments = async () => {
         }
       });
     });
-  });
+  }) : new Error("No treatments found");
   const sortedKeys = Object.keys(dict).sort((a, b) => {
     return new Date(a).getTime() - new Date(b).getTime();
   })
