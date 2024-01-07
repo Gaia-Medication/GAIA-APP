@@ -5,7 +5,7 @@ import * as ImagePicker from "expo-image-picker";
 import callGoogleVisionAsync from "../../OCR/helperFunctions";
 import { styles } from "../../style/style";
 import AvatarButton from "../component/Avatar";
-import { getUserByID, readList } from "../../dao/Storage";
+import { getAllTreatments, getUserByID, readList } from "../../dao/Storage";
 import { Bell } from "react-native-feather";
 import { Button, Input } from "react-native-elements";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
@@ -23,6 +23,7 @@ export default function Home({ navigation }) {
   const [user, setUser] = useState<User | null>(null);
   const [users, setUsers] = useState<User[]>([]);
   const [header, setHeader] = useState(true);
+  const [treatments, setTreatments] = useState<Treatment[]>([]);
 
   const init = async () => {
     const userList = await readList("users");
@@ -69,6 +70,15 @@ export default function Home({ navigation }) {
       }
     }
   };
+
+  const showTreatments = async () => {
+    const treatments = await getAllTreatments();
+    console.log(treatments[0]);
+    setTreatments(treatments);
+  }
+  const deleteTreatments = async () => {
+    AsyncStorage.removeItem("treatments");
+  }
 
   useEffect(() => {
     if (isFocused) {
@@ -142,7 +152,19 @@ export default function Home({ navigation }) {
           </View>
           <Button onPress={notificationDaily} title="Notification quotidienne"/>
           <Button onPress={notificationForgot} title="Notification oubli"/>
-
+          <Button onPress={showTreatments} title="Liste des traitements"/>
+          <Button onPress={deleteTreatments} title="Supprimer traitements"/>
+          {treatments && treatments.map((treatment) => { return (
+            <View key={treatment.name}>
+              <Text>{treatment.name}</Text>
+              <Text>{treatment.instruction.length}</Text>
+              </View>
+         )})}
+          {!treatments ? (
+            <Text>PAS DE VARIABLE ASYNC TREATMENT</Text>
+          ) : treatments.length == 0 ? (
+            <Text>TREATMENTS VIDE</Text>
+          ) :null }
         </>
       )}
       {loading&&<Loading/>}

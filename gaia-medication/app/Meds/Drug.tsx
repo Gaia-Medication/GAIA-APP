@@ -36,7 +36,7 @@ export default function Drug({ route, navigation }) {
   const [stock, setStock] = useState(null);
   const [gens, setGens] = useState([]);
 
-  const { drugCIS } = route.params;
+  const { drugCIS, context } = route.params;
   const drug = getMedbyCIS(drugCIS);
 
   const init = async () => {

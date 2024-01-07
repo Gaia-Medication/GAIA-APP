@@ -16,7 +16,7 @@ export const UserIdAutoIncrement = async () => {
 };
 
 // Lire la liste depuis AsyncStorage
-export const readList = async (key:string) => {
+export const readList = async (key: string) => {
   try {
     const jsonValue = await AsyncStorage.getItem(key);
     return jsonValue != null ? JSON.parse(jsonValue) : [];
@@ -27,7 +27,7 @@ export const readList = async (key:string) => {
 };
 
 // Lire un user 
-export const getUserByID = async (id:number) => {
+export const getUserByID = async (id: number) => {
   try {
     const jsonValue = await AsyncStorage.getItem("users");
     const users = jsonValue != null ? JSON.parse(jsonValue) : [];
@@ -39,7 +39,7 @@ export const getUserByID = async (id:number) => {
 }
 
 // Ajouter un élément à la liste dans AsyncStorage
-export const addItemToList = async (key:string, item) => {
+export const addItemToList = async (key: string, item) => {
   try {
     const existingList = await readList(key);
     existingList.push(item);
@@ -51,7 +51,7 @@ export const addItemToList = async (key:string, item) => {
 };
 
 // Mettre à jour un élément dans la liste dans AsyncStorage
-export const updateItemInList = async (key:string, index, newItem) => {
+export const updateItemInList = async (key: string, index, newItem) => {
   try {
     const existingList = await readList(key);
     if (index >= 0 && index < existingList.length) {
@@ -67,7 +67,7 @@ export const updateItemInList = async (key:string, index, newItem) => {
 };
 
 // Supprimer un élément de la liste dans AsyncStorage
-export const removeItemFromList = async (key:string, index) => {
+export const removeItemFromList = async (key: string, index) => {
   try {
     const existingList = await readList(key);
     if (index >= 0 && index < existingList.length) {
@@ -83,7 +83,7 @@ export const removeItemFromList = async (key:string, index) => {
 };
 
 export const removeItemFromStock = async (cis, cip, idUser) => {
-  const key="stock"
+  const key = "stock"
   try {
     const existingList = await readList(key);
     const indexToRemove = existingList.findIndex(item => item.CIS == cis && item.CIP == cip && item.idUser == idUser);
@@ -97,4 +97,91 @@ export const removeItemFromStock = async (cis, cip, idUser) => {
   } catch (error) {
     console.error(`Erreur lors de la suppression dans la liste ${key}:`, error);
   }
+};
+
+export const getAllTreatments = async (): Promise<Treatment[]> => {
+  const key = "treatments"
+  try {
+
+    const treatments = await AsyncStorage.getItem(key);
+    if (treatments == null) {
+      return []
+    }
+
+    const treatmentsJson = JSON.parse(treatments)
+    const arrayOfTreatments = []
+    treatmentsJson.map((treatment) => {
+      const instructions = JSON.parse(treatment.instructions._j)
+      const instructionsArray = []
+      instructions.map((instr) => {
+        let daqDict = {};
+        Object.entries(instr.datesAndQuantities).forEach(([date, quantity]) => {
+          daqDict[date] = Number(quantity);
+        })
+        const instruction: Instruction = {
+          CIS: instr.CIS,
+          name: instr.name,
+          regularFrequency: instr.regularFrequency,
+          regularFrequencyMode: instr.regularFrequencyMode,
+          regularFrequencyNumber: instr.regularFrequencyNumber,
+          regularFrequencyPeriods: instr.regularFrequencyPeriods,
+          regularFrequencyContinuity: instr.regularFrequencyContinuity,
+          regularFrequencyDays: instr.regularFrequencyDays,
+          endModality: instr.endModality,
+          endDate: instr.endDate,
+          endQuantity: instr.endQuantity,
+          quantity: instr.quantity,
+          datesAndQuantities: daqDict,
+        }
+        instructionsArray.push(instruction)
+      })
+      const treatmentObject: Treatment = {
+        name: treatment.name,
+        description: treatment.description,
+        startDate: new Date(treatment.startDate),
+        instruction: instructionsArray
+      }
+      arrayOfTreatments.push(treatmentObject)
+    })
+    return arrayOfTreatments
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export const initTreatments = async () => {
+  const allTreatments = await getAllTreatments();
+  let dict = {}; // Initialize dict as an array
+
+  const treatmentDates: Record<string, string[]> = {};
+
+  allTreatments.forEach((treatment) => {
+    console.log(treatment.name)
+    treatment.instruction?.forEach((instr) => {
+      Object.keys(instr.datesAndQuantities || {}).forEach((date) => {
+        console.log(date)
+        if (dict[date]) {
+          // If the date already exists in the dictionary, append the treatment name to the array
+          dict[date].push(treatment.name);
+        } else {
+          // If the date doesn't exist, create a new array with the treatment name
+          dict[date] = [treatment.name];
+        }
+      });
+    });
+  });
+  const sortedKeys = Object.keys(dict).sort((a, b) => {
+    return new Date(a).getTime() - new Date(b).getTime();
+  })
+  const dictWithDates = sortedKeys
+    .map(dateStr => new Date(dateStr))
+  console.log("dictWithDates => ", dictWithDates);
+  const nextDateIndex = dictWithDates.findIndex(dateObj => dateObj > new Date());
+  const futureDateKeys = nextDateIndex == 0 ? (sortedKeys) : (nextDateIndex === -1 ? (sortedKeys.slice(-1)) : (sortedKeys.slice(nextDateIndex - 1)));
+  const futureDatesDict = {};
+  futureDateKeys.forEach(date => {
+    futureDatesDict[date] = dict[date];
+  });
+  console.log("futureDatesKeys => ", futureDateKeys);
+  return futureDatesDict;
 };

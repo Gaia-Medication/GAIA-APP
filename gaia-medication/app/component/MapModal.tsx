@@ -7,11 +7,11 @@ const MapModalComponent = ({ visible, onClose, children, icon, color }) => {
     <Modal
       visible={visible}
       transparent={true}
-      animationType="slide"
+      animationType="none"
       onRequestClose={onClose}
     >
       <TouchableOpacity
-        style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0)' }}
+        style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0)'}}
         activeOpacity={1}
         onPress={onClose}
       >
