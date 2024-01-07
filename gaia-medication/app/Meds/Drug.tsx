@@ -126,9 +126,9 @@ export default function Drug({ route, navigation }) {
               <Text className="text-lg">
                 {drug.Name.split(" ").slice(1).join(" ")}
               </Text>
-              <Text>Administration : {drug.Administration_way}</Text>
+              <Text>Administration: {drug.Administration_way}</Text>
             </View>
-            <Text>Boite(s) disponible(s) :</Text>
+            <Text>Boite(s) disponible(s):</Text>
             <View>
               {drug.Values.map((item, index) => {
                 const alreadyStocked =
@@ -170,8 +170,7 @@ export default function Drug({ route, navigation }) {
                       <TouchableOpacity
                         className="bg-blue-400"
                         onPress={() => {
-                          setDrugsToAdd(item);
-                          setDrugModalVisible(true);
+                          addToStock(item);
                         }}
                       >
                         <Text className="text-center">Add</Text>
@@ -181,7 +180,7 @@ export default function Drug({ route, navigation }) {
                 );
               })}
             </View>
-            <Text>Composition :</Text>
+            <Text>Composition:</Text>
               {drug.Composition.map((comp, indexb) => {
                 console.log(comp)
                 if(comp["SA/FT"].length>1){
@@ -201,7 +200,7 @@ export default function Drug({ route, navigation }) {
                   ))
                 )
               })}
-            <Text>Groupe Générique :</Text>
+            <Text>Groupe Générique:</Text>
             <View className=" mb-24">
               {gens.map((item, index) => (
                 <TouchableOpacity
@@ -221,7 +220,9 @@ export default function Drug({ route, navigation }) {
 
           <TouchableOpacity
             className=" bg-[#9CDE00] rounded-[19px] absolute bottom-8 left-6 right-6"
-            onPress={() => {}}
+            onPress={() => {
+              setDrugModalVisible(true);
+            }}
           >
             <Text className="text-center text-white bold text-2xl font-bold py-3 pt-2">
               Ajouter
@@ -234,6 +235,7 @@ export default function Drug({ route, navigation }) {
               borderRadius: 10,
               padding: 20,
               minWidth: 300,
+              maxHeight:"60%"
             }}
             visible={drugModalVisible}
             onClose={() => setDrugModalVisible(!drugModalVisible)}
@@ -242,7 +244,7 @@ export default function Drug({ route, navigation }) {
             <TouchableOpacity
               className=" bg-blue-400"
               onPress={() => {
-                addToStock(drugsToAdd);
+                //addToStock(drugsToAdd);
                 setDrugModalVisible(!drugModalVisible);
               }}
             >
