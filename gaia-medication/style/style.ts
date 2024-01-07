@@ -177,4 +177,30 @@ export const styles = StyleSheet.create({
     marginBottom: 25
     
   },  
+
+  // -------------- INSTRUCTION ---------------//
+
+  input: {
+    height: 40,
+    borderColor: "gray",
+    borderWidth: 1,
+    padding: 10,
+    marginBottom: 5,
+  },
+  selectAllButton: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginVertical: 10,
+  },
+  frequencyPicker: {
+    backgroundColor: "#4296E450",
+    margin: 10,
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginVertical: 10,
+  },
+
 });

@@ -1,7 +1,5 @@
 import React from "react";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { StyleSheet, Text } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
@@ -10,12 +8,12 @@ import Settings from "./Home/Settings";
 import Suivis from "./Suivis/Suivis";
 import CreateProfile from "./Profile/CreateProfile";
 import Stock from "./Suivis/Stock";
-import Journal from "./Suivis/Journal";
 import Profile from "./Profile/Profile";
 import * as Icon from "react-native-feather";
 import Search from "./Meds/Search";
 import Drug from "./Meds/Drug";
 import Map from "./Home/Map";
+import AddTreatment from "./Suivis/AddTreatment";
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -31,6 +29,7 @@ export default function Navigation() {
           options={{ headerShown: false }}
         />
         <Stack.Screen name="CreateProfile" component={CreateProfile} />
+        <Stack.Screen name="AddTreatment" component={AddTreatment} />
         <Stack.Screen name="Profile" component={Profile} />
         <Stack.Screen
           name="Drug"

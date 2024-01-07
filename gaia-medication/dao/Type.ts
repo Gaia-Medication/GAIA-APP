@@ -12,15 +12,28 @@ type Treatment = {
   name: string,
   description: string,
   startDate: Date,
-  instruction: Instruction[],
+  instruction: Instruction[] | undefined,
 };
 
 type Instruction = {
-  CIS: number,
-  CIP: number,
-  qty: number,
-  frequency: string, // seleciton par rapport à une liste ex: tous les jours ...
-  endDate: Date,
+  CIS: string,
+  name: string,
+  regularFrequency: boolean, // CE MÉDICAMENT EST-IL À PRENDRE RÉGULIÈREMENT ?
+
+  // REGULIER
+  regularFrequencyMode: string, // COMMENT ? (X FOIS PAR JOUR/SEMAINE/MOIS OU TOUS LES X JOURS)
+  regularFrequencyNumber: number, // X ?
+  regularFrequencyPeriods: string, // SI X FOIS PAR (JOUR/SEMAINE/MOIS), PÉRIODICITÉ
+  regularFrequencyContinuity: string, // EST-CE QUOTIDIEN OU SEULEMENT CERTAINS JOURS ? (DAILY/CUSTOM) 
+  regularFrequencyDays: string[], // SI CERTAINS JOURS, LESQUELS ?
+
+  // PERSONNALISÉ
+
+  endModality: string, // COMMENT S'ARRÊTE LE TRAITEMENT ? (NOMBRE DE PRIS OU DATE DE FIN)
+  endDate: Date, // DATE DE FIN SI FIN À UNE DATE PRÉCISE
+  endQuantity: number, // NOMBRE DE PRIS SI FIN AU BOUT D'UN CERTAIN NOMBRE DE PRIS
+  quantity: number, // QUANTITÉ À PRENDRE À CHAQUE PRISE SI QUANTITÉ RÉGULIÈRE
+  datesAndQuantities: Record<string, number> | null,
 }
 
 type Stock = {
@@ -28,6 +41,15 @@ type Stock = {
   CIS: number;
   CIP: number;
   qte: number
+};
+
+type Med = {
+  CIS: number,
+  name: string,
+  infos: string,
+  Marketed: string,
+  administration_way: string,
+  authorization: string,
 };
 
 type Journal = {

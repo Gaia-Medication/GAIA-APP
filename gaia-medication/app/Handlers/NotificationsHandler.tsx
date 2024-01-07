@@ -22,7 +22,8 @@ export const scheduleLocalNotification = async (
     sound: string, 
     color: string, 
     priority: Notifications.AndroidNotificationPriority, 
-    categoryIdentifier: string
+    categoryIdentifier: string,
+    date: Date // Add a new parameter for the notification date
   ) => {
   const notificationId = await Notifications.scheduleNotificationAsync({
     content: {
@@ -35,14 +36,16 @@ export const scheduleLocalNotification = async (
       priority,
       categoryIdentifier,
     },
-    trigger: null, // You can specify a trigger if needed.
+    trigger: {
+      date, // Set the trigger date
+    },
   });
   return notificationId;
 };
 
 //--------------------//
 
-export const notificationDaily = async () => {
+export const notificationDaily = async (date) => {
   scheduleLocalNotification(
     "🦠 Rappel ", 
     "Votre traitement", 
@@ -51,7 +54,8 @@ export const notificationDaily = async () => {
     "default", 
     "default", 
     Notifications.AndroidNotificationPriority.DEFAULT,
-    "reminder"
+    "reminder",
+    date
   );
 }
 
