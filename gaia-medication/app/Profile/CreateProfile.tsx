@@ -106,7 +106,7 @@ export default function CreateProfile({ navigation }: ICreateProps) {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Input
         label="Prenom"
         placeholder="Entrez votre prenom"
@@ -198,7 +198,7 @@ export default function CreateProfile({ navigation }: ICreateProps) {
         onPress={handleSumbit}
         disabled={isFormEmpty}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 

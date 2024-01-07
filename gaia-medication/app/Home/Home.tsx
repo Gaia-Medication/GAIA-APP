@@ -14,6 +14,7 @@ import { requestNotificationPermissions, notificationDaily, notificationNow, not
 import * as Notifications from 'expo-notifications';
 import { trouverNomMedicament } from "../../dao/Search";
 import Loading from "../component/Loading";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 
 export default function Home({ navigation }) {
@@ -88,7 +89,7 @@ export default function Home({ navigation }) {
   }, [isFocused]);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       {user && (
         <>
           <View style={styles.header}>
@@ -168,6 +169,6 @@ export default function Home({ navigation }) {
         </>
       )}
       {loading&&<Loading/>}
-    </View>
+    </SafeAreaView>
   );
 }
