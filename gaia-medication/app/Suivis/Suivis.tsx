@@ -50,13 +50,12 @@ export default function Suivis({ navigation }) {
   };
 
   const init = async () => {
-    await getAllMed().then((meds) => {
-      setAllMeds(meds);
-    });
+    setAllMeds(getAllMed());
     const medsWithKey = allMeds.map((med) => ({
       id: med.CIS,
       label: med.Name,
     }));
+    setAllMeds(medsWithKey);
     await initTreatments().then((treatments) => {
       setDatesDict(treatments);
       setDatesKeys(Object.keys(datesDict));
@@ -64,7 +63,7 @@ export default function Suivis({ navigation }) {
     await getAllTreatments().then((treatments) => {
       setTreatments(treatments);
     })
-    setAllMeds(medsWithKey);
+    
     setShowAll(false);
     console.log("datesDict", datesDict);
     console.log("treatments", treatments);
