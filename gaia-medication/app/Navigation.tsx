@@ -14,6 +14,7 @@ import Search from "./Meds/Search";
 import Drug from "./Meds/Drug";
 import Map from "./Home/Map";
 import AddTreatment from "./Suivis/AddTreatment";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -113,7 +114,7 @@ function HomeHandler() {
 
 function SuivisHandler() {
   return (
-    <TopTab.Navigator>
+    <TopTab.Navigator style={{ paddingTop: 60}}>
       <TopTab.Screen name="Suivis" component={Suivis} />
       <TopTab.Screen name="Stock" component={Stock} />
     </TopTab.Navigator>
