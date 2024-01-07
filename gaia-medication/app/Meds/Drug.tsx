@@ -182,9 +182,27 @@ export default function Drug({ route, navigation }) {
               })}
             </View>
             <Text>Composition :</Text>
-
+              {drug.Composition.map((comp, indexb) => {
+                console.log(comp)
+                if(comp["SA/FT"].length>1){
+                return(
+                  comp.Dosage.map((Dosage, index) => (
+                    <Text key={indexb+1*index+1}>{Dosage} {comp["Principe actif"][index]} pour {comp.Quantité[0]}</Text>
+                  ))
+                )}
+                else if(comp["type"].length>1){ return(
+                  comp.Dosage.map((Dosage, index) => (
+                    <Text key={indexb+1*index+1}>{Dosage} {comp["Principe actif"][0]} pour un {comp.type[index]}</Text>
+                  ))
+                )}
+                else return(
+                  comp.Dosage.map((Dosage, index) => (
+                    <Text key={indexb+1*index+1}>{Dosage} {comp["Principe actif"][0]} pour {comp.Quantité[0]}</Text>
+                  ))
+                )
+              })}
             <Text>Groupe Générique :</Text>
-            <View>
+            <View className=" mb-24">
               {gens.map((item, index) => (
                 <TouchableOpacity
                   key={index}
