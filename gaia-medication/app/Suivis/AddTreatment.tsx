@@ -353,7 +353,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
         </View>
     ) : null;
 
-    
+
     const frequencyForm = frequencyMode === 'regular' ? (
         customPeriodicity === 'day' ? (
             <View>

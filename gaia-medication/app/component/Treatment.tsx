@@ -104,7 +104,7 @@ const Treatment = ({
             borderRadius: 100,
             padding: 10,
           }}>
-            <Text style={{ color: status === "previous" ? "black" : "white", fontWeight: "700", fontSize: 15, maxWidth: 180 }} numberOfLines={1} ellipsizeMode="tail">{treatment ? treatment.name : null}</Text>
+            <Text style={{ color: status === "previous" ? "black" : "white", fontWeight: "700", fontSize: 15, maxWidth: 180 }} numberOfLines={1} ellipsizeMode="tail">{treatment.name}</Text>
           </View>
           <Text style={{ color: status === "previous" ? "#D0D0D0" : "black", fontWeight: "700" }}>{formatHour(dateObj)}</Text>
         </View>
