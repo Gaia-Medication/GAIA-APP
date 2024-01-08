@@ -89,7 +89,7 @@ export default function Home({ navigation }) {
     if(treatments.length==0){
       alert("Vous n'avez pas de traitement")
     } else {
-      console.log(treatments[0]);
+      console.log(treatments);
     console.log(treatments[0].instructions[0].takes);
     console.log(treatments.length)
     }
@@ -178,7 +178,7 @@ export default function Home({ navigation }) {
           {treatments && treatments.map((treatment) => { return (
             <View key={treatment.name}>
               <Text>{treatment.name}</Text>
-              <Text>{treatment.instructions.length}</Text>
+              <Text>{treatment.instructions[0].takes.length}</Text>
               </View>
          )})}
           {!treatments ? (

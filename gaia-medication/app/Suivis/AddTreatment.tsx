@@ -159,30 +159,39 @@ export default function AddTreatment({ navigation }: ICreateProps) {
     };
 
     // ASSOCIATE UN DIGIT (QUANTITE) A UNE DATE
-    const associateDigitWithDates = () => {
+    const associateDigitWithDates = (input: String) => {
         if (checkQty === "custom") {
-            const updatedTakes = [...takes];
-
-            checkedDates.forEach((date) => {
-                console.log("DATE => ", date)
-                updatedTakes.push({
-                    userId: user.id,
-                    treatmentName: treatmentName,
-                    CIS: Number(selectedMedCIS),
-                    date: date.toISOString(),
-                    quantity: Number(digitInput),
-                    taken: false,
-                });
-            });
-
+            // Convert checkedDates to a map for quick lookup
+            const checkedDatesMap = new Map(checkedDates.map(date => [date.toDateString(), true]));
+    
+            // Filter out the old takes that match any of the checkedDates
+            const remainingTakes = takes.filter(take => 
+                !checkedDatesMap.has(new Date(take.date).toDateString())
+            );
+    
+            // Create new takes for each checked date
+            const newTakes = checkedDates.map(date => ({
+                userId: user.id,
+                treatmentName: treatmentName,
+                CIS: Number(selectedMedCIS),
+                date: date.toISOString(),
+                quantity: Number(input),
+                taken: false,
+            }));
+    
+            // Combine the remaining takes with the new takes and sort them by date
+            const updatedTakes = [...remainingTakes, ...newTakes].sort((a, b) => 
+                new Date(a.date).getTime() - new Date(b.date).getTime()
+            );
+    
             console.log("UPDATED TAKES => ", updatedTakes);
-
+    
+            // Update the takes state
             setTakes(updatedTakes);
-            setDigitInput("0");
         } else {
             const updatedTakes = [...takes];
 
-            arrayOfDates.forEach((date) => {
+            arrayOfDates.map((date) => {
                 updatedTakes.push({
                     userId: user.id,
                     treatmentName: treatmentName,
@@ -713,6 +722,20 @@ export default function AddTreatment({ navigation }: ICreateProps) {
 
     ) : null;
 
+    const handleInputChange = (text) => {
+        if (!isNaN(parseFloat(text)) && isFinite(text)){
+            associateDigitWithDates(text)
+        } else {
+            console.log("NOT A NUMBER")
+            if (text != "") {
+                setDigitInput("1")
+            } else {
+                setDigitInput("")
+            }
+        }
+        
+    }
+
     const quantityForm = checkQty === 'regular' ? (
         <View>
             <Text>Selectionner la quantité</Text>
@@ -720,7 +743,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
                 style={{ borderWidth: 1, borderColor: 'gray', borderRadius: 5, paddingHorizontal: 8, paddingVertical: 6, fontSize: 16 }}
                 onChangeText={(text) => {
                     setQuantity(parseInt(text))
-                    associateDigitWithDates()
+                    associateDigitWithDates(text)
                 }}
                 value={quantity ? quantity.toString() : ""}
                 keyboardType="numeric"
@@ -740,15 +763,14 @@ export default function AddTreatment({ navigation }: ICreateProps) {
                     <Text style={{ textAlignVertical: "center" }}>{date.toLocaleDateString('en-US', options)}</Text>
                     <Text style={{ textAlignVertical: "center" }}>{formatHour(date)}</Text>
                     <TextInput
+                    editable={false}
                         style={{ borderWidth: 1, borderColor: 'gray', borderRadius: 5, paddingHorizontal: 8, paddingVertical: 6, fontSize: 16 }}
-                        placeholder={takes.find(take => take.date === date.toISOString()) ? takes.find(take => take.date === date.toISOString()).quantity.toString() : "Enter Digit"}
-                        value={takes.find(take => take.date === date.toISOString()) ? takes.find(take => take.date === date.toISOString()).quantity.toString() : ""}
+                        placeholder={takes.find(take => take.date === date.toISOString()) ? takes.find(take => take.date === date.toISOString()).quantity.toString() : "0"}
+                        value={takes.find(take => take.date === date.toISOString()) ? takes.find(take => take.date === date.toISOString()).quantity.toString() : "1"}
                         onChangeText={(text) => {
-                            // Update the dateDigitAssociations state with the new value for the date
-                            const updatedTakes = [...takes];
-                            updatedTakes.find(take => take.date === date.toISOString()) ? updatedTakes.find(take => take.date === date.toISOString()).quantity = parseInt(text) : Alert.alert("Oops..");
-                            setTakes(updatedTakes);
+                            
                         }}
+                        keyboardType="numeric"
                     />
                 </View>
             ))}
@@ -756,9 +778,11 @@ export default function AddTreatment({ navigation }: ICreateProps) {
                 style={{ borderWidth: 1, borderColor: 'gray', borderRadius: 5, paddingHorizontal: 8, paddingVertical: 6, fontSize: 16 }}
                 placeholder="Enter Digit"
                 value={digitInput}
-                onChangeText={(text) => setDigitInput(text)}
+                onChangeText={(text) => {
+                    handleInputChange(text)
+                }}
+                keyboardType="numeric"
             />
-            <Button title="Associate Digit" onPress={associateDigitWithDates} />
         </View>
     ) : null;
 

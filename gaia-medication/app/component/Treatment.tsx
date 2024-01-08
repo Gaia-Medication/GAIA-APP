@@ -26,7 +26,7 @@ const Treatment = ({
   const validStates = ['previous', 'actual', 'next'];
   const isStateValid = validStates.includes(status);
   const [bgColor, setBgColor] = useState("#9CDE00");
-  const [dateObj, setDate] = useState<Date>(new Date());
+  const [date, setDate] = useState<Date>(new Date());
 
 
   const init = () => {
@@ -71,12 +71,12 @@ const Treatment = ({
   }, []);
 
   return (
-    <View style={{ display: "flex", flexDirection: "row", justifyContent: "flex-start", gap: 10, maxHeight: "auto", marginBottom: 7, marginTop: 7 }}>
+    <View style={{ display: "flex", flexDirection: "row", justifyContent: "flex-start", gap: 10, maxHeight: "auto", marginBottom: 7, marginTop: 7, height: 320 }}>
       <View style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-start", width: "20%", gap: 50 }}>
         <View style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
-          <Text style={{ fontWeight: "800", fontSize: 20, color: status === "previous" ? "#BCBCBC" : status === "actual" ? "#9CDE00" : "#00000099" }}>{formatDate(dateObj)[0]}</Text>
-          <Text style={{ fontWeight: "800", fontSize: 20, color: status === "previous" ? "#BCBCBC" : status === "actual" ? "#9CDE00" : "#00000099" }}>{formatDate(dateObj)[1]}</Text>
-          <Text style={{ fontWeight: "800", fontSize: 20, color: status === "previous" ? "#BCBCBC" : status === "actual" ? "#9CDE00" : "#00000099" }}>{formatDate(dateObj)[2]}</Text>
+          <Text style={{ fontWeight: "800", fontSize: 20, color: status === "previous" ? "#BCBCBC" : status === "actual" ? "#9CDE00" : "#00000099" }}>{formatDate(date)[0]}</Text>
+          <Text style={{ fontWeight: "800", fontSize: 20, color: status === "previous" ? "#BCBCBC" : status === "actual" ? "#9CDE00" : "#00000099" }}>{formatDate(date)[1]}</Text>
+          <Text style={{ fontWeight: "800", fontSize: 20, color: status === "previous" ? "#BCBCBC" : status === "actual" ? "#9CDE00" : "#00000099" }}>{formatDate(date)[2]}</Text>
         </View>
         <TouchableOpacity onPress={() => onTakePress(take)} disabled={status === "next"}>
           <View style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "20%", backgroundColor: take.taken ? (status === "actual" ? "#9CDE0030" : "#CCCCCC") : (status === "actual" ? "#FF000030" : "#CCCCCC"), padding: 10, borderRadius: 50 }}>
@@ -104,7 +104,7 @@ const Treatment = ({
         alignItems: "center",
         zIndex: 1,
         width: "70%",
-        backgroundColor: bgColor,
+        backgroundColor: status === "previous" ? "#BCBCBC10" : "#9CDE0010",
         borderRadius: 17,
         borderStyle: "solid",
         borderWidth: 1,
@@ -120,7 +120,12 @@ const Treatment = ({
           }}>
             <Text style={{ color: status === "previous" ? "black" : "white", fontWeight: "700", fontSize: 15, maxWidth: 180 }} numberOfLines={1} ellipsizeMode="tail">{take.treatmentName}</Text>
           </View>
-          <Text style={{ color: status === "previous" ? "#D0D0D0" : "black", fontWeight: "700" }}>{formatHour(dateObj)}</Text>
+          <Text style={{ color: status === "previous" ? "#D0D0D0" : "black", fontWeight: "700" }}>{formatHour(date)}</Text>
+        </View>
+
+        <View style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 10, width: "100%", padding: 10, backgroundColor: status === "previous" ? "#BCBCBC40" : "#9CDE0040", borderRadius: 50 }}>
+          <Icon.Info color={status === "previous" ? "#BCBCBC" : "#9CDE00"} width={25} height={25} />
+          <Text style={{ fontWeight: "bold", color: "#444444" }} ellipsizeMode="tail" numberOfLines={1}>{treatment ? treatment.instructions.find(ins => ins.CIS === take.CIS).name + " x " + take.quantity : null}</Text>
         </View>
 
         <View style={{ padding: 30, display: "flex", flexDirection: "row", gap: 15 }} >
@@ -132,7 +137,7 @@ const Treatment = ({
           }} />
           <View>
             <Text style={{ color: status === "previous" ? "#7B7B7B" : "black", fontWeight: "bold" }}>Description :</Text>
-            <Text style={{ color: "#C9C9C9", fontWeight: "700" }} numberOfLines={3} ellipsizeMode="tail">{treatment ? treatment.description : "1 Doliprane toutes les 4h pendant 5 jours"}</Text>
+            <Text style={{ color: "#C9C9C9", fontWeight: "700" }} numberOfLines={3} ellipsizeMode="tail">{treatment && treatment.description ? treatment.description : "Aucune description..."}</Text>
           </View>
 
         </View>

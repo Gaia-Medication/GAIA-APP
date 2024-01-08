@@ -151,16 +151,14 @@ export const initTreatments = async () => {
 
   allTreatments ? allTreatments.forEach((treatment) => {
     console.log(treatment.name)
-    treatment ? treatment.instructions?.forEach((instr) => {
+    treatment ? treatment.instructions.forEach((instr) => {
       instr.takes.forEach((take) => {
         console.log("take => ", take)
         takesArray.push(take)
       });
     }) : null;
   }) : new Error("No treatments found");
-  return takesArray.sort((a, b) => {
-    return new Date(a.date).getTime() - new Date(b.date).getTime();
-  })
+  return takesArray
 };
 
 export const getTreatmentByName = async (name: string, userId: number): Promise<Treatment> => {

@@ -1,5 +1,5 @@
 import { useIsFocused } from "@react-navigation/native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   Text,
   TouchableOpacity,
@@ -22,6 +22,10 @@ export default function Suivis({ navigation }) {
   const [takes, setTakes] = useState([]);
   const [showAll, setShowAll] = useState(false);
   const [treatment, setTreatment] = useState<Treatment>(null);
+  const [isToday, setIsToday] = useState(false);
+
+  const scrollViewRef = useRef(null);
+
 
   const toggleTakeTaken = (tak: Take) => {
     let takesUpdate = [...takes];
@@ -49,6 +53,7 @@ export default function Suivis({ navigation }) {
   }
 
   const isTodayInDates = (takes: Take[]): boolean => {
+    if (takes.length === 0) return false;
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     return takes.some((take) => {
@@ -61,12 +66,31 @@ export default function Suivis({ navigation }) {
   const init = async () => {
     setShowAll(false);
     initTreatments().then((treatments) => {
+      treatments.sort((a, b) => {
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
+        return dateA.getTime() - dateB.getTime();
+      });
       setTakes(treatments);
+      setIsToday(isTodayInDates(takes));
+      console.log("isToday", isToday);
     })
     getAllTreatments().then((treatments) => {
       setTreatments(treatments);
     })
     console.log("takes", takes);
+
+    const actualIndex = takes.findIndex(take => compareDates(take.date) === 'actual');
+
+    if (actualIndex !== -1) {
+      // Calculate the position to scroll to
+      // For simplicity, assuming each Treatment has a fixed height (e.g., 100)
+      const positionToScroll = 320 * actualIndex + 50;
+
+      // Step 3: Scroll to the target item
+      scrollViewRef.current.scrollTo({ y: positionToScroll, animated: true });
+    }
+    
   };
 
   useEffect(() => {
@@ -94,11 +118,11 @@ export default function Suivis({ navigation }) {
             </Text>
             <Icon.Plus color="#363636" width={35} height={35} />
           </TouchableOpacity>
-          {!isTodayInDates(takes) ? (
+          {isToday === false ? (
             <Text>{"Aucun traitement à prendre aujourd'hui"}</Text>
           ) : null}
 
-          <ScrollView>
+          <ScrollView ref={scrollViewRef}>
             <View style={{ paddingBottom: 200, paddingTop: 50 }}>
               {takes && takes.map((take, index) => (
                 <Treatment
