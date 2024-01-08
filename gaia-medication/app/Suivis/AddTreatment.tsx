@@ -209,7 +209,16 @@ export default function AddTreatment({ navigation }: ICreateProps) {
     };
 
     // SETUP UN MEDICAMENT
-    const handleMedSelect = (CIS) => {
+    const handleMedSelect = async (CIS) => {
+        if (treatmentName === "") {
+            Alert.alert("Veuillez renseigner un nom de traitement");
+            return;
+        }
+        const treatments = await getAllTreatments();
+        if (treatments.find((treatment) => treatment.name === treatmentName)) {
+            Alert.alert("Ce nom de traitement est déja pris...");
+            return;
+        }
         const med = getMedbyCIS(CIS);
         console.log(med);
         setSelectedMed(med);
@@ -850,20 +859,6 @@ export default function AddTreatment({ navigation }: ICreateProps) {
     };
 
     const addTreatment = async () => {
-        // VERIFICATION DES INFORMATION RENTREES
-        const allTreatments = await getAllTreatments();
-        allTreatments.find(treatment => treatment.name === treatmentName)
-        console.log("TREATMENT NAME => ", treatmentName)
-
-        if (treatmentName === "") {
-            alert("Veuillez renseigner le nom du traitement")
-            return
-        } else if (allTreatments.find(treatment => treatment.name === treatmentName)) {
-            alert("Ce nom de traitement est déjà utilisé")
-            return
-        }
-
-        // ------------------------------
         let asyncInstructions = await readList('instructions');
         console.log("ASYNC INSTRUCTIONS => ", await asyncInstructions)
         AsyncStorage.setItem("instructions", JSON.stringify([]));
@@ -912,16 +907,50 @@ export default function AddTreatment({ navigation }: ICreateProps) {
                 marginVertical: 60
 
             }}>
-                <TouchableOpacity onPress={() => { addInstruction() }} style={{ backgroundColor: '#9CDE00', padding: 10, borderRadius: 5 }}>
+                <TouchableOpacity onPress={() => { 
+                    
+                    addInstruction() 
+                    resetModalVariables(); // Reset the state first
+                    }} style={{ backgroundColor: '#9CDE00', padding: 10, borderRadius: 5 }}>
                     <Text style={{ color: "white", fontWeight: "bold" }}>VALIDER</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => setInstructionModalVisible(false)} style={{ backgroundColor: '#FF0000', padding: 10, borderRadius: 5 }}>
+                <TouchableOpacity onPress={() => handleClosePress()} style={{ backgroundColor: '#FF0000', padding: 10, borderRadius: 5 }}>
                     <Text style={{ color: "white", fontWeight: "bold" }}>ANNULER</Text>
                 </TouchableOpacity>
             </View>
 
         </View>
     ) : null;
+
+    const resetModalVariables = () => {
+        console.log("RESET")
+        setCheckFrequency("");
+        setCheckLast("");
+        setCheckQty("");
+        setCheckDaily("");
+        setFrequencyMode("");
+        setCustomPeriodicity("");
+        setCustomPeriodicityNumber("");
+        setCustomPeriodicityBisNumber("");
+        setEndDate(new Date());
+        setDigitInput("");
+        setArrayOfDates([]);
+        setTakes([]);
+        setCheckedDates([]);
+        setSelectedHour(new Date());
+        setSelectedHourBis(new Date());
+        setShowHourPicker(Array.from({ length: parseInt(customPeriodicityNumber) }, (_, index) => false));
+        setShowHourPickerBis(false);
+        setSelectAllText("Select All");
+        setSelectAllColor("blue");
+    }
+
+    // Function to handle close button press
+    const handleClosePress = () => {
+        console.log("CLOSE")
+        resetModalVariables(); // Reset the state first
+        setInstructionModalVisible(false) 
+    };
 
     const modalDescriptionContent =
         selectedInstruction ? (
@@ -958,12 +987,14 @@ export default function AddTreatment({ navigation }: ICreateProps) {
                         <Text>Il est à prendre les {selectedInstruction.regularFrequencyDays.join(", ")}</Text>
                     </View>
                 )}
-                <TouchableOpacity onPress={() => { setInstructionsDetailModal(false) }} style={{ backgroundColor: '#FF000080', padding: 10, borderRadius: 5 }}>
+                <TouchableOpacity onPress={() => setInstructionsDetailModal(false)} style={{ backgroundColor: '#FF000080', padding: 10, borderRadius: 5 }}>
                     <Text style={{ color: "white", fontWeight: "bold" }}>FERMER</Text>
                 </TouchableOpacity>
 
             </View>
         ) : null
+
+    
 
     const init = async () => {
         const allMeds = getAllMed();
@@ -992,6 +1023,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
             <View className=" flex justify-center pt-8">
                 <Text>Nom du traitement*</Text>
                 <TextInput
+                    editable={instructionsList.length === 0}
                     style={{
                         borderWidth: 2,
                         borderColor: 'gray',
@@ -1010,6 +1042,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
 
                 <Text>Description du traitement</Text>
                 <TextInput
+                    editable={instructionsList.length === 0}
                     style={{
                         borderWidth: 2,
                         borderColor: 'gray',
@@ -1030,6 +1063,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
 
                 <Text>Date de début</Text>
                 <TouchableOpacity
+                    disabled={instructionsList.length > 0}
                     onPress={() => setShowStartPicker(true)}
                     style={{
                         paddingHorizontal: 8,
@@ -1082,7 +1116,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
                             setIsVisible(true);
                         }}
                         value={searchText}
-                        placeholder="Selectioner vos médicaments..."
+                        placeholder="Choisir vos médicaments..."
                     />
                 </TouchableOpacity>
                 {isVisible && (
@@ -1127,6 +1161,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
                         <ModalComponent
                             visible={instructionsDetailModal}
                             onClose={() => {
+                                
                                 setInstructionsDetailModal(false);
                             }}
                             styleAdded={{
