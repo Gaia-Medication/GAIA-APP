@@ -11,6 +11,7 @@ import {
 import { Text } from "react-native-elements";
 import { ChevronDown } from "react-native-feather";
 import { styles } from "../../style/style";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const Treatment = ({
   onPress,
@@ -66,7 +67,7 @@ const Treatment = ({
   }, []);
 
   return (
-    <View style={{display: "flex", flexDirection: "row", justifyContent: "flex-start", gap: 10, maxHeight: "auto", marginBottom: 7, marginTop: 7}}>
+    <SafeAreaView style={{display: "flex", flexDirection: "row", justifyContent: "flex-start", gap: 10, maxHeight: "auto", marginBottom: 7, marginTop: 7}}>
       <View style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "20%" }}>
         <Text style={{fontWeight: "800", fontSize: 20, color: status === "previous" ? "#BCBCBC" : status === "actual" ? "#9CDE00" : "#00000099"}}>{formatDate(dateObj)[0]}</Text>
         <Text style={{fontWeight: "800", fontSize: 20, color: status === "previous" ? "#BCBCBC" : status === "actual" ? "#9CDE00" : "#00000099"}}>{formatDate(dateObj)[1]}</Text>
@@ -124,7 +125,7 @@ const Treatment = ({
         </View>
 
       </View>
-    </View>
+    </SafeAreaView>
 
   );
 };

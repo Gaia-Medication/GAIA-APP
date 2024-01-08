@@ -16,6 +16,7 @@ import { styles } from "../../style/style";
 import ModalComponent from "../component/Modal";
 import Treatment from "../component/Treatment";
 import { notificationDaily, scheduleLocalNotification } from "../Handlers/NotificationsHandler";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Suivis({ navigation }) {
   const isFocused = useIsFocused();
@@ -77,7 +78,7 @@ export default function Suivis({ navigation }) {
   }, [isFocused]);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       {datesDict && datesKeys.length == 0 ? (
         <View style={{ padding: 10, width: "100%", height: "100%", display: "flex", alignItems: 'center', justifyContent: 'center', marginBottom: 200 }}>
           <Text style={{ color: "rgb(103, 33, 236)", fontSize: 20, marginBottom: 100 }}>Aucun traitement à venir</Text>
@@ -128,6 +129,6 @@ export default function Suivis({ navigation }) {
           </ScrollView>
         </View>
       )}
-    </View >
+    </SafeAreaView >
   );
 }

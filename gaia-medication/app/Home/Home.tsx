@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, Linking } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Linking,
+  Image,
+  ScrollView,
+} from "react-native";
 import { useIsFocused } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
 import callGoogleVisionAsync from "../../OCR/helperFunctions";
@@ -10,16 +17,21 @@ import { Bell } from "react-native-feather";
 import { Button, Input } from "react-native-elements";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { requestNotificationPermissions, notificationDaily, notificationNow, notificationForgot } from './../Handlers/NotificationsHandler';
-import * as Notifications from 'expo-notifications';
+import {
+  requestNotificationPermissions,
+  notificationDaily,
+  notificationNow,
+  notificationForgot,
+} from "./../Handlers/NotificationsHandler";
+import * as Notifications from "expo-notifications";
 import { trouverNomMedicament } from "../../dao/Search";
 import Loading from "../component/Loading";
-
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Home({ navigation }) {
   const isFocused = useIsFocused();
   const [loading, setLoading] = useState(false);
-  
+
   const [user, setUser] = useState<User | null>(null);
   const [users, setUsers] = useState<User[]>([]);
   const [header, setHeader] = useState(true);
@@ -36,7 +48,7 @@ export default function Home({ navigation }) {
         alert("Va falloir faire le tuto bro");
       }*/ else {
       const current = await getUserByID(JSON.parse(currentId));
-      console.log(current)
+      console.log(current);
       setUser(current);
     }
     Notifications.addNotificationResponseReceivedListener((notification) => {
@@ -47,7 +59,6 @@ export default function Home({ navigation }) {
   const handleAvatarButton = () => {
     setHeader(!header);
   };
-    
 
   const pickImage = async () => {
     let result = await ImagePicker.launchCameraAsync({
@@ -55,18 +66,25 @@ export default function Home({ navigation }) {
       base64: true,
     });
     if (!result.canceled) {
-      setLoading(true)
+      setLoading(true);
       const googleText = await callGoogleVisionAsync(result.assets[0].base64);
       //console.log("OCR :", googleText.text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace('Ⓡ',''));
-      const list=trouverNomMedicament(googleText.text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace('Ⓡ',''))
-      if(list.length>0){
-        let msg:string=""
-        for (const med of list){msg+=med.med+'\nAcc : '+med.score+'%\n\n'}
-        setLoading(false)
-        alert(msg)
-      } else{
-        setLoading(false)
-        alert("Rien")
+      const list = trouverNomMedicament(
+        googleText.text
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .replace("Ⓡ", "")
+      );
+      if (list.length > 0) {
+        let msg: string = "";
+        for (const med of list) {
+          msg += med.med + "\nAcc : " + med.score + "%\n\n";
+        }
+        setLoading(false);
+        alert(msg);
+      } else {
+        setLoading(false);
+        alert("Rien");
       }
     }
   };
@@ -75,10 +93,10 @@ export default function Home({ navigation }) {
     const treatments = await getAllTreatments();
     console.log(treatments[0]);
     setTreatments(treatments);
-  }
+  };
   const deleteTreatments = async () => {
     AsyncStorage.removeItem("treatments");
-  }
+  };
 
   useEffect(() => {
     if (isFocused) {
@@ -88,7 +106,11 @@ export default function Home({ navigation }) {
   }, [isFocused]);
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
+      <Image
+        className=" object-cover h-12 w-24 self-center"
+        source={require("../../assets/logo_title_gaia.png")}
+      ></Image>
       {user && (
         <>
           <View style={styles.header}>
@@ -133,9 +155,7 @@ export default function Home({ navigation }) {
                   value={""}
                   inputContainerStyle={styles.searchBarContainer}
                   //editable={false}
-                  onPressIn={() =>
-                    navigation.navigate("Search")
-                  }
+                  onPressIn={() => navigation.navigate("Search")}
                 />
               </View>
               <TouchableOpacity onPress={pickImage} style={styles.searchQR}>
@@ -150,24 +170,30 @@ export default function Home({ navigation }) {
           <View style={styles.traitementContainer}>
             <Text style={styles.title2}>Suivis d'un traitement</Text>
           </View>
-          <Button onPress={notificationDaily} title="Notification quotidienne"/>
-          <Button onPress={notificationForgot} title="Notification oubli"/>
-          <Button onPress={showTreatments} title="Liste des traitements"/>
-          <Button onPress={deleteTreatments} title="Supprimer traitements"/>
-          {treatments && treatments.map((treatment) => { return (
-            <View key={treatment.name}>
-              <Text>{treatment.name}</Text>
-              <Text>{treatment.instruction.length}</Text>
-              </View>
-         )})}
+          <Button
+            onPress={notificationDaily}
+            title="Notification quotidienne"
+          />
+          <Button onPress={notificationForgot} title="Notification oubli" />
+          <Button onPress={showTreatments} title="Liste des traitements" />
+          <Button onPress={deleteTreatments} title="Supprimer traitements" />
+          {treatments &&
+            treatments.map((treatment) => {
+              return (
+                <View key={treatment.name}>
+                  <Text>{treatment.name}</Text>
+                  <Text>{treatment.instruction.length}</Text>
+                </View>
+              );
+            })}
           {!treatments ? (
             <Text>PAS DE VARIABLE ASYNC TREATMENT</Text>
           ) : treatments.length == 0 ? (
             <Text>TREATMENTS VIDE</Text>
-          ) :null }
+          ) : null}
         </>
       )}
-      {loading&&<Loading/>}
-    </View>
+      {loading && <Loading />}
+    </ScrollView>
   );
 }

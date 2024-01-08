@@ -7,7 +7,7 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/logo_gaia_loading.png",
       "resizeMode": "contain",
       "backgroundColor": "#9CDE00"
     },

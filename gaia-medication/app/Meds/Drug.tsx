@@ -98,7 +98,7 @@ export default function Drug({ route, navigation }) {
     );
   }, []);
   return (
-    <View style={styles.container} className=" px-6">
+    <SafeAreaView style={styles.container} className=" px-6">
       {drug && stock && user && (
         <>
           <View className="flex-row justify-between pt-4">
@@ -263,6 +263,6 @@ export default function Drug({ route, navigation }) {
         </>
       )}
       {(!drug || !stock || !user) && <Loading />}
-    </View>
+    </SafeAreaView>
   );
 }

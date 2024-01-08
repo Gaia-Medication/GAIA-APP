@@ -13,7 +13,6 @@ export const styles = StyleSheet.create({
   },
   header: {
     width: "100%",
-    paddingTop: 20,
     paddingHorizontal: "5%",
     display: "flex",
     flexDirection: "row",
@@ -26,7 +25,7 @@ export const styles = StyleSheet.create({
     textAlign: "center",
     textAlignVertical: "center",
     borderRadius: 25,
-    fontSize: 24,
+    fontSize: 18,
     fontWeight: "900",
     color: "white",
   },
