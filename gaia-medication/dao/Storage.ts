@@ -18,11 +18,10 @@ export const UserIdAutoIncrement = async () => {
 // Lire la liste depuis AsyncStorage
 export const readList = async (key: string) => {
   try {
-    const jsonValue = await AsyncStorage.getItem(key);
-    return jsonValue != null ? JSON.parse(jsonValue) : [];
+    const val = await AsyncStorage.getItem(key);
+    return val != null ? JSON.parse(val) : [];
   } catch (error) {
     console.error(`Erreur lors de la lecture de la liste ${key}:`, error);
-    return [];
   }
 };
 
@@ -41,8 +40,8 @@ export const getUserByID = async (id: number) => {
 // Ajouter un élément à la liste dans AsyncStorage
 export const addItemToList = async (key: string, item) => {
   try {
-    const existingList = await readList(key);
-    existingList.push(item);
+    let existingList = await readList(key);
+    existingList.push(item)
     await AsyncStorage.setItem(key, JSON.stringify(existingList));
     console.log(`Élément ajouté à la liste ${key}.`);
   } catch (error) {
@@ -108,16 +107,12 @@ export const getAllTreatments = async (): Promise<Treatment[]> => {
       return []
     }
 
-    const treatmentsJson = JSON.parse(treatments)
+    const treatmentsJson: [] = JSON.parse(treatments)
     const arrayOfTreatments = []
-    treatmentsJson.map((treatment) => {
-      const instructions = JSON.parse(treatment.instructions._j)
+    treatmentsJson && treatments.length != 0 ? treatmentsJson.map((treatment: Treatment) => {
       const instructionsArray = []
-      instructions.map((instr) => {
+      treatment.instructions ? treatment.instructions.map((instr) => {
         let daqDict = {};
-        Object.entries(instr.datesAndQuantities).forEach(([date, quantity]) => {
-          daqDict[date] = Number(quantity);
-        })
         const instruction: Instruction = {
           CIS: instr.CIS,
           name: instr.name,
@@ -131,18 +126,19 @@ export const getAllTreatments = async (): Promise<Treatment[]> => {
           endDate: instr.endDate,
           endQuantity: instr.endQuantity,
           quantity: instr.quantity,
-          datesAndQuantities: daqDict,
+          takes: instr.takes,
         }
         instructionsArray.push(instruction)
-      })
+      }): null
       const treatmentObject: Treatment = {
         name: treatment.name,
+        userId: treatment.userId,
         description: treatment.description,
         startDate: new Date(treatment.startDate),
-        instruction: instructionsArray
+        instructions: instructionsArray
       }
       arrayOfTreatments.push(treatmentObject)
-    })
+    }): null
     return arrayOfTreatments
   } catch (error) {
     console.error(error);
@@ -150,38 +146,23 @@ export const getAllTreatments = async (): Promise<Treatment[]> => {
 }
 
 export const initTreatments = async () => {
-  const allTreatments = await getAllTreatments();
-  let dict = {}; // Initialize dict as an array
+  const allTreatments: Treatment[] = await getAllTreatments();
+  let takesArray = [];
 
-  const treatmentDates: Record<string, string[]> = {};
-
-  allTreatments.forEach((treatment) => {
+  allTreatments ? allTreatments.forEach((treatment) => {
     console.log(treatment.name)
-    treatment.instruction?.forEach((instr) => {
-      Object.keys(instr.datesAndQuantities || {}).forEach((date) => {
-        console.log(date)
-        if (dict[date]) {
-          // If the date already exists in the dictionary, append the treatment name to the array
-          dict[date].push(treatment.name);
-        } else {
-          // If the date doesn't exist, create a new array with the treatment name
-          dict[date] = [treatment.name];
-        }
+    treatment ? treatment.instructions.forEach((instr) => {
+      instr.takes.forEach((take) => {
+        console.log("take => ", take)
+        takesArray.push(take)
       });
-    });
-  });
-  const sortedKeys = Object.keys(dict).sort((a, b) => {
-    return new Date(a).getTime() - new Date(b).getTime();
-  })
-  const dictWithDates = sortedKeys
-    .map(dateStr => new Date(dateStr))
-  console.log("dictWithDates => ", dictWithDates);
-  const nextDateIndex = dictWithDates.findIndex(dateObj => dateObj > new Date());
-  const futureDateKeys = nextDateIndex == 0 ? (sortedKeys) : (nextDateIndex === -1 ? (sortedKeys.slice(-1)) : (sortedKeys.slice(nextDateIndex - 1)));
-  const futureDatesDict = {};
-  futureDateKeys.forEach(date => {
-    futureDatesDict[date] = dict[date];
-  });
-  console.log("futureDatesKeys => ", futureDateKeys);
-  return futureDatesDict;
+    }) : null;
+  }) : new Error("No treatments found");
+  return takesArray
 };
+
+export const getTreatmentByName = async (name: string, userId: number): Promise<Treatment> => {
+  const allTreatments = await getAllTreatments();
+  const treatment = allTreatments.find(treatment => treatment.name === name);
+  return treatment || null;
+}

@@ -1,7 +1,7 @@
 import { NavigationProp, ParamListBase, useIsFocused } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
-import { addItemToList, getAllTreatments, readList } from "../../dao/Storage";
-import { View, Text, TextInput, FlatList, TouchableOpacity, Button } from "react-native";
+import { addItemToList, getAllTreatments, getUserByID, readList } from "../../dao/Storage";
+import { View, Text, TextInput, FlatList, TouchableOpacity, Button, Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { styles } from "../../style/style";
 import { getAllMed, getMedbyCIS } from "../../dao/Meds";
@@ -72,7 +72,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
     const [selectedHourBis, setSelectedHourBis] = useState(new Date());
     const [selectedHour, setSelectedHour] = useState(new Date());
     const [selectAllText, setSelectAllText] = useState('Select All');
-    const [selectAllColor, setSelectAllColor] = useState('red');
+    const [selectAllColor, setSelectAllColor] = useState('blue');
     const [selectedMed, setSelectedMed] = useState({});
     const [selectedMedCIS, setSelectedMedCIS] = useState("");
     const [selectedMedName, setSelectedMedName] = useState("");
@@ -80,7 +80,8 @@ export default function AddTreatment({ navigation }: ICreateProps) {
     const [instructionsList, setInstructionsList] = useState([]);
     const [selectedInstruction, setSelectedInstruction] = useState<Instruction>(null);
     const [arrayOfDates, setArrayOfDates] = useState([]);
-    const [dateDigitAssociations, setDateDigitAssociations] = useState({});
+    const [takes, setTakes] = useState<Take[]>([]);
+    const [user, setUser] = useState<User | null>(null);
 
     // DATA ARRAYS
     const options = {
@@ -159,24 +160,51 @@ export default function AddTreatment({ navigation }: ICreateProps) {
     };
 
     // ASSOCIATE UN DIGIT (QUANTITE) A UNE DATE
-    const associateDigitWithDates = () => {
+    const associateDigitWithDates = (input: String) => {
         if (checkQty === "custom") {
-            const updatedAssociations = { ...dateDigitAssociations };
-
-            checkedDates.forEach((date) => {
-                updatedAssociations[date.toISOString()] = digitInput;
-            });
-
-            setDateDigitAssociations(updatedAssociations);
-            setDigitInput("0");
+            // Convert checkedDates to a map for quick lookup
+            const checkedDatesMap = new Map(checkedDates.map(date => [date.toDateString(), true]));
+    
+            // Filter out the old takes that match any of the checkedDates
+            const remainingTakes = takes.filter(take => 
+                !checkedDatesMap.has(new Date(take.date).toDateString())
+            );
+    
+            // Create new takes for each checked date
+            const newTakes = checkedDates.map(date => ({
+                userId: user.id,
+                treatmentName: treatmentName,
+                CIS: Number(selectedMedCIS),
+                date: date.toISOString(),
+                quantity: Number(input),
+                taken: false,
+            }));
+    
+            // Combine the remaining takes with the new takes and sort them by date
+            const updatedTakes = [...remainingTakes, ...newTakes].sort((a, b) => 
+                new Date(a.date).getTime() - new Date(b.date).getTime()
+            );
+    
+            console.log("UPDATED TAKES => ", updatedTakes);
+    
+            // Update the takes state
+            setTakes(updatedTakes);
         } else {
-            const updatedAssociations = { ...dateDigitAssociations };
+            const updatedTakes = [...takes];
 
-            arrayOfDates.forEach((date) => {
-                updatedAssociations[date.toISOString()] = quantity;
+            arrayOfDates.map((date) => {
+                updatedTakes.push({
+                    userId: user.id,
+                    treatmentName: treatmentName,
+                    CIS: Number(selectedMedCIS),
+                    date: date.toISOString(),
+                    quantity: quantity,
+                    taken: false,
+                });
             });
 
-            setDateDigitAssociations(updatedAssociations);
+            console.log("UPDATED TAKES => ", updatedTakes);
+            setTakes(updatedTakes);
         }
     };
 
@@ -232,44 +260,106 @@ export default function AddTreatment({ navigation }: ICreateProps) {
         }
     };
 
+    // CALCUL LE NOMBRE DE PRISES SI CUSTOMPERIODICITY == WEEK && CHECKLAST == last   
+    function calculateTotalTakes() {
+        const msInDay = 24 * 60 * 60 * 1000; // Number of milliseconds in a day
+        let totalTakes = 0;
+        let currentDate = new Date(startDate);
+    
+        // Create a map for quick lookup of the days of the week
+        const daysMap = {
+            'Dimanche': 0, 'Lundi': 1, 'Mardi': 2, 'Mercredi': 3,
+            'Jeudi': 4, 'Vendredi': 5, 'Samedi': 6
+        };
+    
+        // Convert weekDays to their respective numbers
+        const targetDays = weekDays.filter(day => day.checked).map(day => daysMap[day.day]);
+    
+        while (currentDate <= endDate) {
+            if (targetDays.includes(currentDate.getDay())) {
+                totalTakes++; // Increment count if it's a target day
+            }
+    
+            // Move to the next day
+            currentDate = new Date(currentDate.getTime() + msInDay);
+        }
+    
+        console.log("TOTAL TAKES => ", totalTakes);
+        return totalTakes;
+    }
+
+    function calculateTakesEveryXDays() {
+        const msInDay = 24 * 60 * 60 * 1000; // Number of milliseconds in a day
+        let totalTakes = 0;
+        let currentDate = new Date(startDate);
+    
+        while (currentDate <= endDate) {
+            totalTakes++; // Increment count for each interval
+    
+            // Move to the next interval day
+            currentDate = new Date(currentDate.getTime() + (parseInt(customPeriodicityBisNumber) * msInDay));
+        }
+    
+        return totalTakes;
+    }
+
     // LIT TOUS LES INPUTS? CHECKBOXES ETC POUR RECUPERER UN TABLEAU DE DATES SANS QUANTITE
     const addDates = async () => {
+        console.log("ADD DATES")
         let array = [];
+        const daysMap = {
+            'Dimanche': 0, 'Lundi': 1, 'Mardi': 2, 'Mercredi': 3,
+            'Jeudi': 4, 'Vendredi': 5, 'Samedi': 6
+        };
         let startDateObj = new Date(startDate);
         const daysDifference = checkLast === 'last' ? Math.floor((Number(endDate) - Number(startDateObj)) / (24 * 60 * 60 * 1000)) : null
-        const numberOfTimes = checkLast === 'last' ? (frequencyMode === "regular" ? (parseInt(customPeriodicityNumber) * daysDifference) : (parseInt(customPeriodicityBisNumber) * daysDifference)) : endNumber;
-        const currentDate = new Date(startDateObj);
+        const numberOfTimes = checkLast === 'last' ? (frequencyMode === "regular" ? (customPeriodicity === "day" ? parseInt(customPeriodicityNumber) * daysDifference + parseInt(customPeriodicityNumber) : calculateTotalTakes()) : (calculateTakesEveryXDays())) : endNumber;
+        let currentDate = new Date(startDateObj);
         const intervalDays = parseInt(customPeriodicityBisNumber);
+        console.log("DAYS DIFFERENCE ", daysDifference)
+        numberOfTimes ? console.log("NUMBER OF TIMES ", numberOfTimes) : null
 
         if (checkFrequency === 'regular') {
             if (frequencyMode === 'regular') {
-                if (checkDaily === 'daily') {
+                if (customPeriodicity === 'week') {
+                    const targetDays = weekDays.filter(day => day.checked).map(day => daysMap[day.day]);
                     while (array.length < numberOfTimes) {
-                        for (let hour of hoursAssociations) {
-                            if (array.length >= numberOfTimes) {
-                                break;
-                            }
-                            const newDate = new Date(currentDate);
-                            newDate.setHours(hour.getHours(), hour.getMinutes(), 0, 0); // Set the specific hour and minute
-                            array.push(newDate);
+                        if (targetDays.includes(currentDate.getDay())) {
+                            array.push(new Date(currentDate)); // Add the date if it's a target day
                         }
-                        currentDate.setDate(currentDate.getDate() + 1);
+                        currentDate = new Date(currentDate.getTime() + (24 * 60 * 60 * 1000)); // Move to the next day
                     }
-                } else if (checkDaily === 'custom') {
-                    // Custom daily logic to use numberOfTimes
-                    while (array.length < numberOfTimes && (!endDate || currentDate <= endDate)) {
-                        if (weekDays[currentDate.getDay()].checked) {
-                            hoursAssociations.forEach(hour => {
-                                if (array.length < numberOfTimes) {
-                                    const newDate = new Date(currentDate);
-                                    newDate.setHours(hour.getHours(), hour.getMinutes(), 0, 0);
-                                    array.push(newDate);
+
+                } else if (customPeriodicity === 'day') {
+                    if (checkDaily === 'daily') {
+                        while (array.length < numberOfTimes) {
+                            for (let hour of hoursAssociations) {
+                                if (array.length >= numberOfTimes) {
+                                    break;
                                 }
-                            });
+                                const newDate = new Date(currentDate);
+                                newDate.setHours(hour.getHours(), hour.getMinutes(), 0, 0); // Set the specific hour and minute
+                                array.push(newDate);
+                            }
+                            currentDate.setDate(currentDate.getDate() + 1);
                         }
-                        currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
+                    } else if (checkDaily === 'custom') {
+                        // Custom daily logic to use numberOfTimes
+                        while (array.length < numberOfTimes) {
+                            if (weekDays[currentDate.getDay()].checked) {
+                                hoursAssociations.forEach(hour => {
+                                    if (array.length < numberOfTimes) {
+                                        const newDate = new Date(currentDate);
+                                        newDate.setHours(hour.getHours(), hour.getMinutes(), 0, 0);
+                                        array.push(newDate);
+                                    }
+                                });
+                            }
+                            currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
+                        }
                     }
                 }
+                
             } else if (frequencyMode === 'bis') {
                 console.log("BIS")
                 console.log(customPeriodicityNumber)
@@ -633,16 +723,32 @@ export default function AddTreatment({ navigation }: ICreateProps) {
 
     ) : null;
 
+    const handleInputChange = (text) => {
+        if (!isNaN(parseFloat(text)) && isFinite(text)){
+            associateDigitWithDates(text)
+        } else {
+            console.log("NOT A NUMBER")
+            if (text != "") {
+                setDigitInput("1")
+            } else {
+                setDigitInput("")
+            }
+        }
+        
+    }
+
     const quantityForm = checkQty === 'regular' ? (
         <View>
             <Text>Selectionner la quantité</Text>
             <TextInput
                 style={{ borderWidth: 1, borderColor: 'gray', borderRadius: 5, paddingHorizontal: 8, paddingVertical: 6, fontSize: 16 }}
-                onChangeText={(text) => setQuantity(parseInt(text))}
+                onChangeText={(text) => {
+                    setQuantity(parseInt(text))
+                    associateDigitWithDates(text)
+                }}
                 value={quantity ? quantity.toString() : ""}
                 keyboardType="numeric"
             ></TextInput>
-            <Button title="Associate Digit" onPress={associateDigitWithDates} />
         </View>
     ) : checkQty === 'custom' && arrayOfDates.length != 0 ? (
         <View>
@@ -658,15 +764,14 @@ export default function AddTreatment({ navigation }: ICreateProps) {
                     <Text style={{ textAlignVertical: "center" }}>{date.toLocaleDateString('en-US', options)}</Text>
                     <Text style={{ textAlignVertical: "center" }}>{formatHour(date)}</Text>
                     <TextInput
+                    editable={false}
                         style={{ borderWidth: 1, borderColor: 'gray', borderRadius: 5, paddingHorizontal: 8, paddingVertical: 6, fontSize: 16 }}
-                        placeholder={dateDigitAssociations[date.toISOString()] || "Enter Digit"}
-                        value={dateDigitAssociations[date.toISOString()] || ""} // Display the associated digit for the date
+                        placeholder={takes.find(take => take.date === date.toISOString()) ? takes.find(take => take.date === date.toISOString()).quantity.toString() : "0"}
+                        value={takes.find(take => take.date === date.toISOString()) ? takes.find(take => take.date === date.toISOString()).quantity.toString() : "1"}
                         onChangeText={(text) => {
-                            // Update the dateDigitAssociations state with the new value for the date
-                            const updatedAssociations = { ...dateDigitAssociations };
-                            updatedAssociations[date.toISOString()] = text;
-                            setDateDigitAssociations(updatedAssociations);
+                            
                         }}
+                        keyboardType="numeric"
                     />
                 </View>
             ))}
@@ -674,9 +779,11 @@ export default function AddTreatment({ navigation }: ICreateProps) {
                 style={{ borderWidth: 1, borderColor: 'gray', borderRadius: 5, paddingHorizontal: 8, paddingVertical: 6, fontSize: 16 }}
                 placeholder="Enter Digit"
                 value={digitInput}
-                onChangeText={(text) => setDigitInput(text)}
+                onChangeText={(text) => {
+                    handleInputChange(text)
+                }}
+                keyboardType="numeric"
             />
-            <Button title="Associate Digit" onPress={associateDigitWithDates} />
         </View>
     ) : null;
 
@@ -715,7 +822,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
     const addInstruction = async () => {
         addDates();
         console.log("ADD INSTRUCTION")
-        console.log("DATES DIGIT ASS", dateDigitAssociations)
+        console.log("TAKES", takes)
         const newInstruction = {
             CIS: selectedMedCIS,
             name: selectedMedName,
@@ -735,22 +842,18 @@ export default function AddTreatment({ navigation }: ICreateProps) {
             endDate: checkLast === 'last' ? endDate : null, // DATE DE FIN SI FIN À UNE DATE PRÉCISE
             endQuantity: checkLast === 'number' ? endNumber : null, // NOMBRE DE PRIS SI FIN AU BOUT D'UN CERTAIN NOMBRE DE PRIS
             quantity: checkQty === 'regular' ? quantity : null, // QUANTITÉ À PRENDRE À CHAQUE PRISE SI QUANTITÉ RÉGULIÈRE
-            datesAndQuantities: dateDigitAssociations,
+            takes: takes, // TABLEAU DES PRISES
         };
-        console.log("NEW INSTRUCTION => ", newInstruction)
         await addItemToList('instructions', newInstruction);
         setInstructionsList([...instructionsList, newInstruction]);
         setInstructionModalVisible(false);
     };
 
     const addTreatment = async () => {
-
         // VERIFICATION DES INFORMATION RENTREES
         const allTreatments = await getAllTreatments();
         allTreatments.find(treatment => treatment.name === treatmentName)
         console.log("TREATMENT NAME => ", treatmentName)
-        console.log("ALL TREATMENTS => ", allTreatments)
-        console.log("FIND TREATMENT => ", allTreatments.find(treatment => treatment.name === treatmentName))
 
         if (treatmentName === "") {
             alert("Veuillez renseigner le nom du traitement")
@@ -761,18 +864,18 @@ export default function AddTreatment({ navigation }: ICreateProps) {
         }
 
         // ------------------------------
-
-        console.log("ADD TREATMENT")
-        let asyncInstructions = AsyncStorage.getItem("instructions");
+        let asyncInstructions = await readList('instructions');
+        console.log("ASYNC INSTRUCTIONS => ", await asyncInstructions)
         AsyncStorage.setItem("instructions", JSON.stringify([]));
         const newTreatment = {
             name: treatmentName,
+            treatmentName: treatmentName,
+            userId: user.id,
             description: treatmentDescription,
             startDate: startDate,
-            instructions: asyncInstructions,
+            instructions: await asyncInstructions,
         };
         await addItemToList('treatments', newTreatment);
-        setInstructionModalVisible(false);
         navigation.navigate("Home");
 
     }
@@ -841,7 +944,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
                                 )
                             ) : null}
                         {selectedInstruction.endModality === "number" ? (
-                            <Text>Il est à prendre {selectedInstruction.endQuantity} fois, jusqu'au {Object.keys(selectedInstruction.datesAndQuantities)[Object.keys(selectedInstruction.datesAndQuantities).length - 1]}</Text>
+                            <Text>Il est à prendre {selectedInstruction.endQuantity} fois, jusqu'au {formatDate(selectedInstruction.takes[selectedInstruction.takes.length].date)}</Text>
                         ) : selectedInstruction.regularFrequencyContinuity === "number" ? (
                             <Text>Il est à prendre {selectedInstruction.endQuantity} fois</Text>
                         ) : null}
@@ -864,6 +967,9 @@ export default function AddTreatment({ navigation }: ICreateProps) {
 
     const init = async () => {
         const allMeds = getAllMed();
+        const currentId = await AsyncStorage.getItem("currentUser");
+        const current = await getUserByID(JSON.parse(currentId));
+        setUser(current);
         const medsWithKey = allMeds.map((med) => ({
             id: med.CIS,
             label: med.Name,
