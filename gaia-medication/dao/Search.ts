@@ -1,4 +1,4 @@
-import { getAllMed } from "./Meds";
+import { getAllMed, getAllPA } from "./Meds";
 
 const medicaments = getAllMed();
 function findMostAccurateMed(meds: any[], search: string) {
@@ -25,12 +25,43 @@ function findMostAccurateMed(meds: any[], search: string) {
   const sortedMeds = medScores.sort(
     (a: { score: number }, b: { score: number }) => b.score - a.score
   );
-  return sortedMeds.filter((med) => med.score > 0); //.map((med: { Name: any }) => med.Name);
+  return sortedMeds.filter((med) => med.score > 0);
+}
+
+const pa = Array.from(getAllPA())
+
+function findMostAccurateAllergy(allergies: any[], search: string) {
+  const scores = allergies.map((allergy) => {
+    const name = allergy.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    const s = search.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    const index = name.indexOf(s);
+    if (index === -1) {
+      return 0;
+    } else if (index === 0) {
+      return s.length / name.length;
+    } else {
+      return s.length / (name.length + index);
+    }
+  });
+  const allergyScores = allergies.map((allergy, index: string | number) => {
+    return {
+      Name: allergy,
+      score: scores[index],
+    };
+  });
+  const sortedAllergies = allergyScores.sort(
+    (a: { score: number }, b: { score: number }) => b.score - a.score
+  );
+  return sortedAllergies.filter((allergy) => allergy.score > 0);
 }
 
 export function searchMed(inputText: string, maxResults = 50) {
   // Calcul de la distance pour chaque médicament et tri par proximité
   return findMostAccurateMed(medicaments, inputText).slice(0, maxResults);
+}
+
+export function SearchAllergy(inputText: string, maxResults = 50) {
+  return findMostAccurateAllergy(pa, inputText).slice(0, maxResults);
 }
 
 export function trouverNomMedicament(texte: string) {

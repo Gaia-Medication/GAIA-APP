@@ -5,7 +5,7 @@ type User = {
   age: number;
   weight: number;
   gender: string;
-  preference: string;
+  preference: string[];
 };
 
 type Treatment = {

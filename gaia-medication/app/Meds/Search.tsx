@@ -11,6 +11,7 @@ import { styles } from "../../style/style";
 import { Icon, Input } from "react-native-elements";
 import MedIconByType from "../component/MedIconByType";
 import { Navigation } from "react-native-feather";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Search({ route, navigation }) {
   const textInputRef = React.useRef(null);
@@ -29,7 +30,7 @@ export default function Search({ route, navigation }) {
   }, [isFocused]);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.searchBarwQR} className="mt-3 px-4">
         <View style={styles.searchBar}>
           <Input
@@ -73,6 +74,6 @@ export default function Search({ route, navigation }) {
           </TouchableOpacity>
         )}
       />
-    </View>
+    </SafeAreaView>
   );
 }

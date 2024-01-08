@@ -13,7 +13,11 @@ import {
   ScrollView,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { getAllGenOfCIS, getMedbyCIS } from "../../dao/Meds";
+import {
+  getAllGenOfCIS,
+  getAllSameCompOfCIS,
+  getMedbyCIS,
+} from "../../dao/Meds";
 import {
   addItemToList,
   getUserByID,
@@ -35,6 +39,7 @@ export default function Drug({ route, navigation }) {
   const [user, setUser] = useState<User | null>(null);
   const [stock, setStock] = useState(null);
   const [gens, setGens] = useState([]);
+  const [sameComp, setSameComp] = useState([]);
 
   const { drugCIS, context } = route.params;
   const drug = getMedbyCIS(drugCIS);
@@ -45,6 +50,7 @@ export default function Drug({ route, navigation }) {
     setUser(current);
     const stockList = await readList("stock");
     setGens(getAllGenOfCIS(drugCIS));
+    setSameComp(getAllSameCompOfCIS(drugCIS));
     setStock(
       stockList.filter(
         (item) => item.idUser == currentId && item.CIS == drugCIS
@@ -92,7 +98,7 @@ export default function Drug({ route, navigation }) {
     );
   }, []);
   return (
-    <View style={styles.container} className=" px-6">
+    <SafeAreaView style={styles.container} className=" px-6">
       {drug && stock && user && (
         <>
           <View className="flex-row justify-between pt-4">
@@ -126,9 +132,9 @@ export default function Drug({ route, navigation }) {
               <Text className="text-lg">
                 {drug.Name.split(" ").slice(1).join(" ")}
               </Text>
-              <Text>Administration : {drug.Administration_way}</Text>
+              <Text>Administration: {drug.Administration_way}</Text>
             </View>
-            <Text>Boite(s) disponible(s) :</Text>
+            <Text>Boite(s) disponible(s):</Text>
             <View>
               {drug.Values.map((item, index) => {
                 const alreadyStocked =
@@ -170,8 +176,7 @@ export default function Drug({ route, navigation }) {
                       <TouchableOpacity
                         className="bg-blue-400"
                         onPress={() => {
-                          setDrugsToAdd(item);
-                          setDrugModalVisible(true);
+                          addToStock(item);
                         }}
                       >
                         <Text className="text-center">Add</Text>
@@ -181,29 +186,52 @@ export default function Drug({ route, navigation }) {
                 );
               })}
             </View>
-            <Text>Composition :</Text>
-
-            <Text>Groupe Générique :</Text>
-            <View>
-              {gens.map((item, index) => (
+            <Text>Composition:</Text>
+            {drug.Composition.map((comp, indexb) => {
+              //console.log(comp)
+              if (comp["SA/FT"].length > 1) {
+                return comp.Dosage.map((Dosage, index) => (
+                  <Text key={indexb + 1 * index + 1}>
+                    {Dosage} {comp["Principe actif"][index]} pour{" "}
+                    {comp.Quantité[0]}
+                  </Text>
+                ));
+              } else if (comp["type"].length > 1) {
+                return comp.Dosage.map((Dosage, index) => (
+                  <Text key={indexb + 1 * index + 1}>
+                    {Dosage} {comp["Principe actif"][0]} pour un{" "}
+                    {comp.type[index]}
+                  </Text>
+                ));
+              } else
+                return comp.Dosage.map((Dosage, index) => (
+                  <Text key={indexb + 1 * index + 1}>
+                    {Dosage} {comp["Principe actif"][0]} pour {comp.Quantité[0]}
+                  </Text>
+                ));
+            })}
+            <Text>Meme composition:</Text>
+            <View className=" mb-24">
+              {sameComp.map((item, index) => (
                 <TouchableOpacity
                   key={index}
                   style={styles.listItem}
                   className="flex justify-start align-middle"
-                  onPress={() =>
-                    navigation.push("Drug", { drugCIS: item.CIS })
-                  }
+                  onPress={() => navigation.push("Drug", { drugCIS: item.CIS })}
                 >
                   <MedIconByType type={item.Shape} />
                   <Text className="ml-4">{item.Name}</Text>
                 </TouchableOpacity>
               ))}
+              {sameComp.length < 1 && <Text>Aucun</Text>}
             </View>
           </ScrollView>
 
           <TouchableOpacity
             className=" bg-[#9CDE00] rounded-[19px] absolute bottom-8 left-6 right-6"
-            onPress={() => {}}
+            onPress={() => {
+              setDrugModalVisible(true);
+            }}
           >
             <Text className="text-center text-white bold text-2xl font-bold py-3 pt-2">
               Ajouter
@@ -216,6 +244,7 @@ export default function Drug({ route, navigation }) {
               borderRadius: 10,
               padding: 20,
               minWidth: 300,
+              maxHeight: "60%",
             }}
             visible={drugModalVisible}
             onClose={() => setDrugModalVisible(!drugModalVisible)}
@@ -224,7 +253,7 @@ export default function Drug({ route, navigation }) {
             <TouchableOpacity
               className=" bg-blue-400"
               onPress={() => {
-                addToStock(drugsToAdd);
+                //addToStock(drugsToAdd);
                 setDrugModalVisible(!drugModalVisible);
               }}
             >
@@ -234,6 +263,6 @@ export default function Drug({ route, navigation }) {
         </>
       )}
       {(!drug || !stock || !user) && <Loading />}
-    </View>
+    </SafeAreaView>
   );
 }

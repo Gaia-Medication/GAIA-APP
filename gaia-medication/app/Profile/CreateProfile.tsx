@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import RNPickerSelect from "react-native-picker-select";
-import { Alert, Button, StyleSheet, Text, TextInput, View } from "react-native";
+import { Alert, Button, FlatList, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import DatePicker from "react-native-date-picker";
 import { Input } from "react-native-elements";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Link, NavigationProp, ParamListBase } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { UserIdAutoIncrement, addItemToList } from "../../dao/Storage";
+import { SearchAllergy, searchMed } from "../../dao/Search";
+import { styles } from "../../style/style";
 
 interface ICreateProps {
   navigation: NavigationProp<ParamListBase>;
@@ -18,7 +20,8 @@ export default function CreateProfile({ navigation }: ICreateProps) {
   const [age, setAge] = useState<number>();
   const [weight, setWeight] = useState<number>();
   const [gender, setGender] = useState("");
-  const [preference, setPreference] = useState("");
+  const [searchAllergy, setSearchAllergy] = useState([]);
+  const [preference, setPreference] = useState([]);
   const [isValidFirstname, setIsValidFirstname] = useState(true);
   const [isValidLastname, setIsValidLastname] = useState(true);
   const [isValidAge, setIsValidAge] = useState(true);
@@ -61,7 +64,7 @@ export default function CreateProfile({ navigation }: ICreateProps) {
     console.log("Nav on CreationProfile Page");
 
     //Empecher le redirection, on reste sur la page creation de profile tant qu'il y a 0 Users -> a finir
-    navigation.addListener("beforeRemove", (e) => {
+    /*navigation.addListener("beforeRemove", (e) => {
       e.preventDefault();
       Alert.alert(
         "Discard changes?",
@@ -77,7 +80,7 @@ export default function CreateProfile({ navigation }: ICreateProps) {
           },
         ]
       );
-    });
+    });*/
   }, []);
 
   const handleSumbit = async () => {
@@ -106,7 +109,7 @@ export default function CreateProfile({ navigation }: ICreateProps) {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Input
         label="Prenom"
         placeholder="Entrez votre prenom"
@@ -119,7 +122,7 @@ export default function CreateProfile({ navigation }: ICreateProps) {
         renderErrorMessage={isValidFirstname}
       />
       {!isValidFirstname && (
-        <Text style={styles.errorText}>
+        <Text style={stylesProfile.errorText}>
           Le prénom doit comporter au moins 1 caractères.
         </Text>
       )}
@@ -136,10 +139,20 @@ export default function CreateProfile({ navigation }: ICreateProps) {
         renderErrorMessage={isValidLastname}
       />
       {!isValidLastname && (
-        <Text style={styles.errorText}>
+        <Text style={stylesProfile.errorText}>
           Le nom doit comporter au moins 1 caractères.
         </Text>
       )}
+      
+      <RNPickerSelect
+        placeholder={{ label: "Sélectionner le genre", value: "" }}
+        onValueChange={(value) => setGender(value)}
+        items={[
+          { label: "Masculin", value: "male" },
+          { label: "Feminin", value: "female" },
+          { label: "Autre", value: "other" },
+        ]}
+      />
 
       <Input
         label="Âge"
@@ -153,7 +166,7 @@ export default function CreateProfile({ navigation }: ICreateProps) {
         keyboardType="numeric"
       ></Input>
       {!isValidAge && (
-        <Text style={styles.errorText}>
+        <Text style={stylesProfile.errorText}>
           L'âge doit être contenu entre 1 et 125 ans.
         </Text>
       )}
@@ -170,39 +183,74 @@ export default function CreateProfile({ navigation }: ICreateProps) {
         keyboardType="numeric"
       ></Input>
       {!isValidWeight && (
-        <Text style={styles.errorText}>
+        <Text style={stylesProfile.errorText}>
           Le poids doit être contenu entre 1 et 999kg.
         </Text>
       )}
 
-      <Input
+      {/*<Input
         label="Preference/Allergies"
         placeholder="Preference/Allergies"
         leftIcon={{ type: "font-awesome", name: "heart" }}
         onChangeText={(text) => setPreference(text)}
         value={preference}
-      />
+      />*/}
+      
+      <Input
+        label="Allergies medicamenteuses"
+        placeholder="Rechercher"
+        onChangeText={(text) => {
+          const newSearch=SearchAllergy(text)
+          console.log(newSearch)
+          setSearchAllergy(newSearch)
+        }}
+        />
+        
+      <FlatList
+      data={searchAllergy}
+      keyExtractor={(_item, index) => index.toString()}
+      renderItem={({ item }) => (
+        <TouchableOpacity
+          style={styles.listItem}
+          className="flex justify-start align-middle"
+          onPress={() => {
+            if (preference.includes(item.Name)) {
+              // Si l'élément est déjà dans preference, supprimez-le
+              const updatedPreference = preference.filter((itemr) => itemr !== item.Name);
+              setPreference(updatedPreference);
+              console.log("Elément retiré de la préférence");
+            } else {
+              // Si l'élément n'est pas dans preference, ajoutez-le
+              const updatedPreference = [...preference, item.Name];
+              setPreference(updatedPreference);
+              console.log("Elément ajouté à la préférence");
+            }
+          }}
+        >
+          <Text className="ml-4">{item.Name}</Text>
+        </TouchableOpacity>
+      )}
+    />
+    
+    <FlatList
+      data={preference}
+      keyExtractor={(_item, index) => index.toString()}
+      renderItem={({ item }) => (
+          <Text>{item}</Text>
+      )}
+    />
 
-      <RNPickerSelect
-        placeholder={{ label: "Sélectionner le genre", value: "" }}
-        onValueChange={(value) => setGender(value)}
-        items={[
-          { label: "Masculin", value: "male" },
-          { label: "Feminin", value: "female" },
-          { label: "Autre", value: "other" },
-        ]}
-      />
 
       <Button
         title="Enregistrer le profil"
         onPress={handleSumbit}
         disabled={isFormEmpty}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
+const stylesProfile = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",

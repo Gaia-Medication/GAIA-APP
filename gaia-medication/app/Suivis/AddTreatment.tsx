@@ -12,6 +12,7 @@ import { Picker } from '@react-native-picker/picker';
 import * as Icon from "react-native-feather";
 import MedIconByType from "../component/MedIconByType";
 import { searchMed } from "../../dao/Search";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 
 interface ICreateProps {
@@ -986,7 +987,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
     }, []);
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             <Text className=" text-3xl">Ajouter un Traitement</Text>
             <View className=" flex justify-center pt-8">
                 <Text>Nom du traitement*</Text>
@@ -1161,6 +1162,6 @@ export default function AddTreatment({ navigation }: ICreateProps) {
                 }}
                 children={modalContent}
             />
-        </View>
+        </SafeAreaView>
     );
 };
