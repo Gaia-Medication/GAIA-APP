@@ -13,6 +13,7 @@ import { ChevronDown } from "react-native-feather";
 import { styles } from "../../style/style";
 import { getTreatmentByName } from "../../dao/Storage";
 import * as Icon from "react-native-feather";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const Treatment = ({
   onPress,
@@ -71,7 +72,7 @@ const Treatment = ({
   }, []);
 
   return (
-    <View style={{ display: "flex", flexDirection: "row", justifyContent: "flex-start", gap: 10, maxHeight: "auto", marginBottom: 7, marginTop: 7, height: 320 }}>
+    <SafeAreaView style={{ display: "flex", flexDirection: "row", justifyContent: "flex-start", gap: 10, maxHeight: "auto", marginBottom: 7, marginTop: 7, height: 320 }}>
       <View style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-start", width: "20%", gap: 50 }}>
         <View style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
           <Text style={{ fontWeight: "800", fontSize: 20, color: status === "previous" ? "#BCBCBC" : status === "actual" ? "#9CDE00" : "#00000099" }}>{formatDate(date)[0]}</Text>
@@ -79,7 +80,7 @@ const Treatment = ({
           <Text style={{ fontWeight: "800", fontSize: 20, color: status === "previous" ? "#BCBCBC" : status === "actual" ? "#9CDE00" : "#00000099" }}>{formatDate(date)[2]}</Text>
         </View>
         <TouchableOpacity onPress={() => onTakePress(take)} disabled={status === "next"}>
-          <View style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "20%", backgroundColor: take.taken ? (status === "actual" ? "#9CDE0030" : "#CCCCCC") : (status === "actual" ? "#FF000030" : "#CCCCCC"), padding: 10, borderRadius: 50 }}>
+          <View style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "20%", backgroundColor: take.taken ? (status === "previous" ? "#CCCCCC" : "#9CDE0030") : (status === "actual" ? "#FF000030" : "#CCCCCC"), padding: 10, borderRadius: 50 }}>
             { take.taken ? <Icon.CheckCircle color={status === "actual" ? "#9CDE00" : "grey"} width={30} height={30} /> : <Icon.AlertCircle  color={status === "actual" ? "#FF0000" : "#666666"} width={30} height={30} /> }
             
           </View>
