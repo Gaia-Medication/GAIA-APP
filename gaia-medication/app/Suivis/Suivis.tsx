@@ -59,16 +59,7 @@ export default function Suivis({ navigation }) {
   };
 
   const init = async () => {
-    // await initTreatments().then((treatments) => {
-    //   setDatesDict(treatments);
-    //   setDatesKeys(Object.keys(datesDict));
-    // });
-    await getAllTreatments().then((treatments) => {
-      setTreatments(treatments);
-    })
     setShowAll(false);
-    // console.log("datesDict", datesDict);
-    // console.log("treatments", treatments)
     initTreatments().then((treatments) => {
       setTakes(treatments);
     })
@@ -76,7 +67,6 @@ export default function Suivis({ navigation }) {
       setTreatments(treatments);
     })
     console.log("takes", takes);
-    
   };
 
   useEffect(() => {

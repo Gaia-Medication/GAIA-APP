@@ -147,37 +147,17 @@ export const getAllTreatments = async (): Promise<Treatment[]> => {
 
 export const initTreatments = async () => {
   const allTreatments: Treatment[] = await getAllTreatments();
-  console.log("allTreatments => ", allTreatments[1].instructions)
-  let dict = {}; // Initialize dict as an array
   let takesArray = [];
 
   allTreatments ? allTreatments.forEach((treatment) => {
     console.log(treatment.name)
-    treatment.instructions?.forEach((instr) => {
+    treatment ? treatment.instructions?.forEach((instr) => {
       instr.takes.forEach((take) => {
         console.log("take => ", take)
         takesArray.push(take)
-        //console.log(take)
-        //if (dict[take.date.toString()]) {
-          //dict[take.date.toString()].push(treatment.name);
-        //} else {
-          //dict[take.date.toString()] = [treatment.name];
-        //}
       });
-    });
+    }) : null;
   }) : new Error("No treatments found");
-  // const sortedKeys = Object.keys(dict).sort((a, b) => {
-  //   return new Date(a).getTime() - new Date(b).getTime();
-  // })
-  // const dictWithDates = sortedKeys
-  //   .map(dateStr => new Date(dateStr))
-  // const nextDateIndex = dictWithDates.findIndex(dateObj => dateObj > new Date());
-  // const futureDateKeys = nextDateIndex == 0 ? (sortedKeys) : (nextDateIndex === -1 ? (sortedKeys.slice(-1)) : (sortedKeys.slice(nextDateIndex - 1)));
-  // const futureDatesDict = {};
-  // futureDateKeys.forEach(date => {
-  //   futureDatesDict[date] = dict[date];
-  // });  
-  // return futureDatesDict;
   return takesArray.sort((a, b) => {
     return new Date(a.date).getTime() - new Date(b.date).getTime();
   })

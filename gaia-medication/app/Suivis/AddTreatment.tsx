@@ -193,6 +193,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
                 });
             });
 
+            console.log("UPDATED TAKES => ", updatedTakes);
             setTakes(updatedTakes);
         }
     };
@@ -656,11 +657,13 @@ export default function AddTreatment({ navigation }: ICreateProps) {
             <Text>Selectionner la quantité</Text>
             <TextInput
                 style={{ borderWidth: 1, borderColor: 'gray', borderRadius: 5, paddingHorizontal: 8, paddingVertical: 6, fontSize: 16 }}
-                onChangeText={(text) => setQuantity(parseInt(text))}
+                onChangeText={(text) => {
+                    setQuantity(parseInt(text))
+                    associateDigitWithDates()
+                }}
                 value={quantity ? quantity.toString() : ""}
                 keyboardType="numeric"
             ></TextInput>
-            <Button title="Associate Digit" onPress={associateDigitWithDates} />
         </View>
     ) : checkQty === 'custom' && arrayOfDates.length != 0 ? (
         <View>

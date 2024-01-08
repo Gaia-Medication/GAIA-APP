@@ -132,7 +132,7 @@ const Treatment = ({
           }} />
           <View>
             <Text style={{ color: status === "previous" ? "#7B7B7B" : "black", fontWeight: "bold" }}>Description :</Text>
-            <Text style={{ color: "#C9C9C9", fontWeight: "700" }} numberOfLines={3} ellipsizeMode="tail">{treatment.description != "" ? treatment.description : "1 Doliprane toutes les 4h pendant 5 jours"}</Text>
+            <Text style={{ color: "#C9C9C9", fontWeight: "700" }} numberOfLines={3} ellipsizeMode="tail">{treatment ? treatment.description : "1 Doliprane toutes les 4h pendant 5 jours"}</Text>
           </View>
 
         </View>
