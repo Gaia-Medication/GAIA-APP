@@ -106,7 +106,7 @@ export default function Home({ navigation }) {
   }, [isFocused]);
 
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
       <Image
         className=" object-cover h-12 w-24 self-center"
         source={require("../../assets/logo_title_gaia.png")}
@@ -194,6 +194,6 @@ export default function Home({ navigation }) {
         </>
       )}
       {loading && <Loading />}
-    </ScrollView>
+    </View>
   );
 }
