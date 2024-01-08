@@ -16,6 +16,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import {
   getAllGenOfCIS,
   getAllSameCompOfCIS,
+  getComposion,
   getMedbyCIS,
 } from "../../dao/Meds";
 import {
@@ -61,6 +62,7 @@ export default function Drug({ route, navigation }) {
   useEffect(() => {
     if (isFocused) {
       console.log("Nav on Drug Page :", drugCIS, "-", drug.Name);
+      getComposion(drug.Composition)
       init();
     }
   }, [isFocused && drug]);
@@ -132,7 +134,7 @@ export default function Drug({ route, navigation }) {
               <Text className="text-lg">
                 {drug.Name.split(" ").slice(1).join(" ")}
               </Text>
-              <Text>Administration: {drug.Administration_way}</Text>
+              <Text>Administration: <Text className=" font-light">{drug.Administration_way}</Text></Text>
             </View>
             <Text>Boite(s) disponible(s):</Text>
             <View>
@@ -142,7 +144,7 @@ export default function Drug({ route, navigation }) {
 
                 return (
                   <View key={index}>
-                    <Text>{item.CIP}</Text>
+                    <Text className=" font-light">{item.CIP}</Text>
                     <Text>{item.Denomination}</Text>
                     {drug.Marketed == "Commercialisée" ? (
                       item.Price_with_taxes ? (
@@ -187,32 +189,19 @@ export default function Drug({ route, navigation }) {
               })}
             </View>
             <Text>Composition:</Text>
-            {drug.Composition.map((comp, indexb) => {
-              //console.log(comp)
-              if (comp["SA/FT"].length > 1) {
-                return comp.Dosage.map((Dosage, index) => (
-                  <Text key={indexb + 1 * index + 1}>
-                    {Dosage} {comp["Principe actif"][index]} pour{" "}
-                    {comp.Quantité[0]}
-                  </Text>
-                ));
-              } else if (comp["type"].length > 1) {
-                return comp.Dosage.map((Dosage, index) => (
-                  <Text key={indexb + 1 * index + 1}>
-                    {Dosage} {comp["Principe actif"][0]} pour un{" "}
-                    {comp.type[index]}
-                  </Text>
-                ));
-              } else
-                return comp.Dosage.map((Dosage, index) => (
-                  <Text key={indexb + 1 * index + 1}>
-                    {Dosage} {comp["Principe actif"][0]} pour {comp.Quantité[0]}
-                  </Text>
-                ));
-            })}
+            {Object.keys(getComposion(drug.Composition)).map((type) => (
+              <View key={type}>
+                <Text>{type} (Composition pour {getComposion(drug.Composition)[type][0]["Quantite"]})</Text>
+                {getComposion(drug.Composition)[type].map((comprime, index) => (
+                  <View key={index}>
+                    <Text>{comprime.Dosage} {"-"} {comprime.PrincipeActif}</Text>
+                  </View>
+                ))}
+              </View>
+            ))}
             <Text>Meme composition:</Text>
             <View className=" mb-24">
-              {sameComp.map((item, index) => (
+              {sameComp.slice(0,5).map((item, index) => (
                 <TouchableOpacity
                   key={index}
                   style={styles.listItem}
