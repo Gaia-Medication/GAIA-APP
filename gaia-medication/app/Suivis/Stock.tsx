@@ -7,6 +7,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getMedbyCIS } from "../../dao/Meds";
 import Loading from "../component/Loading";
 import MedIconByType from "../component/MedIconByType";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Stock({ navigation }) {
   const isFocused = useIsFocused();
@@ -39,7 +40,7 @@ export default function Stock({ navigation }) {
   }, [isFocused]);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       {stock && (
         <FlatList
           data={stock}
@@ -65,6 +66,6 @@ export default function Stock({ navigation }) {
         />
       )}
       {!stock && <Loading />}
-    </View>
+    </SafeAreaView>
   );
 }

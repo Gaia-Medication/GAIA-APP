@@ -11,8 +11,9 @@ type User = {
 type Treatment = {
   name: string,
   description: string,
+  userId: number,
   startDate: Date,
-  instruction: Instruction[] | undefined,
+  instructions: Instruction[] | undefined,
 };
 
 type Instruction = {
@@ -33,8 +34,17 @@ type Instruction = {
   endDate: Date, // DATE DE FIN SI FIN À UNE DATE PRÉCISE
   endQuantity: number, // NOMBRE DE PRIS SI FIN AU BOUT D'UN CERTAIN NOMBRE DE PRIS
   quantity: number, // QUANTITÉ À PRENDRE À CHAQUE PRISE SI QUANTITÉ RÉGULIÈRE
-  datesAndQuantities: Record<string, number> | null,
+  takes: Take[],
 }
+
+type Take = {
+  userId: number,
+  treatmentName: string,
+  CIS: number,
+  date: Date,
+  quantity: number,
+  taken: boolean
+};
 
 type Stock = {
   idUser: number,

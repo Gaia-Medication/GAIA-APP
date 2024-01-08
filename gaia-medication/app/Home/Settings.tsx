@@ -12,7 +12,7 @@ export default function Settings({ navigation: Navigation }) {
     }
   }, [isFocused]);
   return (
-    <View>
+    <SafeAreaView>
       <Text>Settings</Text>
       <Button
         title="CLEAR USERS DATA"
@@ -26,6 +26,6 @@ export default function Settings({ navigation: Navigation }) {
         title="ADD PROFILE"
         onPress={() => Navigation.navigate("CreateProfile")}
       ></Button>
-    </View>
+    </SafeAreaView>
   );
 }

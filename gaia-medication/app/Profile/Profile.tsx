@@ -11,9 +11,9 @@ export default function Profile() {
     }
   },[isFocused]); 
   return (
-    <View>
+    <SafeAreaView>
       <Text>Profile</Text>
-    </View>
+    </SafeAreaView>
   );
 }
 
