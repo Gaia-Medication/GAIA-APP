@@ -13,7 +13,11 @@ import {
   ScrollView,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { getAllGenOfCIS, getMedbyCIS } from "../../dao/Meds";
+import {
+  getAllGenOfCIS,
+  getAllSameCompOfCIS,
+  getMedbyCIS,
+} from "../../dao/Meds";
 import {
   addItemToList,
   getUserByID,
@@ -35,6 +39,7 @@ export default function Drug({ route, navigation }) {
   const [user, setUser] = useState<User | null>(null);
   const [stock, setStock] = useState(null);
   const [gens, setGens] = useState([]);
+  const [sameComp, setSameComp] = useState([]);
 
   const { drugCIS, context } = route.params;
   const drug = getMedbyCIS(drugCIS);
@@ -45,6 +50,7 @@ export default function Drug({ route, navigation }) {
     setUser(current);
     const stockList = await readList("stock");
     setGens(getAllGenOfCIS(drugCIS));
+    setSameComp(getAllSameCompOfCIS(drugCIS));
     setStock(
       stockList.filter(
         (item) => item.idUser == currentId && item.CIS == drugCIS
@@ -181,40 +187,43 @@ export default function Drug({ route, navigation }) {
               })}
             </View>
             <Text>Composition:</Text>
-              {drug.Composition.map((comp, indexb) => {
-                console.log(comp)
-                if(comp["SA/FT"].length>1){
-                return(
-                  comp.Dosage.map((Dosage, index) => (
-                    <Text key={indexb+1*index+1}>{Dosage} {comp["Principe actif"][index]} pour {comp.Quantité[0]}</Text>
-                  ))
-                )}
-                else if(comp["type"].length>1){ return(
-                  comp.Dosage.map((Dosage, index) => (
-                    <Text key={indexb+1*index+1}>{Dosage} {comp["Principe actif"][0]} pour un {comp.type[index]}</Text>
-                  ))
-                )}
-                else return(
-                  comp.Dosage.map((Dosage, index) => (
-                    <Text key={indexb+1*index+1}>{Dosage} {comp["Principe actif"][0]} pour {comp.Quantité[0]}</Text>
-                  ))
-                )
-              })}
-            <Text>Groupe Générique:</Text>
+            {drug.Composition.map((comp, indexb) => {
+              //console.log(comp)
+              if (comp["SA/FT"].length > 1) {
+                return comp.Dosage.map((Dosage, index) => (
+                  <Text key={indexb + 1 * index + 1}>
+                    {Dosage} {comp["Principe actif"][index]} pour{" "}
+                    {comp.Quantité[0]}
+                  </Text>
+                ));
+              } else if (comp["type"].length > 1) {
+                return comp.Dosage.map((Dosage, index) => (
+                  <Text key={indexb + 1 * index + 1}>
+                    {Dosage} {comp["Principe actif"][0]} pour un{" "}
+                    {comp.type[index]}
+                  </Text>
+                ));
+              } else
+                return comp.Dosage.map((Dosage, index) => (
+                  <Text key={indexb + 1 * index + 1}>
+                    {Dosage} {comp["Principe actif"][0]} pour {comp.Quantité[0]}
+                  </Text>
+                ));
+            })}
+            <Text>Meme composition:</Text>
             <View className=" mb-24">
-              {gens.map((item, index) => (
+              {sameComp.map((item, index) => (
                 <TouchableOpacity
                   key={index}
                   style={styles.listItem}
                   className="flex justify-start align-middle"
-                  onPress={() =>
-                    navigation.push("Drug", { drugCIS: item.CIS })
-                  }
+                  onPress={() => navigation.push("Drug", { drugCIS: item.CIS })}
                 >
                   <MedIconByType type={item.Shape} />
                   <Text className="ml-4">{item.Name}</Text>
                 </TouchableOpacity>
               ))}
+              {sameComp.length < 1 && <Text>Aucun</Text>}
             </View>
           </ScrollView>
 
@@ -235,7 +244,7 @@ export default function Drug({ route, navigation }) {
               borderRadius: 10,
               padding: 20,
               minWidth: 300,
-              maxHeight:"60%"
+              maxHeight: "60%",
             }}
             visible={drugModalVisible}
             onClose={() => setDrugModalVisible(!drugModalVisible)}
