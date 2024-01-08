@@ -85,7 +85,7 @@ export default function Suivis({ navigation }) {
     if (actualIndex !== -1) {
       // Calculate the position to scroll to
       // For simplicity, assuming each Treatment has a fixed height (e.g., 100)
-      const positionToScroll = 320 * actualIndex + 50;
+      const positionToScroll = 334 * actualIndex + 50;
 
       // Step 3: Scroll to the target item
       scrollViewRef.current.scrollTo({ y: positionToScroll, animated: true });
