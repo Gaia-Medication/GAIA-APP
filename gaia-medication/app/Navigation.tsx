@@ -33,6 +33,7 @@ export default function Navigation() {
         <Stack.Screen name="CreateProfile" component={CreateProfile} />
         <Stack.Screen name="ModifyProfile" component={ModifyProfile} />
         <Stack.Screen name="AddTreatment" component={AddTreatment} />
+        <Stack.Screen name="Settings" component={Settings} />
         <Stack.Screen name="Profile" component={Profile} />
         <Stack.Screen
           name="Drug"

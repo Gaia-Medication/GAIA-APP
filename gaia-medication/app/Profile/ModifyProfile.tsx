@@ -41,8 +41,9 @@ export default function ModifyProfile({ navigation }: IModifyProps) {
   const [isValidAge, setIsValidAge] = useState(true);
   const [isValidWeight, setIsValidWeight] = useState(true);
 
-  const [profileSelected, setProfileSelected] = useState(false);
+  const [profileSelected, setProfileSelected] = useState<User>(null);
   const [users, setUsers] = useState<User[]>([]);
+  const [userToDelete, setUserToDelete] = useState<User>(null);
 
   const isFormEmpty =
     !firstname ||
@@ -104,25 +105,45 @@ export default function ModifyProfile({ navigation }: IModifyProps) {
     });*/
   }, []);
 
+  const deleteUser = async (userId) => {
+    try {
+      const updatedUsers = users.filter((user) => user.id !== userId);
+      await AsyncStorage.setItem("users", JSON.stringify(updatedUsers));
+      setUsers(updatedUsers); // Maj la liste des utilisateurs dans l'état local
+    } catch (error) {
+      console.error("Erreur lors de la suppression de l'utilisateur :", error);
+    }
+  };
+
   const handleSumbit = async () => {
     if (!isValidFirstname || !isValidLastname || isFormEmpty) {
       console.log(`error not valid`);
     } else {
       try {
-        const user: User = {
-          id: await UserIdAutoIncrement(),
-          firstname,
-          lastname,
-          age,
-          weight,
-          gender,
-          preference,
-        };
-        console.log(user);
+        const userToUpdate = users.find(
+          (user) => user.id === profileSelected.id
+        );
 
-        await addItemToList("users", user);
-        await AsyncStorage.setItem("currentUser", JSON.stringify(user.id));
-        navigation.navigate("Home");
+        if (userToUpdate) {
+          userToUpdate.firstname = firstname;
+          userToUpdate.lastname = lastname;
+          userToUpdate.age = age;
+          userToUpdate.weight = weight;
+          userToUpdate.gender = gender;
+          userToUpdate.preference = preference;
+
+          // Maj l'utilisateur dans la liste des utilisateurs
+          const updatedUsers = users.map((user) =>
+            user.id === userToUpdate.id ? userToUpdate : user
+          );
+
+          // Enregistrez la liste mise à jour dans AsyncStorage
+          await AsyncStorage.setItem("users", JSON.stringify(updatedUsers));
+          setProfileSelected(null);
+          navigation.navigate("Settings");
+        } else {
+          console.log("Utilisateur non trouvé.");
+        }
       } catch (e) {
         console.log(e);
       }
@@ -137,8 +158,20 @@ export default function ModifyProfile({ navigation }: IModifyProps) {
             data={users}
             keyExtractor={(_item, index) => index.toString()}
             renderItem={({ item }) => (
-              <TouchableOpacity>
-                <Text>{item.id} {item.firstname} {item.lastname}</Text>
+              <TouchableOpacity
+                onPress={() => {
+                  setProfileSelected(item);
+                  setFirstname(item.firstname);
+                  setLastname(item.lastname);
+                  setAge(item.age);
+                  setWeight(item.weight);
+                  setGender(item.gender);
+                  setPreference(item.preference);
+                }}
+              >
+                <Text>
+                  {item.id} {item.firstname} {item.lastname}
+                </Text>
               </TouchableOpacity>
             )}
           />
@@ -182,6 +215,7 @@ export default function ModifyProfile({ navigation }: IModifyProps) {
 
           <RNPickerSelect
             placeholder={{ label: "Sélectionner le genre", value: "" }}
+            value={gender}
             onValueChange={(value) => setGender(value)}
             items={[
               { label: "Masculin", value: "male" },
@@ -281,6 +315,34 @@ export default function ModifyProfile({ navigation }: IModifyProps) {
             onPress={handleSumbit}
             disabled={isFormEmpty}
           />
+        </>
+      )}
+      <Text>Supprimer un profil</Text>
+      {!profileSelected && users && (
+        <>
+          <FlatList
+            data={users}
+            keyExtractor={(_item, index) => index.toString()}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                onPress={() => {
+                  setUserToDelete(item);
+                }}
+              >
+                <Text>
+                  {item.id} {item.firstname} {item.lastname}
+                </Text>
+              </TouchableOpacity>
+            )}
+          />
+          <Button
+            title={`Supprimer le profil ${userToDelete?.firstname} ${userToDelete?.lastname}`}
+            onPress={() => {
+              deleteUser(userToDelete.id);
+              navigation.navigate("Settings");
+            }}
+            disabled={userToDelete === null}
+          ></Button>
         </>
       )}
     </SafeAreaView>
