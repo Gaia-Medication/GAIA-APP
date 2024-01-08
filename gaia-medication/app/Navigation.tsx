@@ -15,6 +15,7 @@ import Drug from "./Meds/Drug";
 import Map from "./Home/Map";
 import AddTreatment from "./Suivis/AddTreatment";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import ModifyProfile from "./Profile/ModifyProfile";
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -30,7 +31,9 @@ export default function Navigation() {
           options={{ headerShown: false }}
         />
         <Stack.Screen name="CreateProfile" component={CreateProfile} />
+        <Stack.Screen name="ModifyProfile" component={ModifyProfile} />
         <Stack.Screen name="AddTreatment" component={AddTreatment} />
+        <Stack.Screen name="Settings" component={Settings} />
         <Stack.Screen name="Profile" component={Profile} />
         <Stack.Screen
           name="Drug"
