@@ -10,6 +10,7 @@ import {
 } from "../../dao/Storage";
 import { styles } from "../../style/style";
 import Treatment from "../component/Treatment";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Suivis({ navigation }) {
   const isFocused = useIsFocused();
@@ -38,14 +39,18 @@ export default function Suivis({ navigation }) {
   function compareDates(date): "actual" | "next" | "previous" {
     const now = new Date();
     const dateObj = new Date(date);
-    if (now.getTime() > dateObj.getTime()) {
-      return "previous"; // SI LA DATE EST PASSEE
-    }
+    
     now.setHours(0, 0, 0, 0);
     dateObj.setHours(0, 0, 0, 0);
+    if (now.getTime() > dateObj.getTime()) {
+      console.log(date, "previous")
+      return "previous"; // SI LA DATE EST PASSEE
+    }
     if (now.getTime() === dateObj.getTime()) {
+      console.log(date, "actual")
       return "actual"; // SI LA DATE EST LA MEME
-    } else {
+    }  else {
+      console.log(date, "next")
       return "next"; // SI LA DATE EST FUTURE
     }
   }
@@ -101,7 +106,7 @@ export default function Suivis({ navigation }) {
   }, [isFocused]);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       {takes && takes.length !== 0 ? (
         <View className=" flex border-1 p-5">
           <Text className=" text-[#363636] text-lg">À venir...</Text>
@@ -118,7 +123,7 @@ export default function Suivis({ navigation }) {
           </TouchableOpacity>
           {isToday === false ? (
             <Text>{"Aucun traitement à prendre aujourd'hui"}</Text>
-          ) : null}
+          ) : <Text>TRAITEMENT AJD</Text>}
 
           <ScrollView ref={scrollViewRef}>
             <View style={{ paddingBottom: 200, paddingTop: 50 }}>
@@ -185,6 +190,6 @@ export default function Suivis({ navigation }) {
           </TouchableOpacity>
         </View>
       )}
-    </View>
+    </SafeAreaView>
   );
 }
