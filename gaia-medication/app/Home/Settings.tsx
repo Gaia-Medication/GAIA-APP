@@ -26,6 +26,10 @@ export default function Settings({ navigation: Navigation }) {
         title="ADD PROFILE"
         onPress={() => Navigation.navigate("CreateProfile")}
       ></Button>
+      <Button
+        title="MODIFY PROFILE"
+        onPress={() => Navigation.navigate("ModifyProfile")}
+      ></Button>
     </SafeAreaView>
   );
 }
