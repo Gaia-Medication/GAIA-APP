@@ -1,15 +1,13 @@
 import { useIsFocused } from "@react-navigation/native";
 import React, { useEffect, useState, useRef } from "react";
-import {
-  Text,
-  TouchableOpacity,
-  View,
-  ScrollView,
-  Image
-} from "react-native";
+import { Text, TouchableOpacity, View, ScrollView, Image } from "react-native";
 import * as Icon from "react-native-feather";
 import { getAllMed } from "../../dao/Meds";
-import { getAllTreatments, getTreatmentByName, initTreatments } from "../../dao/Storage";
+import {
+  getAllTreatments,
+  getTreatmentByName,
+  initTreatments,
+} from "../../dao/Storage";
 import { styles } from "../../style/style";
 import Treatment from "../component/Treatment";
 
@@ -25,7 +23,6 @@ export default function Suivis({ navigation }) {
   const [isToday, setIsToday] = useState(false);
 
   const scrollViewRef = useRef(null);
-
 
   const toggleTakeTaken = (tak: Take) => {
     let takesUpdate = [...takes];
@@ -48,7 +45,7 @@ export default function Suivis({ navigation }) {
     dateObj.setHours(0, 0, 0, 0);
     if (now.getTime() === dateObj.getTime()) {
       return "actual"; // SI LA DATE EST LA MEME
-    }  else {
+    } else {
       return "next"; // SI LA DATE EST FUTURE
     }
   }
@@ -75,13 +72,15 @@ export default function Suivis({ navigation }) {
       setTakes(treatments);
       setIsToday(isTodayInDates(takes));
       console.log("isToday", isToday);
-    })
+    });
     getAllTreatments().then((treatments) => {
       setTreatments(treatments);
-    })
+    });
     console.log("takes", takes);
 
-    const actualIndex = takes.findIndex(take => compareDates(take.date) === 'actual');
+    const actualIndex = takes.findIndex(
+      (take) => compareDates(take.date) === "actual"
+    );
 
     if (actualIndex !== -1) {
       // Calculate the position to scroll to
@@ -91,13 +90,11 @@ export default function Suivis({ navigation }) {
       // Step 3: Scroll to the target item
       scrollViewRef.current.scrollTo({ y: positionToScroll, animated: true });
     }
-    
   };
 
   useEffect(() => {
     if (isFocused) {
       console.log("Nav on Suivis Page");
-
 
       init();
     }
@@ -125,34 +122,69 @@ export default function Suivis({ navigation }) {
 
           <ScrollView ref={scrollViewRef}>
             <View style={{ paddingBottom: 200, paddingTop: 50 }}>
-              {takes && takes.map((take, index) => (
-                <Treatment
-                  key={index}
-                  onPress={null}
-                  status={compareDates(take.date)}
-                  take={take}
-                  treatment={treatments.find((treatment) => treatment.name === take.treatmentName)}
-                  onTakePress={toggleTakeTaken} 
-                />
-              ))}
+              {takes &&
+                takes.map((take, index) => (
+                  <Treatment
+                    key={index}
+                    onPress={null}
+                    status={compareDates(take.date)}
+                    take={take}
+                    treatment={treatments.find(
+                      (treatment) => treatment.name === take.treatmentName
+                    )}
+                    onTakePress={toggleTakeTaken}
+                  />
+                ))}
             </View>
           </ScrollView>
         </View>
       ) : (
-        <View style={{ padding: 10, width: "100%", height: "100%", display: "flex", alignItems: 'center', justifyContent: 'center', marginBottom: 200 }}>
-          <Text style={{ color: "rgb(103, 33, 236)", fontSize: 20, marginBottom: 100 }}>Aucun traitement à venir</Text>
+        <View
+          style={{
+            padding: 10,
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            marginBottom: 200,
+          }}
+        >
+          <Text
+            style={{
+              color: "rgb(103, 33, 236)",
+              fontSize: 20,
+              marginBottom: 100,
+            }}
+          >
+            Aucun traitement à venir
+          </Text>
           <Image
-            source={require('./../../assets/heureux.png')}
-            style={{ width: 200, height: 200, resizeMode: 'contain', marginBottom: 100 }}
+            source={require("./../../assets/heureux.png")}
+            style={{
+              width: 200,
+              height: 200,
+              resizeMode: "contain",
+              marginBottom: 100,
+            }}
           />
           <TouchableOpacity
             style={{ backgroundColor: "rgb(103, 33, 236)", borderRadius: 10 }}
             onPress={() => navigation.navigate("AddTreatment")}
           >
-            <Text style={{ color: "white", fontSize: 20, textAlign: "center", padding: 10 }}>Ajouter un traitement</Text>
+            <Text
+              style={{
+                color: "white",
+                fontSize: 20,
+                textAlign: "center",
+                padding: 10,
+              }}
+            >
+              Ajouter un traitement
+            </Text>
           </TouchableOpacity>
         </View>
       )}
-    </SafeAreaView >
+    </View>
   );
 }
