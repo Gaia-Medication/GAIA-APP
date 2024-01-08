@@ -1,7 +1,7 @@
 import { NavigationProp, ParamListBase, useIsFocused } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
-import { addItemToList, getAllTreatments, readList } from "../../dao/Storage";
-import { View, Text, TextInput, FlatList, TouchableOpacity, Button } from "react-native";
+import { addItemToList, getAllTreatments, getUserByID, readList } from "../../dao/Storage";
+import { View, Text, TextInput, FlatList, TouchableOpacity, Button, Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { styles } from "../../style/style";
 import { getAllMed, getMedbyCIS } from "../../dao/Meds";
@@ -79,7 +79,8 @@ export default function AddTreatment({ navigation }: ICreateProps) {
     const [instructionsList, setInstructionsList] = useState([]);
     const [selectedInstruction, setSelectedInstruction] = useState<Instruction>(null);
     const [arrayOfDates, setArrayOfDates] = useState([]);
-    const [dateDigitAssociations, setDateDigitAssociations] = useState({});
+    const [takes, setTakes] = useState<Take[]>([]);
+    const [user, setUser] = useState<User | null>(null);
 
     // DATA ARRAYS
     const options = {
@@ -160,22 +161,39 @@ export default function AddTreatment({ navigation }: ICreateProps) {
     // ASSOCIATE UN DIGIT (QUANTITE) A UNE DATE
     const associateDigitWithDates = () => {
         if (checkQty === "custom") {
-            const updatedAssociations = { ...dateDigitAssociations };
+            const updatedTakes = [...takes];
 
             checkedDates.forEach((date) => {
-                updatedAssociations[date.toISOString()] = digitInput;
+                console.log("DATE => ", date)
+                updatedTakes.push({
+                    userId: user.id,
+                    treatmentName: treatmentName,
+                    CIS: Number(selectedMedCIS),
+                    date: date.toISOString(),
+                    quantity: Number(digitInput),
+                    taken: false,
+                });
             });
 
-            setDateDigitAssociations(updatedAssociations);
+            console.log("UPDATED TAKES => ", updatedTakes);
+
+            setTakes(updatedTakes);
             setDigitInput("0");
         } else {
-            const updatedAssociations = { ...dateDigitAssociations };
+            const updatedTakes = [...takes];
 
             arrayOfDates.forEach((date) => {
-                updatedAssociations[date.toISOString()] = quantity;
+                updatedTakes.push({
+                    userId: user.id,
+                    treatmentName: treatmentName,
+                    CIS: Number(selectedMedCIS),
+                    date: date.toISOString(),
+                    quantity: quantity,
+                    taken: false,
+                });
             });
 
-            setDateDigitAssociations(updatedAssociations);
+            setTakes(updatedTakes);
         }
     };
 
@@ -233,6 +251,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
 
     // LIT TOUS LES INPUTS? CHECKBOXES ETC POUR RECUPERER UN TABLEAU DE DATES SANS QUANTITE
     const addDates = async () => {
+        console.log("ADD DATES")
         let array = [];
         let startDateObj = new Date(startDate);
         const daysDifference = checkLast === 'last' ? Math.floor((Number(endDate) - Number(startDateObj)) / (24 * 60 * 60 * 1000)) : null
@@ -658,13 +677,13 @@ export default function AddTreatment({ navigation }: ICreateProps) {
                     <Text style={{ textAlignVertical: "center" }}>{formatHour(date)}</Text>
                     <TextInput
                         style={{ borderWidth: 1, borderColor: 'gray', borderRadius: 5, paddingHorizontal: 8, paddingVertical: 6, fontSize: 16 }}
-                        placeholder={dateDigitAssociations[date.toISOString()] || "Enter Digit"}
-                        value={dateDigitAssociations[date.toISOString()] || ""} // Display the associated digit for the date
+                        placeholder={takes.find(take => take.date === date.toISOString()) ? takes.find(take => take.date === date.toISOString()).quantity.toString() : "Enter Digit"}
+                        value={takes.find(take => take.date === date.toISOString()) ? takes.find(take => take.date === date.toISOString()).quantity.toString() : ""}
                         onChangeText={(text) => {
                             // Update the dateDigitAssociations state with the new value for the date
-                            const updatedAssociations = { ...dateDigitAssociations };
-                            updatedAssociations[date.toISOString()] = text;
-                            setDateDigitAssociations(updatedAssociations);
+                            const updatedTakes = [...takes];
+                            updatedTakes.find(take => take.date === date.toISOString()) ? updatedTakes.find(take => take.date === date.toISOString()).quantity = parseInt(text) : Alert.alert("Oops..");
+                            setTakes(updatedTakes);
                         }}
                     />
                 </View>
@@ -714,7 +733,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
     const addInstruction = async () => {
         addDates();
         console.log("ADD INSTRUCTION")
-        console.log("DATES DIGIT ASS", dateDigitAssociations)
+        console.log("TAKES", takes)
         const newInstruction = {
             CIS: selectedMedCIS,
             name: selectedMedName,
@@ -734,7 +753,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
             endDate: checkLast === 'last' ? endDate : null, // DATE DE FIN SI FIN À UNE DATE PRÉCISE
             endQuantity: checkLast === 'number' ? endNumber : null, // NOMBRE DE PRIS SI FIN AU BOUT D'UN CERTAIN NOMBRE DE PRIS
             quantity: checkQty === 'regular' ? quantity : null, // QUANTITÉ À PRENDRE À CHAQUE PRISE SI QUANTITÉ RÉGULIÈRE
-            datesAndQuantities: dateDigitAssociations,
+            takes: takes, // TABLEAU DES PRISES
         };
         console.log("EXISTING LIST => ", await readList('instructions'))
         console.log("NEW INSTRUCTION => ", newInstruction)
@@ -763,9 +782,11 @@ export default function AddTreatment({ navigation }: ICreateProps) {
         // ------------------------------
         let asyncInstructions = await readList('instructions');
         console.log("ASYNC INSTRUCTIONS => ", await asyncInstructions)
-        //AsyncStorage.setItem("instructions", JSON.stringify([]));
+        AsyncStorage.setItem("instructions", JSON.stringify([]));
         const newTreatment = {
             name: treatmentName,
+            treatmentName: treatmentName,
+            userId: user.id,
             description: treatmentDescription,
             startDate: startDate,
             instructions: await asyncInstructions,
@@ -841,7 +862,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
                                 )
                             ) : null}
                         {selectedInstruction.endModality === "number" ? (
-                            <Text>Il est à prendre {selectedInstruction.endQuantity} fois, jusqu'au {Object.keys(selectedInstruction.datesAndQuantities)[Object.keys(selectedInstruction.datesAndQuantities).length - 1]}</Text>
+                            <Text>Il est à prendre {selectedInstruction.endQuantity} fois, jusqu'au {formatDate(selectedInstruction.takes[selectedInstruction.takes.length].date)}</Text>
                         ) : selectedInstruction.regularFrequencyContinuity === "number" ? (
                             <Text>Il est à prendre {selectedInstruction.endQuantity} fois</Text>
                         ) : null}
@@ -864,6 +885,9 @@ export default function AddTreatment({ navigation }: ICreateProps) {
 
     const init = async () => {
         const allMeds = getAllMed();
+        const currentId = await AsyncStorage.getItem("currentUser");
+        const current = await getUserByID(JSON.parse(currentId));
+        setUser(current);
         const medsWithKey = allMeds.map((med) => ({
             id: med.CIS,
             label: med.Name,

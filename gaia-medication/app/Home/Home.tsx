@@ -73,7 +73,14 @@ export default function Home({ navigation }) {
 
   const showTreatments = async () => {
     const treatments = await getAllTreatments();
-    console.log(treatments[0]);
+    if(treatments.length==0){
+      alert("Vous n'avez pas de traitement")
+    } else {
+      console.log(treatments[0]);
+    console.log(treatments[0].instructions[0].takes);
+    console.log(treatments.length)
+    }
+    
     setTreatments(treatments);
   }
   const deleteTreatments = async () => {
@@ -157,7 +164,7 @@ export default function Home({ navigation }) {
           {treatments && treatments.map((treatment) => { return (
             <View key={treatment.name}>
               <Text>{treatment.name}</Text>
-              <Text>{treatment.instruction.length}</Text>
+              <Text>{treatment.instructions.length}</Text>
               </View>
          )})}
           {!treatments ? (

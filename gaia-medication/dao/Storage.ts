@@ -103,7 +103,6 @@ export const getAllTreatments = async (): Promise<Treatment[]> => {
   try {
 
     const treatments = await AsyncStorage.getItem(key);
-    console.log("treatments => ", treatments)
     if (treatments == null) {
       return []
     }
@@ -111,13 +110,9 @@ export const getAllTreatments = async (): Promise<Treatment[]> => {
     const treatmentsJson: [] = JSON.parse(treatments)
     const arrayOfTreatments = []
     treatmentsJson && treatments.length != 0 ? treatmentsJson.map((treatment: Treatment) => {
-      console.log("Treatment => ", treatment.instructions)
       const instructionsArray = []
       treatment.instructions ? treatment.instructions.map((instr) => {
         let daqDict = {};
-        Object.entries(instr.datesAndQuantities).forEach(([date, quantity]) => {
-          daqDict[date] = Number(quantity);
-        })
         const instruction: Instruction = {
           CIS: instr.CIS,
           name: instr.name,
@@ -131,12 +126,13 @@ export const getAllTreatments = async (): Promise<Treatment[]> => {
           endDate: instr.endDate,
           endQuantity: instr.endQuantity,
           quantity: instr.quantity,
-          datesAndQuantities: daqDict,
+          takes: instr.takes,
         }
         instructionsArray.push(instruction)
       }): null
       const treatmentObject: Treatment = {
         name: treatment.name,
+        userId: treatment.userId,
         description: treatment.description,
         startDate: new Date(treatment.startDate),
         instructions: instructionsArray
@@ -150,38 +146,45 @@ export const getAllTreatments = async (): Promise<Treatment[]> => {
 }
 
 export const initTreatments = async () => {
-  const allTreatments = await getAllTreatments();
+  const allTreatments: Treatment[] = await getAllTreatments();
+  console.log("allTreatments => ", allTreatments[1].instructions)
   let dict = {}; // Initialize dict as an array
-
-  const treatmentDates: Record<string, string[]> = {};
+  let takesArray = [];
 
   allTreatments ? allTreatments.forEach((treatment) => {
     console.log(treatment.name)
     treatment.instructions?.forEach((instr) => {
-      Object.keys(instr.datesAndQuantities || {}).forEach((date) => {
-        console.log(date)
-        if (dict[date]) {
-          // If the date already exists in the dictionary, append the treatment name to the array
-          dict[date].push(treatment.name);
-        } else {
-          // If the date doesn't exist, create a new array with the treatment name
-          dict[date] = [treatment.name];
-        }
+      instr.takes.forEach((take) => {
+        console.log("take => ", take)
+        takesArray.push(take)
+        //console.log(take)
+        //if (dict[take.date.toString()]) {
+          //dict[take.date.toString()].push(treatment.name);
+        //} else {
+          //dict[take.date.toString()] = [treatment.name];
+        //}
       });
     });
   }) : new Error("No treatments found");
-  const sortedKeys = Object.keys(dict).sort((a, b) => {
-    return new Date(a).getTime() - new Date(b).getTime();
+  // const sortedKeys = Object.keys(dict).sort((a, b) => {
+  //   return new Date(a).getTime() - new Date(b).getTime();
+  // })
+  // const dictWithDates = sortedKeys
+  //   .map(dateStr => new Date(dateStr))
+  // const nextDateIndex = dictWithDates.findIndex(dateObj => dateObj > new Date());
+  // const futureDateKeys = nextDateIndex == 0 ? (sortedKeys) : (nextDateIndex === -1 ? (sortedKeys.slice(-1)) : (sortedKeys.slice(nextDateIndex - 1)));
+  // const futureDatesDict = {};
+  // futureDateKeys.forEach(date => {
+  //   futureDatesDict[date] = dict[date];
+  // });  
+  // return futureDatesDict;
+  return takesArray.sort((a, b) => {
+    return new Date(a.date).getTime() - new Date(b.date).getTime();
   })
-  const dictWithDates = sortedKeys
-    .map(dateStr => new Date(dateStr))
-  console.log("dictWithDates => ", dictWithDates);
-  const nextDateIndex = dictWithDates.findIndex(dateObj => dateObj > new Date());
-  const futureDateKeys = nextDateIndex == 0 ? (sortedKeys) : (nextDateIndex === -1 ? (sortedKeys.slice(-1)) : (sortedKeys.slice(nextDateIndex - 1)));
-  const futureDatesDict = {};
-  futureDateKeys.forEach(date => {
-    futureDatesDict[date] = dict[date];
-  });
-  console.log("futureDatesKeys => ", futureDateKeys);
-  return futureDatesDict;
 };
+
+export const getTreatmentByName = async (name: string, userId: number): Promise<Treatment> => {
+  const allTreatments = await getAllTreatments();
+  const treatment = allTreatments.find(treatment => treatment.name === name);
+  return treatment || null;
+}

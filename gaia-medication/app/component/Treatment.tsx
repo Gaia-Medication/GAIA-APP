@@ -11,12 +11,15 @@ import {
 import { Text } from "react-native-elements";
 import { ChevronDown } from "react-native-feather";
 import { styles } from "../../style/style";
+import { getTreatmentByName } from "../../dao/Storage";
+import * as Icon from "react-native-feather";
 
 const Treatment = ({
   onPress,
   status = "actual" as "actual" | "next" | "previous",
-  date,
-  treatment
+  take,
+  treatment,
+  onTakePress
 }) => {
   const [expanded, setExpanded] = useState(false);
 
@@ -25,6 +28,7 @@ const Treatment = ({
   const [bgColor, setBgColor] = useState("#9CDE00");
   const [dateObj, setDate] = useState<Date>(new Date());
 
+
   const init = () => {
     if (status === "actual" || status === "next") {
       setBgColor("#9CDE0010");
@@ -32,7 +36,7 @@ const Treatment = ({
       setBgColor("#BCBCBC10");
     }
 
-    setDate(new Date(date));
+    setDate(new Date(take.date));
   };
 
   const formatHour = (hour) => {
@@ -50,36 +54,46 @@ const Treatment = ({
       console.error("Invalid date");
       return null;
     }
-  
+
     const days = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
     const months = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
-  
+
     let dayOfWeek = days[date.getDay()];
     let dayOfMonth = date.getDate();
     let month = months[date.getMonth()];
-  
+
     return [dayOfWeek, dayOfMonth, month];
   };
 
   useEffect(() => {
     init();
+    console.log("Treatmet", treatment);
   }, []);
 
   return (
-    <View style={{display: "flex", flexDirection: "row", justifyContent: "flex-start", gap: 10, maxHeight: "auto", marginBottom: 7, marginTop: 7}}>
-      <View style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "20%" }}>
-        <Text style={{fontWeight: "800", fontSize: 20, color: status === "previous" ? "#BCBCBC" : status === "actual" ? "#9CDE00" : "#00000099"}}>{formatDate(dateObj)[0]}</Text>
-        <Text style={{fontWeight: "800", fontSize: 20, color: status === "previous" ? "#BCBCBC" : status === "actual" ? "#9CDE00" : "#00000099"}}>{formatDate(dateObj)[1]}</Text>
-        <Text style={{fontWeight: "800", fontSize: 20, color: status === "previous" ? "#BCBCBC" : status === "actual" ? "#9CDE00" : "#00000099"}}>{formatDate(dateObj)[2]}</Text>
+    <View style={{ display: "flex", flexDirection: "row", justifyContent: "flex-start", gap: 10, maxHeight: "auto", marginBottom: 7, marginTop: 7 }}>
+      <View style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-start", width: "20%", gap: 50 }}>
+        <View style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
+          <Text style={{ fontWeight: "800", fontSize: 20, color: status === "previous" ? "#BCBCBC" : status === "actual" ? "#9CDE00" : "#00000099" }}>{formatDate(dateObj)[0]}</Text>
+          <Text style={{ fontWeight: "800", fontSize: 20, color: status === "previous" ? "#BCBCBC" : status === "actual" ? "#9CDE00" : "#00000099" }}>{formatDate(dateObj)[1]}</Text>
+          <Text style={{ fontWeight: "800", fontSize: 20, color: status === "previous" ? "#BCBCBC" : status === "actual" ? "#9CDE00" : "#00000099" }}>{formatDate(dateObj)[2]}</Text>
+        </View>
+        <TouchableOpacity onPress={() => onTakePress(take)} disabled={status === "next"}>
+          <View style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "20%", backgroundColor: take.taken ? (status === "actual" ? "#9CDE0030" : "#CCCCCC") : (status === "actual" ? "#FF000030" : "#CCCCCC"), padding: 10, borderRadius: 50 }}>
+            { take.taken ? <Icon.CheckCircle color={status === "actual" ? "#9CDE00" : "grey"} width={30} height={30} /> : <Icon.AlertCircle  color={status === "actual" ? "#FF0000" : "#666666"} width={30} height={30} /> }
+            
+          </View>
+        </TouchableOpacity>
       </View>
-      <View style= {{ display: "flex", flexDirection: "column", gap: 15, alignItems: "center" }}>
-        <View style={{ 
+
+      <View style={{ display: "flex", flexDirection: "column", gap: 15, alignItems: "center" }}>
+        <View style={{
           width: 15,
           height: 15,
           borderRadius: 100,
           backgroundColor: bgColor.length == 9 ? bgColor.slice(0, -2) : bgColor,
         }}></View>
-        <View style={{ 
+        <View style={{
           width: 5,
           height: 230,
           borderRadius: 100,
@@ -104,7 +118,7 @@ const Treatment = ({
             borderRadius: 100,
             padding: 10,
           }}>
-            <Text style={{ color: status === "previous" ? "black" : "white", fontWeight: "700", fontSize: 15, maxWidth: 180 }} numberOfLines={1} ellipsizeMode="tail">{treatment.name}</Text>
+            <Text style={{ color: status === "previous" ? "black" : "white", fontWeight: "700", fontSize: 15, maxWidth: 180 }} numberOfLines={1} ellipsizeMode="tail">{take.treatmentName}</Text>
           </View>
           <Text style={{ color: status === "previous" ? "#D0D0D0" : "black", fontWeight: "700" }}>{formatHour(dateObj)}</Text>
         </View>
@@ -118,9 +132,27 @@ const Treatment = ({
           }} />
           <View>
             <Text style={{ color: status === "previous" ? "#7B7B7B" : "black", fontWeight: "bold" }}>Description :</Text>
-            <Text style={{ color: "#C9C9C9", fontWeight: "700" }} numberOfLines={3} ellipsizeMode="tail">{treatment.description ? treatment.description : "1 Doliprane toutes les 4h pendant 5 jours"}</Text>
+            <Text style={{ color: "#C9C9C9", fontWeight: "700" }} numberOfLines={3} ellipsizeMode="tail">{treatment.description != "" ? treatment.description : "1 Doliprane toutes les 4h pendant 5 jours"}</Text>
           </View>
 
+        </View>
+
+        <View>
+          <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
+            {take.taken ? (
+              <View style={{ display: "flex", flexDirection: "row", justifyContent: "center", gap: 5, alignItems: "center", paddingVertical: 3 }}>
+                <Icon.CheckCircle color="#9CDE00" width={22} height={22} />
+                <Text style={{ color: status === "previous" ? "#9CDE00" : "black", fontWeight: "bold" }}>Pris</Text>
+              </View>
+
+            ) : (
+              <View style={{ display: "flex", flexDirection: "row", justifyContent: "center", gap: 5, alignItems: "center", paddingVertical: 3, }}>
+                <Icon.AlertCircle color={status === "next" ? "#333333" : "#FF000090"} width={22} height={22} />
+                <Text style={{ color: status === "next" ? "#333333" : "#FF000090", fontWeight: "bold" }}>Non pris</Text>
+              </View>
+
+            )}
+          </View>
         </View>
 
       </View>
