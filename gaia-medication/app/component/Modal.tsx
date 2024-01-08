@@ -6,15 +6,17 @@ const ModalComponent = ({ visible, onClose, children, styleAdded }) => {
     <Modal
       visible={visible}
       transparent={true}
-      animationType="slide"
-      onRequestClose={null}
+      animationType="fade"
+      onRequestClose={onClose}
     >
         <TouchableOpacity
           style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
           activeOpacity={1}
           onPress={null}
         >
-          <ScrollView style={styleAdded}>
+          <ScrollView style={styleAdded}
+            contentContainerStyle={{ alignItems: 'center', justifyContent: 'center' }}
+          >
             {children}
           </ScrollView>
           

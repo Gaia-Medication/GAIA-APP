@@ -855,6 +855,9 @@ export default function AddTreatment({ navigation }: ICreateProps) {
                         <Text>Il est à prendre les {selectedInstruction.regularFrequencyDays.join(", ")}</Text>
                     </View>
                 )}
+                <TouchableOpacity onPress={() => { setInstructionsDetailModal(false) }} style={{ backgroundColor: '#FF000080', padding: 10, borderRadius: 5 }}>
+                    <Text style={{ color: "white", fontWeight: "bold" }}>FERMER</Text>
+                </TouchableOpacity>
 
             </View>
         ) : null
