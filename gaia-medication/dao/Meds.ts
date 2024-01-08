@@ -76,7 +76,23 @@ export function getAllPA(){
   }
 }
 
-export function getComposion(composition){   
+export function getPAfromMed(CIS){   
+  try {
+    const medicament = medicaments.find(med => med.CIS === CIS);
+    const composition = medicament.Composition
+    const principesActifsUniques = new Set();
+    composition.forEach((element) => {
+      const principeActif = element["Principe actif"][0];
+      principesActifsUniques.add(principeActif);
+    });
+
+    return principesActifsUniques;
+  } catch (error) {
+    console.error('Error reading JSON file', error);
+  }
+}
+
+export function getComposition(composition){   
   try {
     const dictionnaireTypes = {};
 
