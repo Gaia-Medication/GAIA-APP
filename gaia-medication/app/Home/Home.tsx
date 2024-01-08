@@ -26,6 +26,8 @@ import {
 import * as Notifications from "expo-notifications";
 import { trouverNomMedicament } from "../../dao/Search";
 import Loading from "../component/Loading";
+import data from './../Suivis/treatment.json';
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Home({ navigation }) {
   const isFocused = useIsFocused();
@@ -88,9 +90,28 @@ export default function Home({ navigation }) {
     }
   };
 
+  const createTreatmentTest1 = async () => {
+    const tre=JSON.parse(JSON.stringify(data))
+    console.log("tre",tre)
+    const treatments = await getAllTreatments();
+    if (treatments.find((treatment) => treatment.name === tre.name)) {
+      alert("Le traitement existe déjà");
+      return;
+    }
+    treatments.push(tre);
+    await AsyncStorage.setItem("treatments", JSON.stringify(treatments));
+  }
+
   const showTreatments = async () => {
     const treatments = await getAllTreatments();
-    console.log(treatments[0]);
+    if(treatments.length==0){
+      alert("Vous n'avez pas de traitement")
+    } else {
+      console.log(treatments);
+    console.log(treatments[0].instructions[0].takes);
+    console.log(treatments.length)
+    }
+    
     setTreatments(treatments);
   };
   const deleteTreatments = async () => {
@@ -169,23 +190,18 @@ export default function Home({ navigation }) {
           <View style={styles.traitementContainer}>
             <Text style={styles.title2}>Suivis d'un traitement</Text>
           </View>
-          <Button
-            onPress={notificationDaily}
-            title="Notification quotidienne"
-          />
-          <Button onPress={notificationForgot} title="Notification oubli" />
-          <Button onPress={showTreatments} title="Liste des traitements" />
-          <Button onPress={deleteTreatments} title="Supprimer traitements" />
-          {treatments &&
-            treatments.map((treatment) => {
-              return (
-                <View key={treatment.name}>
-                  <Text>{treatment.name}</Text>
-                  <Text>{treatment.instruction.length}</Text>
-                </View>
-              );
-            })}
-          {!treatments ? (
+          <Button onPress={notificationDaily} title="Notification quotidienne"/>
+          <Button onPress={notificationForgot} title="Notification oubli"/>
+          <Button onPress={showTreatments} title="Liste des traitements"/>
+          <Button onPress={deleteTreatments} title="Supprimer traitements"/>
+          <Button onPress={createTreatmentTest1} title="TraitementTest 1"/>
+          {treatments && treatments.map((treatment) => { return (
+            <View key={treatment.name}>
+              <Text>{treatment.name}</Text>
+              <Text>{treatment.instructions.length}</Text>
+              </View>
+         )})}
+        {!treatments ? (
             <Text>PAS DE VARIABLE ASYNC TREATMENT</Text>
           ) : treatments.length == 0 ? (
             <Text>TREATMENTS VIDE</Text>

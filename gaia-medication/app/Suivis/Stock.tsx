@@ -58,7 +58,7 @@ export default function Stock({ navigation }) {
                 <MedIconByType type={drug.Shape}/>
                 <View className="ml-4 flex-1 flex-row justify-between items-center">
                   <Text className="flex-1">{drug.Name}</Text>
-                  <Text className=" text-[#7B7B7B]">{item.qte} restant(e)(s)</Text>
+                  <Text className=" text-[#7B7B7B]">{item.qte} Boite(s)</Text>
                 </View>
               </TouchableOpacity>
             );

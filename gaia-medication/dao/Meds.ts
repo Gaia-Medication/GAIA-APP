@@ -76,3 +76,36 @@ export function getAllPA(){
   }
 }
 
+export function getComposion(composition){   
+  try {
+    const dictionnaireTypes = {};
+
+    composition.forEach((comprime) => {
+      comprime["type"].forEach((type, index) => {
+        if (!dictionnaireTypes[type]) {
+          dictionnaireTypes[type] = [];
+        }
+      });
+      if(comprime["type"].length>1){
+        comprime["type"].forEach((type, index) => {
+          dictionnaireTypes[type].push({
+            PrincipeActif: comprime["Principe actif"][0],
+            Dosage: comprime["Dosage"][index],
+            Quantite: comprime["Quantité"][0],
+          });
+        });
+      }else{
+        comprime["Principe actif"].forEach((pa, index) => {
+          dictionnaireTypes[comprime["type"][0]].push({
+            PrincipeActif: pa,
+            Dosage: comprime["Dosage"][index],
+            Quantite: comprime["Quantité"][0],
+          });
+        });
+      }
+    });
+    return dictionnaireTypes;
+  } catch (error) {
+    console.error('Error reading JSON file', error);
+  }
+}
