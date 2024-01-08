@@ -14,6 +14,7 @@ import { requestNotificationPermissions, notificationDaily, notificationNow, not
 import * as Notifications from 'expo-notifications';
 import { trouverNomMedicament } from "../../dao/Search";
 import Loading from "../component/Loading";
+import data from './../Suivis/treatment.json';
 
 
 export default function Home({ navigation }) {
@@ -70,6 +71,18 @@ export default function Home({ navigation }) {
       }
     }
   };
+
+  const createTreatmentTest1 = async () => {
+    const tre=JSON.parse(JSON.stringify(data))
+    console.log("tre",tre)
+    const treatments = await getAllTreatments();
+    if (treatments.find((treatment) => treatment.name === tre.name)) {
+      alert("Le traitement existe déjà");
+      return;
+    }
+    treatments.push(tre);
+    await AsyncStorage.setItem("treatments", JSON.stringify(treatments));
+  }
 
   const showTreatments = async () => {
     const treatments = await getAllTreatments();
@@ -161,6 +174,7 @@ export default function Home({ navigation }) {
           <Button onPress={notificationForgot} title="Notification oubli"/>
           <Button onPress={showTreatments} title="Liste des traitements"/>
           <Button onPress={deleteTreatments} title="Supprimer traitements"/>
+          <Button onPress={createTreatmentTest1} title="TraitementTest 1"/>
           {treatments && treatments.map((treatment) => { return (
             <View key={treatment.name}>
               <Text>{treatment.name}</Text>

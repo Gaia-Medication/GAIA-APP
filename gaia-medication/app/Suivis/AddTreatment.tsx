@@ -758,12 +758,9 @@ export default function AddTreatment({ navigation }: ICreateProps) {
             quantity: checkQty === 'regular' ? quantity : null, // QUANTITÉ À PRENDRE À CHAQUE PRISE SI QUANTITÉ RÉGULIÈRE
             takes: takes, // TABLEAU DES PRISES
         };
-        console.log("EXISTING LIST => ", await readList('instructions'))
-        console.log("NEW INSTRUCTION => ", newInstruction)
         await addItemToList('instructions', newInstruction);
         setInstructionsList([...instructionsList, newInstruction]);
         setInstructionModalVisible(false);
-        console.log("INSTRUCTIONS LIST => ", instructionsList)
     };
 
     const addTreatment = async () => {
@@ -771,8 +768,6 @@ export default function AddTreatment({ navigation }: ICreateProps) {
         const allTreatments = await getAllTreatments();
         allTreatments.find(treatment => treatment.name === treatmentName)
         console.log("TREATMENT NAME => ", treatmentName)
-        //console.log("ALL TREATMENTS => ", allTreatments)
-        //console.log("FIND TREATMENT => ", allTreatments.find(treatment => treatment.name === treatmentName))
 
         if (treatmentName === "") {
             alert("Veuillez renseigner le nom du traitement")
@@ -794,9 +789,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
             startDate: startDate,
             instructions: await asyncInstructions,
         };
-        console.log("NEW TREATMENT => ", newTreatment)
         await addItemToList('treatments', newTreatment);
-        setInstructionModalVisible(false);
         navigation.navigate("Home");
 
     }
