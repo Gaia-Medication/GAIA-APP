@@ -71,7 +71,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
     const [selectedHourBis, setSelectedHourBis] = useState(new Date());
     const [selectedHour, setSelectedHour] = useState(new Date());
     const [selectAllText, setSelectAllText] = useState('Select All');
-    const [selectAllColor, setSelectAllColor] = useState('red');
+    const [selectAllColor, setSelectAllColor] = useState('blue');
     const [selectedMed, setSelectedMed] = useState({});
     const [selectedMedCIS, setSelectedMedCIS] = useState("");
     const [selectedMedName, setSelectedMedName] = useState("");
@@ -250,45 +250,106 @@ export default function AddTreatment({ navigation }: ICreateProps) {
         }
     };
 
+    // CALCUL LE NOMBRE DE PRISES SI CUSTOMPERIODICITY == WEEK && CHECKLAST == last   
+    function calculateTotalTakes() {
+        const msInDay = 24 * 60 * 60 * 1000; // Number of milliseconds in a day
+        let totalTakes = 0;
+        let currentDate = new Date(startDate);
+    
+        // Create a map for quick lookup of the days of the week
+        const daysMap = {
+            'Dimanche': 0, 'Lundi': 1, 'Mardi': 2, 'Mercredi': 3,
+            'Jeudi': 4, 'Vendredi': 5, 'Samedi': 6
+        };
+    
+        // Convert weekDays to their respective numbers
+        const targetDays = weekDays.filter(day => day.checked).map(day => daysMap[day.day]);
+    
+        while (currentDate <= endDate) {
+            if (targetDays.includes(currentDate.getDay())) {
+                totalTakes++; // Increment count if it's a target day
+            }
+    
+            // Move to the next day
+            currentDate = new Date(currentDate.getTime() + msInDay);
+        }
+    
+        console.log("TOTAL TAKES => ", totalTakes);
+        return totalTakes;
+    }
+
+    function calculateTakesEveryXDays() {
+        const msInDay = 24 * 60 * 60 * 1000; // Number of milliseconds in a day
+        let totalTakes = 0;
+        let currentDate = new Date(startDate);
+    
+        while (currentDate <= endDate) {
+            totalTakes++; // Increment count for each interval
+    
+            // Move to the next interval day
+            currentDate = new Date(currentDate.getTime() + (parseInt(customPeriodicityBisNumber) * msInDay));
+        }
+    
+        return totalTakes;
+    }
+
     // LIT TOUS LES INPUTS? CHECKBOXES ETC POUR RECUPERER UN TABLEAU DE DATES SANS QUANTITE
     const addDates = async () => {
         console.log("ADD DATES")
         let array = [];
+        const daysMap = {
+            'Dimanche': 0, 'Lundi': 1, 'Mardi': 2, 'Mercredi': 3,
+            'Jeudi': 4, 'Vendredi': 5, 'Samedi': 6
+        };
         let startDateObj = new Date(startDate);
         const daysDifference = checkLast === 'last' ? Math.floor((Number(endDate) - Number(startDateObj)) / (24 * 60 * 60 * 1000)) : null
-        const numberOfTimes = checkLast === 'last' ? (frequencyMode === "regular" ? (parseInt(customPeriodicityNumber) * daysDifference) : (parseInt(customPeriodicityBisNumber) * daysDifference)) : endNumber;
-        const currentDate = new Date(startDateObj);
+        const numberOfTimes = checkLast === 'last' ? (frequencyMode === "regular" ? (customPeriodicity === "day" ? parseInt(customPeriodicityNumber) * daysDifference + parseInt(customPeriodicityNumber) : calculateTotalTakes()) : (calculateTakesEveryXDays())) : endNumber;
+        let currentDate = new Date(startDateObj);
         const intervalDays = parseInt(customPeriodicityBisNumber);
+        console.log("DAYS DIFFERENCE ", daysDifference)
+        numberOfTimes ? console.log("NUMBER OF TIMES ", numberOfTimes) : null
 
         if (checkFrequency === 'regular') {
             if (frequencyMode === 'regular') {
-                if (checkDaily === 'daily') {
+                if (customPeriodicity === 'week') {
+                    const targetDays = weekDays.filter(day => day.checked).map(day => daysMap[day.day]);
                     while (array.length < numberOfTimes) {
-                        for (let hour of hoursAssociations) {
-                            if (array.length >= numberOfTimes) {
-                                break;
-                            }
-                            const newDate = new Date(currentDate);
-                            newDate.setHours(hour.getHours(), hour.getMinutes(), 0, 0); // Set the specific hour and minute
-                            array.push(newDate);
+                        if (targetDays.includes(currentDate.getDay())) {
+                            array.push(new Date(currentDate)); // Add the date if it's a target day
                         }
-                        currentDate.setDate(currentDate.getDate() + 1);
+                        currentDate = new Date(currentDate.getTime() + (24 * 60 * 60 * 1000)); // Move to the next day
                     }
-                } else if (checkDaily === 'custom') {
-                    // Custom daily logic to use numberOfTimes
-                    while (array.length < numberOfTimes && (!endDate || currentDate <= endDate)) {
-                        if (weekDays[currentDate.getDay()].checked) {
-                            hoursAssociations.forEach(hour => {
-                                if (array.length < numberOfTimes) {
-                                    const newDate = new Date(currentDate);
-                                    newDate.setHours(hour.getHours(), hour.getMinutes(), 0, 0);
-                                    array.push(newDate);
+
+                } else if (customPeriodicity === 'day') {
+                    if (checkDaily === 'daily') {
+                        while (array.length < numberOfTimes) {
+                            for (let hour of hoursAssociations) {
+                                if (array.length >= numberOfTimes) {
+                                    break;
                                 }
-                            });
+                                const newDate = new Date(currentDate);
+                                newDate.setHours(hour.getHours(), hour.getMinutes(), 0, 0); // Set the specific hour and minute
+                                array.push(newDate);
+                            }
+                            currentDate.setDate(currentDate.getDate() + 1);
                         }
-                        currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
+                    } else if (checkDaily === 'custom') {
+                        // Custom daily logic to use numberOfTimes
+                        while (array.length < numberOfTimes) {
+                            if (weekDays[currentDate.getDay()].checked) {
+                                hoursAssociations.forEach(hour => {
+                                    if (array.length < numberOfTimes) {
+                                        const newDate = new Date(currentDate);
+                                        newDate.setHours(hour.getHours(), hour.getMinutes(), 0, 0);
+                                        array.push(newDate);
+                                    }
+                                });
+                            }
+                            currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
+                        }
                     }
                 }
+                
             } else if (frequencyMode === 'bis') {
                 console.log("BIS")
                 console.log(customPeriodicityNumber)
