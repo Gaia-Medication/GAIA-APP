@@ -114,7 +114,7 @@ function HomeHandler() {
 
 function SuivisHandler() {
   return (
-    <TopTab.Navigator style={{ paddingTop: 60}}>
+    <TopTab.Navigator>
       <TopTab.Screen name="Suivis" component={Suivis} />
       <TopTab.Screen name="Stock" component={Stock} />
     </TopTab.Navigator>
