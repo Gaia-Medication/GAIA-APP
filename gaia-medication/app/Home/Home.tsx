@@ -26,7 +26,6 @@ import {
 import * as Notifications from "expo-notifications";
 import { trouverNomMedicament } from "../../dao/Search";
 import Loading from "../component/Loading";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Home({ navigation }) {
   const isFocused = useIsFocused();
