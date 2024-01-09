@@ -141,14 +141,16 @@ const Treatment = ({ onPress, status = "actual" as "actual" | "next" | "previous
           width: 15,
           height: 15,
           borderRadius: 100,
-          backgroundColor: bgColor.length == 9 ? bgColor.slice(0, -2) : bgColor,
-        }}></View>
+          backgroundColor: status === "next"?"#FFFFFF":(bgColor.length == 9 ? bgColor.slice(0, -2) : bgColor),  
+          borderWidth: status !== "previous"?3:null,        
+          borderColor:status !== "previous"? '#9CDE00':null 
+        }}/>
         <View style={{
           width: 5,
           height: 230,
           borderRadius: 100,
           backgroundColor: bgColor.length == 9 ? bgColor.slice(0, -2) : bgColor,
-        }}></View>
+        }}/>
       </View>
       <TouchableOpacity style={{
         alignItems: "center",
@@ -161,6 +163,7 @@ const Treatment = ({ onPress, status = "actual" as "actual" | "next" | "previous
         borderColor: bgColor.length == 9 ? bgColor.slice(0, -2) : bgColor,
         padding: 15,
         height: "auto",
+        opacity: status === "previous" ?0.5:null
       }}
         onPress={() => setTakeDetailsModalVisible(true)}
       >
@@ -170,9 +173,9 @@ const Treatment = ({ onPress, status = "actual" as "actual" | "next" | "previous
             borderRadius: 100,
             padding: 10,
           }}>
-            <Text style={{ color: status === "previous" ? "black" : "white", fontWeight: "700", fontSize: 15, maxWidth: 180 }} numberOfLines={1} ellipsizeMode="tail">{take.treatmentName}</Text>
+            <Text style={{ color: status === "previous" ? null : "white", fontWeight: "700", fontSize: 15, maxWidth: 180 }} numberOfLines={1} ellipsizeMode="tail">{take.treatmentName}</Text>
           </View>
-          <Text style={{ color: status === "previous" ? "#D0D0D0" : "black", fontWeight: "700" }}>{formatHour(date)}</Text>
+          <Text style={{ fontWeight: "700" }}>{formatHour(date)}</Text>
         </View>
 
         <View style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 10, width: "100%", padding: 10, backgroundColor: status === "previous" ? "#BCBCBC40" : "#9CDE0040", borderRadius: 50 }}>
@@ -214,18 +217,20 @@ const Treatment = ({ onPress, status = "actual" as "actual" | "next" | "previous
         ) : null}
 
       </TouchableOpacity>
-      <ModalComponent
-        visible={takeDetailsModalVisible}
-        onClose={null}
-        children={takeModalContent}
-        styleAdded={{
-          backgroundColor: "white",
-          borderRadius: 10,
-          padding: 20,
-          maxHeight: "80%",
-          width: "80%",
-        }}
-      />
+      {status !== "next" &&(
+        <ModalComponent
+          visible={takeDetailsModalVisible}
+          onClose={null}
+          children={takeModalContent}
+          styleAdded={{
+            backgroundColor: "white",
+            borderRadius: 10,
+            padding: 20,
+            maxHeight: "80%",
+            width: "80%",
+          }}
+        />
+      )}
     </SafeAreaView>
 
   );

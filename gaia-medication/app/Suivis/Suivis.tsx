@@ -64,17 +64,21 @@ export default function Suivis({ navigation }) {
 
   function compareDates(targetDate, currentDate = new Date()): "previous" | "actual" | "next" {
     // Set the time to midnight for both dates
-    currentDate.setHours(0, 0, 0, 0);
+    const today=new Date(currentDate);
     const dateObj = new Date(targetDate);
     dateObj.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
 
     // Compare using ISO date strings
-    if (dateObj.toISOString() < currentDate.toISOString()) {
-      return "previous";
-    } else if (dateObj.toISOString() === currentDate.toISOString()) {
-      return "actual";
-    } else {
+    let fourHoursAgo = new Date(currentDate);
+    fourHoursAgo.setHours(currentDate.getHours() - 6);
+    console.log(fourHoursAgo.getHours())
+    if (new Date(targetDate) <= fourHoursAgo) {
+        return "previous";
+    } else if (dateObj.toISOString() > today.toISOString()) {
       return "next";
+    } else {
+      return "actual";
     }
   }
 
@@ -124,7 +128,7 @@ export default function Suivis({ navigation }) {
   useEffect(() => {
     if (isFocused) {
       console.log("Nav on Suivis Page");
-      //setIsLoading(true);
+      if(takes.length<1) setIsLoading(true);
 
       init();
     }
@@ -171,7 +175,7 @@ export default function Suivis({ navigation }) {
             <Text>{"Aucun traitement à prendre aujourd'hui"}</Text>
           ) : <Text>TRAITEMENT AJD</Text>}
 
-          <ScrollView ref={scrollViewRef}>
+          <ScrollView ref={scrollViewRef} showsVerticalScrollIndicator={false}>
             <View style={{ paddingBottom: 200, paddingTop: 50 }}>
               {takes && takes.map((take, index) => (
                 <View key={index}>
