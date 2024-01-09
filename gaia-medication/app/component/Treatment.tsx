@@ -72,12 +72,14 @@ const Treatment = ({ onPress, status = "actual" as "actual" | "next" | "previous
           <Text style={{ fontWeight: "800", fontSize: 20, color: status === "previous" ? "#BCBCBC" : status === "actual" ? "#9CDE00" : "#00000099" }}>{formatDate(date)[1]}</Text>
           <Text style={{ fontWeight: "800", fontSize: 20, color: status === "previous" ? "#BCBCBC" : status === "actual" ? "#9CDE00" : "#00000099" }}>{formatDate(date)[2]}</Text>
         </View>
-        <TouchableOpacity onPress={() => onTakePress(take)} disabled={status === "next"}>
+        { status !== "next" ? (
+        <TouchableOpacity onPress={() => onTakePress(take)}>
           <View style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "20%", backgroundColor: take.taken ? (status === "previous" ? "#CCCCCC" : "#9CDE0030") : (status === "actual" ? "#FF000030" : "#CCCCCC"), padding: 10, borderRadius: 50 }}>
             { take.taken ? <Icon.CheckCircle color={status === "actual" ? "#9CDE00" : "grey"} width={30} height={30} /> : <Icon.AlertCircle  color={status === "actual" ? "#FF0000" : "#666666"} width={30} height={30} /> }
             
           </View>
         </TouchableOpacity>
+        ):null}
       </View>
 
       <View style={{ display: "flex", flexDirection: "column", gap: 15, alignItems: "center" }}>
@@ -119,7 +121,7 @@ const Treatment = ({ onPress, status = "actual" as "actual" | "next" | "previous
 
         <View style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 10, width: "100%", padding: 10, backgroundColor: status === "previous" ? "#BCBCBC40" : "#9CDE0040", borderRadius: 50 }}>
           <Icon.Info color={status === "previous" ? "#BCBCBC" : "#9CDE00"} width={25} height={25} />
-          <Text style={{ fontWeight: "bold", color: "#444444" }} ellipsizeMode="tail" numberOfLines={1}>{treatmentName ? treatmentName + " x " + take.quantity : null}</Text>
+          <Text style={{ fontWeight: "bold", color: "#444444" }} ellipsizeMode="tail" numberOfLines={1}>{med ? med + " x " + take.quantity : null}</Text>
         </View>
 
         <View style={{ padding: 30, display: "flex", flexDirection: "row", gap: 15 }} >
@@ -135,7 +137,7 @@ const Treatment = ({ onPress, status = "actual" as "actual" | "next" | "previous
           </View>
 
         </View>
-
+        { status !== "next" ? (
         <View>
           <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
             {take.taken ? (
@@ -146,13 +148,14 @@ const Treatment = ({ onPress, status = "actual" as "actual" | "next" | "previous
 
             ) : (
               <View style={{ display: "flex", flexDirection: "row", justifyContent: "center", gap: 5, alignItems: "center", paddingVertical: 3, }}>
-                <Icon.AlertCircle color={status === "next" ? "#333333" : "#FF000090"} width={22} height={22} />
-                <Text style={{ color: status === "next" ? "#333333" : "#FF000090", fontWeight: "bold" }}>Non pris</Text>
+                <Icon.AlertCircle color={status === "previous" ? "#333333" : "#FF000090"} width={22} height={22} />
+                <Text style={{ color: status === "previous" ? "#333333" : "#FF000090", fontWeight: "bold" }}>Non pris</Text>
               </View>
 
             )}
           </View>
         </View>
+        ):null}
 
       </View>
     </SafeAreaView>
