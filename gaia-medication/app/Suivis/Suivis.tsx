@@ -29,13 +29,15 @@ export default function Suivis({ navigation }) {
   const scrollViewRef = useRef(null);
 
   const changeTreatments = async (tak: Take) => {
+    console.log(tak);
     treatments.forEach((treatment) => {
       if (treatment.name === tak.treatmentName) {
         treatment.instructions.forEach((instruction) => {
           if (Number(instruction.CIS) === tak.CIS) {
             instruction.takes.forEach((take) => {
               if (take.date === tak.date) {
-                take.taken = !take.taken;
+                take.taken = tak.taken;
+                take.review = tak.review;
               }
             });
           }
@@ -171,6 +173,7 @@ export default function Suivis({ navigation }) {
                     treatmentDescription={take.treatmentDescription}
                     med={take.med}
                     onTakePress={toggleTakeTaken}
+                    validateModalFun={changeTreatments}
                   />
 
                 </View>

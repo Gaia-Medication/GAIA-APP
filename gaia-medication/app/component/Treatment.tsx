@@ -5,6 +5,7 @@ import {
   Dimensions,
   FlatList,
   Pressable,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -15,8 +16,9 @@ import { getTreatmentByName } from "../../dao/Storage";
 import * as Icon from "react-native-feather";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ModalComponent from "./Modal";
+import { validatePathConfig } from "@react-navigation/native";
 
-const Treatment = ({ onPress, status = "actual" as "actual" | "next" | "previous", take, treatmentName, treatmentDescription, med, onTakePress }) => {
+const Treatment = ({ onPress, status = "actual" as "actual" | "next" | "previous", take, treatmentName, treatmentDescription, med, onTakePress, validateModalFun }) => {
   const [expanded, setExpanded] = useState(false);
 
   const validStates = ['previous', 'actual', 'next'];
@@ -24,6 +26,7 @@ const Treatment = ({ onPress, status = "actual" as "actual" | "next" | "previous
   const [bgColor, setBgColor] = useState("#9CDE00");
   const [date, setDate] = useState<Date>(new Date());
   const [takeDetailsModalVisible, setTakeDetailsModalVisible] = useState(false);
+  const [newTxt, setNewTxt] = useState("");
 
 
   const init = () => {
@@ -32,7 +35,7 @@ const Treatment = ({ onPress, status = "actual" as "actual" | "next" | "previous
     } else {
       setBgColor("#BCBCBC10");
     }
-
+    setNewTxt(take.review);
     setDate(new Date(take.date));
   };
 
@@ -58,22 +61,55 @@ const Treatment = ({ onPress, status = "actual" as "actual" | "next" | "previous
     let dayOfWeek = days[date.getDay()];
     let dayOfMonth = date.getDate();
     let month = months[date.getMonth()];
-    let year = months[date.getFullYear()];
+    let year = date.getFullYear();
 
     return { day: dayOfWeek, dayOfMonth: dayOfMonth, month: month, year: year };
   };
 
+  const handleReviewChange = () => {
+    take.review=newTxt;
+    validateModalFun(take)
+    setTakeDetailsModalVisible(false);
+  }
+
   const takeModalContent = (
     <View style={{ backgroundColor: "white", width: "80%", display: "flex", justifyContent: "center" }}>
-      <View style={{alignItems: "center"}}>
-        <Text style={{color: "#333333", fontSize: 20}}>{med}</Text>
+      <View style={{ alignItems: "center" }}>
+        <Text style={{ color: "#333333", fontSize: 20 }}>{med}</Text>
       </View>
-      
-      <Text>Date de prise : {formatDate(new Date(take.date)).day} {formatDate(new Date(take.date)).dayOfMonth} {formatDate(new Date(take.date)).month} {formatDate(new Date(take.date)).year}</Text>
-      <Text>{formatHour(new Date(take.date))}</Text>
+      <View style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 40 }}>
+      <View style={{ display: "flex", flexDirection: "row", justifyContent: "flex-start", alignItems: "flex-start", gap: 10 }}>
+          <Icon.BookOpen color="#333333" width={30} height={30} />
+          <Text style={{ fontSize: 17 }}>{treatmentDescription}</Text>
+        </View>
+        <View style={{ display: "flex", flexDirection: "row", justifyContent: "flex-start", alignItems: "center", gap: 10 }}>
+          <Icon.Calendar color="#333333" width={30} height={30} />
+          <Text style={{ fontSize: 17 }}>{formatDate(new Date(take.date)).day} {formatDate(new Date(take.date)).dayOfMonth} {formatDate(new Date(take.date)).month} {formatDate(new Date(take.date)).year}</Text>
+        </View>
+        <View style={{ display: "flex", flexDirection: "row", justifyContent: "flex-start", alignItems: "center", gap: 10 }}>
+          <Icon.Clock color="#333333" width={30} height={30} />
+          <Text style={{ fontSize: 17 }}>{formatHour(new Date(take.date))}</Text>
+        </View>
+        <View style={{ display: "flex", flexDirection: "column", justifyContent: "flex-start", alignItems: "flex-start", gap: 10 }}>
+          <TextInput
+          multiline
+          numberOfLines={10} 
+          value={newTxt}
+          onChangeText={(text) => setNewTxt(text)}
+          style={{ fontSize: 17, width: "100%", borderBottomColor: "#333333", borderWidth: 2, borderRadius: 10, padding: 5, textAlignVertical: "top" }}
+          placeholder={take.review === "" ? "Ajouter un review..." : take.review}
+          />
+        </View>
 
-      <TouchableOpacity onPress={() => setTakeDetailsModalVisible(false)}>
-        <Text>Close</Text>
+      </View>
+
+      <TouchableOpacity style={{ display: "flex", flexDirection: "row", justifyContent: "flex-end", alignItems: "center", marginTop: 40, backgroundColor: "#FF000080" }} onPress={() => setTakeDetailsModalVisible(false)}>
+        <Icon.X color="#333333" width={30} height={30} />
+        <Text style={{ fontSize: 17 }}>Fermer</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={{ display: "flex", flexDirection: "row", justifyContent: "flex-end", alignItems: "center", marginTop: 40, backgroundColor: "#9CDE00" }} onPress={(text) => handleReviewChange()}>
+        <Icon.X color="#FFFFFF" width={30} height={30} />
+        <Text style={{ fontSize: 17 }}>Valider</Text>
       </TouchableOpacity>
     </View>
   );
@@ -86,9 +122,9 @@ const Treatment = ({ onPress, status = "actual" as "actual" | "next" | "previous
     <SafeAreaView style={{ display: "flex", flexDirection: "row", justifyContent: "flex-start", gap: 10, maxHeight: "auto", marginBottom: 7, marginTop: 7, height: 320 }}>
       <View style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-start", width: "20%", gap: 50 }}>
         <View style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
-          <Text style={{ fontWeight: "800", fontSize: 20, color: status === "previous" ? "#BCBCBC" : status === "actual" ? "#9CDE00" : "#00000099" }}>{formatDate(date)[0]}</Text>
-          <Text style={{ fontWeight: "800", fontSize: 20, color: status === "previous" ? "#BCBCBC" : status === "actual" ? "#9CDE00" : "#00000099" }}>{formatDate(date)[1]}</Text>
-          <Text style={{ fontWeight: "800", fontSize: 20, color: status === "previous" ? "#BCBCBC" : status === "actual" ? "#9CDE00" : "#00000099" }}>{formatDate(date)[2]}</Text>
+          <Text style={{ fontWeight: "800", fontSize: 20, color: status === "previous" ? "#BCBCBC" : status === "actual" ? "#9CDE00" : "#00000099" }}>{formatDate(date).day}</Text>
+          <Text style={{ fontWeight: "800", fontSize: 20, color: status === "previous" ? "#BCBCBC" : status === "actual" ? "#9CDE00" : "#00000099" }}>{formatDate(date).dayOfMonth}</Text>
+          <Text style={{ fontWeight: "800", fontSize: 20, color: status === "previous" ? "#BCBCBC" : status === "actual" ? "#9CDE00" : "#00000099" }}>{formatDate(date).month}</Text>
         </View>
         {status !== "next" ? (
           <TouchableOpacity onPress={() => onTakePress(take)}>
@@ -188,7 +224,7 @@ const Treatment = ({ onPress, status = "actual" as "actual" | "next" | "previous
           padding: 20,
           maxHeight: "80%",
           width: "80%",
-      }}
+        }}
       />
     </SafeAreaView>
 
