@@ -123,7 +123,7 @@ export default function Suivis({ navigation }) {
 
     //console.log(actualIndex);
     if (actualIndex && actualIndex !== -1) {
-      const positionToScroll = 300 * actualIndex + 50;
+      const positionToScroll = 275 * actualIndex + 25;
       scrollViewRef.current.scrollTo({ y: positionToScroll, animated: true });
     }
     console.log("fin init");

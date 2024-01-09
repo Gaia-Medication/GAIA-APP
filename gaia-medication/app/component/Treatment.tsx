@@ -130,7 +130,7 @@ const Treatment = ({ onPress, status = "actual" as "actual" | "next" | "previous
           width: 15,
           height: 15,
           borderRadius: 100,
-          backgroundColor: status === "next"?"#FFFFFF":status === "previous"?"#BCBCBC":"#9CDE00",  
+          backgroundColor: status === "next"?"#FFFFFF":status === "previous"?"#BCBCBC90":"#9CDE00",  
           borderWidth: status !== "previous"?3:null,        
           borderColor:status !== "previous"? '#9CDE00':null 
         }}/>
@@ -138,18 +138,18 @@ const Treatment = ({ onPress, status = "actual" as "actual" | "next" | "previous
           width: 5,
           height: 230,
           borderRadius: 100,
-          backgroundColor: status === "previous"? '#BCBCBC':'#9CDE00',
+          backgroundColor: status === "previous"? '#BCBCBC90':'#9CDE00',
         }}/>
       </View>
       <TouchableOpacity style={{
         alignItems: "center",
         zIndex: 1,
         width: "70%",
-        backgroundColor: status === "previous" ? "#BCBCBC10" : "#9CDE0010",
+        backgroundColor: status === "actual" ? "#9CDE0010" : "#BCBCBC10",
         borderRadius: 17,
         borderStyle: "solid",
         borderWidth: 1,
-        borderColor: status === "previous" ? "#BCBCBC" : "#9CDE00",
+        borderColor: status === "actual" ? "#9CDE00" : "#BCBCBC90",
         padding: 15,
         height: "auto",
         opacity: status === "previous" ?0.5:null

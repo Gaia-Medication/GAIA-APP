@@ -12,7 +12,7 @@ import * as ImagePicker from "expo-image-picker";
 import callGoogleVisionAsync from "../../OCR/helperFunctions";
 import { styles } from "../../style/style";
 import AvatarButton from "../component/Avatar";
-import { getUserByID, readList } from "../../dao/Storage";
+import { getAllTreatments, getUserByID, initTreatments, readList } from "../../dao/Storage";
 import { Bell } from "react-native-feather";
 import { Button, Input } from "react-native-elements";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
@@ -25,7 +25,8 @@ import Loading from "../component/Loading";
 export default function Home({ navigation }) {
   const isFocused = useIsFocused();
   const [loading, setLoading] = useState(false);
-
+  const [treatments, setTreatments] = useState<Treatment[]>([]);
+  const [takes, setTakes] = useState([]);
   const [user, setUser] = useState<User | null>(null);
   const [users, setUsers] = useState<User[]>([]);
   const [header, setHeader] = useState(true);
@@ -33,6 +34,14 @@ export default function Home({ navigation }) {
   const init = async () => {
     const userList = await readList("users");
     setUsers(userList);
+    setTreatments(await getAllTreatments());
+    const takes = await initTreatments();
+    takes.sort((a, b) => {
+      const dateA = new Date(a.take.date);
+      const dateB = new Date(b.take.date);
+      return dateA.getTime() - dateB.getTime();
+    });
+    setTakes(takes);
     const currentId = await AsyncStorage.getItem("currentUser");
     if (userList.length < 1) {
       // L'utilisateur se connecte pour la première fois
@@ -154,6 +163,8 @@ export default function Home({ navigation }) {
           <View style={styles.traitementContainer}>
             <Text style={styles.title2}>Suivis d'un traitement</Text>
           </View>
+          <TouchableOpacity onPress={()=>navigation.navigate("Suivis")} style={styles.searchQR}>
+          </TouchableOpacity>
         </>
       )}
       {loading && <Loading />}
