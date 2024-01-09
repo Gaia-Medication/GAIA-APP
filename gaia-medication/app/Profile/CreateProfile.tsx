@@ -1,14 +1,21 @@
 import React, { useEffect, useState } from "react";
 import RNPickerSelect from "react-native-picker-select";
-import { Alert, Button, FlatList, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
-import DatePicker from "react-native-date-picker";
+import {
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { Input } from "react-native-elements";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Link, NavigationProp, ParamListBase } from "@react-navigation/native";
+import { NavigationProp, ParamListBase } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { UserIdAutoIncrement, addItemToList } from "../../dao/Storage";
-import { SearchAllergy, searchMed } from "../../dao/Search";
+import { SearchAllergy } from "../../dao/Search";
 import { styles } from "../../style/style";
+import CustomButton from "../component/CustomButton";
+import AllergySelector from "../component/AllergySelector";
 
 interface ICreateProps {
   navigation: NavigationProp<ParamListBase>;
@@ -20,12 +27,17 @@ export default function CreateProfile({ navigation }: ICreateProps) {
   const [age, setAge] = useState<number>();
   const [weight, setWeight] = useState<number>();
   const [gender, setGender] = useState("");
-  const [searchAllergy, setSearchAllergy] = useState([]);
   const [preference, setPreference] = useState([]);
+
   const [isValidFirstname, setIsValidFirstname] = useState(true);
   const [isValidLastname, setIsValidLastname] = useState(true);
   const [isValidAge, setIsValidAge] = useState(true);
   const [isValidWeight, setIsValidWeight] = useState(true);
+
+  const [validFirstPart, setValidFirstPart] = useState(false);
+  const [isAllergySelectorValid, setIsAllergySelectorValid] = useState(false);
+
+  const isFirstFormEmpty = !firstname || !lastname || !gender;
 
   const isFormEmpty =
     !firstname ||
@@ -60,6 +72,10 @@ export default function CreateProfile({ navigation }: ICreateProps) {
     }
   };
 
+  const handleAllergySelectorValidation = (isValid) => {
+    setIsAllergySelectorValid(isValid);
+  };
+
   useEffect(() => {
     console.log("Nav on CreationProfile Page");
 
@@ -82,6 +98,18 @@ export default function CreateProfile({ navigation }: ICreateProps) {
       );
     });*/
   }, []);
+
+  const handleFirstSumbit = () => {
+    if (validFirstPart) {
+      setValidFirstPart(false);
+    } else {
+      if (!isValidFirstname || !isValidLastname || isFirstFormEmpty) {
+        console.log(`error not valid`);
+      } else {
+        setValidFirstPart(true);
+      }
+    }
+  };
 
   const handleSumbit = async () => {
     if (!isValidFirstname || !isValidLastname || isFormEmpty) {
@@ -110,139 +138,177 @@ export default function CreateProfile({ navigation }: ICreateProps) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Input
-        label="Prenom"
-        placeholder="Entrez votre prenom"
-        onChangeText={(text) =>
-          setFirstname(text.charAt(0).toUpperCase() + text.slice(1))
-        }
-        onBlur={validateFirstname}
-        value={firstname}
-        renderErrorMessage={isValidFirstname}
-      />
-      {!isValidFirstname && (
-        <Text style={stylesProfile.errorText}>
-          Le prénom doit comporter au moins 1 caractères.
-        </Text>
+      {!validFirstPart && (
+        <>
+          <Input
+            label="Prénom"
+            labelStyle={styles.label}
+            placeholder="Entrez votre prenom"
+            placeholderTextColor={"#dedede"}
+            onChangeText={(text) =>
+              setFirstname(text.charAt(0).toUpperCase() + text.slice(1))
+            }
+            onBlur={validateFirstname}
+            value={firstname}
+            renderErrorMessage={isValidFirstname}
+          />
+          {!isValidFirstname && (
+            <Text style={stylesProfile.errorText}>
+              Le prénom doit comporter au moins 1 caractères.
+            </Text>
+          )}
+
+          <Input
+            label="Nom"
+            labelStyle={styles.label}
+            placeholder="Entrez votre nom"
+            placeholderTextColor={"#dedede"}
+            onChangeText={(text) =>
+              setLastname(text.charAt(0).toUpperCase() + text.slice(1))
+            }
+            onBlur={validateLastname}
+            value={lastname}
+            renderErrorMessage={isValidLastname}
+          />
+          {!isValidLastname && (
+            <Text style={stylesProfile.errorText}>
+              Le nom doit comporter au moins 1 caractères.
+            </Text>
+          )}
+
+          <Text
+            style={{
+              color: "#888888",
+              fontWeight: "400",
+              paddingLeft: 10,
+              fontSize: 16,
+            }}
+          >
+            Genre
+          </Text>
+          <RNPickerSelect
+            placeholder={{ label: "Sélectionner le genre", value: "" }}
+            onValueChange={(value) => setGender(value)}
+            value={gender}
+            items={[
+              { label: "Masculin", value: "male" },
+              { label: "Feminin", value: "female" },
+              { label: "Autre", value: "other" },
+            ]}
+          />
+          <View className=" flex justify-center items-center">
+            <CustomButton
+              title="Suivant"
+              onPress={handleFirstSumbit}
+              disabled={isFirstFormEmpty}
+              color={"#9CDE00"}
+            />
+          </View>
+        </>
       )}
 
-      <Input
-        label="Nom"
-        placeholder="Entrez votre nom"
-        onChangeText={(text) =>
-          setLastname(text.charAt(0).toUpperCase() + text.slice(1))
-        }
-        onBlur={validateLastname}
-        value={lastname}
-        renderErrorMessage={isValidLastname}
-      />
-      {!isValidLastname && (
-        <Text style={stylesProfile.errorText}>
-          Le nom doit comporter au moins 1 caractères.
-        </Text>
-      )}
-      
-      <Text>Genre</Text>
-      <RNPickerSelect
-        placeholder={{ label: "Sélectionner le genre", value: "" }}
-        onValueChange={(value) => setGender(value)}
-        items={[
-          { label: "Masculin", value: "male" },
-          { label: "Feminin", value: "female" },
-          { label: "Autre", value: "other" },
-        ]}
-      />
+      {validFirstPart && (
+        <>
+          {!isAllergySelectorValid && (
+            <>
+              <Text className=" m-4 text-gray-300 text-lg">
+                {firstname} {lastname}
+              </Text>
+              <Input
+                label="Âge"
+                labelStyle={styles.label}
+                placeholder="Votre Âge"
+                placeholderTextColor={"#dedede"}
+                onChangeText={(text) => setAge(parseInt(text))}
+                onBlur={validateAge}
+                value={age ? age.toString() : ""}
+                maxLength={3}
+                renderErrorMessage={isValidAge}
+                keyboardType="numeric"
+              ></Input>
+              {!isValidAge && (
+                <Text style={stylesProfile.errorText}>
+                  L'âge doit être contenu entre 1 et 125 ans.
+                </Text>
+              )}
 
-      <Input
-        label="Âge"
-        placeholder="Votre Âge"
-        onChangeText={(text) => setAge(parseInt(text))}
-        onBlur={validateAge}
-        value={age ? age.toString() : ""}
-        maxLength={3}
-        renderErrorMessage={isValidAge}
-        keyboardType="numeric"
-      ></Input>
-      {!isValidAge && (
-        <Text style={stylesProfile.errorText}>
-          L'âge doit être contenu entre 1 et 125 ans.
-        </Text>
-      )}
+              <Input
+                label="Poids (kg)"
+                labelStyle={styles.label}
+                placeholder="Votre poids en kg"
+                placeholderTextColor={"#dedede"}
+                onChangeText={(text) => setWeight(parseInt(text))}
+                onBlur={validateWeight}
+                value={weight ? weight.toString() : ""}
+                maxLength={4}
+                renderErrorMessage={isValidWeight}
+                keyboardType="numeric"
+              ></Input>
+              {!isValidWeight && (
+                <Text style={stylesProfile.errorText}>
+                  Le poids doit être contenu entre 1 et 999kg.
+                </Text>
+              )}
 
-      <Input
-        label="Poids (kg)"
-        placeholder="Votre poids en kg"
-        onChangeText={(text) => setWeight(parseInt(text))}
-        onBlur={validateWeight}
-        value={weight ? weight.toString() : ""}
-        maxLength={4}
-        renderErrorMessage={isValidWeight}
-        keyboardType="numeric"
-      ></Input>
-      {!isValidWeight && (
-        <Text style={stylesProfile.errorText}>
-          Le poids doit être contenu entre 1 et 999kg.
-        </Text>
-      )}
-
-      {/*<Input
+              {/*<Input
         label="Preference/Allergies"
         placeholder="Preference/Allergies"
         leftIcon={{ type: "font-awesome", name: "heart" }}
         onChangeText={(text) => setPreference(text)}
         value={preference}
       />*/}
-      
-      <Input
-        label="Allergies medicamenteuses"
-        placeholder="Rechercher"
-        onChangeText={(text) => {
-          const newSearch=SearchAllergy(text)
-          console.log(newSearch)
-          setSearchAllergy(newSearch)
-        }}
-        />
-        
-      <FlatList
-      data={searchAllergy}
-      keyExtractor={(_item, index) => index.toString()}
-      renderItem={({ item }) => (
-        <TouchableOpacity
-          style={styles.listItem}
-          className="flex justify-start align-middle"
-          onPress={() => {
-            if (preference.includes(item.Name)) {
-              // Si l'élément est déjà dans preference, supprimez-le
-              const updatedPreference = preference.filter((itemr) => itemr !== item.Name);
-              setPreference(updatedPreference);
-              console.log("Elément retiré de la préférence");
-            } else {
-              // Si l'élément n'est pas dans preference, ajoutez-le
-              const updatedPreference = [...preference, item.Name];
-              setPreference(updatedPreference);
-              console.log("Elément ajouté à la préférence");
-            }
-          }}
-        >
-          <Text className="ml-4">{item.Name}</Text>
-        </TouchableOpacity>
-      )}
-    />
-    
-    <FlatList
-      data={preference}
-      keyExtractor={(_item, index) => index.toString()}
-      renderItem={({ item }) => (
-          <Text>{item}</Text>
-      )}
-    />
 
+              <TouchableOpacity
+                onPress={() => {
+                  setIsAllergySelectorValid(true);
+                }}
+              >
+                <View className="flex items-center">
+                  <Text className="text-lime-400 text-center font-semibold bg-lime-100 rounded-lg w-[80%] p-1 ">
+                    Choisir vos allergies médicamenteuses
+                  </Text>
+                </View>
+              </TouchableOpacity>
 
-      <Button
-        title="Enregistrer le profil"
-        onPress={handleSumbit}
-        disabled={isFormEmpty}
-      />
+              <FlatList
+                className=" m-3 min-h-[40px] max-h-[40px]"
+                horizontal={true}
+                data={preference}
+                keyExtractor={(_item, index) => index.toString()}
+                renderItem={({ item }) => (
+                  <View className=" bg-blue-200 m-1 p-1 rounded-lg flex flex-row justify-center align-middle">
+                    <Text className=" text-blue-500">{item}</Text>
+                  </View>
+                )}
+              />
+
+              <View className=" flex items-center justify-center mt-auto mb-2">
+                <View className=" scale-75 w-max ">
+                  <CustomButton
+                    title="Retour"
+                    onPress={handleFirstSumbit}
+                    disabled={false}
+                    color={"#dddddd"}
+                  />
+                </View>
+                <CustomButton
+                  title="Enregistrer le profil"
+                  onPress={handleSumbit}
+                  disabled={isFormEmpty}
+                  color={"#9CDE00"}
+                />
+              </View>
+            </>
+          )}
+          {isAllergySelectorValid && (
+            <AllergySelector
+              isAllergySelectorValid={handleAllergySelectorValidation}
+              preference={preference}
+              onPreferenceChange={setPreference}
+            ></AllergySelector>
+          )}
+        </>
+      )}
     </SafeAreaView>
   );
 }
