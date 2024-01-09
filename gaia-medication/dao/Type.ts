@@ -43,7 +43,8 @@ type Take = {
   CIS: number,
   date: Date,
   quantity: number,
-  taken: boolean
+  taken: boolean,
+  review: string,
 };
 
 type Stock = {

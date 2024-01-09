@@ -11,11 +11,12 @@ import {
 } from "react-native";
 import * as Icon from "react-native-feather";
 import { getAllMed } from "../../dao/Meds";
-import { getAllTreatments, getTreatmentByName, initTreatments } from "../../dao/Storage";
+import { addItemToList, getAllTreatments, getTreatmentByName, initTreatments } from "../../dao/Storage";
 import { styles } from "../../style/style";
 import Treatment from "../component/Treatment";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Suivis({ navigation }) {
   const isFocused = useIsFocused();
@@ -25,15 +26,36 @@ export default function Suivis({ navigation }) {
   const [isLoading, setIsLoading] = useState(true);
   const scrollViewRef = useRef(null);
 
+  const changeTreatments = async (tak: Take) => {
+    treatments.forEach((treatment) => {
+      if (treatment.name === tak.treatmentName) {
+        treatment.instructions.forEach((instruction) => {
+          if (Number(instruction.CIS) === tak.CIS) {
+            instruction.takes.forEach((take) => {
+              if (take.date === tak.date) {
+                take.taken = !take.taken;
+              }
+            });
+          }
+        })
+      }
+    });
+    setTreatments(treatments);
+    AsyncStorage.setItem('treatments', JSON.stringify(treatments));
+  }
+
+
   const toggleTakeTaken = (tak: Take) => {
     let takesUpdate = [...takes];
     takesUpdate.forEach((take) => {
-      if (take.date === tak.date && take.treatmentName === tak.treatmentName) {
-        take.taken = !take.taken;
+      if (take.take.date === tak.date && take.treatmentName === tak.treatmentName) {
+        take.take.taken = !take.take.taken;
       }
     });
     setTakes(takesUpdate);
+    changeTreatments(tak);
   };
+
 
   function compareDates(targetDate, currentDate = new Date()): "previous" | "actual" | "next" {
     // Set the time to midnight for both dates
@@ -83,9 +105,11 @@ export default function Suivis({ navigation }) {
     await getTreatments();
     await getTakes();
     setIsLoading(false);
+    let actualIndex =null
 
-    const actualIndex = takes.findIndex(take => compareDates(take.take.date) === 'actual');
+    takes.length !== 0 ? takes.findIndex(take => compareDates(take.take.date) === 'actual')? actualIndex = takes.findIndex(take => compareDates(take.take.date) === 'actual') : actualIndex = takes.findIndex(take => compareDates(take.take.date) === 'previous') : null;
 
+    console.log(actualIndex);
     if (actualIndex && actualIndex !== -1) {
       const positionToScroll = 334 * actualIndex + 50;
       scrollViewRef.current.scrollTo({ y: positionToScroll, animated: true });
