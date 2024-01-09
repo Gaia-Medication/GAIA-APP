@@ -65,7 +65,7 @@ const Treatment = ({ onPress, status = "actual" as "actual" | "next" | "previous
   }, []);
 
   return (
-    <SafeAreaView style={{ display: "flex", flexDirection: "row", justifyContent: "flex-start", gap: 10, maxHeight: "auto", marginBottom: 7, marginTop: 7, height: 320 }}>
+    <SafeAreaView style={{ display: "flex", flexDirection: "row", justifyContent: "flex-start", gap: 10, maxHeight: "auto", marginBottom: 7, marginTop: 7, }}>
       <View style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-start", width: "20%", gap: 50 }}>
         <View style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
           <Text style={{ fontWeight: "800", fontSize: 20, color: status === "previous" ? "#BCBCBC" : status === "actual" ? "#9CDE00" : "#00000099" }}>{formatDate(date)[0]}</Text>
@@ -82,7 +82,7 @@ const Treatment = ({ onPress, status = "actual" as "actual" | "next" | "previous
         ):null}
       </View>
 
-      <View style={{ display: "flex", flexDirection: "column", gap: 15, alignItems: "center" }}>
+      <View style={{ display: "flex", flexDirection: "column", gap: 15, alignItems: "center"}} className=" flex-1">
         <View style={{
           width: 15,
           height: 15,

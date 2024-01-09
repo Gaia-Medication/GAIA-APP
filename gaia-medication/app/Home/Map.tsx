@@ -137,7 +137,7 @@ export default function Map() {
         }
         customMapStyle={standardMapType}
         toolbarEnabled={false}
-        //showsUserLocation={currentLocation}
+        showsUserLocation={currentLocation!=null}
       >
         {points &&
           points.map((point) => {

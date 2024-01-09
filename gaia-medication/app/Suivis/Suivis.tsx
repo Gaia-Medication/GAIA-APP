@@ -17,6 +17,7 @@ import Treatment from "../component/Treatment";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { BlurView } from "expo-blur";
 
 export default function Suivis({ navigation }) {
   const isFocused = useIsFocused();
@@ -114,13 +115,12 @@ export default function Suivis({ navigation }) {
       const positionToScroll = 334 * actualIndex + 50;
       scrollViewRef.current.scrollTo({ y: positionToScroll, animated: true });
     }
-
   };
 
   useEffect(() => {
     if (isFocused) {
       console.log("Nav on Suivis Page");
-      setIsLoading(true);
+      //setIsLoading(true);
 
       init();
     }
@@ -129,18 +129,29 @@ export default function Suivis({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       {isLoading ? (
-        <View style={styles.loadingContainer}>
+    <BlurView
+      intensity={20}
+      style={{
+        position: "absolute",
+        display: "flex",
+        justifyContent: "center",
+        height: "100%",
+        width: "100%",
+        flex: 1,
+        zIndex:10
+      }}
+      className="px-0"
+    >
         <Image
           className=" object-cover h-24 w-48 self-center"
           source={require("../../assets/logo_title_gaia.png")}
         />
         <ActivityIndicator size={40} color="#9CDE00" />
-        <Text style={{ color: "#9CDE00", fontSize: 20, marginTop: 50 }}>Récupération des traitements...</Text>
-      </View>
+        <Text style={{ color: "#9CDE00", fontSize: 20, marginTop: 50, textAlign:'center' }}>Récupération des traitements...</Text>
+      </BlurView>
       ): null}
       {takes && takes.length !== 0 ? (
         <View className=" flex border-1 p-5">
-          <Text className=" text-[#363636] text-lg">À venir...</Text>
           <TouchableOpacity
             className=" flex flex-row items-center gap-3 justify-end"
             onPress={() => navigation.navigate("AddTreatment")}
