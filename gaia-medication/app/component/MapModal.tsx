@@ -35,13 +35,6 @@ const MapModalComponent = ({ visible, onClose, children, icon, color }) => {
           }}>
           <Image source={icon} style={{ width: 50, height: 50, position: "absolute", top: -25, left: 25 }} />
             {children}
-            <TouchableOpacity onPress={onClose} style={{
-              backgroundColor: 'rgba(200, 0, 0, 0.4)' , 
-              borderRadius: 10,
-              width: "50%"
-            }}>
-              <Text style={{ margin: 10, textAlign: 'center', color: 'red', fontWeight: "bold", textAlignVertical: "center" }}>Fermer</Text>
-            </TouchableOpacity>
           </View>
         </View>
 

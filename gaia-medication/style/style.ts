@@ -9,7 +9,6 @@ export const styles = StyleSheet.create({
     width: "100%",
     backgroundColor: "#fff",
     flex: 1,
-    gap: 20,
   },
   header: {
     width: "100%",

@@ -169,3 +169,26 @@ export const getTreatmentByName = async (name: string, userId: number): Promise<
   const treatment = allTreatments.find(treatment => treatment.name === name);
   return treatment || null;
 }
+
+async function mongoToApp() {
+  try {
+    const mongoUrl = 'mongodb://root@172.26.82.44:27777/?readPreference=primary&serverSelectionTimeoutMS=5000&connectTimeoutMS=10000&authSource=test&authMechanism=SCRAM-SHA-256&3t.uriVersion=3&3t.connection.name=GAIA&3t.ssh=true&3t.sshAddress=172.26.82.25&3t.sshPort=22&3t.sshAuthMode=password&3t.sshUser=s5a06a&3t.alwaysShowAuthDB=true&3t.alwaysShowDBFromUserRole=true';
+    const { MongoClient } = require('mongodb');
+    const fs = require('fs');
+    const client = new MongoClient(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true });
+    await client.connect();
+
+    const database = client.db('dbMedication');
+    const collection = database.collection('medication');
+
+    const data = await collection.find({}).toArray();
+
+    fs.writeFileSync('medication.json', JSON.stringify(data, null, 2));
+
+    console.log('Conversion réussie : medication.json créé.');
+
+    await client.close();
+  } catch (error) {
+    console.error('Erreur lors de la conversion :', error);
+  }
+}
