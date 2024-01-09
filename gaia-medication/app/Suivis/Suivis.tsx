@@ -17,6 +17,8 @@ import Treatment from "../component/Treatment";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import ModalComponent from "../component/Modal";
+import { Modal } from "react-native-paper";
 
 export default function Suivis({ navigation }) {
   const isFocused = useIsFocused();
@@ -78,11 +80,11 @@ export default function Suivis({ navigation }) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     return takes.length === 0 ? false :
-    takes.some((take: {take: Take, tre: Treatment}) => {
-      const currentDate = new Date(take.take.date);
-      currentDate.setHours(0, 0, 0, 0);
-      return currentDate.getTime() === today.getTime();
-    });
+      takes.some((take: { take: Take, tre: Treatment }) => {
+        const currentDate = new Date(take.take.date);
+        currentDate.setHours(0, 0, 0, 0);
+        return currentDate.getTime() === today.getTime();
+      });
   };
 
   async function getTreatments() {
@@ -105,9 +107,9 @@ export default function Suivis({ navigation }) {
     await getTreatments();
     await getTakes();
     setIsLoading(false);
-    let actualIndex =null
+    let actualIndex = null
 
-    takes.length !== 0 ? takes.findIndex(take => compareDates(take.take.date) === 'actual')? actualIndex = takes.findIndex(take => compareDates(take.take.date) === 'actual') : actualIndex = takes.findIndex(take => compareDates(take.take.date) === 'previous') : null;
+    takes.length !== 0 ? takes.findIndex(take => compareDates(take.take.date) === 'actual') ? actualIndex = takes.findIndex(take => compareDates(take.take.date) === 'actual') : actualIndex = takes.findIndex(take => compareDates(take.take.date) === 'previous') : null;
 
     console.log(actualIndex);
     if (actualIndex && actualIndex !== -1) {
@@ -130,14 +132,14 @@ export default function Suivis({ navigation }) {
     <SafeAreaView style={styles.container}>
       {isLoading ? (
         <View style={styles.loadingContainer}>
-        <Image
-          className=" object-cover h-24 w-48 self-center"
-          source={require("../../assets/logo_title_gaia.png")}
-        />
-        <ActivityIndicator size={40} color="#9CDE00" />
-        <Text style={{ color: "#9CDE00", fontSize: 20, marginTop: 50 }}>Récupération des traitements...</Text>
-      </View>
-      ): null}
+          <Image
+            className=" object-cover h-24 w-48 self-center"
+            source={require("../../assets/logo_title_gaia.png")}
+          />
+          <ActivityIndicator size={40} color="#9CDE00" />
+          <Text style={{ color: "#9CDE00", fontSize: 20, marginTop: 50 }}>Récupération des traitements...</Text>
+        </View>
+      ) : null}
       {takes && takes.length !== 0 ? (
         <View className=" flex border-1 p-5">
           <Text className=" text-[#363636] text-lg">À venir...</Text>
@@ -159,16 +161,19 @@ export default function Suivis({ navigation }) {
           <ScrollView ref={scrollViewRef}>
             <View style={{ paddingBottom: 200, paddingTop: 50 }}>
               {takes && takes.map((take, index) => (
-                <Treatment
-                  key={index}
-                  onPress={null}
-                  status={compareDates(take.take.date)}
-                  take={take.take}
-                  treatmentName={take.treatmentName}
-                  treatmentDescription={take.treatmentDescription}
-                  med={take.med}
-                  onTakePress={toggleTakeTaken}
-                />
+                <View key={index}>
+                  <Treatment
+                    key={index}
+                    onPress={null}
+                    status={compareDates(take.take.date)}
+                    take={take.take}
+                    treatmentName={take.treatmentName}
+                    treatmentDescription={take.treatmentDescription}
+                    med={take.med}
+                    onTakePress={toggleTakeTaken}
+                  />
+
+                </View>
               ))}
             </View>
           </ScrollView>

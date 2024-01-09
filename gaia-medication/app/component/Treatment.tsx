@@ -14,6 +14,7 @@ import { styles } from "../../style/style";
 import { getTreatmentByName } from "../../dao/Storage";
 import * as Icon from "react-native-feather";
 import { SafeAreaView } from "react-native-safe-area-context";
+import ModalComponent from "./Modal";
 
 const Treatment = ({ onPress, status = "actual" as "actual" | "next" | "previous", take, treatmentName, treatmentDescription, med, onTakePress }) => {
   const [expanded, setExpanded] = useState(false);
@@ -22,6 +23,7 @@ const Treatment = ({ onPress, status = "actual" as "actual" | "next" | "previous
   const isStateValid = validStates.includes(status);
   const [bgColor, setBgColor] = useState("#9CDE00");
   const [date, setDate] = useState<Date>(new Date());
+  const [takeDetailsModalVisible, setTakeDetailsModalVisible] = useState(false);
 
 
   const init = () => {
@@ -56,9 +58,25 @@ const Treatment = ({ onPress, status = "actual" as "actual" | "next" | "previous
     let dayOfWeek = days[date.getDay()];
     let dayOfMonth = date.getDate();
     let month = months[date.getMonth()];
+    let year = months[date.getFullYear()];
 
-    return [dayOfWeek, dayOfMonth, month];
+    return { day: dayOfWeek, dayOfMonth: dayOfMonth, month: month, year: year };
   };
+
+  const takeModalContent = (
+    <View style={{ backgroundColor: "white", width: "80%", display: "flex", justifyContent: "center" }}>
+      <View style={{alignItems: "center"}}>
+        <Text style={{color: "#333333", fontSize: 20}}>{med}</Text>
+      </View>
+      
+      <Text>Date de prise : {formatDate(new Date(take.date)).day} {formatDate(new Date(take.date)).dayOfMonth} {formatDate(new Date(take.date)).month} {formatDate(new Date(take.date)).year}</Text>
+      <Text>{formatHour(new Date(take.date))}</Text>
+
+      <TouchableOpacity onPress={() => setTakeDetailsModalVisible(false)}>
+        <Text>Close</Text>
+      </TouchableOpacity>
+    </View>
+  );
 
   useEffect(() => {
     init();
@@ -72,14 +90,14 @@ const Treatment = ({ onPress, status = "actual" as "actual" | "next" | "previous
           <Text style={{ fontWeight: "800", fontSize: 20, color: status === "previous" ? "#BCBCBC" : status === "actual" ? "#9CDE00" : "#00000099" }}>{formatDate(date)[1]}</Text>
           <Text style={{ fontWeight: "800", fontSize: 20, color: status === "previous" ? "#BCBCBC" : status === "actual" ? "#9CDE00" : "#00000099" }}>{formatDate(date)[2]}</Text>
         </View>
-        { status !== "next" ? (
-        <TouchableOpacity onPress={() => onTakePress(take)}>
-          <View style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "20%", backgroundColor: take.taken ? (status === "previous" ? "#CCCCCC" : "#9CDE0030") : (status === "actual" ? "#FF000030" : "#CCCCCC"), padding: 10, borderRadius: 50 }}>
-            { take.taken ? <Icon.CheckCircle color={status === "actual" ? "#9CDE00" : "grey"} width={30} height={30} /> : <Icon.AlertCircle  color={status === "actual" ? "#FF0000" : "#666666"} width={30} height={30} /> }
-            
-          </View>
-        </TouchableOpacity>
-        ):null}
+        {status !== "next" ? (
+          <TouchableOpacity onPress={() => onTakePress(take)}>
+            <View style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "20%", backgroundColor: take.taken ? (status === "previous" ? "#CCCCCC" : "#9CDE0030") : (status === "actual" ? "#FF000030" : "#CCCCCC"), padding: 10, borderRadius: 50 }}>
+              {take.taken ? <Icon.CheckCircle color={status === "actual" ? "#9CDE00" : "grey"} width={30} height={30} /> : <Icon.AlertCircle color={status === "actual" ? "#FF0000" : "#666666"} width={30} height={30} />}
+
+            </View>
+          </TouchableOpacity>
+        ) : null}
       </View>
 
       <View style={{ display: "flex", flexDirection: "column", gap: 15, alignItems: "center" }}>
@@ -96,7 +114,7 @@ const Treatment = ({ onPress, status = "actual" as "actual" | "next" | "previous
           backgroundColor: bgColor.length == 9 ? bgColor.slice(0, -2) : bgColor,
         }}></View>
       </View>
-      <View style={{
+      <TouchableOpacity style={{
         alignItems: "center",
         zIndex: 1,
         width: "70%",
@@ -107,7 +125,9 @@ const Treatment = ({ onPress, status = "actual" as "actual" | "next" | "previous
         borderColor: bgColor.length == 9 ? bgColor.slice(0, -2) : bgColor,
         padding: 15,
         height: "auto",
-      }}>
+      }}
+        onPress={() => setTakeDetailsModalVisible(true)}
+      >
         <View style={{ width: "100%", alignItems: "center", flexDirection: "row", justifyContent: "space-between", margin: 10 }}>
           <View style={{
             backgroundColor: status === "previous" ? "#BCBCBC40" : "#9CDE00",
@@ -137,27 +157,39 @@ const Treatment = ({ onPress, status = "actual" as "actual" | "next" | "previous
           </View>
 
         </View>
-        { status !== "next" ? (
-        <View>
-          <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
-            {take.taken ? (
-              <View style={{ display: "flex", flexDirection: "row", justifyContent: "center", gap: 5, alignItems: "center", paddingVertical: 3 }}>
-                <Icon.CheckCircle color="#9CDE00" width={22} height={22} />
-                <Text style={{ color: status === "previous" ? "#9CDE00" : "black", fontWeight: "bold" }}>Pris</Text>
-              </View>
+        {status !== "next" ? (
+          <View>
+            <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
+              {take.taken ? (
+                <View style={{ display: "flex", flexDirection: "row", justifyContent: "center", gap: 5, alignItems: "center", paddingVertical: 3 }}>
+                  <Icon.CheckCircle color="#9CDE00" width={22} height={22} />
+                  <Text style={{ color: status === "previous" ? "#9CDE00" : "black", fontWeight: "bold" }}>Pris</Text>
+                </View>
 
-            ) : (
-              <View style={{ display: "flex", flexDirection: "row", justifyContent: "center", gap: 5, alignItems: "center", paddingVertical: 3, }}>
-                <Icon.AlertCircle color={status === "previous" ? "#333333" : "#FF000090"} width={22} height={22} />
-                <Text style={{ color: status === "previous" ? "#333333" : "#FF000090", fontWeight: "bold" }}>Non pris</Text>
-              </View>
+              ) : (
+                <View style={{ display: "flex", flexDirection: "row", justifyContent: "center", gap: 5, alignItems: "center", paddingVertical: 3, }}>
+                  <Icon.AlertCircle color={status === "previous" ? "#333333" : "#FF000090"} width={22} height={22} />
+                  <Text style={{ color: status === "previous" ? "#333333" : "#FF000090", fontWeight: "bold" }}>Non pris</Text>
+                </View>
 
-            )}
+              )}
+            </View>
           </View>
-        </View>
-        ):null}
+        ) : null}
 
-      </View>
+      </TouchableOpacity>
+      <ModalComponent
+        visible={takeDetailsModalVisible}
+        onClose={null}
+        children={takeModalContent}
+        styleAdded={{
+          backgroundColor: "white",
+          borderRadius: 10,
+          padding: 20,
+          maxHeight: "80%",
+          width: "80%",
+      }}
+      />
     </SafeAreaView>
 
   );
