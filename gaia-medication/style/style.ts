@@ -200,5 +200,13 @@ export const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginVertical: 10,
   },
+  loadingContainer: {
+    backgroundColor: "#fff",
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: "100%",
+    width: "100%",
+  },
 
 });

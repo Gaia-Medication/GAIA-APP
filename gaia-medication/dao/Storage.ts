@@ -150,11 +150,14 @@ export const initTreatments = async () => {
   let takesArray = [];
 
   allTreatments ? allTreatments.forEach((treatment) => {
-    console.log(treatment.name)
     treatment ? treatment.instructions.forEach((instr) => {
       instr.takes.forEach((take) => {
-        console.log("take => ", take)
-        takesArray.push(take)
+        takesArray.push({
+          take: take,
+          treatmentName: treatment.name,
+          treatmentDescription: treatment.description,
+          med: instr.name,
+        })
       });
     }) : null;
   }) : new Error("No treatments found");

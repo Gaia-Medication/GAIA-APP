@@ -1,105 +1,126 @@
 import { useIsFocused } from "@react-navigation/native";
 import React, { useEffect, useState, useRef } from "react";
-import { Text, TouchableOpacity, View, ScrollView, Image } from "react-native";
+import {
+  Text,
+  TouchableOpacity,
+  View,
+  ScrollView,
+  Image,
+  ActivityIndicator,
+  FlatList
+} from "react-native";
 import * as Icon from "react-native-feather";
 import { getAllMed } from "../../dao/Meds";
-import {
-  getAllTreatments,
-  getTreatmentByName,
-  initTreatments,
-} from "../../dao/Storage";
+import { addItemToList, getAllTreatments, getTreatmentByName, initTreatments } from "../../dao/Storage";
 import { styles } from "../../style/style";
 import Treatment from "../component/Treatment";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Suivis({ navigation }) {
   const isFocused = useIsFocused();
-  const [allMeds, setAllMeds] = useState([]);
   const [treatments, setTreatments] = useState<Treatment[]>([]);
-  const [datesDict, setDatesDict] = useState({});
-  const [datesKeys, setDatesKeys] = useState([]);
   const [takes, setTakes] = useState([]);
-  const [showAll, setShowAll] = useState(false);
-  const [treatment, setTreatment] = useState<Treatment>(null);
   const [isToday, setIsToday] = useState(false);
-
+  const [isLoading, setIsLoading] = useState(true);
   const scrollViewRef = useRef(null);
+
+  const changeTreatments = async (tak: Take) => {
+    treatments.forEach((treatment) => {
+      if (treatment.name === tak.treatmentName) {
+        treatment.instructions.forEach((instruction) => {
+          if (Number(instruction.CIS) === tak.CIS) {
+            instruction.takes.forEach((take) => {
+              if (take.date === tak.date) {
+                take.taken = !take.taken;
+              }
+            });
+          }
+        })
+      }
+    });
+    setTreatments(treatments);
+    AsyncStorage.setItem('treatments', JSON.stringify(treatments));
+  }
+
 
   const toggleTakeTaken = (tak: Take) => {
     let takesUpdate = [...takes];
     takesUpdate.forEach((take) => {
-      if (take.date === tak.date && take.treatmentName === tak.treatmentName) {
-        take.taken = !take.taken;
-        console.log("take", take);
+      if (take.take.date === tak.date && take.treatmentName === tak.treatmentName) {
+        take.take.taken = !take.take.taken;
       }
     });
     setTakes(takesUpdate);
+    changeTreatments(tak);
   };
 
-  function compareDates(date): "actual" | "next" | "previous" {
-    const now = new Date();
-    const dateObj = new Date(date);
-    
-    now.setHours(0, 0, 0, 0);
+
+  function compareDates(targetDate, currentDate = new Date()): "previous" | "actual" | "next" {
+    // Set the time to midnight for both dates
+    currentDate.setHours(0, 0, 0, 0);
+    const dateObj = new Date(targetDate);
     dateObj.setHours(0, 0, 0, 0);
-    if (now.getTime() > dateObj.getTime()) {
-      console.log(date, "previous")
-      return "previous"; // SI LA DATE EST PASSEE
-    }
-    if (now.getTime() === dateObj.getTime()) {
-      console.log(date, "actual")
-      return "actual"; // SI LA DATE EST LA MEME
-    }  else {
-      console.log(date, "next")
-      return "next"; // SI LA DATE EST FUTURE
+
+    // Compare using ISO date strings
+    if (dateObj.toISOString() < currentDate.toISOString()) {
+      return "previous";
+    } else if (dateObj.toISOString() === currentDate.toISOString()) {
+      return "actual";
+    } else {
+      return "next";
     }
   }
 
-  const isTodayInDates = (takes: Take[]): boolean => {
+  const isTodayInDates = (takes: any[]): boolean => {
     if (takes.length === 0) return false;
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    return takes.some((take) => {
-      const currentDate = new Date(take.date);
+    return takes.length === 0 ? false :
+    takes.some((take: {take: Take, tre: Treatment}) => {
+      const currentDate = new Date(take.take.date);
       currentDate.setHours(0, 0, 0, 0);
       return currentDate.getTime() === today.getTime();
     });
   };
 
+  async function getTreatments() {
+    const treatments = await getAllTreatments();
+    setTreatments(treatments);
+  }
+
+  async function getTakes() {
+    const takes = await initTreatments();
+    takes.sort((a, b) => {
+      const dateA = new Date(a.take.date);
+      const dateB = new Date(b.take.date);
+      return dateA.getTime() - dateB.getTime();
+    })
+    setTakes(takes);
+    setIsToday(isTodayInDates(takes));
+  }
+
   const init = async () => {
-    setShowAll(false);
-    initTreatments().then((treatments) => {
-      treatments.sort((a, b) => {
-        const dateA = new Date(a.date);
-        const dateB = new Date(b.date);
-        return dateA.getTime() - dateB.getTime();
-      });
-      setTakes(treatments);
-      setIsToday(isTodayInDates(takes));
-      console.log("isToday", isToday);
-    });
-    getAllTreatments().then((treatments) => {
-      setTreatments(treatments);
-    });
-    console.log("takes", takes);
+    await getTreatments();
+    await getTakes();
+    setIsLoading(false);
+    let actualIndex =null
 
-    const actualIndex = takes.findIndex(
-      (take) => compareDates(take.date) === "actual"
-    );
+    takes.length !== 0 ? takes.findIndex(take => compareDates(take.take.date) === 'actual')? actualIndex = takes.findIndex(take => compareDates(take.take.date) === 'actual') : actualIndex = takes.findIndex(take => compareDates(take.take.date) === 'previous') : null;
 
-    if (actualIndex !== -1) {
-      // Calculate the position to scroll to
-      // For simplicity, assuming each Treatment has a fixed height (e.g., 100)
+    console.log(actualIndex);
+    if (actualIndex && actualIndex !== -1) {
       const positionToScroll = 334 * actualIndex + 50;
-
-      // Step 3: Scroll to the target item
       scrollViewRef.current.scrollTo({ y: positionToScroll, animated: true });
     }
+
   };
 
   useEffect(() => {
     if (isFocused) {
       console.log("Nav on Suivis Page");
+      setIsLoading(true);
 
       init();
     }
@@ -107,6 +128,16 @@ export default function Suivis({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
+      {isLoading ? (
+        <View style={styles.loadingContainer}>
+        <Image
+          className=" object-cover h-24 w-48 self-center"
+          source={require("../../assets/logo_title_gaia.png")}
+        />
+        <ActivityIndicator size={40} color="#9CDE00" />
+        <Text style={{ color: "#9CDE00", fontSize: 20, marginTop: 50 }}>Récupération des traitements...</Text>
+      </View>
+      ): null}
       {takes && takes.length !== 0 ? (
         <View className=" flex border-1 p-5">
           <Text className=" text-[#363636] text-lg">À venir...</Text>
@@ -127,69 +158,37 @@ export default function Suivis({ navigation }) {
 
           <ScrollView ref={scrollViewRef}>
             <View style={{ paddingBottom: 200, paddingTop: 50 }}>
-              {takes &&
-                takes.map((take, index) => (
-                  <Treatment
-                    key={index}
-                    onPress={null}
-                    status={compareDates(take.date)}
-                    take={take}
-                    treatment={treatments.find(
-                      (treatment) => treatment.name === take.treatmentName
-                    )}
-                    onTakePress={toggleTakeTaken}
-                  />
-                ))}
+              {takes && takes.map((take, index) => (
+                <Treatment
+                  key={index}
+                  onPress={null}
+                  status={compareDates(take.take.date)}
+                  take={take.take}
+                  treatmentName={take.treatmentName}
+                  treatmentDescription={take.treatmentDescription}
+                  med={take.med}
+                  onTakePress={toggleTakeTaken}
+                />
+              ))}
             </View>
           </ScrollView>
         </View>
       ) : (
-        <View
-          style={{
-            padding: 10,
-            width: "100%",
-            height: "100%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            marginBottom: 200,
-          }}
-        >
-          <Text
-            style={{
-              color: "rgb(103, 33, 236)",
-              fontSize: 20,
-              marginBottom: 100,
-            }}
-          >
-            Aucun traitement à venir
-          </Text>
+        <View style={{ padding: 10, width: "100%", height: "100%", display: "flex", alignItems: 'center', justifyContent: 'center', marginBottom: 200 }}>
+          <Text style={{ color: "rgb(103, 33, 236)", fontSize: 20, marginBottom: 100 }}>Aucun traitement à venir</Text>
           <Image
-            source={require("./../../assets/heureux.png")}
-            style={{
-              width: 200,
-              height: 200,
-              resizeMode: "contain",
-              marginBottom: 100,
-            }}
+            source={require('./../../assets/heureux.png')}
+            style={{ width: 200, height: 200, resizeMode: 'contain', marginBottom: 100 }}
           />
           <TouchableOpacity
             style={{ backgroundColor: "rgb(103, 33, 236)", borderRadius: 10 }}
             onPress={() => navigation.navigate("AddTreatment")}
           >
-            <Text
-              style={{
-                color: "white",
-                fontSize: 20,
-                textAlign: "center",
-                padding: 10,
-              }}
-            >
-              Ajouter un traitement
-            </Text>
+            <Text style={{ color: "white", fontSize: 20, textAlign: "center", padding: 10 }}>Ajouter un traitement</Text>
           </TouchableOpacity>
         </View>
       )}
     </SafeAreaView>
   );
+
 }

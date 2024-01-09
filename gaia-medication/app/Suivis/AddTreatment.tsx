@@ -178,6 +178,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
                 date: date.toISOString(),
                 quantity: Number(input),
                 taken: false,
+                review: ""
             }));
     
             // Combine the remaining takes with the new takes and sort them by date
@@ -200,6 +201,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
                     date: date.toISOString(),
                     quantity: quantity,
                     taken: false,
+                    review: ""
                 });
             });
 

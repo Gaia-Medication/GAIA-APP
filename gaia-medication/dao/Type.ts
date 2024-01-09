@@ -13,7 +13,7 @@ type Treatment = {
   description: string,
   userId: number,
   startDate: Date,
-  instructions: Instruction[] | undefined,
+  instructions: Instruction[],
 };
 
 type Instruction = {
@@ -43,7 +43,8 @@ type Take = {
   CIS: number,
   date: Date,
   quantity: number,
-  taken: boolean
+  taken: boolean,
+  review: string,
 };
 
 type Stock = {
@@ -51,19 +52,4 @@ type Stock = {
   CIS: number;
   CIP: number;
   qte: number
-};
-
-type Med = {
-  CIS: number,
-  name: string,
-  infos: string,
-  Marketed: string,
-  administration_way: string,
-  authorization: string,
-};
-
-type Journal = {
-  id: number,
-  idSuivis: number,
-  text: string
 };
