@@ -133,15 +133,6 @@ export default function Suivis({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       {isLoading ? (
-        <View style={styles.loadingContainer}>
-          <Image
-            className=" object-cover h-24 w-48 self-center"
-            source={require("../../assets/logo_title_gaia.png")}
-          />
-          <ActivityIndicator size={40} color="#9CDE00" />
-          <Text style={{ color: "#9CDE00", fontSize: 20, marginTop: 50 }}>Récupération des traitements...</Text>
-        </View>
-      ) : null}
     <BlurView
       intensity={20}
       style={{
