@@ -60,17 +60,6 @@ export default function Map() {
     markerIcons.satelite
   );
 
-  const toggleMapType = () => {
-    // Toggle between 'standard' and 'satellite' view modes
-    if (mapType === "standard") {
-      setMapType("satellite");
-      setSatelliteButtonIcon(markerIcons.map); // Change button icon to 'map.png'
-    } else {
-      setMapType("standard");
-      setSatelliteButtonIcon(markerIcons.satelite); // Change button icon back to 'satelite.png'
-    }
-  };
-
   const openModal = (point: any) => {
     setIsModalVisible(true);
     setSelectedpoint(point);
@@ -144,7 +133,7 @@ export default function Map() {
         style={{ width: "100%", height: "100%" }}
         initialRegion={initialRegion}
         onRegionChangeComplete={(region, gesture) =>
-          gesture.isGesture ? setRegion(region) : null
+          setRegion(region) 
         }
         customMapStyle={standardMapType}
         toolbarEnabled={false}
@@ -167,16 +156,6 @@ export default function Map() {
             );
           })}
       </MapView>
-      <TouchableOpacity style={{ position: "absolute", top: 20, right: 20 }}>
-        <View
-          style={{ backgroundColor: "white", padding: 10, borderRadius: 5 }}
-        >
-          <Image
-            source={satelliteButtonIcon}
-            style={{ width: 40, height: 40 }}
-          />
-        </View>
-      </TouchableOpacity>
       <MapModalComponent
         visible={isModalVisible}
         onClose={closeModal}
