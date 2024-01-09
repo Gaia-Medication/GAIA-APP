@@ -18,6 +18,11 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
+  label: {
+    color: "#888888",
+    fontWeight: "400",
+    fontSize: 16,
+  },
   AvatarIcon: {
     width: 45,
     height: 45,
@@ -36,7 +41,7 @@ export const styles = StyleSheet.create({
     borderRadius: 50,
   },
   bar: {
-    backgroundColor: "#E0E0E0",
+    backgroundColor: "#dddddd",
     height: 25,
     width: 2,
   },
@@ -54,6 +59,15 @@ export const styles = StyleSheet.create({
   },
   searchBarContainer: {
     borderBottomWidth: 0,
+  },
+  button: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 18,
+    padding: 16,
+    borderWidth: 1,
+    width: "80%",
   },
   searchBar: {
     display: "flex",
@@ -151,7 +165,7 @@ export const styles = StyleSheet.create({
   medItems: {
     backgroundColor: "#4296E450",
     borderRadius: 100,
-    padding: 10,    
+    padding: 10,
   },
 
   // -------------- MODAL ---------------//
@@ -173,8 +187,8 @@ export const styles = StyleSheet.create({
     padding: 10,
     paddingHorizontal: 20,
     marginBottom: 25
-    
-  },  
+
+  },
 
   // -------------- INSTRUCTION ---------------//
 

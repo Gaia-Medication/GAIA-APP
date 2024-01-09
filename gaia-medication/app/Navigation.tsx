@@ -16,6 +16,7 @@ import Map from "./Home/Map";
 import AddTreatment from "./Suivis/AddTreatment";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import ModifyProfile from "./Profile/ModifyProfile";
+import AllergySelector from "./component/AllergySelector";
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
