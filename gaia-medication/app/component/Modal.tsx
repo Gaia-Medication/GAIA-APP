@@ -8,6 +8,7 @@ const ModalComponent = ({ visible, onClose, children, styleAdded }) => {
       transparent={true}
       animationType="fade"
       onRequestClose={onClose}
+      style={{ width: '100%' }}
     >
         <TouchableOpacity
           style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
