@@ -300,5 +300,8 @@ print(BOLD,YELLOW,"\n\n#########################################################
 
 jsonMedication = dfMedication.to_json('out/medication.json', orient="records", indent=4)
 
-# export=Export("out/medication.json", "localhost", 27017, "medication", "medication")
-# export.export_json()
+export=Export("out/medication.json", "172.26.82.44", 27777, "dbMedication", "medication")
+try:
+    export.export_json()
+except Exception as e:
+    print(BOLD,RED,"Error: ",RESET,e)

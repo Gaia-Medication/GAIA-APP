@@ -17,7 +17,7 @@ class Export:
         self.collectionName=collectionName
     
     def export_json(self):
-        client = MongoClient(self.hostname, self.port) # Connects to MongoDB server, replace with your server details
+        client = MongoClient("mongodb://root:s5a06a@172.26.82.44:27777/?readPreference=primary&serverSelectionTimeoutMS=5000&connectTimeoutMS=10000&authSource=test&authMechanism=SCRAM-SHA-256") # Connects to MongoDB server, replace with your server details
         db = client[self.dbName]
         collection = db[self.collectionName]
 
