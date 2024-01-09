@@ -21,6 +21,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Notifications from "expo-notifications";
 import { trouverNomMedicament } from "../../dao/Search";
 import Loading from "../component/Loading";
+import { initDailyNotifications } from "../Handlers/NotificationsHandler";
 
 export default function Home({ navigation }) {
   const isFocused = useIsFocused();
@@ -44,9 +45,7 @@ export default function Home({ navigation }) {
       console.log(current);
       setUser(current);
     }
-    Notifications.addNotificationResponseReceivedListener((notification) => {
-      console.log("Action notification => ", notification.actionIdentifier);
-    });
+    await initDailyNotifications(user?.firstname);
   };
 
   const handleAvatarButton = () => {

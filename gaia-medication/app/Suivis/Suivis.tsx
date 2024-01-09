@@ -20,6 +20,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import ModalComponent from "../component/Modal";
 import { Modal } from "react-native-paper";
 import { BlurView } from "expo-blur";
+import * as Notifications from "expo-notifications";
 
 export default function Suivis({ navigation }) {
   const isFocused = useIsFocused();
@@ -28,6 +29,7 @@ export default function Suivis({ navigation }) {
   const [isToday, setIsToday] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const scrollViewRef = useRef(null);
+  const [scheduledNotifications, setScheduledNotifications] = useState([]);
 
   const changeTreatments = async (tak: Take) => {
     console.log(tak);
@@ -107,6 +109,15 @@ export default function Suivis({ navigation }) {
   }
 
   const init = async () => {
+    async function getAllScheduledNotifications() {
+      const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+      setScheduledNotifications(scheduled);
+    }
+
+    getAllScheduledNotifications();
+    scheduledNotifications.forEach((notif) => {
+      console.log(new Date(notif.trigger.value));
+    })
     await getTreatments();
     await getTakes();
     setIsLoading(false);
@@ -133,36 +144,27 @@ export default function Suivis({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       {isLoading ? (
-        <View style={styles.loadingContainer}>
+        <BlurView
+          intensity={20}
+          style={{
+            position: "absolute",
+            display: "flex",
+            justifyContent: "center",
+            height: "100%",
+            width: "100%",
+            flex: 1,
+            zIndex: 10
+          }}
+          className="px-0"
+        >
           <Image
             className=" object-cover h-24 w-48 self-center"
             source={require("../../assets/logo_title_gaia.png")}
           />
           <ActivityIndicator size={40} color="#9CDE00" />
-          <Text style={{ color: "#9CDE00", fontSize: 20, marginTop: 50 }}>Récupération des traitements...</Text>
-        </View>
+          <Text style={{ color: "#9CDE00", fontSize: 20, marginTop: 50, textAlign: 'center' }}>Récupération des traitements...</Text>
+        </BlurView>
       ) : null}
-    <BlurView
-      intensity={20}
-      style={{
-        position: "absolute",
-        display: "flex",
-        justifyContent: "center",
-        height: "100%",
-        width: "100%",
-        flex: 1,
-        zIndex:10
-      }}
-      className="px-0"
-    >
-        <Image
-          className=" object-cover h-24 w-48 self-center"
-          source={require("../../assets/logo_title_gaia.png")}
-        />
-        <ActivityIndicator size={40} color="#9CDE00" />
-        <Text style={{ color: "#9CDE00", fontSize: 20, marginTop: 50, textAlign:'center' }}>Récupération des traitements...</Text>
-      </BlurView>
-      ): null}
       {takes && takes.length !== 0 ? (
         <View className=" flex border-1 p-5">
           <TouchableOpacity
@@ -181,6 +183,15 @@ export default function Suivis({ navigation }) {
           ) : <Text>TRAITEMENT AJD</Text>}
 
           <ScrollView ref={scrollViewRef}>
+          {scheduledNotifications.map((notification) => (
+        <View key={notification.identifier}>
+          <Text>Title: {notification.content.title}</Text>
+          <Text>Subtitle: {notification.content.subtitle}</Text>
+          <Text>Date: {notification.trigger.value}</Text>
+          <Text>Identifier: {notification.identifier}</Text>
+          <Text>--------------------</Text>
+        </View>
+      ))}
             <View style={{ paddingBottom: 200, paddingTop: 50 }}>
               {takes && takes.map((take, index) => (
                 <View key={index}>
