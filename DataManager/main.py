@@ -300,7 +300,7 @@ print(BOLD,YELLOW,"\n\n#########################################################
 
 jsonMedication = dfMedication.to_json('out/medication.json', orient="records", indent=4)
 
-export=Export("out/medication.json", "172.26.82.44", 27777, "dbMedication", "medication")
+export=Export("out/medication.json", "dbMedication", "medication")
 try:
     export.export_json()
 except Exception as e:

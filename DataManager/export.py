@@ -9,10 +9,8 @@ GREEN = '\033[92m' # SUCCESS
 YELLOW = '\033[93m' # INFORMATIONS
 
 class Export:
-    def __init__(self, json, hostname, portnumber, dbName, collectionName) -> None:
+    def __init__(self, json, dbName, collectionName) -> None:
         self.json = json
-        self.hostname=hostname
-        self.port=portnumber
         self.dbName=dbName
         self.collectionName=collectionName
     
