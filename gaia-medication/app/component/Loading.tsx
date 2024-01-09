@@ -14,6 +14,7 @@ const Loading = () => {
         width: "100%",
         flex: 1,
       }}
+      className="px-0"
     >
         <ActivityIndicator size="large" />
     </BlurView>
