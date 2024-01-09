@@ -82,7 +82,7 @@ export default function Drug({ route, navigation }) {
         idUser: user.id,
         CIP: item.CIP,
         CIS: item.CIS,
-        qte: 0,
+        qte: 1,
       };
       console.log(addstock);
 
@@ -197,49 +197,26 @@ export default function Drug({ route, navigation }) {
                   stock.find((stockItem) => stockItem.CIP === item.CIP) != null;
 
                 return (
-                  <View key={index}>
+                  <View key={index} className=" -mb-[1px] pb-2 border-t border-b border-gray-300">
                     <Text className=" font-light">{item.CIP}</Text>
                     <Text className=" text-xs">{item.Denomination}</Text>
+                    <View className=" -mt-1">
                     {drug.Marketed == "Commercialisée" ? (
                       item.Price_with_taxes ? (
                         <>
-                          <Text className=" text-xs">
+                          <Text className="font-bold text-right">
                             {item.Price_with_taxes}€
                           </Text>
-                          <Text className=" text-xs">{item.Remboursement}</Text>
+                          <Text className="text-right text-xs">(Remboursement: {item.Remboursement})</Text>
                         </>
                       ) : (
                         <>
-                          <Text className=" text-xs">Prix libre</Text>
-                          <Text className=" text-xs">Non remboursable</Text>
+                          <Text className="text-right text-xs font-bold">Prix libre</Text>
+                          <Text className="text-right text-xs">(Non remboursable)</Text>
                         </>
                       )
                     ) : null}
-
-                    {alreadyStocked ? (
-                      <>
-                        <TouchableOpacity className="bg-green-400 text-center">
-                          <Text className="text-center">In stock</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                          className="bg-red-400 text-center"
-                          onPress={() =>
-                            deleteFromStock(item.CIS, item.CIP, user.id)
-                          }
-                        >
-                          <Text className="text-center">❌</Text>
-                        </TouchableOpacity>
-                      </>
-                    ) : (
-                      <TouchableOpacity
-                        className="bg-blue-400"
-                        onPress={() => {
-                          addToStock(item);
-                        }}
-                      >
-                        <Text className="text-center">Add</Text>
-                      </TouchableOpacity>
-                    )}
+                    </View>
                   </View>
                 );
               })}
@@ -337,15 +314,42 @@ export default function Drug({ route, navigation }) {
             onClose={() => setDrugModalVisible(!drugModalVisible)}
           >
             <Text>Ajouter un Medicament</Text>
-            <TouchableOpacity
-              className=" bg-blue-400"
-              onPress={() => {
-                //addToStock(drugsToAdd);
-                setDrugModalVisible(!drugModalVisible);
-              }}
-            >
-              <Text className="text-center">Add</Text>
-            </TouchableOpacity>
+            {drug.Values.map((item, index) => {
+                const alreadyStocked =
+                  stock.find((stockItem) => stockItem.CIP === item.CIP) != null;
+
+                return (
+                  <View key={index}>
+                    <Text className=" font-light">{item.CIP}</Text>
+                    <Text className=" text-xs">{item.Denomination}</Text>
+
+                    {alreadyStocked ? (
+                      <>
+                        <TouchableOpacity className="bg-green-400 text-center">
+                          <Text className="text-center">In stock</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          className="bg-red-400 text-center"
+                          onPress={() =>
+                            deleteFromStock(item.CIS, item.CIP, user.id)
+                          }
+                        >
+                          <Text className="text-center">❌</Text>
+                        </TouchableOpacity>
+                      </>
+                    ) : (
+                      <TouchableOpacity
+                        className="bg-blue-400"
+                        onPress={() => {
+                          addToStock(item);
+                        }}
+                      >
+                        <Text className="text-center">Add</Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                );
+              })}
           </ModalComponent>
         </>
       )}
