@@ -31,8 +31,16 @@ export default function Navigation() {
           component={HomeHandler}
           options={{ headerShown: false }}
         />
-        <Stack.Screen name="CreateProfile" component={CreateProfile} />
-        <Stack.Screen name="ModifyProfile" component={ModifyProfile} />
+        <Stack.Screen
+          name="CreateProfile"
+          component={CreateProfile}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="ModifyProfile"
+          component={ModifyProfile}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen name="AddTreatment" component={AddTreatment} />
         <Stack.Screen name="Settings" component={Settings} />
         <Stack.Screen name="Profile" component={Profile} />

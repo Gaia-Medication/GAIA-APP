@@ -138,6 +138,7 @@ export default function CreateProfile({ navigation }: ICreateProps) {
 
   return (
     <SafeAreaView style={styles.container}>
+      <Text className=" text-center my-6 text-2xl text-neutral-700 font-bold">Création de profil</Text>
       {!validFirstPart && (
         <>
           <Input
