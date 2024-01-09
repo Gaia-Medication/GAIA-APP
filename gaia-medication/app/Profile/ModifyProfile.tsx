@@ -107,9 +107,12 @@ export default function ModifyProfile({ navigation }: IModifyProps) {
 
   const deleteUser = async (userId) => {
     try {
-      const updatedUsers = users.filter((user) => user.id !== userId);
-      await AsyncStorage.setItem("users", JSON.stringify(updatedUsers));
-      setUsers(updatedUsers); // Maj la liste des utilisateurs dans l'état local
+      if(users.length>1){
+        const updatedUsers = users.filter((user) => user.id !== userId);
+        await AsyncStorage.setItem("currentUser", JSON.stringify(updatedUsers[0].id));
+        await AsyncStorage.setItem("users", JSON.stringify(updatedUsers));
+        setUsers(updatedUsers); // Maj la liste des utilisateurs dans l'état local
+      }
     } catch (error) {
       console.error("Erreur lors de la suppression de l'utilisateur :", error);
     }

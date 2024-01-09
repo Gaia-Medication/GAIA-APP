@@ -41,7 +41,7 @@ export default function Drug({ route, navigation }) {
   const isFocused = useIsFocused();
   const [user, setUser] = useState<User | null>(null);
   const [showMore, setShowMore] = useState(5);
-  const [stock, setStock] = useState(null);
+  const [stock, setStock] = useState([]);
   const [allergique, setAllergique] = useState(false);
   const [gens, setGens] = useState([]);
   const [sameComp, setSameComp] = useState([]);

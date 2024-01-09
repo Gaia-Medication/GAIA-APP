@@ -11,7 +11,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Stock({ navigation }) {
   const isFocused = useIsFocused();
-  const [stock, setStock] = useState(null);
+  const [stock, setStock] = useState([]);
   const [user, setUser] = useState<User | null>(null);
 
   const init = async () => {
