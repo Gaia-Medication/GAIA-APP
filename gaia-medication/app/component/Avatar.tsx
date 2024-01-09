@@ -194,9 +194,12 @@ const AvatarButton: React.FC<AvatarButtonProps> = ({
                       width: windowWidth,
                       backgroundColor: "#fff",
                       position: "absolute",
-                      top: 55,
-                      left: -50,
-                      paddingRight: "18%",
+                      top: 63,
+                      left: -75,
+                      paddingLeft: 25,
+                      paddingRight: "13%",
+                      borderBottomWidth: 1,
+                      borderColor: "#E8E8E8",
                     }}
                     data={usersNoCurrent}
                     renderItem={({ item, index }) => {

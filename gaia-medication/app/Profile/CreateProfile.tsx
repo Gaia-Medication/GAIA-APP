@@ -113,7 +113,6 @@ export default function CreateProfile({ navigation }: ICreateProps) {
       <Input
         label="Prenom"
         placeholder="Entrez votre prenom"
-        leftIcon={{ type: "font-awesome", name: "user" }}
         onChangeText={(text) =>
           setFirstname(text.charAt(0).toUpperCase() + text.slice(1))
         }
@@ -130,7 +129,6 @@ export default function CreateProfile({ navigation }: ICreateProps) {
       <Input
         label="Nom"
         placeholder="Entrez votre nom"
-        leftIcon={{ type: "font-awesome", name: "user" }}
         onChangeText={(text) =>
           setLastname(text.charAt(0).toUpperCase() + text.slice(1))
         }
@@ -144,6 +142,7 @@ export default function CreateProfile({ navigation }: ICreateProps) {
         </Text>
       )}
       
+      <Text>Genre</Text>
       <RNPickerSelect
         placeholder={{ label: "Sélectionner le genre", value: "" }}
         onValueChange={(value) => setGender(value)}
@@ -157,7 +156,6 @@ export default function CreateProfile({ navigation }: ICreateProps) {
       <Input
         label="Âge"
         placeholder="Votre Âge"
-        leftIcon={{}}
         onChangeText={(text) => setAge(parseInt(text))}
         onBlur={validateAge}
         value={age ? age.toString() : ""}
@@ -174,7 +172,6 @@ export default function CreateProfile({ navigation }: ICreateProps) {
       <Input
         label="Poids (kg)"
         placeholder="Votre poids en kg"
-        leftIcon={{}}
         onChangeText={(text) => setWeight(parseInt(text))}
         onBlur={validateWeight}
         value={weight ? weight.toString() : ""}

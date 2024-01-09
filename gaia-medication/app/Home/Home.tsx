@@ -12,22 +12,15 @@ import * as ImagePicker from "expo-image-picker";
 import callGoogleVisionAsync from "../../OCR/helperFunctions";
 import { styles } from "../../style/style";
 import AvatarButton from "../component/Avatar";
-import { getAllTreatments, getUserByID, readList } from "../../dao/Storage";
+import { getUserByID, readList } from "../../dao/Storage";
 import { Bell } from "react-native-feather";
 import { Button, Input } from "react-native-elements";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {
-  requestNotificationPermissions,
-  notificationDaily,
-  notificationNow,
-  notificationForgot,
-} from "./../Handlers/NotificationsHandler";
+
 import * as Notifications from "expo-notifications";
 import { trouverNomMedicament } from "../../dao/Search";
 import Loading from "../component/Loading";
-import data from './../Suivis/treatment.json';
-import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Home({ navigation }) {
   const isFocused = useIsFocused();
@@ -36,7 +29,6 @@ export default function Home({ navigation }) {
   const [user, setUser] = useState<User | null>(null);
   const [users, setUsers] = useState<User[]>([]);
   const [header, setHeader] = useState(true);
-  const [treatments, setTreatments] = useState<Treatment[]>([]);
 
   const init = async () => {
     const userList = await readList("users");
@@ -90,34 +82,6 @@ export default function Home({ navigation }) {
     }
   };
 
-  const createTreatmentTest1 = async () => {
-    const tre=JSON.parse(JSON.stringify(data))
-    console.log("tre",tre)
-    const treatments = await getAllTreatments();
-    if (treatments.find((treatment) => treatment.name === tre.name)) {
-      alert("Le traitement existe déjà");
-      return;
-    }
-    treatments.push(tre);
-    await AsyncStorage.setItem("treatments", JSON.stringify(treatments));
-  }
-
-  const showTreatments = async () => {
-    const treatments = await getAllTreatments();
-    if(treatments.length==0){
-      alert("Vous n'avez pas de traitement")
-    } else {
-      console.log(treatments);
-    console.log(treatments[0].instructions[0].takes);
-    console.log(treatments.length)
-    }
-    
-    setTreatments(treatments);
-  };
-  const deleteTreatments = async () => {
-    AsyncStorage.removeItem("treatments");
-  };
-
   useEffect(() => {
     if (isFocused) {
       console.log("Nav on Home Page");
@@ -126,7 +90,7 @@ export default function Home({ navigation }) {
   }, [isFocused]);
 
   return (
-    <View style={styles.container}>
+    <View className=" flex bg-white w-full h-full flex-1" style={{ gap: 20 }}>
       <Image
         className=" object-cover h-12 w-24 self-center"
         source={require("../../assets/logo_title_gaia.png")}
@@ -190,22 +154,6 @@ export default function Home({ navigation }) {
           <View style={styles.traitementContainer}>
             <Text style={styles.title2}>Suivis d'un traitement</Text>
           </View>
-          <Button onPress={notificationDaily} title="Notification quotidienne"/>
-          <Button onPress={notificationForgot} title="Notification oubli"/>
-          <Button onPress={showTreatments} title="Liste des traitements"/>
-          <Button onPress={deleteTreatments} title="Supprimer traitements"/>
-          <Button onPress={createTreatmentTest1} title="TraitementTest 1"/>
-          {treatments && treatments.map((treatment) => { return (
-            <View key={treatment.name}>
-              <Text>{treatment.name}</Text>
-              <Text>{treatment.instructions.length}</Text>
-              </View>
-         )})}
-        {!treatments ? (
-            <Text>PAS DE VARIABLE ASYNC TREATMENT</Text>
-          ) : treatments.length == 0 ? (
-            <Text>TREATMENTS VIDE</Text>
-          ) : null}
         </>
       )}
       {loading && <Loading />}
