@@ -39,7 +39,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
     // CHECKBOXES, RADIO BUTTONS, PICKERS
     const [checkFrequency, setCheckFrequency] = useState('');
     const [frequencyMode, setFrequencyMode] = useState('regular');
-    const [customPeriodicity, setCustomPeriodicity] = useState("week");
+    const [customPeriodicity, setCustomPeriodicity] = useState("day");
     const [weekDays, setWeekDays] = useState([
         { day: 'Dimanche', checked: false },
         { day: 'Lundi', checked: false },
