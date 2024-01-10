@@ -21,8 +21,6 @@ import { validatePathConfig } from "@react-navigation/native";
 const Treatment = ({ onPress, status = "actual" as "actual" | "next" | "previous", take, treatmentName, treatmentDescription, med, onTakePress, validateModalFun }) => {
   const [expanded, setExpanded] = useState(false);
 
-  const validStates = ['previous', 'actual', 'next'];
-  const isStateValid = validStates.includes(status);
   const [date, setDate] = useState<Date>(new Date());
   const [takeDetailsModalVisible, setTakeDetailsModalVisible] = useState(false);
   const [newTxt, setNewTxt] = useState("");
@@ -104,7 +102,7 @@ const Treatment = ({ onPress, status = "actual" as "actual" | "next" | "previous
 
   useEffect(() => {
     init();
-  }, []);
+  }, [take]);
 
   return (
     <SafeAreaView style={{ display: "flex", flexDirection: "row", justifyContent: "flex-start", gap: 10, maxHeight: "auto", marginBottom: 7, marginTop: 7, }}>

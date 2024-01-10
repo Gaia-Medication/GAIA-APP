@@ -31,12 +31,12 @@ import { trouverNomMedicament } from "../../dao/Search";
 import Loading from "../component/Loading";
 import { initDailyNotifications } from "../Handlers/NotificationsHandler";
 import TutorialBubble from "../component/TutorialBubble";
-import Stock from "../Suivis/Stock";
 
 export default function Home({ navigation }) {
   const isFocused = useIsFocused();
   const [loading, setLoading] = useState(false);
-  const [takes, setTakes] = useState([]);
+  const [takes, setTakes] = useState(null);
+  const [stock, setStock] = useState(null);
   const [nextTake, setNextTake] = useState(-1);
   const [user, setUser] = useState<User | null>(null);
   const [users, setUsers] = useState<User[]>([]);
@@ -58,6 +58,31 @@ export default function Home({ navigation }) {
   const init = async () => {
     const userList = await readList("users");
     setUsers(userList);
+    
+    const currentId = await AsyncStorage.getItem("currentUser");
+    const isFirstConnection = await AsyncStorage.getItem("isFirstConnection");
+    setTutoHome(await AsyncStorage.getItem("TutoHome"));
+    if (userList.length < 1 || isFirstConnection === "true") {
+      // L'utilisateur se connecte pour la première fois
+      AsyncStorage.setItem("TutoHome", "0");
+      AsyncStorage.setItem("TutoCreate", "0");
+      AsyncStorage.setItem("TutoSearch", "0");
+      AsyncStorage.setItem("TutoMedic", "0");
+      AsyncStorage.setItem("TutoMap", "0");
+      AsyncStorage.setItem("TutoTreatment", "0");
+      AsyncStorage.setItem("TutoSettings", "0");
+      navigation.navigate("CreateProfile");
+    } else {
+      const current = await getUserByID(JSON.parse(currentId));
+      console.log(current);
+      setUser(current);
+    }
+    const notifs = await initDailyNotifications(user?.firstname);
+    setNotificationsList(notifs);
+    console.log("Notifs Totales :", notifs.length);
+  };
+
+  const initUserInfo = async ()=>{
     const takes = await initTreatments();
     takes.sort((a, b) => {
       const dateA = new Date(a.take.date);
@@ -81,29 +106,23 @@ export default function Home({ navigation }) {
     });
     console.log(nextTakeIndex)
     setNextTake(nextTakeIndex) 
-    setTakes(todaysTakes);
-    const currentId = await AsyncStorage.getItem("currentUser");
-    const isFirstConnection = await AsyncStorage.getItem("isFirstConnection");
-    setTutoHome(await AsyncStorage.getItem("TutoHome"));
-    if (userList.length < 1 || isFirstConnection === "true") {
-      // L'utilisateur se connecte pour la première fois
-      AsyncStorage.setItem("TutoHome", "0");
-      AsyncStorage.setItem("TutoCreate", "0");
-      AsyncStorage.setItem("TutoSearch", "0");
-      AsyncStorage.setItem("TutoMedic", "0");
-      AsyncStorage.setItem("TutoMap", "0");
-      AsyncStorage.setItem("TutoTreatment", "0");
-      AsyncStorage.setItem("TutoSettings", "0");
-      navigation.navigate("CreateProfile");
-    } else {
-      const current = await getUserByID(JSON.parse(currentId));
-      console.log(current);
-      setUser(current);
-    }
-    const notifs = await initDailyNotifications(user?.firstname);
-    setNotificationsList(notifs);
-    console.log("Notifs Totales :", notifs.length);
-  };
+    setTakes(todaysTakes.filter(take=>take.take.userId==user.id));
+    
+    const stockList = await readList("stock");
+    const stockListFilter=stockList.filter((item) => item.idUser == user.id);
+    const stockListFilterGrouped = stockListFilter.reduce((result, current) => {
+      const key = current.CIS;
+      if (!result[key]) {
+        result[key] = { ...current };
+      } else {
+        result[key].qte += current.qte;
+      }
+      return result;
+    }, {});
+    
+    const actualStock = Object.values(stockListFilterGrouped);
+    setStock(actualStock)
+  }
 
   const handleAvatarButton = () => {
     setHeader(!header);
@@ -145,6 +164,11 @@ export default function Home({ navigation }) {
     }
   }, [isFocused]);
 
+  
+  useEffect(() => {
+    initUserInfo()
+  }, [user]);
+
   const handleTuto = (isClicked: boolean) => {
     if (tutoHome === "1") {
       navigation.navigate("SuivisHandler");
@@ -165,7 +189,7 @@ export default function Home({ navigation }) {
         source={require("../../assets/logo_title_gaia.png")}
       ></Image>
       <View className=" flex bg-white w-full h-full flex-1" style={{ gap: 20 }}>
-      {user && (
+      {user && takes && (
         <>
           {smallTutoStep === 0 && tutoHome === "0" && (
             <TutorialBubble
@@ -259,63 +283,82 @@ export default function Home({ navigation }) {
           <View style={styles.traitementContainer}>
             <Text style={styles.title2}>Suivis d'un traitement</Text>
           </View>
-            <FlatList
-            className=" flex-grow-0" 
-            contentContainerStyle={{paddingHorizontal:25}}
-            data={takes}
-            horizontal={true}
-            showsHorizontalScrollIndicator={false}
-            ItemSeparatorComponent={() => <View style={{width: 25}} />}
-            renderItem={({item, index}) => (
-              <TouchableOpacity style={{
-                alignItems: "center",
-                zIndex: 1,
-                width: 200,
-                backgroundColor:  "#BCBCBC10",
-                borderRadius: 17,
-                borderStyle: "solid",
-                borderWidth: 1,
-                borderColor:  "#BCBCBC90",
-                padding: 15,
-              }}
-                onPress={()=>navigation.navigate("SuivisHandler")}
-              >
-                <View style={{ width: "100%", alignItems: "center", flexDirection: "row", justifyContent: "space-between", margin: 10 }}>
-                  <View className="flex-1 items-center mx-2"
-                  style={{
-                    backgroundColor: nextTake !== index ? "#BCBCBC40" : "#9CDE00",
-                    borderRadius: 100,
-                    padding: 5,
-                  }}>
-                    <Text style={{ color: nextTake !== index ? null : "white", fontWeight: "700", fontSize: 12,lineHeight:14, maxWidth: 180 }} numberOfLines={1} ellipsizeMode="tail">{item.take.treatmentName}</Text>
-                  </View>
-                  <Text className="mx-2" style={{ fontWeight: "700",fontSize:16, }}>{formatHour(new Date(item.take.date))}</Text>
+          <FlatList
+          className=" flex-grow-0" 
+          contentContainerStyle={{paddingHorizontal:25}}
+          ref={(ref) => (this.flatList = ref)}
+          onContentSizeChange={() => {
+            if (
+              this.flatList &&
+              this.flatList.scrollToIndex &&
+              takes &&
+              takes.length
+            ) {
+              this.flatList.scrollToIndex({ index: nextTake });
+            }
+          }}
+          data={takes}
+          horizontal={true}
+          showsHorizontalScrollIndicator={false}
+          ItemSeparatorComponent={() => <View style={{width: 25}} />}
+          renderItem={({item, index}) => (
+            <TouchableOpacity style={{
+              alignItems: "center",
+              zIndex: 1,
+              width: 200,
+              backgroundColor:  "#BCBCBC10",
+              borderRadius: 17,
+              borderStyle: "solid",
+              borderWidth: 1,
+              borderColor:  "#BCBCBC90",
+              padding: 15,
+            }}
+              onPress={()=>navigation.navigate("SuivisHandler")}
+            >
+              <View style={{ width: "100%", alignItems: "center", flexDirection: "row", justifyContent: "space-between", margin: 10 }}>
+                <View className="flex-1 items-center mx-2"
+                style={{
+                  backgroundColor: nextTake !== index ? "#BCBCBC40" : "#9CDE00",
+                  borderRadius: 100,
+                  padding: 5,
+                }}>
+                  <Text style={{ color: nextTake !== index ? null : "white", fontWeight: "700", fontSize: 12,lineHeight:14, maxWidth: 180 }} numberOfLines={1} ellipsizeMode="tail">{item.take.treatmentName}</Text>
                 </View>
-        
-                <View style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 10, }}>
-                  {/* <Icon.Info color={nextTake !== index ? "#BCBCBC" : "#9CDE00"} width={25} height={25} /> */}
-                  <Text style={{ fontWeight: "bold", color: "#444444" }} ellipsizeMode="tail" numberOfLines={1}>{item.med ? item.med + " x " + item.take.quantity : null}</Text>
+                <Text className="mx-2" style={{ fontWeight: "700",fontSize:16, }}>{formatHour(new Date(item.take.date))}</Text>
+              </View>
+      
+              <View style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 10, }}>
+                {/* <Icon.Info color={nextTake !== index ? "#BCBCBC" : "#9CDE00"} width={25} height={25} /> */}
+                <Text style={{ fontWeight: "bold", color: "#444444" }} ellipsizeMode="tail" numberOfLines={1}>{item.med ? item.med + " x " + item.take.quantity : null}</Text>
+              </View>
+      
+              <View style={{ paddingHorizontal: 30,marginTop:10, display: "flex", flexDirection: "row", gap: 15 }} >
+                <View style={{
+                  backgroundColor: nextTake !== index ? "#BCBCBC90" : "#9CDE00",
+                  width: 5,
+                  borderRadius: 100,
+      
+                }} />
+                <View>
+                  <Text style={{ color: nextTake !== index  ? "#7B7B7B" : "black", fontWeight: "bold" }}>Description :</Text>
+                  <Text style={{ color: "#C9C9C9", fontWeight: "700" }} numberOfLines={3} ellipsizeMode="tail">{item.treatmentDescription ? item.treatmentDescription : "Aucune description..."}</Text>
                 </View>
-        
-                <View style={{ paddingHorizontal: 30,marginTop:10, display: "flex", flexDirection: "row", gap: 15 }} >
-                  <View style={{
-                    backgroundColor: nextTake !== index ? "#BCBCBC90" : "#9CDE00",
-                    width: 5,
-                    borderRadius: 100,
-        
-                  }} />
-                  <View>
-                    <Text style={{ color: nextTake !== index  ? "#7B7B7B" : "black", fontWeight: "bold" }}>Description :</Text>
-                    <Text style={{ color: "#C9C9C9", fontWeight: "700" }} numberOfLines={3} ellipsizeMode="tail">{item.treatmentDescription ? item.treatmentDescription : "Aucune description..."}</Text>
-                  </View>
-        
-                </View>
-              </TouchableOpacity>
-            )}
-            />
+      
+              </View>
+            </TouchableOpacity>
+          )}
+          />
+          {takes && takes.length<1 && (
+            <TouchableOpacity className="flex justify-center items-center"
+            onPress={()=>navigation.navigate("SuivisHandler")}>
+              <Image className="w-24 h-24 -mt-4" source={require("../../assets/prescription.png")} />
+              <Text className="mt-2 text-base">Aucune prise à prendre aujoud'hui</Text>
+            </TouchableOpacity>
+          )}
           
           <View style={styles.traitementContainer}>
             <Text style={styles.title2}>Stock</Text>
+            <Text>Medicaments en stock : {stock.length}</Text>
           </View>
         </>
       )}

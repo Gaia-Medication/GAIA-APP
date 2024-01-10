@@ -116,8 +116,8 @@ export default function Suivis({ navigation }) {
       const dateB = new Date(b.take.date);
       return dateA.getTime() - dateB.getTime();
     });
-    setTakes(takes);
-
+    const currentId = await AsyncStorage.getItem("currentUser");
+    setTakes(takes.filter(take=>take.take.userId==currentId));
     
     let actualIndex = null;
     takes.length !== 0
@@ -143,9 +143,8 @@ export default function Suivis({ navigation }) {
 
   useEffect(() => {
     if (isFocused) {
+      setIsLoading(true)
       console.log("Nav on Suivis Page");
-      setIsLoading(true);
-
       init();
     }
   }, [isFocused]);
@@ -199,7 +198,7 @@ export default function Suivis({ navigation }) {
           className="px-0"
         >
           <Image
-            className=" object-cover h-24 w-48 self-center"
+            className=" object-cover h-24 w-48 self-center -mt-[50%]"
             source={require("../../assets/logo_title_gaia.png")}
           />
           <ActivityIndicator size={40} color="#9CDE00" />
