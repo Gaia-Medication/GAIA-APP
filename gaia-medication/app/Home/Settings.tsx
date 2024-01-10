@@ -16,14 +16,15 @@ import TutorialBubble from "../component/TutorialBubble";
 
 export default function Settings({ navigation }) {
   const [treatments, setTreatments] = useState<Treatment[]>([]);
+  const [debug, setDebug] = useState(false);
   const dateNotification = new Date();
   const settingsData = [
-    { id: 'UsersSettings', title: 'User Settings' },
+    { id: 'ModifyProfile', title: 'Profile Settings' },
     { id: 'NotificationsSettings', title: 'Notifications Settings' },
   ];
   const handleItemClick = (pageId) => {
     // Navigate to the selected settings page
-    Navigation.navigate(pageId);
+    navigation.navigate(pageId);
   };
   
 
@@ -78,14 +79,14 @@ export default function Settings({ navigation }) {
     dateNotification.setHours(18, 37, 0, 0);
     const dateTake = new Date();
     dateTake.setHours(22, 0, 0, 0);
-    const notif = await notificationDaily(
-      "Nathan",
-      [{
-        hour: dateTake,
-        med: "Doliprane",
-      }],
-      dateNotification
-      );
+    // const notif = await notificationDaily(
+    //   "Nathan",
+    //   [{
+    //     hour: dateTake,
+    //     med: "Doliprane",
+    //   }],
+    //   dateNotification
+    //   );
   }
   const reset = () => {
     AsyncStorage.removeItem("users"), AsyncStorage.removeItem("stock");
@@ -111,31 +112,20 @@ export default function Settings({ navigation }) {
           }
         ></TutorialBubble>
       )}
-      <Text>Settings</Text>
-      <Button
+      
+      {debug&&<><Button
         title="CLEAR USERS DATA"
         onPress={() => (
           AsyncStorage.removeItem("users"), AsyncStorage.removeItem("stock")
-        )}
-      />
-      <Button
-        title="CLEAR STOCK DATA"
-        onPress={() => AsyncStorage.removeItem("stock")}
-      />
-      <Button
-        title="ADD PROFILE"
-        onPress={() => navigation.navigate("CreateProfile")}
-      ></Button>
-      <Button
-        title="MODIFY PROFILE"
-        onPress={() => navigation.navigate("ModifyProfile")}
-      ></Button>
-      <Button onPress={() => notifDaily()} title="Notification quotidienne" />
-      <Button onPress={notificationForgot} title="Notification oubli" />
-      <Button onPress={showTreatments} title="Liste des traitements" />
-      <Button onPress={deleteTreatments} title="Supprimer traitements" />
-      <Button onPress={createTreatmentTest1} title="TraitementTest 1" />
-      <Button onPress={reset} title="reset" />
+        )} /><Button
+          title="CLEAR STOCK DATA"
+          onPress={() => AsyncStorage.removeItem("stock")} /><Button
+            title="ADD PROFILE"
+            onPress={() => navigation.navigate("CreateProfile")}
+          ></Button><Button
+            title="MODIFY PROFILE"
+            onPress={() => navigation.navigate("ModifyProfile")}
+          ></Button><Button onPress={() => notifDaily()} title="Notification quotidienne" /><Button onPress={notificationForgot} title="Notification oubli" /><Button onPress={showTreatments} title="Liste des traitements" /><Button onPress={deleteTreatments} title="Supprimer traitements" /><Button onPress={createTreatmentTest1} title="TraitementTest 1" /><Button onPress={reset} title="reset" />
       {treatments &&
         treatments.map((treatment) => {
           return (
@@ -149,7 +139,18 @@ export default function Settings({ navigation }) {
         <Text>PAS DE VARIABLE ASYNC TREATMENT</Text>
       ) : treatments.length == 0 ? (
         <Text>TREATMENTS VIDE</Text>
-      ) : null}
+      ) : null}</>
+      }
+      
+      <TouchableOpacity
+        onPress={() => {
+          setDebug(!debug);
+        }}
+      >
+        <Text className="text-center text-[#9CDE00] mt-3 font-bold">
+          TOGGLE DEBUG
+        </Text>
+      </TouchableOpacity>
       <FlatList
         data={settingsData}
         keyExtractor={(item) => item.id}
