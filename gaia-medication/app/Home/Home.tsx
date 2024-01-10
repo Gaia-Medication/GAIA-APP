@@ -23,15 +23,7 @@ import {
 } from "../../dao/Storage";
 import { styles } from "../../style/style";
 import AvatarButton from "../component/Avatar";
-import { getUserByID, readList } from "../../dao/Storage";
-import { Bell } from "react-native-feather";
-import { Button, Input } from "react-native-elements";
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Icon from "react-native-feather";
-
-
-import * as Notifications from "expo-notifications";
 import { trouverNomMedicament } from "../../dao/Search";
 import Loading from "../component/Loading";
 import { initDailyNotifications } from "../Handlers/NotificationsHandler";

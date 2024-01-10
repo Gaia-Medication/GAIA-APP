@@ -130,11 +130,11 @@ export default function Suivis({ navigation }) {
     takes.length !== 0
       ? takes.findIndex((take) => compareDates(take.take.date) === "actual")
         ? (actualIndex = takes.findIndex(
-            (take) => compareDates(take.take.date) === "actual"
-          ))
+          (take) => compareDates(take.take.date) === "actual"
+        ))
         : (actualIndex = takes.findIndex(
-            (take) => compareDates(take.take.date) === "previous"
-          ))
+          (take) => compareDates(take.take.date) === "previous"
+        ))
       : null;
 
     console.log(actualIndex);
@@ -220,11 +220,20 @@ export default function Suivis({ navigation }) {
         <View className=" flex border-1">
           <View className="flex-row justify-between items-center px-5 py-2 border-b border-gray-200">
             <Text className=" text-4xl font-bold pt-3">À venir</Text>
-            <TouchableOpacity
-              onPress={() => navigation.navigate("AddTreatment")}
-            >
-              <Text className=" text-[#9CDE00] text-lg font-bold">Ajouter</Text>
-            </TouchableOpacity>
+            <View style={{ display: "flex", flexDirection: "column" }}>
+              <TouchableOpacity
+                onPress={() => navigation.navigate("ManageTreatments")}
+              >
+                <Text className=" text-[#9CDE00] text-lg font-bold">Gestion des traitements</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => navigation.navigate("AddTreatment")}
+              >
+                <Text className=" text-[#9CDE00] text-lg font-bold">Ajouter</Text>
+              </TouchableOpacity>
+            </View>
+
+
           </View>
           <FlatList
             contentContainerStyle={{
@@ -246,7 +255,7 @@ export default function Suivis({ navigation }) {
                 this.flatList.scrollToIndex({ index: scroll });
               }
             }}
-            onScrollToIndexFailed={() => {}}
+            onScrollToIndexFailed={() => { }}
             renderItem={({ item }) => {
               return (
                 <Treatment

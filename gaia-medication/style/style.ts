@@ -222,5 +222,23 @@ export const styles = StyleSheet.create({
     height: "100%",
     width: "100%",
   },
+  square: {
+    flex: 1,
+    margin: 8,
+    padding: 15,
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+  },
+  customContainer: {
+    flex: 1,
+    resizeMode: "cover",
+    backgroundColor: "black",
+  },
+  customContent: {
+    flex: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)', // Background color for content with opacity
+    padding: 16,
+    justifyContent: 'center', // Center content vertically
+  },
 
 });
