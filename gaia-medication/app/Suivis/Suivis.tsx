@@ -136,16 +136,9 @@ export default function Suivis({ navigation }) {
       : null;
 
     console.log(actualIndex);
-    setScroll(actualIndex)
+    setScroll(actualIndex);
     setTakes(takes);
     console.log("Takes");
-  }
-
-  const init = async () => {
-    await getTreatments();
-    await getTakes();
-    setIsLoading(false);
-    console.log("fin init");
   };
 
   useEffect(() => {
@@ -179,7 +172,9 @@ export default function Suivis({ navigation }) {
         <TutorialBubble
           isClicked={handleTuto}
           styleAdded={{ top: "1%", left: "40%" }}
-          text={"Et c'est dans le Stock, \noù vous retrouvez tous \ntes médicaments , 3/4"}
+          text={
+            "Et c'est dans le Stock, \noù vous retrouvez tous \ntes médicaments , 3/4"
+          }
         ></TutorialBubble>
       )}
       {tutoStep === 3 && tutoTreatment === "0" && (
@@ -192,7 +187,7 @@ export default function Suivis({ navigation }) {
       {isLoading ? (
         <View
           style={{
-            backgroundColor:"white",
+            backgroundColor: "white",
             position: "absolute",
             display: "flex",
             justifyContent: "center",
@@ -223,46 +218,49 @@ export default function Suivis({ navigation }) {
       {takes && takes.length !== 0 ? (
         <View className=" flex border-1">
           <View className="flex-row justify-between items-center px-5 py-2 border-b border-gray-200">
-            <Text className=" text-4xl font-bold pt-3">
-              À venir
-            </Text>
+            <Text className=" text-4xl font-bold pt-3">À venir</Text>
             <TouchableOpacity
               onPress={() => navigation.navigate("AddTreatment")}
             >
-              <Text className=" text-[#9CDE00] text-lg font-bold">
-                Ajouter
-              </Text>
+              <Text className=" text-[#9CDE00] text-lg font-bold">Ajouter</Text>
             </TouchableOpacity>
-
           </View>
-            <FlatList
-              contentContainerStyle={{paddingHorizontal:20, paddingBottom:160}}
-              //initialScrollIndex={scroll}
-              ref={ref => (this.flatList = ref)}
-              showsVerticalScrollIndicator={false}
-              data={takes}
-              keyExtractor={(take, index) => index.toString()}
-              onContentSizeChange={() => {
-                  if (this.flatList && this.flatList.scrollToIndex && takes && takes.length) {
-                      this.flatList.scrollToIndex({  index: scroll });
-                  }
-              }}
-              onScrollToIndexFailed={() => {}}
-              renderItem={({ item }) => {
-                return (
-                  <Treatment
-                    onPress={null}
-                    status={compareDates(item.take.date)}
-                    take={item.take}
-                    treatmentName={item.treatmentName}
-                    treatmentDescription={item.treatmentDescription}
-                    med={item.med}
-                    onTakePress={toggleTakeTaken}
-                    validateModalFun={changeTreatments}
-                  />
-                );
-              }}
-            />
+          <FlatList
+            contentContainerStyle={{
+              paddingHorizontal: 20,
+              paddingBottom: 160,
+            }}
+            //initialScrollIndex={scroll}
+            ref={(ref) => (this.flatList = ref)}
+            showsVerticalScrollIndicator={false}
+            data={takes}
+            keyExtractor={(take, index) => index.toString()}
+            onContentSizeChange={() => {
+              if (
+                this.flatList &&
+                this.flatList.scrollToIndex &&
+                takes &&
+                takes.length
+              ) {
+                this.flatList.scrollToIndex({ index: scroll });
+              }
+            }}
+            onScrollToIndexFailed={() => {}}
+            renderItem={({ item }) => {
+              return (
+                <Treatment
+                  onPress={null}
+                  status={compareDates(item.take.date)}
+                  take={item.take}
+                  treatmentName={item.treatmentName}
+                  treatmentDescription={item.treatmentDescription}
+                  med={item.med}
+                  onTakePress={toggleTakeTaken}
+                  validateModalFun={changeTreatments}
+                />
+              );
+            }}
+          />
         </View>
       ) : (
         <View
