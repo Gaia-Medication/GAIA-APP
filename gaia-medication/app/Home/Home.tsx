@@ -40,7 +40,7 @@ export default function Home({ navigation }) {
   const [header, setHeader] = useState(true);
 
   const [smallTutoStep, setSmallTutoStep] = useState(0);
-  const [tutoHome, setTutoHome] = useState("0");
+  const [tutoHome, setTutoHome] = useState(null);
   const formatHour = (hour) => {
     if (hour instanceof Date) {
       const hours = hour.getHours();

@@ -136,7 +136,7 @@ export default function Map({ navigation }) {
     setPoints(newPoints);
   }, [region]);
 
-  const [tutoMap, setTutoMap] = useState("0");
+  const [tutoMap, setTutoMap] = useState(null);
 
   useEffect(() => {
     tuto();
