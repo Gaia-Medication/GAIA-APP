@@ -1015,8 +1015,8 @@ export default function AddTreatment({ navigation }: ICreateProps) {
         setCheckLast("");
         setCheckQty("");
         setCheckDaily("");
-        setFrequencyMode("");
-        setCustomPeriodicity("");
+        setFrequencyMode("regular");
+        setCustomPeriodicity("day");
         setCustomPeriodicityNumber("");
         setCustomPeriodicityBisNumber("");
         setEndDate(new Date());
@@ -1024,6 +1024,8 @@ export default function AddTreatment({ navigation }: ICreateProps) {
         setArrayOfDates([]);
         setTakes([]);
         setCheckedDates([]);
+        setQuantity(0);
+        setEndNumber(0);
         setSelectedHour(new Date());
         setSelectedHourBis(new Date());
         setShowHourPicker(Array.from({ length: parseInt(customPeriodicityNumber) }, (_, index) => false));
