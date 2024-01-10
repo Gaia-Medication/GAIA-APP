@@ -30,8 +30,8 @@ export default function AddTreatment({ navigation }: ICreateProps) {
     const [search, setSearch] = useState(searchMed("E"));
     const [searchText, setSearchText] = useState("");
     const [endDate, setEndDate] = useState(new Date());
-    const [endNumber, setEndNumber] = useState(0);
-    const [quantity, setQuantity] = useState(0);
+    const [endNumber, setEndNumber] = useState("");
+    const [quantity, setQuantity] = useState("");
     const [digitInput, setDigitInput] = useState("0");
     const [customPeriodicityBisNumber, setCustomPeriodicityBisNumber] = useState("0");
     const [customPeriodicityNumber, setCustomPeriodicityNumber] = useState("0");
@@ -200,7 +200,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
                     treatmentName: treatmentName,
                     CIS: Number(selectedMedCIS),
                     date: date.toISOString(),
-                    quantity: quantity,
+                    quantity: Number(quantity),
                     taken: false,
                     review: ""
                 });
@@ -325,7 +325,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
         };
         let startDateObj = new Date(startDate);
         const daysDifference = checkLast === 'last' ? Math.floor((Number(endDate) - Number(startDateObj)) / (24 * 60 * 60 * 1000)) : null
-        const numberOfTimes = checkLast === 'last' ? (frequencyMode === "regular" ? (customPeriodicity === "day" ? parseInt(customPeriodicityNumber) * daysDifference + parseInt(customPeriodicityNumber) : calculateTotalTakes()) : (calculateTakesEveryXDays())) : endNumber;
+        const numberOfTimes = checkLast === 'last' ? (frequencyMode === "regular" ? (customPeriodicity === "day" ? parseInt(customPeriodicityNumber) * daysDifference + parseInt(customPeriodicityNumber) : calculateTotalTakes()) : (calculateTakesEveryXDays())) : Number(endNumber);
         let currentDate = new Date(startDateObj);
         const intervalDays = parseInt(customPeriodicityBisNumber);
         console.log("DAYS DIFFERENCE ", daysDifference)
@@ -413,8 +413,8 @@ export default function AddTreatment({ navigation }: ICreateProps) {
                     fontSize: 16,
                     marginBottom: 10
                 }}
-                onChangeText={(text) => setEndNumber(parseInt(text))}
-                value={endNumber ? endNumber.toString() : ""}
+                onChangeText={(text) => setEndNumber(text)}
+                value={endNumber ? endNumber : ""}
                 keyboardType="numeric"
             ></TextInput>
         </View>
@@ -755,7 +755,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
             <TextInput
                 style={{ borderWidth: 1, borderColor: 'gray', borderRadius: 5, paddingHorizontal: 8, paddingVertical: 6, fontSize: 16 }}
                 onChangeText={(text) => {
-                    setQuantity(parseInt(text))
+                    setQuantity(text)
                     associateDigitWithDates(text)
                 }}
                 value={quantity ? quantity.toString() : ""}
@@ -852,8 +852,8 @@ export default function AddTreatment({ navigation }: ICreateProps) {
 
             endModality: checkLast, // COMMENT S'ARRÊTE LE TRAITEMENT ? (NOMBRE DE PRIS OU DATE DE FIN)
             endDate: checkLast === 'last' ? endDate : null, // DATE DE FIN SI FIN À UNE DATE PRÉCISE
-            endQuantity: checkLast === 'number' ? endNumber : null, // NOMBRE DE PRIS SI FIN AU BOUT D'UN CERTAIN NOMBRE DE PRIS
-            quantity: checkQty === 'regular' ? quantity : null, // QUANTITÉ À PRENDRE À CHAQUE PRISE SI QUANTITÉ RÉGULIÈRE
+            endQuantity: checkLast === 'number' ? Number(endNumber) : null, // NOMBRE DE PRIS SI FIN AU BOUT D'UN CERTAIN NOMBRE DE PRIS
+            quantity: checkQty === 'regular' ? Number(quantity) : null, // QUANTITÉ À PRENDRE À CHAQUE PRISE SI QUANTITÉ RÉGULIÈRE
             takes: takes, // TABLEAU DES PRISES
         };
         await addItemToList('instructions', newInstruction);
@@ -926,7 +926,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
                 canValidate = false;
             }
             if (checkLast === "number") {
-                if (endNumber === 0) {
+                if (parseInt(endNumber) === 0 || endNumber === "") {
                     missingFields += "Le nombre total de prises \n\n";
                     canValidate = false;
                 }
@@ -936,13 +936,23 @@ export default function AddTreatment({ navigation }: ICreateProps) {
                     canValidate = false;
                 }
             }
+            if (checkQty === "") {
+                missingFields += "La régularité des quantitées \n (régulière ou personnalisée)\n\n";
+                canValidate = false;
+            }
+            if (checkQty === "regular") {
+                if (parseInt(quantity) === 0 || quantity === "") {
+                    missingFields += "Une quantité globale valide \n\n";
+                    canValidate = false;
+                }
+            }
         } else if (checkFrequency === "custom") {
             if (checkQty === "") {
                 missingFields += "La régularité des quantitées \n (régulière ou personnalisée)\n\n";
                 canValidate = false;
             }
             if (checkQty === "regular") {
-                if (quantity === 0) {
+                if (parseInt(quantity) === 0 || quantity === "") {
                     missingFields += "Une quantité globale valide \n\n";
                     canValidate = false;
                 }
@@ -1024,8 +1034,8 @@ export default function AddTreatment({ navigation }: ICreateProps) {
         setArrayOfDates([]);
         setTakes([]);
         setCheckedDates([]);
-        setQuantity(0);
-        setEndNumber(0);
+        setQuantity("0");
+        setEndNumber("0");
         setSelectedHour(new Date());
         setSelectedHourBis(new Date());
         setShowHourPicker(Array.from({ length: parseInt(customPeriodicityNumber) }, (_, index) => false));
