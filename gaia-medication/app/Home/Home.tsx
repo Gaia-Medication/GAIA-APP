@@ -53,12 +53,7 @@ export default function Home({ navigation }) {
     });
     
     const today = new Date();
-    const nextTakeIndex = takes.findIndex((take) => {
-      const takeDate = new Date(take.take.date);
-      return takeDate > today;
-    });
-    console.log(nextTakeIndex-1)
-    setNextTake(nextTakeIndex-1) 
+    
     today.setHours(0, 0, 0, 0);
 
     const todaysTakes = takes.filter((take) => {
@@ -66,6 +61,13 @@ export default function Home({ navigation }) {
       currentDate.setHours(0, 0, 0, 0);
       return currentDate.toISOString() === today.toISOString();
     });
+    const now = new Date();
+    const nextTakeIndex = todaysTakes.findIndex((take) => {
+      const takeDate = new Date(take.take.date);
+      return takeDate > now;
+    });
+    console.log(nextTakeIndex-1)
+    setNextTake(nextTakeIndex-1) 
     setTakes(todaysTakes);
     const currentId = await AsyncStorage.getItem("currentUser");
     if (userList.length < 1) {
@@ -235,7 +237,7 @@ export default function Home({ navigation }) {
         
                   }} />
                   <View>
-                    <Text style={{ color: nextTake !== index  ? "#7B7B7B" : "black", fontWeight: "bold" }}>Description : {index}{nextTake&&nextTake}</Text>
+                    <Text style={{ color: nextTake !== index  ? "#7B7B7B" : "black", fontWeight: "bold" }}>Description :</Text>
                     <Text style={{ color: "#C9C9C9", fontWeight: "700" }} numberOfLines={3} ellipsizeMode="tail">{item.treatmentDescription ? item.treatmentDescription : "Aucune description..."}</Text>
                   </View>
         

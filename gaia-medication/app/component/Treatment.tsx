@@ -26,7 +26,7 @@ const Treatment = ({ onPress, status = "actual" as "actual" | "next" | "previous
   const [date, setDate] = useState<Date>(new Date());
   const [takeDetailsModalVisible, setTakeDetailsModalVisible] = useState(false);
   const [newTxt, setNewTxt] = useState("");
-
+  
 
   const init = () => {
     setNewTxt(take.review);

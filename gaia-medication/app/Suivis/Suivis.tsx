@@ -30,8 +30,7 @@ export default function Suivis({ navigation }) {
   const [treatments, setTreatments] = useState<Treatment[]>([]);
   const [takes, setTakes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [scroll, setScroll] = useState(false);
-  const scrollViewRef = useRef(null);
+  const [scroll, setScroll] = useState(0);
 
   const changeTreatments = async (tak: Take) => {
     console.log(tak);
@@ -102,7 +101,20 @@ export default function Suivis({ navigation }) {
       const dateB = new Date(b.take.date);
       return dateA.getTime() - dateB.getTime();
     });
-    //takes.map(item=>console.log(item))
+    
+    let actualIndex = null;
+    takes.length !== 0
+      ? takes.findIndex((take) => compareDates(take.take.date) === "actual")
+        ? (actualIndex = takes.findIndex(
+            (take) => compareDates(take.take.date) === "actual"
+          ))
+        : (actualIndex = takes.findIndex(
+            (take) => compareDates(take.take.date) === "previous"
+          ))
+      : null;
+
+    console.log(actualIndex);
+    setScroll(actualIndex)
     setTakes(takes);
     console.log("Takes");
   }
@@ -117,34 +129,11 @@ export default function Suivis({ navigation }) {
   useEffect(() => {
     if (isFocused) {
       console.log("Nav on Suivis Page");
-      setScroll(true)
       setIsLoading(true);
 
       init();
     }
   }, [isFocused]);
-
-  useEffect(() => {
-    if(scroll){
-      let actualIndex = null;
-      takes.length !== 0
-        ? takes.findIndex((take) => compareDates(take.take.date) === "actual")
-          ? (actualIndex = takes.findIndex(
-              (take) => compareDates(take.take.date) === "actual"
-            ))
-          : (actualIndex = takes.findIndex(
-              (take) => compareDates(take.take.date) === "previous"
-            ))
-        : null;
-  
-      console.log(actualIndex);
-      if (actualIndex && actualIndex !== -1) {
-        const positionToScroll = 275 * actualIndex;
-        scrollViewRef.current.scrollTo({ y: positionToScroll, animated: true });
-      }
-      setScroll(false)
-    }
-  }, [takes]);
 
   return (
     <View style={styles.container}>
@@ -194,47 +183,34 @@ export default function Suivis({ navigation }) {
             </TouchableOpacity>
 
           </View>
-          <ScrollView ref={scrollViewRef} showsVerticalScrollIndicator={false}>
-            <View className="px-5 pb-40">
-              {/* <FlatList
-                className=""
-                ref={scrollViewRef}
-                showsVerticalScrollIndicator={false}
-                data={takes}
-                keyExtractor={(take, index) => index.toString()}
-                renderItem={({ item }) => {
-                  return (
-                    <Treatment
-                      onPress={null}
-                      status={compareDates(item.take.date)}
-                      take={item.take}
-                      treatmentName={item.treatmentName}
-                      treatmentDescription={item.treatmentDescription}
-                      med={item.med}
-                      onTakePress={toggleTakeTaken}
-                      validateModalFun={changeTreatments}
-                    />
-                  );
-                }}
-              /> */}
-              {takes &&
-                takes.map((take, index) => (
-                  <View key={index}>
-                    <Treatment
-                      key={index}
-                      onPress={null}
-                      status={compareDates(take.take.date)}
-                      take={take.take}
-                      treatmentName={take.treatmentName}
-                      treatmentDescription={take.treatmentDescription}
-                      med={take.med}
-                      onTakePress={toggleTakeTaken}
-                      validateModalFun={changeTreatments}
-                    />
-                  </View>
-                ))}
-            </View>
-          </ScrollView>
+            <FlatList
+              contentContainerStyle={{paddingHorizontal:20, paddingBottom:160}}
+              //initialScrollIndex={scroll}
+              ref={ref => (this.flatList = ref)}
+              showsVerticalScrollIndicator={false}
+              data={takes}
+              keyExtractor={(take, index) => index.toString()}
+              onContentSizeChange={() => {
+                  if (this.flatList && this.flatList.scrollToIndex && takes && takes.length) {
+                      this.flatList.scrollToIndex({  index: scroll });
+                  }
+              }}
+              onScrollToIndexFailed={() => {}}
+              renderItem={({ item }) => {
+                return (
+                  <Treatment
+                    onPress={null}
+                    status={compareDates(item.take.date)}
+                    take={item.take}
+                    treatmentName={item.treatmentName}
+                    treatmentDescription={item.treatmentDescription}
+                    med={item.med}
+                    onTakePress={toggleTakeTaken}
+                    validateModalFun={changeTreatments}
+                  />
+                );
+              }}
+            />
         </View>
       ) : (
         <View
