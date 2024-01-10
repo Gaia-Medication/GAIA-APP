@@ -129,7 +129,7 @@ export const getAllTreatments = async (): Promise<Treatment[]> => {
           takes: instr.takes,
         }
         instructionsArray.push(instruction)
-      }): null
+      }) : null
       const treatmentObject: Treatment = {
         name: treatment.name,
         userId: treatment.userId,
@@ -138,7 +138,7 @@ export const getAllTreatments = async (): Promise<Treatment[]> => {
         instructions: instructionsArray
       }
       arrayOfTreatments.push(treatmentObject)
-    }): null
+    }) : null
     return arrayOfTreatments
   } catch (error) {
     console.error(error);
@@ -214,7 +214,7 @@ export async function getDaysTakes() {
           }
 
           // Add the take to the corresponding date's array
-          groupedTakesByDay[dateKey].push({...take, medName: medName});
+          groupedTakesByDay[dateKey].push({ ...take, medName: medName });
         } else {
           console.error("Date invalide");
         }
@@ -224,3 +224,36 @@ export async function getDaysTakes() {
 
   return groupedTakesByDay;
 }
+
+export async function dropTake(take) {
+  const allTreatments = await getAllTreatments();
+  allTreatments ? allTreatments.forEach((treatment) => {
+    if (treatment.name === take.treatmentName) {
+      treatment ? treatment.instructions.forEach((instruction) => {
+        instruction ? instruction.takes.forEach((tak, index) => {
+          if (new Date(tak.date).toISOString() === new Date(take.date).toISOString()){
+            instruction.takes.splice(index, 1);
+          }
+            
+        }) : null;
+      }) : null;
+    }
+    
+  }) : null;
+  await AsyncStorage.setItem("treatments", JSON.stringify(allTreatments));
+}
+
+
+export async function addTake(take) {
+  
+    const allTreatments = await getAllTreatments();
+    allTreatments ? allTreatments.forEach((treatment) => {
+      if (treatment.name === take.treatmentName) {
+        treatment ? treatment.instructions.forEach((instruction) => {
+          instruction ? instruction.takes.push(take) : null;
+        }) : null;
+      }
+      
+    }) : null;
+    await AsyncStorage.setItem("treatments", JSON.stringify(allTreatments));
+  }
