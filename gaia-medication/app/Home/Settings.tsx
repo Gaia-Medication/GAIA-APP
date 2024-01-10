@@ -23,7 +23,7 @@ export default function Settings({ navigation }) {
   ];
   const handleItemClick = (pageId) => {
     // Navigate to the selected settings page
-    Navigation.navigate(pageId);
+    navigation.navigate(pageId);
   };
   
 
@@ -74,19 +74,6 @@ export default function Settings({ navigation }) {
     AsyncStorage.removeItem("treatments");
   };
 
-  const notifDaily = async () => {
-    dateNotification.setHours(18, 37, 0, 0);
-    const dateTake = new Date();
-    dateTake.setHours(22, 0, 0, 0);
-    const notif = await notificationDaily(
-      "Nathan",
-      [{
-        hour: dateTake,
-        med: "Doliprane",
-      }],
-      dateNotification
-      );
-  }
   const reset = () => {
     AsyncStorage.removeItem("users"), AsyncStorage.removeItem("stock");
     AsyncStorage.removeItem("treatments");
@@ -130,7 +117,6 @@ export default function Settings({ navigation }) {
         title="MODIFY PROFILE"
         onPress={() => navigation.navigate("ModifyProfile")}
       ></Button>
-      <Button onPress={() => notifDaily()} title="Notification quotidienne" />
       <Button onPress={notificationForgot} title="Notification oubli" />
       <Button onPress={showTreatments} title="Liste des traitements" />
       <Button onPress={deleteTreatments} title="Supprimer traitements" />
