@@ -104,7 +104,6 @@ export default function Home({ navigation }) {
       const takeDate = new Date(take.take.date);
       return takeDate > now;
     });
-    console.log(nextTakeIndex)
     setNextTake(nextTakeIndex) 
     setTakes(todaysTakes.filter(take=>take.take.userId==user.id));
     
@@ -189,7 +188,7 @@ export default function Home({ navigation }) {
         source={require("../../assets/logo_title_gaia.png")}
       ></Image>
       <View className=" flex bg-white w-full h-full flex-1" style={{ gap: 20 }}>
-      {user && takes && (
+      {user && takes && stock && (
         <>
           {smallTutoStep === 0 && tutoHome === "0" && (
             <TutorialBubble
@@ -294,7 +293,7 @@ export default function Home({ navigation }) {
               takes &&
               takes.length
             ) {
-              this.flatList.scrollToIndex({ index: nextTake });
+              this.flatList.scrollToIndex({ index: nextTake<0?takes.length-1:nextTake });
             }
           }}
           data={takes}

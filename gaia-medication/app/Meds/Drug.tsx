@@ -38,13 +38,11 @@ import TutorialBubble from "../component/TutorialBubble";
 
 export default function Drug({ route, navigation }) {
   const [drugModalVisible, setDrugModalVisible] = useState(false);
-  const [drugsToAdd, setDrugsToAdd] = useState(null);
   const isFocused = useIsFocused();
   const [user, setUser] = useState<User | null>(null);
   const [showMore, setShowMore] = useState(5);
   const [stock, setStock] = useState(null);
   const [allergique, setAllergique] = useState(false);
-  const [gens, setGens] = useState([]);
   const [sameComp, setSameComp] = useState([]);
 
   const { drugCIS, context } = route.params;
@@ -64,7 +62,6 @@ export default function Drug({ route, navigation }) {
         .map((allergie) => Array.from(getPAfromMed(drugCIS)).includes(allergie))
         .some((bool) => bool)
     );
-    setGens(getAllGenOfCIS(drugCIS));
     setSameComp(getAllSameCompOfCIS(drugCIS));
     setStock(
       stockList.filter(
@@ -98,9 +95,44 @@ export default function Drug({ route, navigation }) {
     }
   };
 
-  const deleteFromStock = async (cis, cip, idUser) => {
+  const updateStock = async (cis, cip,addQte) => {
     try {
-      await removeItemFromStock(cis, cip, idUser);
+      const product=stock.find((stockItem) => stockItem.CIP === cip)
+      if(product){
+        await removeItemFromStock(cis, cip, user.id);
+        if(product.qte+addQte>0){
+          const addstock: Stock = {
+            idUser: user.id,
+            CIP: cip,
+            CIS: cis,
+            qte: product.qte+addQte,
+          };
+          console.log(addstock);
+    
+          await addItemToList("stock", addstock);
+          //setStock([...stock, addstock]);
+        }
+      }else{
+        const addstock: Stock = {
+          idUser: user.id,
+          CIP: cip,
+          CIS: cis,
+          qte: 1,
+        };
+        console.log(addstock);
+  
+        await addItemToList("stock", addstock);
+        //setStock([...stock, addstock]);
+      }
+      init();
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const deleteFromStock = async (cis, cip, ) => {
+    try {
+      await removeItemFromStock(cis, cip, user.id);
       init();
     } catch (e) {
       console.log(e);
@@ -384,50 +416,67 @@ export default function Drug({ route, navigation }) {
             styleAdded={{
               backgroundColor: "white",
               borderRadius: 10,
-              padding: 20,
-              minWidth: 300,
+              paddingHorizontal: 20,
+              maxWidth: "80%",
               maxHeight: "60%",
             }}
             visible={drugModalVisible}
             onClose={() => setDrugModalVisible(!drugModalVisible)}
           >
-            <Text>Ajouter un Medicament</Text>
-            {drug.Values.map((item, index) => {
-              const alreadyStocked =
-                stock.find((stockItem) => stockItem.CIP === item.CIP) != null;
+            <View>
+              {drug.Values.map((item, index) => {
+                const alreadyStocked =
+                  stock.find((stockItem) => stockItem.CIP === item.CIP) != null;
 
-              return (
-                <View key={index}>
-                  <Text className=" font-light">{item.CIP}</Text>
-                  <Text className=" text-xs">{item.Denomination}</Text>
+                return (
+                  <View key={index} className="flex-row items-center py-2 border-b border-gray-200">
+                    <View className="flex-1">
+                      <Text className=" font-light">{item.CIP}</Text>
+                      <Text className=" text-xs">{item.Denomination}</Text>
+                    </View>
 
-                  {alreadyStocked ? (
-                    <>
-                      <TouchableOpacity className="bg-green-400 text-center">
-                        <Text className="text-center">In stock</Text>
-                      </TouchableOpacity>
+                    {alreadyStocked ? (
+                      <>
+                        <TouchableOpacity
+                          className="px-2"
+                          onPress={() => {
+                            updateStock(item.CIS, item.CIP,+1)
+                          }}
+                        >
+                          <Text className="">➕</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          className="px-2"
+                          onPress={() =>
+                            updateStock(item.CIS, item.CIP,-1)
+                          }
+                        >
+                          <Text className="">❌</Text>
+                        </TouchableOpacity>
+                      </>
+                    ) : (
                       <TouchableOpacity
-                        className="bg-red-400 text-center"
-                        onPress={() =>
-                          deleteFromStock(item.CIS, item.CIP, user.id)
-                        }
+                        className="px-2"
+                        onPress={() => {
+                          updateStock(item.CIS, item.CIP,+1)
+                        }}
                       >
-                        <Text className="text-center">❌</Text>
+                        <Text className="">➕</Text>
                       </TouchableOpacity>
-                    </>
-                  ) : (
-                    <TouchableOpacity
-                      className="bg-blue-400"
-                      onPress={() => {
-                        addToStock(item);
-                      }}
-                    >
-                      <Text className="text-center">Add</Text>
-                    </TouchableOpacity>
-                  )}
-                </View>
-              );
-            })}
+                    )}
+                  </View>
+                );
+              })}
+              <View className="mt-4">
+                {stock.map((item, index) => {
+                  return(
+                    <View key={index}className="flex-row">
+                      <Text >x{item.qte} - {drug.Values.find(prod=>prod.CIP==item.CIP).Denomination}</Text>
+                    </View>
+                  )
+                })}
+              </View>
+            </View>
           </ModalComponent>
         </>
       )}

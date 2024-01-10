@@ -85,6 +85,9 @@ export default function Search({ route, navigation }) {
           />
         </View>
       </View>
+      <View className="flex w-full h-80 justify-center items-center">
+        <Image className="w-24 h-24 -mt-4" source={require("../../assets/composition.png")} />
+      </View>
       <FlatList
         data={search}
         keyExtractor={(_item, index) => index.toString()}
