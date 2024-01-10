@@ -170,6 +170,7 @@ export default function Home({ navigation }) {
 
   const handleTuto = (isClicked: boolean) => {
     if (tutoHome === "1") {
+      AsyncStorage.setItem("TutoHome", "2");
       navigation.navigate("SuivisHandler");
     }
     if (smallTutoStep === 2) {
