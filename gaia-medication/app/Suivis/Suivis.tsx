@@ -117,15 +117,8 @@ export default function Suivis({ navigation }) {
       return dateA.getTime() - dateB.getTime();
     });
     setTakes(takes);
-    console.log("Takes");
-  }
 
-  const init = async () => {
-    setTutoTreatment(await AsyncStorage.getItem("TutoTreatment"));
-    await getTreatments();
-    await getTakes();
-    setIsLoading(false);
-
+    
     let actualIndex = null;
     takes.length !== 0
       ? takes.findIndex((take) => compareDates(take.take.date) === "actual")
@@ -136,9 +129,16 @@ export default function Suivis({ navigation }) {
             (take) => compareDates(take.take.date) === "previous"
           ))
       : null;
-
-    console.log(actualIndex);
+      
     setScroll(actualIndex);
+    console.log("Takes");
+  }
+
+  const init = async () => {
+    setTutoTreatment(await AsyncStorage.getItem("TutoTreatment"));
+    await getTreatments();
+    await getTakes();
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -231,7 +231,6 @@ export default function Suivis({ navigation }) {
               paddingHorizontal: 20,
               paddingBottom: 160,
             }}
-            //initialScrollIndex={scroll}
             ref={(ref) => (this.flatList = ref)}
             showsVerticalScrollIndicator={false}
             data={takes}
