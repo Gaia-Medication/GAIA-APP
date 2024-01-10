@@ -19,6 +19,7 @@ import ModifyProfile from "./Profile/ModifyProfile";
 import NotificationsSettings from "./Home/Settings/NotificationsSettings";
 import UsersSettings from "./Home/Settings/UsersSettings";
 import Notifications from "./Home/Notifications";
+import AllergySelector from "./component/AllergySelector";
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -33,8 +34,16 @@ export default function Navigation() {
           component={HomeHandler}
           options={{ headerShown: false }}
         />
-        <Stack.Screen name="CreateProfile" component={CreateProfile} />
-        <Stack.Screen name="ModifyProfile" component={ModifyProfile} />
+        <Stack.Screen
+          name="CreateProfile"
+          component={CreateProfile}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="ModifyProfile"
+          component={ModifyProfile}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen name="AddTreatment" component={AddTreatment} />
         <Stack.Screen name="Settings" component={Settings} />
         <Stack.Screen name="Notifications" component={Notifications} />

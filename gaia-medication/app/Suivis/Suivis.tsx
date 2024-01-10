@@ -7,29 +7,45 @@ import {
   ScrollView,
   Image,
   ActivityIndicator,
-  FlatList
+  FlatList,
 } from "react-native";
 import * as Icon from "react-native-feather";
 import { getAllMed } from "../../dao/Meds";
-import { addItemToList, getAllTreatments, getTreatmentByName, initTreatments } from "../../dao/Storage";
+import {
+  addItemToList,
+  getAllTreatments,
+  getTreatmentByName,
+  initTreatments,
+} from "../../dao/Storage";
 import { styles } from "../../style/style";
 import Treatment from "../component/Treatment";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ModalComponent from "../component/Modal";
-import { Modal } from "react-native-paper";
 import { BlurView } from "expo-blur";
 import * as Notifications from "expo-notifications";
+import TutorialBubble from "../component/TutorialBubble";
 
 export default function Suivis({ navigation }) {
   const isFocused = useIsFocused();
   const [treatments, setTreatments] = useState<Treatment[]>([]);
   const [takes, setTakes] = useState([]);
-  const [isToday, setIsToday] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const scrollViewRef = useRef(null);
   const [scheduledNotifications, setScheduledNotifications] = useState([]);
+  const [scroll, setScroll] = useState(0);
+
+  const [tutoTreatment, setTutoTreatment] = useState(null);
+  const [tutoStep, setTutoStep] = useState(0);
+
+  const handleTuto = (isClicked) => {
+    setTutoStep(tutoStep + 1);
+    console.log(tutoStep);
+    if (tutoStep === 3) {
+      AsyncStorage.setItem("TutoTreatment", "1");
+      navigation.navigate("Map");
+    }
+  };
 
   const changeTreatments = async (tak: Take) => {
     console.log(tak);
@@ -44,18 +60,20 @@ export default function Suivis({ navigation }) {
               }
             });
           }
-        })
+        });
       }
     });
     setTreatments(treatments);
-    AsyncStorage.setItem('treatments', JSON.stringify(treatments));
-  }
-
+    AsyncStorage.setItem("treatments", JSON.stringify(treatments));
+  };
 
   const toggleTakeTaken = (tak: Take) => {
     let takesUpdate = [...takes];
     takesUpdate.forEach((take) => {
-      if (take.take.date === tak.date && take.treatmentName === tak.treatmentName) {
+      if (
+        take.take.date === tak.date &&
+        take.treatmentName === tak.treatmentName
+      ) {
         take.take.taken = !take.take.taken;
       }
     });
@@ -63,38 +81,32 @@ export default function Suivis({ navigation }) {
     changeTreatments(tak);
   };
 
-
-  function compareDates(targetDate, currentDate = new Date()): "previous" | "actual" | "next" {
+  function compareDates(
+    targetDate,
+    currentDate = new Date()
+  ): "previous" | "actual" | "next" {
     // Set the time to midnight for both dates
-    currentDate.setHours(0, 0, 0, 0);
+    const today = new Date(currentDate);
     const dateObj = new Date(targetDate);
     dateObj.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
 
     // Compare using ISO date strings
-    if (dateObj.toISOString() < currentDate.toISOString()) {
+    let fourHoursAgo = new Date(currentDate);
+    fourHoursAgo.setHours(currentDate.getHours() - 6);
+    if (new Date(targetDate) <= fourHoursAgo) {
       return "previous";
-    } else if (dateObj.toISOString() === currentDate.toISOString()) {
-      return "actual";
-    } else {
+    } else if (dateObj.toISOString() > today.toISOString()) {
       return "next";
+    } else {
+      return "actual";
     }
   }
-
-  const isTodayInDates = (takes: any[]): boolean => {
-    if (takes.length === 0) return false;
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    return takes.length === 0 ? false :
-      takes.some((take: { take: Take, tre: Treatment }) => {
-        const currentDate = new Date(take.take.date);
-        currentDate.setHours(0, 0, 0, 0);
-        return currentDate.getTime() === today.getTime();
-      });
-  };
 
   async function getTreatments() {
     const treatments = await getAllTreatments();
     setTreatments(treatments);
+    console.log("Treatments");
   }
 
   async function getTakes() {
@@ -103,48 +115,86 @@ export default function Suivis({ navigation }) {
       const dateA = new Date(a.take.date);
       const dateB = new Date(b.take.date);
       return dateA.getTime() - dateB.getTime();
-    })
+    });
     setTakes(takes);
-    setIsToday(isTodayInDates(takes));
+    console.log("Takes");
   }
 
   const init = async () => {
+    setTutoTreatment(await AsyncStorage.getItem("TutoTreatment"));
     await getTreatments();
     await getTakes();
     setIsLoading(false);
-    let actualIndex = null
 
-    takes.length !== 0 ? takes.findIndex(take => compareDates(take.take.date) === 'actual') ? actualIndex = takes.findIndex(take => compareDates(take.take.date) === 'actual') : actualIndex = takes.findIndex(take => compareDates(take.take.date) === 'previous') : null;
+    let actualIndex = null;
+    takes.length !== 0
+      ? takes.findIndex((take) => compareDates(take.take.date) === "actual")
+        ? (actualIndex = takes.findIndex(
+            (take) => compareDates(take.take.date) === "actual"
+          ))
+        : (actualIndex = takes.findIndex(
+            (take) => compareDates(take.take.date) === "previous"
+          ))
+      : null;
 
     console.log(actualIndex);
-    if (actualIndex && actualIndex !== -1) {
-      const positionToScroll = 334 * actualIndex + 50;
-      scrollViewRef.current.scrollTo({ y: positionToScroll, animated: true });
-    }
+    setScroll(actualIndex);
   };
 
   useEffect(() => {
     if (isFocused) {
       console.log("Nav on Suivis Page");
-      //setIsLoading(true);
+      setIsLoading(true);
 
       init();
     }
   }, [isFocused]);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
+      {tutoStep === 0 && tutoTreatment === "0" && (
+        <TutorialBubble
+          isClicked={handleTuto}
+          styleAdded={{ top: "2%", left: "2%" }}
+          text={
+            "Voici la page des suivis,\nvous pourrez voir tes futurs traitements.1/4"
+          }
+        ></TutorialBubble>
+      )}
+      {tutoStep === 1 && tutoTreatment === "0" && (
+        <TutorialBubble
+          isClicked={handleTuto}
+          styleAdded={{ top: "64%", left: "12%" }}
+          text={"C'est ici que ce passe la création \nd'un traitement, 2/4"}
+        ></TutorialBubble>
+      )}
+      {tutoStep === 2 && tutoTreatment === "0" && (
+        <TutorialBubble
+          isClicked={handleTuto}
+          styleAdded={{ top: "1%", left: "40%" }}
+          text={
+            "Et c'est dans le Stock, \noù vous retrouvez tous \ntes médicaments , 3/4"
+          }
+        ></TutorialBubble>
+      )}
+      {tutoStep === 3 && tutoTreatment === "0" && (
+        <TutorialBubble
+          isClicked={handleTuto}
+          styleAdded={{ top: "75%", left: "33%" }}
+          text={"On va passer ensuite\nau prochain onglet, 4/4"}
+        ></TutorialBubble>
+      )}
       {isLoading ? (
-        <BlurView
-          intensity={20}
+        <View
           style={{
+            backgroundColor: "white",
             position: "absolute",
             display: "flex",
             justifyContent: "center",
             height: "100%",
             width: "100%",
             flex: 1,
-            zIndex: 10
+            zIndex: 10,
           }}
           className="px-0"
         >
@@ -153,72 +203,113 @@ export default function Suivis({ navigation }) {
             source={require("../../assets/logo_title_gaia.png")}
           />
           <ActivityIndicator size={40} color="#9CDE00" />
-          <Text style={{ color: "#9CDE00", fontSize: 20, marginTop: 50, textAlign: 'center' }}>Récupération des traitements...</Text>
-        </BlurView>
+
+          <Text
+            style={{
+              color: "#9CDE00",
+              fontSize: 20,
+              marginTop: 50,
+              textAlign: "center",
+            }}
+          >
+            Chargement des traitements...
+          </Text>
+        </View>
       ) : null}
       {takes && takes.length !== 0 ? (
-        <View className=" flex border-1 p-5">
-          <TouchableOpacity
-            className=" flex flex-row items-center gap-3 justify-end"
-            onPress={() => navigation.navigate("AddTreatment")}
-            style={{ position: "relative", right: 0, top: 0 }}
-          >
-            <Text className=" text-[#363636] text-lg">
-              {" "}
-              Ajouter un traitement
-            </Text>
-            <Icon.Plus color="#363636" width={35} height={35} />
-          </TouchableOpacity>
-          {isToday === false ? (
-            <Text>{"Aucun traitement à prendre aujourd'hui"}</Text>
-          ) : <Text>TRAITEMENT AJD</Text>}
-
-          <ScrollView ref={scrollViewRef}>
-          {scheduledNotifications.map((notification) => (
-        <View key={notification.identifier}>
-          <Text>Title: {notification.content.title}</Text>
-          <Text>Subtitle: {notification.content.subtitle}</Text>
-          <Text>Date: {notification.trigger.value}</Text>
-          <Text>Identifier: {notification.identifier}</Text>
-          <Text>--------------------</Text>
-        </View>
-      ))}
-            <View style={{ paddingBottom: 200, paddingTop: 50 }}>
-              {takes && takes.map((take, index) => (
-                <View key={index}>
-                  <Treatment
-                    key={index}
-                    onPress={null}
-                    status={compareDates(take.take.date)}
-                    take={take.take}
-                    treatmentName={take.treatmentName}
-                    treatmentDescription={take.treatmentDescription}
-                    med={take.med}
-                    onTakePress={toggleTakeTaken}
-                    validateModalFun={changeTreatments}
-                  />
-
-                </View>
-              ))}
-            </View>
-          </ScrollView>
+        <View className=" flex border-1">
+          <View className="flex-row justify-between items-center px-5 py-2 border-b border-gray-200">
+            <Text className=" text-4xl font-bold pt-3">À venir</Text>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("AddTreatment")}
+            >
+              <Text className=" text-[#9CDE00] text-lg font-bold">Ajouter</Text>
+            </TouchableOpacity>
+          </View>
+          <FlatList
+            contentContainerStyle={{
+              paddingHorizontal: 20,
+              paddingBottom: 160,
+            }}
+            //initialScrollIndex={scroll}
+            ref={(ref) => (this.flatList = ref)}
+            showsVerticalScrollIndicator={false}
+            data={takes}
+            keyExtractor={(take, index) => index.toString()}
+            onContentSizeChange={() => {
+              if (
+                this.flatList &&
+                this.flatList.scrollToIndex &&
+                takes &&
+                takes.length
+              ) {
+                this.flatList.scrollToIndex({ index: scroll });
+              }
+            }}
+            onScrollToIndexFailed={() => {}}
+            renderItem={({ item }) => {
+              return (
+                <Treatment
+                  onPress={null}
+                  status={compareDates(item.take.date)}
+                  take={item.take}
+                  treatmentName={item.treatmentName}
+                  treatmentDescription={item.treatmentDescription}
+                  med={item.med}
+                  onTakePress={toggleTakeTaken}
+                  validateModalFun={changeTreatments}
+                />
+              );
+            }}
+          />
         </View>
       ) : (
-        <View style={{ padding: 10, width: "100%", height: "100%", display: "flex", alignItems: 'center', justifyContent: 'center', marginBottom: 200 }}>
-          <Text style={{ color: "rgb(103, 33, 236)", fontSize: 20, marginBottom: 100 }}>Aucun traitement à venir</Text>
+        <View
+          style={{
+            padding: 10,
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            marginBottom: 200,
+          }}
+        >
+          <Text
+            style={{
+              color: "rgb(103, 33, 236)",
+              fontSize: 20,
+              marginBottom: 100,
+            }}
+          >
+            Aucun traitement à venir
+          </Text>
           <Image
-            source={require('./../../assets/heureux.png')}
-            style={{ width: 200, height: 200, resizeMode: 'contain', marginBottom: 100 }}
+            source={require("./../../assets/heureux.png")}
+            style={{
+              width: 200,
+              height: 200,
+              resizeMode: "contain",
+              marginBottom: 100,
+            }}
           />
           <TouchableOpacity
             style={{ backgroundColor: "rgb(103, 33, 236)", borderRadius: 10 }}
             onPress={() => navigation.navigate("AddTreatment")}
           >
-            <Text style={{ color: "white", fontSize: 20, textAlign: "center", padding: 10 }}>Ajouter un traitement</Text>
+            <Text
+              style={{
+                color: "white",
+                fontSize: 20,
+                textAlign: "center",
+                padding: 10,
+              }}
+            >
+              Ajouter un traitement
+            </Text>
           </TouchableOpacity>
         </View>
       )}
-    </SafeAreaView>
+    </View>
   );
-
 }
