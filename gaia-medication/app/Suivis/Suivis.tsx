@@ -33,7 +33,7 @@ export default function Suivis({ navigation }) {
   const [isLoading, setIsLoading] = useState(true);
   const [scroll, setScroll] = useState(0);
 
-  const [tutoTreatment, setTutoTreatment] = useState("0");
+  const [tutoTreatment, setTutoTreatment] = useState(null);
   const [tutoStep, setTutoStep] = useState(0);
 
   const handleTuto = (isClicked) => {

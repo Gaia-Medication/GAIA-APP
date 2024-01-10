@@ -16,7 +16,7 @@ import TutorialBubble from "../component/TutorialBubble";
 export default function Settings({ navigation }) {
   const [treatments, setTreatments] = useState<Treatment[]>([]);
 
-  const [tutoSettings, setTutoSettings] = useState("0");
+  const [tutoSettings, setTutoSettings] = useState(null);
 
   const tuto = async () => {
     setTutoSettings(await AsyncStorage.getItem("TutoSettings"));
