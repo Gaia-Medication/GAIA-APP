@@ -153,6 +153,7 @@ const Treatment = ({ onPress, status = "actual" as "actual" | "next" | "previous
         height: "auto",
         opacity: status === "previous" ?0.5:null
       }}
+        disabled={!(status !== "next" && (date.toISOString() <= new Date().toISOString()))}
         onPress={() => setTakeDetailsModalVisible(true)}
       >
         <View style={{ width: "100%", alignItems: "center", flexDirection: "row", justifyContent: "space-between", margin: 10 }}>
@@ -206,7 +207,7 @@ const Treatment = ({ onPress, status = "actual" as "actual" | "next" | "previous
         )}
 
       </TouchableOpacity>
-      {status !== "next" &&(
+      {status !== "next" && (date.toISOString() <= new Date().toISOString())&&(
         <ModalComponent
           visible={takeDetailsModalVisible}
           onClose={()=>setTakeDetailsModalVisible(!takeDetailsModalVisible)}
