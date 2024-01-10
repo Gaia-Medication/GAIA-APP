@@ -24,6 +24,7 @@ import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ModalComponent from "../component/Modal";
 import { BlurView } from "expo-blur";
+import * as Notifications from "expo-notifications";
 import TutorialBubble from "../component/TutorialBubble";
 
 export default function Suivis({ navigation }) {
@@ -31,6 +32,7 @@ export default function Suivis({ navigation }) {
   const [treatments, setTreatments] = useState<Treatment[]>([]);
   const [takes, setTakes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [scheduledNotifications, setScheduledNotifications] = useState([]);
   const [scroll, setScroll] = useState(0);
 
   const [tutoTreatment, setTutoTreatment] = useState(null);
@@ -201,6 +203,7 @@ export default function Suivis({ navigation }) {
             source={require("../../assets/logo_title_gaia.png")}
           />
           <ActivityIndicator size={40} color="#9CDE00" />
+
           <Text
             style={{
               color: "#9CDE00",

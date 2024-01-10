@@ -47,6 +47,19 @@ type Take = {
   review: string,
 };
 
+type Notif = {
+  notifId: string,
+  userName: string,
+  date: Date,
+  type: string,
+  datas: NotifData[],
+};
+
+type NotifData = {
+  take: Take,
+  medName: string,
+};
+
 type Stock = {
   idUser: number,
   CIS: number;

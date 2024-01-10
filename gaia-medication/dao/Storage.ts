@@ -191,3 +191,36 @@ async function mongoToApp() {
     console.error('Erreur lors de la conversion :', error);
   }
 }
+
+export async function getDaysTakes() {
+  // Create an object to store the grouped takes by day
+  const groupedTakesByDay = {};
+  const allTreatments = await getAllTreatments();
+
+  // Iterate through allTreatments and extract takes
+  allTreatments ? allTreatments.forEach((treatment) => {
+    treatment ? treatment.instructions.forEach((instruction) => {
+      let medName = instruction.name;
+      instruction ? instruction.takes.forEach((take) => {
+        let date = new Date(take.date);
+        if (date instanceof Date) {
+          const dateKey = date.toDateString(); // Use the date as the key
+          console.log("datekeys", dateKey);
+
+          // Check if the dateKey exists in the groupedTakesByDay object
+          if (!groupedTakesByDay[dateKey]) {
+            // If not, create a new array for that date
+            groupedTakesByDay[dateKey] = [];
+          }
+
+          // Add the take to the corresponding date's array
+          groupedTakesByDay[dateKey].push({...take, medName: medName});
+        } else {
+          console.error("Date invalide");
+        }
+      }) : null;
+    }) : null;
+  }) : null;
+
+  return groupedTakesByDay;
+}

@@ -1,6 +1,33 @@
 import * as Notifications from 'expo-notifications';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getDaysTakes } from '../../dao/Storage';
 
 //--------------------//
+const formatDate = (date) => {
+  if (!(date instanceof Date)) {
+    console.error("Invalid date");
+    return null;
+  }
+
+  const days = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
+  const months = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
+
+  let dayOfWeek = days[date.getDay()];
+  let dayOfMonth = date.getDate();
+  let month = months[date.getMonth()];
+  let year = date.getFullYear();
+  let hours = date.getHours().toString()
+  let minutes = date.getMinutes().toString().padStart(2, '0')
+
+  return { day: dayOfWeek, dayOfMonth: dayOfMonth, month: month, year: year, hours: hours, minutes: minutes };
+};
+
+export const getDailyNotificationTime = async () => {
+  const storedTime = await AsyncStorage.getItem('notificationTime');
+  if (storedTime) {
+    return new Date(storedTime);
+  }
+}
 
 export const requestNotificationPermissions = async () => {
   const { status } = await Notifications.getPermissionsAsync();
@@ -15,16 +42,16 @@ export const requestNotificationPermissions = async () => {
 };
 
 export const scheduleLocalNotification = async (
-    title: string, 
-    subtitle: string, 
-    body: string, 
-    data = {}, 
-    sound: string, 
-    color: string, 
-    priority: Notifications.AndroidNotificationPriority, 
-    categoryIdentifier: string,
-    date: Date // Add a new parameter for the notification date
-  ) => {
+  title: string,
+  subtitle: string,
+  body: string,
+  data = {},
+  sound: string,
+  color: string,
+  priority: Notifications.AndroidNotificationPriority,
+  categoryIdentifier: string,
+  date: Date // Add a new parameter for the notification date
+) => {
   const notificationId = await Notifications.scheduleNotificationAsync({
     content: {
       title,
@@ -45,43 +72,53 @@ export const scheduleLocalNotification = async (
 
 //--------------------//
 
-export const notificationDaily = async (date) => {
-  scheduleLocalNotification(
-    "🦠 Rappel ", 
-    "Votre traitement", 
-    "Aujourd'hui :\n\n 💊 Doliprane 700\n 💊 Aspirine\n 💊 Betadine", 
-    { data: "data" }, 
-    "default", 
-    "default", 
+export const notificationDaily = async (userName, data: NotifData[], date) => {
+  const notificationTime = new Date(date);
+  notificationTime.setHours(notificationTime.getHours(), notificationTime.getMinutes(), 0, 0);
+  let content = "Aujourd'hui : \n\n";
+  data.forEach((d) => {
+    const str = `💊 ${d.medName} à ${formatDate(new Date(d.take.date)).hours}h${formatDate(new Date(d.take.date)).minutes}\n`
+    content += str;
+  })
+  console.log("content", content);
+  return await scheduleLocalNotification(
+    "Bonjour ! ",
+    userName,
+    content,
+    { data: null },
+    "default",
+    "default",
     Notifications.AndroidNotificationPriority.DEFAULT,
-    "reminder",
-    date
+    null,
+    notificationTime
   );
 }
 
 export const notificationNow = async () => {
   scheduleLocalNotification(
-    "🦠 Rappel ", 
-    "Votre traitement", 
-    "C'est le moment ! : \n💊 Doliprane 700", 
-    { data: "data" }, 
-    "default", 
-    "default", 
+    "🦠 Rappel ",
+    "Votre traitement",
+    "C'est le moment ! : \n💊 Doliprane 700",
+    { data: "data" },
+    "default",
+    "default",
     Notifications.AndroidNotificationPriority.DEFAULT,
-    "reminder"
+    "reminder",
+    new Date()
   );
 }
 
 export const notificationForgot = async () => {
   scheduleLocalNotification(
-    "⚠️ N'oubliez pas !", 
-    "Votre traitement", 
+    "⚠️ N'oubliez pas !",
+    "Votre traitement",
     "Avez vous pensé à prendre votre : \n\n 💊 Doliprane 700 ?",
-    { data: "data" }, 
-    "default", 
-    "red", 
+    { data: "data" },
+    "default",
+    "red",
     Notifications.AndroidNotificationPriority.HIGH,
-    "alertReminder"
+    "alertReminder",
+    new Date()
   );
 }
 
@@ -126,3 +163,47 @@ Notifications.setNotificationCategoryAsync('alertReminder', [
 ]);
 
 //--------------------//
+
+export const initDailyNotifications = async (userName) => {
+  console.log("initDailyNotifications");
+  const notificationTime = await getDailyNotificationTime();
+  const treatmentsDays = await getDaysTakes();
+  const arrayOfNotifications: Notif[] = [];
+  Notifications.cancelAllScheduledNotificationsAsync();
+
+  for (const dateKey in treatmentsDays) {
+    let dateNotification = new Date(dateKey);
+    dateNotification.setHours(notificationTime.getHours(), notificationTime.getMinutes(), 0, 0);
+
+    let dataArray: NotifData[] = [];
+    if (treatmentsDays.hasOwnProperty(dateKey)) {
+      const takesForDate = treatmentsDays[dateKey];
+
+      const d =new Date(dateKey)
+      d.setHours(notificationTime.getHours(), notificationTime.getMinutes(), 0, 0);
+      
+      takesForDate.forEach((take) => {
+        dataArray.push({medName: take.medName, take: take})
+      });
+    }
+    try { 
+      let dateNotification = new Date(dateKey);
+      dateNotification.setHours(notificationTime.getHours(), notificationTime.getMinutes(), 0, 0);
+      const notif = await notificationDaily(userName, dataArray, dateNotification)
+      console.log('dateNotification', dateNotification)
+      const returnedNotif: Notif = {
+        notifId: notif,
+        userName: userName,
+        date: dateNotification,
+        type: "daily",
+        datas: dataArray,
+      };
+      arrayOfNotifications.push(returnedNotif);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      dataArray = [];
+    }
+  }
+  return arrayOfNotifications;
+}
