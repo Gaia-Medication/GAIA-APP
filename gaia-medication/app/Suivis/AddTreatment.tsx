@@ -78,7 +78,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
     const [selectedMedCIS, setSelectedMedCIS] = useState("");
     const [selectedMedName, setSelectedMedName] = useState("");
     const [tempDate, setTempDate] = useState(new Date());
-    const [instructionsList, setInstructionsList] = useState([]);
+    const [instructionsList, setInstructionsList] = useState<Instruction[]>([]);
     const [selectedInstruction, setSelectedInstruction] = useState<Instruction>(null);
     const [arrayOfDates, setArrayOfDates] = useState([]);
     const [takes, setTakes] = useState<Take[]>([]);
@@ -214,12 +214,22 @@ export default function AddTreatment({ navigation }: ICreateProps) {
     // SETUP UN MEDICAMENT
     const handleMedSelect = async (CIS) => {
         if (treatmentName === "") {
-            Alert.alert("Veuillez renseigner un nom de traitement");
+            Dialog.show({
+                type: ALERT_TYPE.WARNING, 
+                title: "Erreur", 
+                textBody: "Veuillez renseigner un nom de traitement",
+                button: 'Fermer'
+            });
             return;
         }
         const treatments = await getAllTreatments();
         if (treatments.find((treatment) => treatment.name === treatmentName)) {
-            Alert.alert("Ce nom de traitement est déja pris...");
+            Dialog.show({
+                type: ALERT_TYPE.WARNING, 
+                title: "Erreur", 
+                textBody: "Ce nom de traitement existe déjà",
+                button: 'Fermer'
+            });
             return;
         }
         const med = getMedbyCIS(CIS);
@@ -835,14 +845,14 @@ export default function AddTreatment({ navigation }: ICreateProps) {
         addDates();
         console.log("ADD INSTRUCTION")
         console.log("TAKES", takes)
-        const newInstruction = {
+        const newInstruction: Instruction = {
             CIS: selectedMedCIS,
             name: selectedMedName,
             regularFrequency: checkFrequency === 'regular', // CE MÉDICAMENT EST-IL À PRENDRE RÉGULIÈREMENT ?
 
             // REGULIER
             regularFrequencyMode: frequencyMode ? frequencyMode : null, // COMMENT ? (X FOIS PAR JOUR/SEMAINE/MOIS OU TOUS LES X JOURS)
-            regularFrequencyNumber: frequencyMode ? (customPeriodicityNumber ? customPeriodicityNumber : customPeriodicityBisNumber) : null, // X ?
+            regularFrequencyNumber: frequencyMode ? (customPeriodicityNumber ? Number(customPeriodicityNumber) : Number(customPeriodicityBisNumber)) : null, // X ?
             regularFrequencyPeriods: frequencyMode === "regular" ? (customPeriodicity ? customPeriodicity : "day") : null, // SI X FOIS PAR (JOUR/SEMAINE/MOIS), PÉRIODICITÉ
             regularFrequencyContinuity: checkDaily ? checkDaily : null, // EST-CE QUOTIDIEN OU SEULEMENT CERTAINS JOURS ? (DAILY/CUSTOM) 
             regularFrequencyDays: checkDaily === "custom" ? weekDays.filter(day => day.checked).map(day => day.day) : null, // SI CERTAINS JOURS, LESQUELS ?
@@ -1094,6 +1104,11 @@ export default function AddTreatment({ navigation }: ICreateProps) {
         ) : null
 
 
+        const handleDeleteInstruction = async (instruction) => {
+            const updatedInstructions = instructionsList.filter((item) => item.name !== instruction.name);
+            setInstructionsList(updatedInstructions);
+            await AsyncStorage.setItem("instructions", JSON.stringify(updatedInstructions));
+        }
 
     const init = async () => {
         const allMeds = getAllMed();
@@ -1255,7 +1270,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
                         </TouchableOpacity>
                         <TouchableOpacity
                             className=" flex items-center justify-center"
-                            onPress={() => setShowDatePicker(true)}
+                            onPress={() => handleDeleteInstruction(instruction)}
                             style={{ backgroundColor: "#FF0000", padding: 10, borderRadius: 5 }}
                         >
                             <Icon.Trash color={"white"} />
