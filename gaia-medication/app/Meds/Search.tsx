@@ -5,15 +5,17 @@ import { searchMed } from "../../dao/Search";
 import { styles } from "../../style/style";
 import { Icon, Input } from "react-native-elements";
 import MedIconByType from "../component/MedIconByType";
-import { Navigation } from "react-native-feather";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getUserByID } from "../../dao/Storage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getPAfromMed } from "../../dao/Meds";
+import TutorialBubble from "../component/TutorialBubble";
 
 export default function Search({ route, navigation }) {
   const textInputRef = React.useRef(null);
   const [user, setUser] = useState<User | null>(null);
+
+  const [tutoSearch, setTutoSearch] = useState("0");
 
   useEffect(() => {
     if (textInputRef.current) {
@@ -22,7 +24,9 @@ export default function Search({ route, navigation }) {
   }, []);
   const [search, setSearch] = useState([]);
   const isFocused = useIsFocused();
+
   const init = async () => {
+    setTutoSearch(await AsyncStorage.getItem("TutoSearch"));
     const currentId = await AsyncStorage.getItem("currentUser");
     const current = await getUserByID(JSON.parse(currentId));
     setUser(current);
@@ -34,8 +38,22 @@ export default function Search({ route, navigation }) {
     }
   }, [isFocused]);
 
+  const handleTuto = (isClicked: boolean) => {
+    if (isClicked) {
+      AsyncStorage.setItem("TutoSearch", "1");
+      navigation.navigate("Drug", { drugCIS: 63283736 });
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
+      {tutoSearch === "0" && (
+        <TutorialBubble
+          isClicked={handleTuto}
+          styleAdded={{ top: "20%", left: "4%" }}
+          text={"Voici l'endroit où vous pouvez rechercher \ndes médicaments."}
+        ></TutorialBubble>
+      )}
       <View style={styles.searchBarwQR} className="mt-3 px-4">
         <View style={styles.searchBar}>
           <Input

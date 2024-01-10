@@ -16,8 +16,10 @@ import { getAllPoints, getPointsbyRegion } from "../../dao/MapPoint";
 import ModalComponent from "../component/Modal";
 import { styles } from "../../style/style";
 import MapModalComponent from "../component/MapModal";
+import TutorialBubble from "../component/TutorialBubble";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export default function Map() {
+export default function Map({ navigation }) {
   const initialRegion = {
     latitude: 47.200819319828305,
     latitudeDelta: 0.2705200915647197,
@@ -85,8 +87,16 @@ export default function Map() {
       </Text>
       <Text>{selectedPoint.city}</Text>
       {selectedPoint.phone != null ? (
-        <TouchableOpacity onPress={contact} >
-          <Text className=" font-bold" style={{ color: "rgba("+colorOf[selectedPoint?.type.split(' ')[0]]+",0.8)"}}>Contacter</Text>
+        <TouchableOpacity onPress={contact}>
+          <Text
+            className=" font-bold"
+            style={{
+              color:
+                "rgba(" + colorOf[selectedPoint?.type.split(" ")[0]] + ",0.8)",
+            }}
+          >
+            Contacter
+          </Text>
         </TouchableOpacity>
       ) : (
         <Text>Pas de numéro de téléphone 🙁</Text>
@@ -126,18 +136,40 @@ export default function Map() {
     setPoints(newPoints);
   }, [region]);
 
+  const [tutoMap, setTutoMap] = useState("0");
+
+  useEffect(() => {
+    tuto();
+  });
+
+  const tuto = async () => {
+    setTutoMap(await AsyncStorage.getItem("TutoMap"));
+  };
+
+  const handleTuto = (isClicked) => {
+    AsyncStorage.setItem("TutoMap", "1");
+    navigation.navigate("Settings");
+  };
+
   return (
     <View>
+      {tutoMap === "0" && (
+        <TutorialBubble
+          isClicked={handleTuto}
+          styleAdded={{ top: "70%", left: "5%" }}
+          text={
+            "Voici la page de la carte où vous pouvez retrouver les établissements\nde santé proche de chez vous, 1/1"
+          }
+        ></TutorialBubble>
+      )}
       <MapView
         ref={(map) => (this.map = map)}
         style={{ width: "100%", height: "100%" }}
         initialRegion={initialRegion}
-        onRegionChangeComplete={(region, gesture) =>
-          setRegion(region) 
-        }
+        onRegionChangeComplete={(region, gesture) => setRegion(region)}
         customMapStyle={standardMapType}
         toolbarEnabled={false}
-        showsUserLocation={currentLocation!=null}
+        showsUserLocation={currentLocation != null}
       >
         {points &&
           points.map((point) => {

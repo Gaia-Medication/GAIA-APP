@@ -18,6 +18,7 @@ interface AvatarButtonProps {
   current: User;
   setUser: any;
   navigation: any;
+  tuto: boolean;
 }
 
 const AvatarButton: React.FC<AvatarButtonProps> = ({
@@ -26,10 +27,13 @@ const AvatarButton: React.FC<AvatarButtonProps> = ({
   current,
   setUser,
   navigation,
+  tuto,
 }) => {
   const [expanded, setExpanded] = useState(false);
   const [dropdownListVisible, setDropdownListVisible] = useState(false);
   const usersNoCurrent = users.filter((user) => user.id !== current.id);
+
+  const [tutoToggle, setTutoToggle] = useState(false);
   // const pour le style
   const animation = useMemo(() => new Animated.Value(60), []);
   const textOpacity = useMemo(() => new Animated.Value(0), []);
@@ -49,13 +53,16 @@ const AvatarButton: React.FC<AvatarButtonProps> = ({
   ];
 
   useEffect(() => {
-    console.log(users);
+    if (tuto && !tutoToggle) {
+      toggleExpansion();
+      setTutoToggle(true);
+    }
     Animated.timing(textOpacity, {
       toValue: expanded ? 1 : 0,
       duration: 400,
       useNativeDriver: false,
     }).start();
-  }, [expanded]);
+  });
 
   const toggleExpansion = () => {
     const toValue = expanded ? 60 : 340;
@@ -113,7 +120,7 @@ const AvatarButton: React.FC<AvatarButtonProps> = ({
     setUser(item);
     await AsyncStorage.setItem("currentUser", JSON.stringify(item.id));
     setDropdownListVisible(false);
-    toggleExpansion()
+    toggleExpansion();
   };
 
   return (

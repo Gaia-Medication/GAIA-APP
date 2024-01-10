@@ -34,6 +34,7 @@ import { styles } from "../../style/style";
 import DrugModal from "../component/Modal";
 import ModalComponent from "../component/Modal";
 import MedIconByType from "../component/MedIconByType";
+import TutorialBubble from "../component/TutorialBubble";
 
 export default function Drug({ route, navigation }) {
   const [drugModalVisible, setDrugModalVisible] = useState(false);
@@ -49,7 +50,11 @@ export default function Drug({ route, navigation }) {
   const { drugCIS, context } = route.params;
   const drug = getMedbyCIS(drugCIS);
 
+  const [tutoMedic, setTutoMedic] = useState("0");
+  const [tutoStep, setTutoStep] = useState(0);
+
   const init = async () => {
+    setTutoMedic(await AsyncStorage.getItem("TutoMedic"));
     const currentId = await AsyncStorage.getItem("currentUser");
     const current = await getUserByID(JSON.parse(currentId));
     setUser(current);
@@ -108,8 +113,47 @@ export default function Drug({ route, navigation }) {
         "&typedoc=N"
     );
   }, []);
+
+  const handleTuto = (isClicked, step) => {
+    if (isClicked) {
+      setTutoStep(tutoStep + 1);
+      if (tutoStep === 3) {
+        AsyncStorage.setItem("TutoMedic", "1");
+        navigation.navigate("Home");
+      }
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
+      {tutoStep === 0 && tutoMedic === "0" && (
+        <TutorialBubble
+          isClicked={handleTuto}
+          styleAdded={{ top: "70%", left: "5%" }}
+          text={"Voici la page d'un médicament, 1/4"}
+        ></TutorialBubble>
+      )}
+      {tutoStep === 1 && tutoMedic === "0" && (
+        <TutorialBubble
+          isClicked={handleTuto}
+          styleAdded={{ top: "30%", left: "5%" }}
+          text={"Vous pouvez voir si le médicament est disponible, 2/4"}
+        ></TutorialBubble>
+      )}
+      {tutoStep === 2 && tutoMedic === "0" && (
+        <TutorialBubble
+          isClicked={handleTuto}
+          styleAdded={{ top: "85%", left: "5%" }}
+          text={"Vous avez à votre disposition\nles informations du médicaments, 3/4"}
+        ></TutorialBubble>
+      )}
+      {tutoStep === 3 && tutoMedic === "0" && (
+        <TutorialBubble
+          isClicked={handleTuto}
+          styleAdded={{ top: "72%", left: "9%" }}
+          text={"Et pour finir,vous avez la possibilité\n d'ajouté ce médicament, 4/4"}
+        ></TutorialBubble>
+      )}
       {drug && stock && user && (
         <>
           <View className="flex-row justify-between pt-4 px-6">
@@ -197,25 +241,34 @@ export default function Drug({ route, navigation }) {
                   stock.find((stockItem) => stockItem.CIP === item.CIP) != null;
 
                 return (
-                  <View key={index} className=" -mb-[1px] pb-2 border-t border-b border-gray-300">
+                  <View
+                    key={index}
+                    className=" -mb-[1px] pb-2 border-t border-b border-gray-300"
+                  >
                     <Text className=" font-light">{item.CIP}</Text>
                     <Text className=" text-xs">{item.Denomination}</Text>
                     <View className=" -mt-1">
-                    {drug.Marketed == "Commercialisée" ? (
-                      item.Price_with_taxes ? (
-                        <>
-                          <Text className="font-bold text-right">
-                            {item.Price_with_taxes}€
-                          </Text>
-                          <Text className="text-right text-xs">(Remboursement: {item.Remboursement})</Text>
-                        </>
-                      ) : (
-                        <>
-                          <Text className="text-right text-xs font-bold">Prix libre</Text>
-                          <Text className="text-right text-xs">(Non remboursable)</Text>
-                        </>
-                      )
-                    ) : null}
+                      {drug.Marketed == "Commercialisée" ? (
+                        item.Price_with_taxes ? (
+                          <>
+                            <Text className="font-bold text-right">
+                              {item.Price_with_taxes}€
+                            </Text>
+                            <Text className="text-right text-xs">
+                              (Remboursement: {item.Remboursement})
+                            </Text>
+                          </>
+                        ) : (
+                          <>
+                            <Text className="text-right text-xs font-bold">
+                              Prix libre
+                            </Text>
+                            <Text className="text-right text-xs">
+                              (Non remboursable)
+                            </Text>
+                          </>
+                        )
+                      ) : null}
                     </View>
                   </View>
                 );
@@ -283,7 +336,9 @@ export default function Drug({ route, navigation }) {
                       setShowMore(showMore + 5);
                     }}
                   >
-                    <Text className="text-center text-[#9CDE00] mt-3 font-bold">Afficher plus</Text>
+                    <Text className="text-center text-[#9CDE00] mt-3 font-bold">
+                      Afficher plus
+                    </Text>
                   </TouchableOpacity>
                 )}
               </View>
@@ -315,41 +370,41 @@ export default function Drug({ route, navigation }) {
           >
             <Text>Ajouter un Medicament</Text>
             {drug.Values.map((item, index) => {
-                const alreadyStocked =
-                  stock.find((stockItem) => stockItem.CIP === item.CIP) != null;
+              const alreadyStocked =
+                stock.find((stockItem) => stockItem.CIP === item.CIP) != null;
 
-                return (
-                  <View key={index}>
-                    <Text className=" font-light">{item.CIP}</Text>
-                    <Text className=" text-xs">{item.Denomination}</Text>
+              return (
+                <View key={index}>
+                  <Text className=" font-light">{item.CIP}</Text>
+                  <Text className=" text-xs">{item.Denomination}</Text>
 
-                    {alreadyStocked ? (
-                      <>
-                        <TouchableOpacity className="bg-green-400 text-center">
-                          <Text className="text-center">In stock</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                          className="bg-red-400 text-center"
-                          onPress={() =>
-                            deleteFromStock(item.CIS, item.CIP, user.id)
-                          }
-                        >
-                          <Text className="text-center">❌</Text>
-                        </TouchableOpacity>
-                      </>
-                    ) : (
-                      <TouchableOpacity
-                        className="bg-blue-400"
-                        onPress={() => {
-                          addToStock(item);
-                        }}
-                      >
-                        <Text className="text-center">Add</Text>
+                  {alreadyStocked ? (
+                    <>
+                      <TouchableOpacity className="bg-green-400 text-center">
+                        <Text className="text-center">In stock</Text>
                       </TouchableOpacity>
-                    )}
-                  </View>
-                );
-              })}
+                      <TouchableOpacity
+                        className="bg-red-400 text-center"
+                        onPress={() =>
+                          deleteFromStock(item.CIS, item.CIP, user.id)
+                        }
+                      >
+                        <Text className="text-center">❌</Text>
+                      </TouchableOpacity>
+                    </>
+                  ) : (
+                    <TouchableOpacity
+                      className="bg-blue-400"
+                      onPress={() => {
+                        addToStock(item);
+                      }}
+                    >
+                      <Text className="text-center">Add</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+              );
+            })}
           </ModalComponent>
         </>
       )}
