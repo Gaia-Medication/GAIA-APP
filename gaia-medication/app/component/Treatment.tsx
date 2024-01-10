@@ -26,7 +26,7 @@ const Treatment = ({ onPress, status = "actual" as "actual" | "next" | "previous
   const [date, setDate] = useState<Date>(new Date());
   const [takeDetailsModalVisible, setTakeDetailsModalVisible] = useState(false);
   const [newTxt, setNewTxt] = useState("");
-
+  
 
   const init = () => {
     setNewTxt(take.review);
@@ -115,14 +115,14 @@ const Treatment = ({ onPress, status = "actual" as "actual" | "next" | "previous
           <Text style={{ fontWeight: "800", fontSize: 20, color: status === "previous" ? "#BCBCBC" : status === "actual" ? "#9CDE00" : "#00000099" }}>{formatDate(date).dayOfMonth}</Text>
           <Text style={{ fontWeight: "800", fontSize: 20, color: status === "previous" ? "#BCBCBC" : status === "actual" ? "#9CDE00" : "#00000099" }}>{formatDate(date).month}</Text>
         </View>
-        {status == "actual" ? (
+        {status == "actual" && (date.toISOString() <= new Date().toISOString())&&(
           <TouchableOpacity onPress={() => onTakePress(take)}>
             <View style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "20%", backgroundColor: take.taken ? ("#9CDE0030") : (status === "actual" ? "#FF000030" : "#CCCCCC"), padding: 10, borderRadius: 50 }}>
               {take.taken ? <Icon.CheckCircle color={status === "actual" ? "#9CDE00" : "grey"} width={30} height={30} /> : <Icon.AlertCircle color={status === "actual" ? "#FF0000" : "#666666"} width={30} height={30} />}
 
             </View>
           </TouchableOpacity>
-        ) : null}
+        )}
       </View>
 
       <View style={{ display: "flex", flexDirection: "column", gap: 15, alignItems: "center"}} className=" flex-1">
@@ -186,7 +186,7 @@ const Treatment = ({ onPress, status = "actual" as "actual" | "next" | "previous
           </View>
 
         </View>
-        {status !== "next" ? (
+        {status !== "next" && (date.toISOString() <= new Date().toISOString())&&(
           <View>
             <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
               {take.taken ? (
@@ -204,7 +204,7 @@ const Treatment = ({ onPress, status = "actual" as "actual" | "next" | "previous
               )}
             </View>
           </View>
-        ) : null}
+        )}
 
       </TouchableOpacity>
       {status !== "next" &&(

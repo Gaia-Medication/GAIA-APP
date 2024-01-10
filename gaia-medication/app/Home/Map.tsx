@@ -99,7 +99,7 @@ export default function Map({ navigation }) {
           </Text>
         </TouchableOpacity>
       ) : (
-        <Text>No phone number available here... 🙁</Text>
+        <Text>Pas de numéro de téléphone 🙁</Text>
       )}
     </View>
   ) : null;
