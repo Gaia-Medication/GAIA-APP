@@ -18,6 +18,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import ModifyProfile from "./Profile/ModifyProfile";
 import NotificationsSettings from "./Home/Settings/NotificationsSettings";
 import UsersSettings from "./Home/Settings/UsersSettings";
+import Notifications from "./Home/Notifications";
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -36,6 +37,7 @@ export default function Navigation() {
         <Stack.Screen name="ModifyProfile" component={ModifyProfile} />
         <Stack.Screen name="AddTreatment" component={AddTreatment} />
         <Stack.Screen name="Settings" component={Settings} />
+        <Stack.Screen name="Notifications" component={Notifications} />
         <Stack.Screen name="NotificationsSettings" component={NotificationsSettings}/>
         <Stack.Screen name="UsersSettings" component={UsersSettings}/>
         <Stack.Screen name="Profile" component={Profile} />

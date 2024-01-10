@@ -109,15 +109,6 @@ export default function Suivis({ navigation }) {
   }
 
   const init = async () => {
-    async function getAllScheduledNotifications() {
-      const scheduled = await Notifications.getAllScheduledNotificationsAsync();
-      setScheduledNotifications(scheduled);
-    }
-
-    getAllScheduledNotifications();
-    scheduledNotifications.forEach((notif) => {
-      console.log(new Date(notif.trigger.value));
-    })
     await getTreatments();
     await getTakes();
     setIsLoading(false);

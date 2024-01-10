@@ -72,16 +72,16 @@ export const scheduleLocalNotification = async (
 
 //--------------------//
 
-export const notificationDaily = async (userName, data: {hour: Date, med: string}[], date) => {
+export const notificationDaily = async (userName, data: NotifData[], date) => {
   const notificationTime = new Date(date);
   notificationTime.setHours(notificationTime.getHours(), notificationTime.getMinutes(), 0, 0);
   let content = "Aujourd'hui : \n\n";
   data.forEach((d) => {
-    const str = `💊 ${d.med} à ${formatDate(d.hour).hours}h${formatDate(d.hour).minutes}\n`
+    const str = `💊 ${d.medName} à ${formatDate(new Date(d.take.date)).hours}h${formatDate(new Date(d.take.date)).minutes}\n`
     content += str;
   })
   console.log("content", content);
-  await scheduleLocalNotification(
+  return await scheduleLocalNotification(
     "Bonjour ! ",
     userName,
     content,
@@ -168,14 +168,14 @@ export const initDailyNotifications = async (userName) => {
   console.log("initDailyNotifications");
   const notificationTime = await getDailyNotificationTime();
   const treatmentsDays = await getDaysTakes();
+  const arrayOfNotifications: Notif[] = [];
   Notifications.cancelAllScheduledNotificationsAsync();
 
   for (const dateKey in treatmentsDays) {
     let dateNotification = new Date(dateKey);
     dateNotification.setHours(notificationTime.getHours(), notificationTime.getMinutes(), 0, 0);
-    console.log("dateNotification", dateNotification);
 
-    let dataArray = [];
+    let dataArray: NotifData[] = [];
     if (treatmentsDays.hasOwnProperty(dateKey)) {
       const takesForDate = treatmentsDays[dateKey];
 
@@ -183,19 +183,27 @@ export const initDailyNotifications = async (userName) => {
       d.setHours(notificationTime.getHours(), notificationTime.getMinutes(), 0, 0);
       
       takesForDate.forEach((take) => {
-        console.log("TAKE", take.date)
-        dataArray.push({hour: new Date(take.date), med: take.medName})
-        console.log("DATAARRAY", dataArray);
+        dataArray.push({medName: take.medName, take: take})
       });
     }
-    try {
+    try { 
       let dateNotification = new Date(dateKey);
       dateNotification.setHours(notificationTime.getHours(), notificationTime.getMinutes(), 0, 0);
-      await notificationDaily(userName, dataArray, dateNotification)
+      const notif = await notificationDaily(userName, dataArray, dateNotification)
+      console.log('dateNotification', dateNotification)
+      const returnedNotif: Notif = {
+        notifId: notif,
+        userName: userName,
+        date: dateNotification,
+        type: "daily",
+        datas: dataArray,
+      };
+      arrayOfNotifications.push(returnedNotif);
     } catch (error) {
       console.log(error);
     } finally {
       dataArray = [];
     }
   }
+  return arrayOfNotifications;
 }

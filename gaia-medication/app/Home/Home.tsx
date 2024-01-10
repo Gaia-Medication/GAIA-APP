@@ -17,6 +17,8 @@ import { Bell } from "react-native-feather";
 import { Button, Input } from "react-native-elements";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Icon from "react-native-feather";
+
 
 import * as Notifications from "expo-notifications";
 import { trouverNomMedicament } from "../../dao/Search";
@@ -30,6 +32,7 @@ export default function Home({ navigation }) {
   const [user, setUser] = useState<User | null>(null);
   const [users, setUsers] = useState<User[]>([]);
   const [header, setHeader] = useState(true);
+  const [notificationsList, setNotificationsList] = useState<Notif[]>([]);
 
   const init = async () => {
     const userList = await readList("users");
@@ -45,7 +48,9 @@ export default function Home({ navigation }) {
       console.log(current);
       setUser(current);
     }
-    await initDailyNotifications(user?.firstname);
+    const notifs = await initDailyNotifications(user?.firstname);
+    setNotificationsList(notifs);
+    console.log("Notifs Totales :", notifs.length);
   };
 
   const handleAvatarButton = () => {
@@ -110,15 +115,11 @@ export default function Home({ navigation }) {
                   <Text style={styles.subtitle}>Welcome back</Text>
                   <Text style={styles.title}>{user?.firstname}</Text>
                 </View>
-                <Bell
-                  stroke="#242424"
-                  width={24}
-                  height={24}
-                  style={{
-                    marginLeft: 13,
-                    marginRight: 13,
-                  }}
-                ></Bell>
+                <TouchableOpacity style={{ marginHorizontal: 13 }} onPress={() => navigation.navigate("Notifications", { data: JSON.stringify(notificationsList) })}>
+                  <Icon.Bell stroke="#242424" width={24} height={24}></Icon.Bell>
+                  
+                </TouchableOpacity>
+                
               </>
             )}
           </View>
