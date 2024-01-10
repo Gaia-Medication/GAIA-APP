@@ -75,19 +75,6 @@ export default function Settings({ navigation }) {
     AsyncStorage.removeItem("treatments");
   };
 
-  const notifDaily = async () => {
-    dateNotification.setHours(18, 37, 0, 0);
-    const dateTake = new Date();
-    dateTake.setHours(22, 0, 0, 0);
-    // const notif = await notificationDaily(
-    //   "Nathan",
-    //   [{
-    //     hour: dateTake,
-    //     med: "Doliprane",
-    //   }],
-    //   dateNotification
-    //   );
-  }
   const reset = () => {
     AsyncStorage.removeItem("users"), AsyncStorage.removeItem("stock");
     AsyncStorage.removeItem("treatments");
@@ -117,15 +104,25 @@ export default function Settings({ navigation }) {
         title="CLEAR USERS DATA"
         onPress={() => (
           AsyncStorage.removeItem("users"), AsyncStorage.removeItem("stock")
-        )} /><Button
-          title="CLEAR STOCK DATA"
-          onPress={() => AsyncStorage.removeItem("stock")} /><Button
-            title="ADD PROFILE"
-            onPress={() => navigation.navigate("CreateProfile")}
-          ></Button><Button
-            title="MODIFY PROFILE"
-            onPress={() => navigation.navigate("ModifyProfile")}
-          ></Button><Button onPress={() => notifDaily()} title="Notification quotidienne" /><Button onPress={notificationForgot} title="Notification oubli" /><Button onPress={showTreatments} title="Liste des traitements" /><Button onPress={deleteTreatments} title="Supprimer traitements" /><Button onPress={createTreatmentTest1} title="TraitementTest 1" /><Button onPress={reset} title="reset" />
+        )}
+      />
+      <Button
+        title="CLEAR STOCK DATA"
+        onPress={() => AsyncStorage.removeItem("stock")}
+      />
+      <Button
+        title="ADD PROFILE"
+        onPress={() => navigation.navigate("CreateProfile")}
+      ></Button>
+      <Button
+        title="MODIFY PROFILE"
+        onPress={() => navigation.navigate("ModifyProfile")}
+      ></Button>
+      <Button onPress={notificationForgot} title="Notification oubli" />
+      <Button onPress={showTreatments} title="Liste des traitements" />
+      <Button onPress={deleteTreatments} title="Supprimer traitements" />
+      <Button onPress={createTreatmentTest1} title="TraitementTest 1" />
+      <Button onPress={reset} title="reset" />
       {treatments &&
         treatments.map((treatment) => {
           return (
