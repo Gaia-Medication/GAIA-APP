@@ -19,17 +19,19 @@
                     "CIS": 63283736,
                     "date": "2024-01-10T09:30:00.000Z",
                     "quantity": 0,
-                    "taken": false,
+                    "taken": true,
                     "treatmentName": "TraitementTest1",
-                    "userId": 1
+                    "userId": 1,
+                    "review": "c'est pas bon"
                 },
                 {
                     "CIS": 63283736,
                     "date": "2024-01-10T14:00:00.000Z",
                     "quantity": 0,
-                    "taken": false,
+                    "taken": true,
                     "treatmentName": "TraitementTest1",
-                    "userId": 1
+                    "userId": 1,
+                    "review": "Je suis mort avec ce truc"
                 },
                 {
                     "CIS": 63283736,
