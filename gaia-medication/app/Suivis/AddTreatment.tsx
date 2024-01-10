@@ -903,8 +903,14 @@ export default function AddTreatment({ navigation }: ICreateProps) {
                     missingFields += "La continuité de prise \n (quotidienne ou personnalisée)\n\n";
                     canValidate = false;
                 }
-                if ((checkDaily === "custom" && customPeriodicity === "day")|| (customPeriodicity === "week")) {
+                if ((customPeriodicity === "week")) {
                     if (weekDays.filter(day => day.checked).length === 0 || weekDays.filter(day => day.checked).length < parseInt(customPeriodicityNumber)) {
+                        missingFields += "Les jours de prise \n\n";
+                        canValidate = false;
+                    }
+                }
+                if (checkDaily === "custom" && customPeriodicity === "day") {
+                    if (weekDays.filter(day => day.checked).length === 0) {
                         missingFields += "Les jours de prise \n\n";
                         canValidate = false;
                     }
