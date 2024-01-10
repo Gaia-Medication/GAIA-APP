@@ -50,7 +50,7 @@ export default function Drug({ route, navigation }) {
   const { drugCIS, context } = route.params;
   const drug = getMedbyCIS(drugCIS);
 
-  const [tutoMedic, setTutoMedic] = useState("0");
+  const [tutoMedic, setTutoMedic] = useState(null);
   const [tutoStep, setTutoStep] = useState(0);
 
   const init = async () => {
