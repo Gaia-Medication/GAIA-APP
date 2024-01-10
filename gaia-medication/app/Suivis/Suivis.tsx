@@ -137,8 +137,6 @@ export default function Suivis({ navigation }) {
 
     console.log(actualIndex);
     setScroll(actualIndex);
-    setTakes(takes);
-    console.log("Takes");
   };
 
   useEffect(() => {
@@ -211,7 +209,7 @@ export default function Suivis({ navigation }) {
               textAlign: "center",
             }}
           >
-            Récupération des traitements...
+            Chargement des traitements...
           </Text>
         </View>
       ) : null}

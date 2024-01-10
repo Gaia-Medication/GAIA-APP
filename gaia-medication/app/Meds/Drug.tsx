@@ -42,7 +42,7 @@ export default function Drug({ route, navigation }) {
   const isFocused = useIsFocused();
   const [user, setUser] = useState<User | null>(null);
   const [showMore, setShowMore] = useState(5);
-  const [stock, setStock] = useState([]);
+  const [stock, setStock] = useState(null);
   const [allergique, setAllergique] = useState(false);
   const [gens, setGens] = useState([]);
   const [sameComp, setSameComp] = useState([]);
@@ -345,17 +345,40 @@ export default function Drug({ route, navigation }) {
             )}
             <View className=" mb-24" />
           </ScrollView>
-
-          <TouchableOpacity
-            className=" bg-[#9CDE00] rounded-[19px] absolute bottom-8 left-6 right-6"
-            onPress={() => {
-              setDrugModalVisible(true);
-            }}
-          >
-            <Text className="text-center text-white bold text-2xl font-bold py-3 pt-2">
-              Ajouter
-            </Text>
-          </TouchableOpacity>
+          
+          {stock.find((stockItem) => stockItem.CIS === drugCIS) != null?(
+            <><TouchableOpacity
+              disabled={true}
+              className=" bg-white rounded-[19px] absolute bottom-24 left-6 right-6 border border-[#9CDE00]"
+              onPress={() => {
+              } }
+            >
+              <Text className="text-center text-[#9CDE00] text-lg py-3 pt-2">
+                Déjà dans le stock
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              className=" bg-[#D5F48A] rounded-[19px] absolute bottom-8 left-6 right-6"
+              onPress={() => {
+                setDrugModalVisible(true);
+              } }
+            >
+                <Text className="text-center text-[#9CDE00] text-lg py-3 pt-2">
+                  Modifier
+                </Text>
+              </TouchableOpacity></>
+          ):(
+            <TouchableOpacity
+              className=" bg-[#9CDE00] rounded-[19px] absolute bottom-8 left-6 right-6"
+              onPress={() => {
+                setDrugModalVisible(true);
+              }}
+            >
+              <Text className="text-center text-white text-2xl font-bold py-3 pt-2">
+                Ajouter
+              </Text>
+            </TouchableOpacity>
+          )}
 
           <ModalComponent
             styleAdded={{
