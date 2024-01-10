@@ -164,7 +164,7 @@ Notifications.setNotificationCategoryAsync('alertReminder', [
 
 //--------------------//
 
-export const initDailyNotifications = async (userName) => {
+export const initDailyNotifications = async (userName, userId) => {
   console.log("initDailyNotifications");
   const notificationTime = await getDailyNotificationTime();
   const treatmentsDays = await getDaysTakes();
@@ -193,7 +193,7 @@ export const initDailyNotifications = async (userName) => {
       console.log('dateNotification', dateNotification)
       const returnedNotif: Notif = {
         notifId: notif,
-        userName: userName,
+        userId: userName,
         date: dateNotification,
         type: "daily",
         datas: dataArray,

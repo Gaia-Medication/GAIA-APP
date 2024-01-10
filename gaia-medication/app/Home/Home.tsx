@@ -97,7 +97,7 @@ export default function Home({ navigation }) {
       console.log(current);
       setUser(current);
     }
-    const notifs = await initDailyNotifications(user?.firstname);
+    const notifs = await initDailyNotifications(user?.firstname, user?.id);
     setNotificationsList(notifs);
     console.log("Notifs Totales :", notifs.length);
   };
