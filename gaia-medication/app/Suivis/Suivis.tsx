@@ -24,6 +24,7 @@ import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ModalComponent from "../component/Modal";
 import { BlurView } from "expo-blur";
+import TutorialBubble from "../component/TutorialBubble";
 
 export default function Suivis({ navigation }) {
   const isFocused = useIsFocused();
@@ -31,6 +32,18 @@ export default function Suivis({ navigation }) {
   const [takes, setTakes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const scrollViewRef = useRef(null);
+
+  const [tutoTreatment, setTutoTreatment] = useState("0");
+  const [tutoStep, setTutoStep] = useState(0);
+
+  const handleTuto = (isClicked) => {
+    setTutoStep(tutoStep + 1);
+    console.log(tutoStep);
+    if (tutoStep === 3) {
+      AsyncStorage.setItem("TutoTreatment", "1");
+      navigation.navigate("Map");
+    }
+  };
 
   const changeTreatments = async (tak: Take) => {
     console.log(tak);
@@ -106,6 +119,7 @@ export default function Suivis({ navigation }) {
   }
 
   const init = async () => {
+    setTutoTreatment(await AsyncStorage.getItem("TutoTreatment"));
     await getTreatments();
     await getTakes();
     setIsLoading(false);
@@ -140,6 +154,36 @@ export default function Suivis({ navigation }) {
 
   return (
     <View style={styles.container}>
+      {tutoStep === 0 && tutoTreatment === "0" && (
+        <TutorialBubble
+          isClicked={handleTuto}
+          styleAdded={{ top: "2%", left: "2%" }}
+          text={
+            "Voici la page des suivis,\nvous pourrez voir tes futurs traitements.1/4"
+          }
+        ></TutorialBubble>
+      )}
+      {tutoStep === 1 && tutoTreatment === "0" && (
+        <TutorialBubble
+          isClicked={handleTuto}
+          styleAdded={{ top: "64%", left: "12%" }}
+          text={"C'est ici que ce passe la création \nd'un traitement, 2/4"}
+        ></TutorialBubble>
+      )}
+      {tutoStep === 2 && tutoTreatment === "0" && (
+        <TutorialBubble
+          isClicked={handleTuto}
+          styleAdded={{ top: "1%", left: "40%" }}
+          text={"Et c'est dans le Stock, \noù vous retrouvez tous \ntes médicaments , 3/4"}
+        ></TutorialBubble>
+      )}
+      {tutoStep === 3 && tutoTreatment === "0" && (
+        <TutorialBubble
+          isClicked={handleTuto}
+          styleAdded={{ top: "75%", left: "33%" }}
+          text={"On va passer ensuite\nau prochain onglet, 4/4"}
+        ></TutorialBubble>
+      )}
       {isLoading ? (
         <View
           style={{

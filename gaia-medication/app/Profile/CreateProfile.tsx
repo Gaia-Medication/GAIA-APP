@@ -16,6 +16,7 @@ import { SearchAllergy } from "../../dao/Search";
 import { styles } from "../../style/style";
 import CustomButton from "../component/CustomButton";
 import AllergySelector from "../component/AllergySelector";
+import TutorialBubble from "../component/TutorialBubble";
 
 interface ICreateProps {
   navigation: NavigationProp<ParamListBase>;
@@ -36,6 +37,10 @@ export default function CreateProfile({ navigation }: ICreateProps) {
 
   const [validFirstPart, setValidFirstPart] = useState(false);
   const [isAllergySelectorValid, setIsAllergySelectorValid] = useState(false);
+
+  const [firstConnection, setFirstConnection] = useState("");
+  const [tutoStep, setTutoStep] = useState(0);
+  const [TutoCreate, setTutoCreate] = useState("0");
 
   const isFirstFormEmpty = !firstname || !lastname || !gender;
 
@@ -76,9 +81,14 @@ export default function CreateProfile({ navigation }: ICreateProps) {
     setIsAllergySelectorValid(isValid);
   };
 
+  const init = async () => {
+    setFirstConnection(await AsyncStorage.getItem("isFirstConnection"));
+    setTutoCreate(await AsyncStorage.getItem("TutoCreate"));
+  };
+
   useEffect(() => {
     console.log("Nav on CreationProfile Page");
-
+    init();
     //Empecher le redirection, on reste sur la page creation de profile tant qu'il y a 0 Users -> a finir
     /*navigation.addListener("beforeRemove", (e) => {
       e.preventDefault();
@@ -99,6 +109,17 @@ export default function CreateProfile({ navigation }: ICreateProps) {
     });*/
   }, []);
 
+  const handleTuto = (isClicked, step) => {
+    if (isClicked) {
+      if(step === 2){
+        setTutoStep(2);
+      }
+      else if (tutoStep < 1){
+        setTutoStep(tutoStep + 1);
+      }
+    }
+  };
+
   const handleFirstSumbit = () => {
     if (validFirstPart) {
       setValidFirstPart(false);
@@ -107,6 +128,7 @@ export default function CreateProfile({ navigation }: ICreateProps) {
         console.log(`error not valid`);
       } else {
         setValidFirstPart(true);
+        handleTuto(true, 2);
       }
     }
   };
@@ -116,6 +138,10 @@ export default function CreateProfile({ navigation }: ICreateProps) {
       console.log(`error not valid`);
     } else {
       try {
+        if (firstConnection === "true") {
+          await AsyncStorage.setItem("isFirstConnection", "false");
+          await AsyncStorage.setItem("TutoCreate", "1");
+        }
         const user: User = {
           id: await UserIdAutoIncrement(),
           firstname,
@@ -138,7 +164,33 @@ export default function CreateProfile({ navigation }: ICreateProps) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text className=" text-center my-6 text-2xl text-neutral-700 font-bold">Création de profil</Text>
+      {tutoStep === 0 && TutoCreate === "0" && (
+        <TutorialBubble
+          isClicked={handleTuto}
+          styleAdded={{ top: "60%", left: "5%" }}
+          text={
+            "Bienvenue sur Gaïa,\nmais avant tout, permettez-nous\nde créer votre profil. 1/2"
+          }
+        ></TutorialBubble>
+      )}
+      {tutoStep === 1 && TutoCreate === "0" && (
+        <TutorialBubble
+          isClicked={handleTuto}
+          styleAdded={{ top: "60%", left: "5%" }}
+          text={"Veuillez renseigner\nles différents champs. 2/2"}
+        ></TutorialBubble>
+      )}
+      {tutoStep === 2 && TutoCreate === "0" && (
+        <TutorialBubble
+          isClicked={handleTuto}
+          styleAdded={{ top: "60%", left: "3%" }}
+          text={"Veuillez renseigner ces autres champs. 1/1"}
+        ></TutorialBubble>
+      )}
+
+      <Text className=" text-center my-6 text-2xl text-neutral-700 font-bold">
+        Création de profil
+      </Text>
       {!validFirstPart && (
         <>
           <Input
