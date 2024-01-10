@@ -13,6 +13,7 @@ import * as Icon from "react-native-feather";
 import MedIconByType from "../component/MedIconByType";
 import { searchMed } from "../../dao/Search";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
 
 
 interface ICreateProps {
@@ -164,12 +165,12 @@ export default function AddTreatment({ navigation }: ICreateProps) {
         if (checkQty === "custom") {
             // Convert checkedDates to a map for quick lookup
             const checkedDatesMap = new Map(checkedDates.map(date => [date.toDateString(), true]));
-    
+
             // Filter out the old takes that match any of the checkedDates
-            const remainingTakes = takes.filter(take => 
+            const remainingTakes = takes.filter(take =>
                 !checkedDatesMap.has(new Date(take.date).toDateString())
             );
-    
+
             // Create new takes for each checked date
             const newTakes = checkedDates.map(date => ({
                 userId: user.id,
@@ -180,14 +181,14 @@ export default function AddTreatment({ navigation }: ICreateProps) {
                 taken: false,
                 review: ""
             }));
-    
+
             // Combine the remaining takes with the new takes and sort them by date
-            const updatedTakes = [...remainingTakes, ...newTakes].sort((a, b) => 
+            const updatedTakes = [...remainingTakes, ...newTakes].sort((a, b) =>
                 new Date(a.date).getTime() - new Date(b.date).getTime()
             );
-    
+
             console.log("UPDATED TAKES => ", updatedTakes);
-    
+
             // Update the takes state
             setTakes(updatedTakes);
         } else {
@@ -276,25 +277,25 @@ export default function AddTreatment({ navigation }: ICreateProps) {
         const msInDay = 24 * 60 * 60 * 1000; // Number of milliseconds in a day
         let totalTakes = 0;
         let currentDate = new Date(startDate);
-    
+
         // Create a map for quick lookup of the days of the week
         const daysMap = {
             'Dimanche': 0, 'Lundi': 1, 'Mardi': 2, 'Mercredi': 3,
             'Jeudi': 4, 'Vendredi': 5, 'Samedi': 6
         };
-    
+
         // Convert weekDays to their respective numbers
         const targetDays = weekDays.filter(day => day.checked).map(day => daysMap[day.day]);
-    
+
         while (currentDate <= endDate) {
             if (targetDays.includes(currentDate.getDay())) {
                 totalTakes++; // Increment count if it's a target day
             }
-    
+
             // Move to the next day
             currentDate = new Date(currentDate.getTime() + msInDay);
         }
-    
+
         console.log("TOTAL TAKES => ", totalTakes);
         return totalTakes;
     }
@@ -303,14 +304,14 @@ export default function AddTreatment({ navigation }: ICreateProps) {
         const msInDay = 24 * 60 * 60 * 1000; // Number of milliseconds in a day
         let totalTakes = 0;
         let currentDate = new Date(startDate);
-    
+
         while (currentDate <= endDate) {
             totalTakes++; // Increment count for each interval
-    
+
             // Move to the next interval day
             currentDate = new Date(currentDate.getTime() + (parseInt(customPeriodicityBisNumber) * msInDay));
         }
-    
+
         return totalTakes;
     }
 
@@ -370,7 +371,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
                         }
                     }
                 }
-                
+
             } else if (frequencyMode === 'bis') {
                 console.log("BIS")
                 console.log(customPeriodicityNumber)
@@ -735,7 +736,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
     ) : null;
 
     const handleInputChange = (text) => {
-        if (!isNaN(parseFloat(text)) && isFinite(text)){
+        if (!isNaN(parseFloat(text)) && isFinite(text)) {
             associateDigitWithDates(text)
         } else {
             console.log("NOT A NUMBER")
@@ -745,7 +746,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
                 setDigitInput("")
             }
         }
-        
+
     }
 
     const quantityForm = checkQty === 'regular' ? (
@@ -775,12 +776,12 @@ export default function AddTreatment({ navigation }: ICreateProps) {
                     <Text style={{ textAlignVertical: "center" }}>{date.toLocaleDateString('en-US', options)}</Text>
                     <Text style={{ textAlignVertical: "center" }}>{formatHour(date)}</Text>
                     <TextInput
-                    editable={false}
+                        editable={false}
                         style={{ borderWidth: 1, borderColor: 'gray', borderRadius: 5, paddingHorizontal: 8, paddingVertical: 6, fontSize: 16 }}
                         placeholder={takes.find(take => take.date === date.toISOString()) ? takes.find(take => take.date === date.toISOString()).quantity.toString() : "0"}
                         value={takes.find(take => take.date === date.toISOString()) ? takes.find(take => take.date === date.toISOString()).quantity.toString() : "1"}
                         onChangeText={(text) => {
-                            
+
                         }}
                         keyboardType="numeric"
                     />
@@ -877,6 +878,84 @@ export default function AddTreatment({ navigation }: ICreateProps) {
 
     }
 
+    const handleValidate = () => {
+        let canValidate = true;
+        let missingFields = "";
+        if (checkFrequency === "") {
+            missingFields += "Fréquence de prise (régulière ou personnalisée) \n\n";
+            canValidate = false;
+        }
+        if (checkFrequency === "regular") {
+            if (frequencyMode === "") {
+                missingFields += "Le mode de fréquence \n (X fois par jour/semaine ou tous les X jours)\n\n";
+                canValidate = false;
+            }
+            if (frequencyMode === "regular") {
+                if (customPeriodicity === "") {
+                    missingFields += "La périodicité de prise \n (jour/semaine)\n\n";
+                    canValidate = false;
+                }
+                if (customPeriodicityNumber === "" || parseInt(customPeriodicityNumber) === 0) {
+                    missingFields += "Une périodicité de prise valide \n (nombre de fois par jour/semaine)\n\n"
+                    canValidate = false;
+                }
+                if (checkDaily === "" && customPeriodicity === "day") {
+                    missingFields += "La continuité de prise \n (quotidienne ou personnalisée)\n\n";
+                    canValidate = false;
+                }
+                if ((checkDaily === "custom" && customPeriodicity === "day")|| (customPeriodicity === "week")) {
+                    if (weekDays.filter(day => day.checked).length === 0 || weekDays.filter(day => day.checked).length < parseInt(customPeriodicityNumber)) {
+                        missingFields += "Les jours de prise \n\n";
+                        canValidate = false;
+                    }
+                }
+            } else if (frequencyMode === "bis") {
+                if (customPeriodicityBisNumber === "") {
+                    missingFields += "Une périodicité de prise valide \n (nombre de jours par semaine)\n\n";
+                    canValidate = false;
+                }
+            }
+            if (checkLast === "") {
+                missingFields += "La modalité de fin de prise \n (nombre de prises ou date de fin)\n\n";
+                canValidate = false;
+            }
+            if (checkLast === "number") {
+                if (endNumber === 0) {
+                    missingFields += "Le nombre total de prises \n\n";
+                    canValidate = false;
+                }
+            } else if (checkLast === "last") {
+                if (endDate.getTime() < startDate.getTime()) { 
+                    missingFields += "Une date de fin de prise valide \n\n";
+                    canValidate = false;
+                }
+            }
+        } else if (checkFrequency === "custom") {
+            if (checkQty === "") {
+                missingFields += "La régularité des quantitées \n (régulière ou personnalisée)\n\n";
+                canValidate = false;
+            }
+            if (checkQty === "regular") {
+                if (quantity === 0) {
+                    missingFields += "Une quantité globale valide \n\n";
+                    canValidate = false;
+                }
+            }
+        }
+        if (canValidate) {
+            addInstruction();
+            resetModalVariables();
+        } else {
+            //Alert.alert("Veuillez renseigner : \n" + missingFields);
+            Dialog.show({
+                type: ALERT_TYPE.WARNING,
+                title: 'Oups !',
+                textBody: "Veuillez renseigner : \n\n" + missingFields,
+                button: 'Fermer',
+            })
+        }
+    }
+
     const modalContent = selectedMed ? (
         <View className="flex justify-center gap-4 p-2">
             <Text className="text-center text-xl font-bold text-blue-400">
@@ -909,11 +988,11 @@ export default function AddTreatment({ navigation }: ICreateProps) {
                 marginVertical: 60
 
             }}>
-                <TouchableOpacity onPress={() => { 
-                    
-                    addInstruction() 
-                    resetModalVariables(); // Reset the state first
-                    }} style={{ backgroundColor: '#9CDE00', padding: 10, borderRadius: 5 }}>
+                <TouchableOpacity onPress={() => {
+                    handleValidate()
+                    // Reset the state first
+
+                }} style={{ backgroundColor: '#9CDE00', padding: 10, borderRadius: 5 }}>
                     <Text style={{ color: "white", fontWeight: "bold" }}>VALIDER</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => handleClosePress()} style={{ backgroundColor: '#FF0000', padding: 10, borderRadius: 5 }}>
@@ -951,7 +1030,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
     const handleClosePress = () => {
         console.log("CLOSE")
         resetModalVariables(); // Reset the state first
-        setInstructionModalVisible(false) 
+        setInstructionModalVisible(false)
     };
 
     const modalDescriptionContent =
@@ -996,7 +1075,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
             </View>
         ) : null
 
-    
+
 
     const init = async () => {
         const allMeds = getAllMed();
@@ -1021,6 +1100,8 @@ export default function AddTreatment({ navigation }: ICreateProps) {
 
     return (
         <SafeAreaView style={styles.container}>
+            <AlertNotificationRoot>
+            
             <Text className=" text-3xl">Ajouter un Traitement</Text>
             <View className=" flex justify-center pt-8">
                 <Text>Nom du traitement*</Text>
@@ -1114,6 +1195,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
                             console.log("Focus");
                         }}
                         onChangeText={(text) => {
+                            setSearchText(text);
                             setSearch(searchMed(text));
                             setIsVisible(true);
                         }}
@@ -1163,7 +1245,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
                         <ModalComponent
                             visible={instructionsDetailModal}
                             onClose={() => {
-                                
+
                                 setInstructionsDetailModal(false);
                             }}
                             styleAdded={{
@@ -1199,6 +1281,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
                 }}
                 children={modalContent}
             />
+            </AlertNotificationRoot>
         </SafeAreaView>
     );
 };
