@@ -66,8 +66,8 @@ export default function Home({ navigation }) {
       const takeDate = new Date(take.take.date);
       return takeDate > now;
     });
-    console.log(nextTakeIndex-1)
-    setNextTake(nextTakeIndex-1) 
+    console.log(nextTakeIndex)
+    setNextTake(nextTakeIndex) 
     setTakes(todaysTakes);
     const currentId = await AsyncStorage.getItem("currentUser");
     if (userList.length < 1) {
