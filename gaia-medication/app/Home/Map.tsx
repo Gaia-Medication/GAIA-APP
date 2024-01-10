@@ -89,7 +89,7 @@ export default function Map() {
           <Text className=" font-bold" style={{ color: "rgba("+colorOf[selectedPoint?.type.split(' ')[0]]+",0.8)"}}>Contacter</Text>
         </TouchableOpacity>
       ) : (
-        <Text>No phone number available here... 🙁</Text>
+        <Text>Pas de numéro de téléphone 🙁</Text>
       )}
     </View>
   ) : null;

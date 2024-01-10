@@ -30,6 +30,7 @@ export default function Suivis({ navigation }) {
   const [treatments, setTreatments] = useState<Treatment[]>([]);
   const [takes, setTakes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [scroll, setScroll] = useState(false);
   const scrollViewRef = useRef(null);
 
   const changeTreatments = async (tak: Take) => {
@@ -101,6 +102,7 @@ export default function Suivis({ navigation }) {
       const dateB = new Date(b.take.date);
       return dateA.getTime() - dateB.getTime();
     });
+    //takes.map(item=>console.log(item))
     setTakes(takes);
     console.log("Takes");
   }
@@ -109,34 +111,40 @@ export default function Suivis({ navigation }) {
     await getTreatments();
     await getTakes();
     setIsLoading(false);
-    let actualIndex = null;
-
-    takes.length !== 0
-      ? takes.findIndex((take) => compareDates(take.take.date) === "actual")
-        ? (actualIndex = takes.findIndex(
-            (take) => compareDates(take.take.date) === "actual"
-          ))
-        : (actualIndex = takes.findIndex(
-            (take) => compareDates(take.take.date) === "previous"
-          ))
-      : null;
-
-    //console.log(actualIndex);
-    if (actualIndex && actualIndex !== -1) {
-      const positionToScroll = 275 * actualIndex + 25;
-      scrollViewRef.current.scrollTo({ y: positionToScroll, animated: true });
-    }
     console.log("fin init");
   };
 
   useEffect(() => {
     if (isFocused) {
       console.log("Nav on Suivis Page");
-      if (takes.length < 1) setIsLoading(true);
+      setScroll(true)
+      setIsLoading(true);
 
       init();
     }
   }, [isFocused]);
+
+  useEffect(() => {
+    if(scroll){
+      let actualIndex = null;
+      takes.length !== 0
+        ? takes.findIndex((take) => compareDates(take.take.date) === "actual")
+          ? (actualIndex = takes.findIndex(
+              (take) => compareDates(take.take.date) === "actual"
+            ))
+          : (actualIndex = takes.findIndex(
+              (take) => compareDates(take.take.date) === "previous"
+            ))
+        : null;
+  
+      console.log(actualIndex);
+      if (actualIndex && actualIndex !== -1) {
+        const positionToScroll = 275 * actualIndex;
+        scrollViewRef.current.scrollTo({ y: positionToScroll, animated: true });
+      }
+      setScroll(false)
+    }
+  }, [takes]);
 
   return (
     <View style={styles.container}>
@@ -172,21 +180,22 @@ export default function Suivis({ navigation }) {
         </View>
       ) : null}
       {takes && takes.length !== 0 ? (
-        <View className=" flex border-1 p-5">
-          <TouchableOpacity
-            className=" flex flex-row items-center gap-3 justify-end"
-            onPress={() => navigation.navigate("AddTreatment")}
-            style={{ position: "relative", right: 0, top: 0 }}
-          >
-            <Text className=" text-[#363636] text-lg">
-              {" "}
-              Ajouter un traitement
+        <View className=" flex border-1">
+          <View className="flex-row justify-between items-center px-5 py-2 border-b border-gray-200">
+            <Text className=" text-4xl font-bold pt-3">
+              À venir
             </Text>
-            <Icon.Plus color="#363636" width={35} height={35} />
-          </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("AddTreatment")}
+            >
+              <Text className=" text-[#9CDE00] text-lg font-bold">
+                Ajouter
+              </Text>
+            </TouchableOpacity>
 
+          </View>
           <ScrollView ref={scrollViewRef} showsVerticalScrollIndicator={false}>
-            <View style={{ paddingBottom: 150, paddingTop: 25 }}>
+            <View className="px-5 pb-40">
               {/* <FlatList
                 className=""
                 ref={scrollViewRef}

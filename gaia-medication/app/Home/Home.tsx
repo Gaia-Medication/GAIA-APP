@@ -6,6 +6,7 @@ import {
   Linking,
   Image,
   ScrollView,
+  FlatList,
 } from "react-native";
 import { useIsFocused } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
@@ -25,23 +26,47 @@ import Loading from "../component/Loading";
 export default function Home({ navigation }) {
   const isFocused = useIsFocused();
   const [loading, setLoading] = useState(false);
-  const [treatments, setTreatments] = useState<Treatment[]>([]);
   const [takes, setTakes] = useState([]);
+  const [nextTake, setNextTake] = useState(-1);
   const [user, setUser] = useState<User | null>(null);
   const [users, setUsers] = useState<User[]>([]);
   const [header, setHeader] = useState(true);
 
+  const formatHour = (hour) => {
+    if (hour instanceof Date) {
+      const hours = hour.getHours();
+      const minutes = hour.getMinutes();
+      const formattedTime = `${hours.toString()}:${minutes.toString().padStart(2, '0')}`;
+      return formattedTime;
+    }
+    return "";
+  };
+
   const init = async () => {
     const userList = await readList("users");
     setUsers(userList);
-    setTreatments(await getAllTreatments());
     const takes = await initTreatments();
     takes.sort((a, b) => {
       const dateA = new Date(a.take.date);
       const dateB = new Date(b.take.date);
       return dateA.getTime() - dateB.getTime();
     });
-    setTakes(takes);
+    
+    const today = new Date();
+    const nextTakeIndex = takes.findIndex((take) => {
+      const takeDate = new Date(take.take.date);
+      return takeDate > today;
+    });
+    console.log(nextTakeIndex-1)
+    setNextTake(nextTakeIndex-1) 
+    today.setHours(0, 0, 0, 0);
+
+    const todaysTakes = takes.filter((take) => {
+      const currentDate = new Date(take.take.date);
+      currentDate.setHours(0, 0, 0, 0);
+      return currentDate.toISOString() === today.toISOString();
+    });
+    setTakes(todaysTakes);
     const currentId = await AsyncStorage.getItem("currentUser");
     if (userList.length < 1) {
       // L'utilisateur se connecte pour la première fois
@@ -99,11 +124,12 @@ export default function Home({ navigation }) {
   }, [isFocused]);
 
   return (
-    <View className=" flex bg-white w-full h-full flex-1" style={{ gap: 20 }}>
+    <View className=" flex bg-white w-full h-full" style={{ gap: 0 }}>
       <Image
-        className=" object-cover h-12 w-24 self-center"
+        className=" object-cover h-12 w-24 self-center mt-2"
         source={require("../../assets/logo_title_gaia.png")}
       ></Image>
+      <View className=" flex bg-white w-full h-full flex-1" style={{ gap: 20 }}>
       {user && (
         <>
           <View style={styles.header}>
@@ -163,11 +189,70 @@ export default function Home({ navigation }) {
           <View style={styles.traitementContainer}>
             <Text style={styles.title2}>Suivis d'un traitement</Text>
           </View>
-          <TouchableOpacity onPress={()=>navigation.navigate("Suivis")} style={styles.searchQR}>
-          </TouchableOpacity>
+            <FlatList
+            className=" flex-grow-0" 
+            contentContainerStyle={{paddingHorizontal:25}}
+            data={takes}
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+            ItemSeparatorComponent={() => <View style={{width: 25}} />}
+            renderItem={({item, index}) => (
+              <TouchableOpacity style={{
+                alignItems: "center",
+                zIndex: 1,
+                width: 200,
+                backgroundColor:  "#BCBCBC10",
+                borderRadius: 17,
+                borderStyle: "solid",
+                borderWidth: 1,
+                borderColor:  "#BCBCBC90",
+                padding: 15,
+              }}
+                onPress={()=>navigation.navigate("SuivisHandler")}
+              >
+                <View style={{ width: "100%", alignItems: "center", flexDirection: "row", justifyContent: "space-between", margin: 10 }}>
+                  <View className="flex-1 items-center mx-2"
+                  style={{
+                    backgroundColor: nextTake !== index ? "#BCBCBC40" : "#9CDE00",
+                    borderRadius: 100,
+                    padding: 5,
+                  }}>
+                    <Text style={{ color: nextTake !== index ? null : "white", fontWeight: "700", fontSize: 12,lineHeight:14, maxWidth: 180 }} numberOfLines={1} ellipsizeMode="tail">{item.take.treatmentName}</Text>
+                  </View>
+                  <Text className="mx-2" style={{ fontWeight: "700",fontSize:16, }}>{formatHour(new Date(item.take.date))}</Text>
+                </View>
+        
+                <View style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 10, }}>
+                  {/* <Icon.Info color={nextTake !== index ? "#BCBCBC" : "#9CDE00"} width={25} height={25} /> */}
+                  <Text style={{ fontWeight: "bold", color: "#444444" }} ellipsizeMode="tail" numberOfLines={1}>{item.med ? item.med + " x " + item.take.quantity : null}</Text>
+                </View>
+        
+                <View style={{ paddingHorizontal: 30,marginTop:10, display: "flex", flexDirection: "row", gap: 15 }} >
+                  <View style={{
+                    backgroundColor: nextTake !== index ? "#BCBCBC90" : "#9CDE00",
+                    width: 5,
+                    borderRadius: 100,
+        
+                  }} />
+                  <View>
+                    <Text style={{ color: nextTake !== index  ? "#7B7B7B" : "black", fontWeight: "bold" }}>Description : {index}{nextTake&&nextTake}</Text>
+                    <Text style={{ color: "#C9C9C9", fontWeight: "700" }} numberOfLines={3} ellipsizeMode="tail">{item.treatmentDescription ? item.treatmentDescription : "Aucune description..."}</Text>
+                  </View>
+        
+                </View>
+              </TouchableOpacity>
+            )}
+            />
+          
+          <View style={styles.traitementContainer}>
+            <Text style={styles.title2}>Stock</Text>
+          </View>
         </>
       )}
+      </View>
       {loading && <Loading />}
     </View>
   );
 }
+
+

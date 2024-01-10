@@ -148,7 +148,7 @@ export const getAllTreatments = async (): Promise<Treatment[]> => {
 export const initTreatments = async () => {
   const allTreatments: Treatment[] = await getAllTreatments();
   let takesArray = [];
-
+  console.log(allTreatments)
   allTreatments ? allTreatments.forEach((treatment) => {
     treatment ? treatment.instructions.forEach((instr) => {
       instr.takes.forEach((take) => {
