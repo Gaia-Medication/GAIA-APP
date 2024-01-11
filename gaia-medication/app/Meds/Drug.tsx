@@ -423,14 +423,13 @@ export default function Drug({ route, navigation }) {
             visible={drugModalVisible}
             onClose={() => setDrugModalVisible(!drugModalVisible)}
           >
-            <View>
+            <View className="flex grow">
               {drug.Values.map((item, index) => {
                 const alreadyStocked =
                   stock.find((stockItem) => stockItem.CIP === item.CIP) != null;
-
                 return (
-                  <View key={index} className="flex-row items-center py-2 border-b border-gray-200">
-                    <View className="flex-1">
+                  <View key={index} className="flex py-2 border-b border-gray-200">
+                    <View className="flex">
                       <Text className=" font-light">{item.CIP}</Text>
                       <Text className=" text-xs">{item.Denomination}</Text>
                     </View>
@@ -471,7 +470,7 @@ export default function Drug({ route, navigation }) {
                 {stock.map((item, index) => {
                   return(
                     <View key={index}className="flex-row">
-                      <Text >x{item.qte} - {drug.Values.find(prod=>prod.CIP==item.CIP).Denomination}</Text>
+                      <Text className=" text-xs">x{item.qte} - {drug.Values.find(prod=>prod.CIP==item.CIP).Denomination}</Text>
                     </View>
                   )
                 })}

@@ -24,9 +24,6 @@ import {
 import { styles } from "../../style/style";
 import AvatarButton from "../component/Avatar";
 import * as Icon from "react-native-feather";
-
-
-import * as Notifications from "expo-notifications";
 import { trouverNomMedicament } from "../../dao/Search";
 import Loading from "../component/Loading";
 import { initDailyNotifications } from "../Handlers/NotificationsHandler";
@@ -165,7 +162,7 @@ export default function Home({ navigation }) {
 
   
   useEffect(() => {
-    initUserInfo()
+    if(user)initUserInfo()
   }, [user]);
 
   const handleTuto = (isClicked: boolean) => {
@@ -310,7 +307,7 @@ export default function Home({ navigation }) {
               borderRadius: 17,
               borderStyle: "solid",
               borderWidth: 1,
-              borderColor:  "#BCBCBC90",
+              borderColor:  nextTake !== index ? "#BCBCBC90" : "#9CDE00",
               padding: 15,
             }}
               onPress={()=>navigation.navigate("SuivisHandler")}
