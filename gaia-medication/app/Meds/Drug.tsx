@@ -78,23 +78,6 @@ export default function Drug({ route, navigation }) {
     }
   }, [isFocused && drug]);
 
-  const addToStock = async (item) => {
-    try {
-      const addstock: Stock = {
-        idUser: user.id,
-        CIP: item.CIP,
-        CIS: item.CIS,
-        qte: 1,
-      };
-      console.log(addstock);
-
-      await addItemToList("stock", addstock);
-      setStock([...stock, addstock]);
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
   const updateStock = async (cis, cip,addQte) => {
     try {
       const product=stock.find((stockItem) => stockItem.CIP === cip)
@@ -130,14 +113,6 @@ export default function Drug({ route, navigation }) {
     }
   };
 
-  const deleteFromStock = async (cis, cip, ) => {
-    try {
-      await removeItemFromStock(cis, cip, user.id);
-      init();
-    } catch (e) {
-      console.log(e);
-    }
-  };
   const handlePress = useCallback(async () => {
     await Linking.openURL(
       "https://base-donnees-publique.medicaments.gouv.fr/affichageDoc.php?specid=" +

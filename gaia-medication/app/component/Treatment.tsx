@@ -29,7 +29,6 @@ const Treatment = ({ navigation, onPress, status = "actual" as "actual" | "next"
   const init = () => {
     setNewTxt(take.review);
     setDate(new Date(take.date));
-    console.log(take)
   };
 
   const formatHour = (hour) => {

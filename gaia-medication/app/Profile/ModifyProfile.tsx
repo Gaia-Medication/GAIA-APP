@@ -103,6 +103,9 @@ export default function ModifyProfile({ navigation }: IModifyProps) {
           JSON.stringify(updatedUsers[0].id)
         );
         await AsyncStorage.setItem("users", JSON.stringify(updatedUsers));
+        const stock = await readList("stock");
+        const updatedStock = stock.filter((stock:Stock) => stock.idUser !== userId);
+        await AsyncStorage.setItem("stock", JSON.stringify(updatedStock));
         setUsers(updatedUsers); // Maj la liste des utilisateurs dans l'état local
       }
     } catch (error) {

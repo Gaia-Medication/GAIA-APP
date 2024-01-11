@@ -22,9 +22,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 export default function Map({ navigation }) {
   const initialRegion = {
     latitude: 47.200819319828305,
-    latitudeDelta: 0.2705200915647197,
+    latitudeDelta: 0.05,
     longitude: -1.5608386136591434,
-    longitudeDelta: 0.18985044211149216,
+    longitudeDelta: 0.05,
   };
   const standardMapType = [
     {
