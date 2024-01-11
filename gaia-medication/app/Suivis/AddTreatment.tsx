@@ -19,6 +19,7 @@ import {
   Button,
   Alert,
   Dimensions,
+  ScrollView,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { styles } from "../../style/style";
@@ -40,16 +41,15 @@ import {
 import { Input } from "react-native-elements";
 import { ArrowRightCircle } from "react-native-feather";
 
-interface ICreateProps {
-  navigation: NavigationProp<ParamListBase>;
-}
-
-export default function AddTreatment({ navigation }: ICreateProps) {
+export default function AddTreatment({route, navigation}) {
   const isFocused = useIsFocused();
 
   const windowWidth = Dimensions.get("window").width;
   const windowHeight = Dimensions.get("window").height;
-
+  let drugScanned; 
+    if (route.params) {
+        ({ drugScanned } = route.params); 
+    }
   // INPUTS
   const [treatmentName, setTreatmentName] = useState("");
   const [treatmentDescription, setTreatmentDescription] = useState("");
@@ -1204,6 +1204,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
   };
 
   const modalContent = selectedMed ? (
+    <ScrollView>
     <View className="flex justify-center gap-4 p-2">
       <Text className="text-center text-xl font-bold text-blue-400">
         {selectedMedName}
@@ -1253,6 +1254,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
         </TouchableOpacity>
       </View>
     </View>
+    </ScrollView>
   ) : null;
 
   const resetModalVariables = () => {
@@ -1456,10 +1458,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
               }}
             />
           )}
-          <TouchableOpacity
-            className=" flex items-center justify-center"
-            onPress={() => setShowDatePicker(true)}
-          >
+          {!drugScanned ? (
             <Input
               className=" text-[#363636] text-lg"
               label="Médicaments"
@@ -1477,7 +1476,9 @@ export default function AddTreatment({ navigation }: ICreateProps) {
               placeholder="Choisir vos médicaments..."
               placeholderTextColor={"#dedede"}
             />
-          </TouchableOpacity>
+          ):(
+            <Text>Médicaments détectés</Text>
+          )}
           {isVisible && (
             <FlatList
               className="border-0"
@@ -1493,6 +1494,28 @@ export default function AddTreatment({ navigation }: ICreateProps) {
                   <Text className="ml-4">{item.Name}</Text>
                 </TouchableOpacity>
               )}
+              style={styles.dropdownList}
+            />
+          )}
+          {drugScanned && (
+            <FlatList
+              className="border-0"
+              data={drugScanned}
+              keyExtractor={(_item, index) => index.toString()}
+              renderItem={({ item }) => {
+                const drug = getMedbyCIS(item.med.CIS)
+                return(
+                    <TouchableOpacity
+                      style={styles.listItem}
+                      className="flex justify-start align-middle"
+                      onPress={() => handleMedSelect(drug.CIS)}
+                    >
+                      <MedIconByType type={drug.Shape} />
+                      <Text className="ml-4">{drug.Name}</Text>
+                    </TouchableOpacity>
+                )
+              }
+              }
               style={styles.dropdownList}
             />
           )}
@@ -1577,6 +1600,7 @@ export default function AddTreatment({ navigation }: ICreateProps) {
             backgroundColor: "white",
             borderRadius: 10,
             padding: 20,
+            //maxWidth: "90%",
             maxHeight: "80%",
           }}
           children={modalContent}

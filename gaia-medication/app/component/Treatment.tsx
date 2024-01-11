@@ -93,9 +93,8 @@ const Treatment = ({ navigation, onPress, status = "actual" as "actual" | "next"
           />
         </View>
       </View>
-      <TouchableOpacity style={{ display: "flex", flexDirection: "row", justifyContent: "flex-end", alignItems: "center", marginTop: 40, backgroundColor: "#9CDE00" }} onPress={(text) => handleReviewChange()}>
-        <Icon.X color="#FFFFFF" width={30} height={30} />
-        <Text style={{ fontSize: 17 }}>Valider</Text>
+      <TouchableOpacity style={{ display: "flex", flexDirection: "row", justifyContent: "flex-start", alignItems: "center", marginTop: 40 }} onPress={() => handleReviewChange()}>
+        <Text style={{ fontSize: 17, color:"#9CDE00" }}>Valider</Text>
       </TouchableOpacity>
     </View>
   );

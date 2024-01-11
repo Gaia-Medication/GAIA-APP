@@ -144,8 +144,8 @@ export default function Home({ navigation }) {
       );
       if (scanMedsFinded.meds.length > 0) {
         setLoading(false);
-        if(scanMedsFinded.ordonnanceBool==null){
-
+        if(scanMedsFinded.ordonnanceBool){
+          navigation.navigate("AddTreatment", { drugScanned: scanMedsFinded.meds })
         }else{
           navigation.navigate("Drug", { drugCIS: scanMedsFinded.meds[0].med.CIS })
         }
