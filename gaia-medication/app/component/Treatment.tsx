@@ -18,11 +18,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import ModalComponent from "./Modal";
 import { validatePathConfig } from "@react-navigation/native";
 
-const Treatment = ({ onPress, status = "actual" as "actual" | "next" | "previous", take, treatmentName, treatmentDescription, med, onTakePress, validateModalFun }) => {
+const Treatment = ({ navigation, onPress, status = "actual" as "actual" | "next" | "previous", take, treatmentName, treatmentDescription, med, onTakePress, validateModalFun }) => {
   const [expanded, setExpanded] = useState(false);
 
-  const validStates = ['previous', 'actual', 'next'];
-  const isStateValid = validStates.includes(status);
   const [date, setDate] = useState<Date>(new Date());
   const [takeDetailsModalVisible, setTakeDetailsModalVisible] = useState(false);
   const [newTxt, setNewTxt] = useState("");
@@ -31,6 +29,7 @@ const Treatment = ({ onPress, status = "actual" as "actual" | "next" | "previous
   const init = () => {
     setNewTxt(take.review);
     setDate(new Date(take.date));
+    console.log(take)
   };
 
   const formatHour = (hour) => {
@@ -95,16 +94,15 @@ const Treatment = ({ onPress, status = "actual" as "actual" | "next" | "previous
           />
         </View>
       </View>
-      <TouchableOpacity style={{ display: "flex", flexDirection: "row", justifyContent: "flex-end", alignItems: "center", marginTop: 40, backgroundColor: "#9CDE00" }} onPress={(text) => handleReviewChange()}>
-        <Icon.X color="#FFFFFF" width={30} height={30} />
-        <Text style={{ fontSize: 17 }}>Valider</Text>
+      <TouchableOpacity style={{ display: "flex", flexDirection: "row", justifyContent: "flex-start", alignItems: "center", marginTop: 40 }} onPress={() => handleReviewChange()}>
+        <Text style={{ fontSize: 17, color:"#9CDE00" }}>Valider</Text>
       </TouchableOpacity>
     </View>
   );
 
   useEffect(() => {
     init();
-  }, []);
+  }, [take]);
 
   return (
     <SafeAreaView style={{ display: "flex", flexDirection: "row", justifyContent: "flex-start", gap: 10, maxHeight: "auto", marginBottom: 7, marginTop: 7, }}>
@@ -168,10 +166,11 @@ const Treatment = ({ onPress, status = "actual" as "actual" | "next" | "previous
           <Text className="mx-2" style={{ fontWeight: "700",fontSize:16, }}>{formatHour(date)}</Text>
         </View>
 
-        <View style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 10, width: "100%", padding: 10, backgroundColor: status === "previous" ? "#BCBCBC40" : "#9CDE0040", borderRadius: 50 }}>
+        <TouchableOpacity onPress={()=>navigation.navigate("Drug", { drugCIS: take.CIS })}
+        style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 10, width: "100%", padding: 10, backgroundColor: status === "previous" ? "#BCBCBC40" : "#9CDE0040", borderRadius: 50 }}>
           <Icon.Info color={status === "previous" ? "#BCBCBC" : "#9CDE00"} width={25} height={25} />
-          <Text style={{ fontWeight: "bold", color: "#444444" }} ellipsizeMode="tail" numberOfLines={1}>{med ? med + " x " + take.quantity : null}</Text>
-        </View>
+          <Text style={{ fontWeight: "bold", color: "#444444" }} ellipsizeMode="tail" numberOfLines={1}>{med ? "x" + take.quantity+" "+med  : null}</Text>
+        </TouchableOpacity>
 
         <View style={{ padding: 30, display: "flex", flexDirection: "row", gap: 15 }} >
           <View style={{
@@ -191,12 +190,14 @@ const Treatment = ({ onPress, status = "actual" as "actual" | "next" | "previous
             <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
               {take.taken ? (
                 <View style={{ display: "flex", flexDirection: "row", justifyContent: "center", gap: 5, alignItems: "center", paddingVertical: 3 }}>
+                  {take.review&&take.review.length>0&&<Icon.BookOpen className="mr-2" color={status === "previous" ? "#333333" : "#9CDE00"} width={30} height={30} />}
                   <Icon.CheckCircle color="#9CDE00" width={22} height={22} />
                   <Text style={{ color: "#9CDE00", fontWeight: "bold" }}>Pris</Text>
                 </View>
 
               ) : (
                 <View style={{ display: "flex", flexDirection: "row", justifyContent: "center", gap: 5, alignItems: "center", paddingVertical: 3, }}>
+                  {take.review&&take.review.length>0&&<Icon.BookOpen className="mr-2" color={status === "previous" ? "#333333" : "#9CDE00"} width={30} height={30} />}
                   <Icon.AlertCircle color={status === "previous" ? "#333333" : "#FF000090"} width={22} height={22} />
                   <Text style={{ color: status === "previous" ? "#333333" : "#FF000090", fontWeight: "bold" }}>Non pris</Text>
                 </View>

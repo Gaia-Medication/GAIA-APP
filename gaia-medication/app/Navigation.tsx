@@ -8,7 +8,6 @@ import Settings from "./Home/Settings";
 import Suivis from "./Suivis/Suivis";
 import CreateProfile from "./Profile/CreateProfile";
 import Stock from "./Suivis/Stock";
-import Profile from "./Profile/Profile";
 import * as Icon from "react-native-feather";
 import Search from "./Meds/Search";
 import Drug from "./Meds/Drug";
@@ -17,7 +16,6 @@ import AddTreatment from "./Suivis/AddTreatment";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import ModifyProfile from "./Profile/ModifyProfile";
 import NotificationsSettings from "./Home/Settings/NotificationsSettings";
-import UsersSettings from "./Home/Settings/UsersSettings";
 import Notifications from "./Home/Notifications";
 import AllergySelector from "./component/AllergySelector";
 import ManageTreatments from "./Suivis/ManageTreatments";
@@ -52,6 +50,26 @@ export default function Navigation() {
         <Stack.Screen name="NotificationsSettings" component={NotificationsSettings}/>
         <Stack.Screen name="UsersSettings" component={UsersSettings}/>
         <Stack.Screen name="Profile" component={Profile} />
+        <Stack.Screen
+          name="AddTreatment"
+          component={AddTreatment}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Settings"
+          component={Settings}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Notifications"
+          component={Notifications}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="NotificationsSettings"
+          component={NotificationsSettings}
+          options={{ headerShown: false}}
+        />
         <Stack.Screen
           name="Drug"
           component={Drug}

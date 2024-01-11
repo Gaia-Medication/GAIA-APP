@@ -1,30 +1,23 @@
 import React, { useEffect, useState } from "react";
 import RNPickerSelect from "react-native-picker-select";
 import {
-  Alert,
-  Button,
   FlatList,
-  ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
-import DatePicker from "react-native-date-picker";
 import { Input } from "react-native-elements";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import {
-  UserIdAutoIncrement,
-  addItemToList,
-  readList,
-} from "../../dao/Storage";
-import { SearchAllergy } from "../../dao/Search";
+import { readList } from "../../dao/Storage";
 import { styles } from "../../style/style";
 import AllergySelector from "../component/AllergySelector";
 import CustomButton from "../component/CustomButton";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import GoBackButton from "../component/GoBackButton";
+import { Trash } from "react-native-feather";
 
 interface IModifyProps {
   navigation: NavigationProp<ParamListBase>;
@@ -33,14 +26,14 @@ interface IModifyProps {
 export default function ModifyProfile({ navigation }: IModifyProps) {
   const [lastname, setLastname] = useState("");
   const [firstname, setFirstname] = useState("");
-  const [age, setAge] = useState<number>();
+  const [dateOfBirth, setDateOfBirth] = useState<Date>();
   const [weight, setWeight] = useState<number>();
   const [gender, setGender] = useState("");
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   const [preference, setPreference] = useState([]);
   const [isValidFirstname, setIsValidFirstname] = useState(true);
   const [isValidLastname, setIsValidLastname] = useState(true);
-  const [isValidAge, setIsValidAge] = useState(true);
   const [isValidWeight, setIsValidWeight] = useState(true);
 
   const [validFirstPart, setValidFirstPart] = useState(false);
@@ -56,9 +49,8 @@ export default function ModifyProfile({ navigation }: IModifyProps) {
     !firstname ||
     !lastname ||
     !gender ||
-    !age ||
+    !dateOfBirth ||
     !weight ||
-    !isValidAge ||
     !isValidWeight;
 
   const init = async () => {
@@ -74,14 +66,6 @@ export default function ModifyProfile({ navigation }: IModifyProps) {
     setIsValidLastname(lastname.length >= 2);
   };
 
-  const validateAge = () => {
-    if (age > 0 || age <= 115) {
-      setIsValidAge(true);
-    } else {
-      setIsValidAge(false);
-    }
-  };
-
   const validateWeight = () => {
     if (weight > 0 || weight <= 999) {
       setIsValidWeight(true);
@@ -94,26 +78,20 @@ export default function ModifyProfile({ navigation }: IModifyProps) {
     setIsAllergySelectorValid(isValid);
   };
 
+  function formatDateToDDMMYYYY(date: Date) {
+    console.log("date: ", date);
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+    const year = date.getFullYear();
+    const formattedDay = day < 10 ? `0${day}` : day;
+    const formattedMonth = month < 10 ? `0${month}` : month;
+    const formattedDate = `${formattedDay}/${formattedMonth}/${year}`;
+
+    return formattedDate;
+  }
+
   useEffect(() => {
     init();
-    //Empecher le redirection, on reste sur la page creation de profile tant qu'il y a 0 Users -> a finir
-    /*navigation.addListener("beforeRemove", (e) => {
-      e.preventDefault();
-      Alert.alert(
-        "Discard changes?",
-        "You have unsaved changes. Are you sure to discard them and leave the screen?",
-        [
-          { text: "Don't leave", style: "cancel", onPress: () => {} },
-          {
-            text: "Discard",
-            style: "destructive",
-            // If the user confirmed, then we dispatch the action we blocked earlier
-            // This will continue the action that had triggered the removal of the screen
-            onPress: () => navigation.dispatch(e.data.action),
-          },
-        ]
-      );
-    });*/
   }, []);
 
   const deleteUser = async (userId) => {
@@ -156,7 +134,7 @@ export default function ModifyProfile({ navigation }: IModifyProps) {
         if (userToUpdate) {
           userToUpdate.firstname = firstname;
           userToUpdate.lastname = lastname;
-          userToUpdate.age = age;
+          userToUpdate.dateOfBirth = dateOfBirth;
           userToUpdate.weight = weight;
           userToUpdate.gender = gender;
           userToUpdate.preference = preference;
@@ -169,7 +147,7 @@ export default function ModifyProfile({ navigation }: IModifyProps) {
           // Enregistrez la liste mise à jour dans AsyncStorage
           await AsyncStorage.setItem("users", JSON.stringify(updatedUsers));
           setProfileSelected(null);
-          navigation.navigate("Settings");
+          navigation.goBack();
         } else {
           console.log("Utilisateur non trouvé.");
         }
@@ -180,14 +158,17 @@ export default function ModifyProfile({ navigation }: IModifyProps) {
   };
 
   return (
-    <SafeAreaView style={styles.container} className="p-4">
+    <SafeAreaView style={styles.container}>
+      <GoBackButton navigation={navigation}></GoBackButton>
+
       {!profileSelected && users && (
-        <>
-          <Text className=" text-2xl font-semibold py-2">
+        <View className="mt-[16px]" style={styles.container}>
+          <Text className=" text-2xl font-semibold py-2 mx-auto">
             Modifier un profil
           </Text>
           <FlatList
             data={users}
+            className=" p-2"
             keyExtractor={(_item, index) => index.toString()}
             renderItem={({ item }) => (
               <TouchableOpacity
@@ -195,7 +176,7 @@ export default function ModifyProfile({ navigation }: IModifyProps) {
                   setProfileSelected(item);
                   setFirstname(item.firstname);
                   setLastname(item.lastname);
-                  setAge(item.age);
+                  setDateOfBirth(new Date(item.dateOfBirth));
                   setWeight(item.weight);
                   setGender(item.gender);
                   setPreference(item.preference);
@@ -209,17 +190,20 @@ export default function ModifyProfile({ navigation }: IModifyProps) {
               </TouchableOpacity>
             )}
           />
-        </>
+        </View>
       )}
 
       {profileSelected && (
         <>
+          <Text className=" text-center my-6 text-2xl text-neutral-700 font-bold">
+            Modification de profil
+          </Text>
           {!validFirstPart && (
             <>
               <Input
                 label="Prénom"
                 labelStyle={styles.label}
-                placeholder="Entrez votre prenom"
+                placeholder="Entrez votre prnom"
                 placeholderTextColor={"#dedede"}
                 onChangeText={(text) =>
                   setFirstname(text.charAt(0).toUpperCase() + text.slice(1))
@@ -272,7 +256,8 @@ export default function ModifyProfile({ navigation }: IModifyProps) {
                   { label: "Autre", value: "other" },
                 ]}
               />
-              <View className=" flex justify-center items-center">
+
+              <View className=" flex items-center justify-center mt-auto mb-2">
                 <CustomButton
                   title="Suivant"
                   onPress={handleFirstSumbit}
@@ -290,24 +275,39 @@ export default function ModifyProfile({ navigation }: IModifyProps) {
                   <Text className=" m-4 text-gray-300 text-lg">
                     {firstname} {lastname}
                   </Text>
-                  <Input
-                    label="Âge"
-                    labelStyle={styles.label}
-                    placeholder="Votre Âge"
-                    placeholderTextColor={"#dedede"}
-                    onChangeText={(text) => setAge(parseInt(text))}
-                    onBlur={validateAge}
-                    value={age ? age.toString() : ""}
-                    maxLength={3}
-                    renderErrorMessage={isValidAge}
-                    keyboardType="numeric"
-                  ></Input>
-                  {!isValidAge && (
-                    <Text style={stylesProfile.errorText}>
-                      L'âge doit être contenu entre 1 et 125 ans.
-                    </Text>
+                  <Text style={styles.label} className="m-2">
+                    Date de naissance
+                  </Text>
+                  <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+                    {dateOfBirth && (
+                      <View className="flex items-center">
+                        <Text className="text-white text-center font-semibold bg-lime-400 rounded-lg w-[80%] m-4 p-2 ">
+                          {formatDateToDDMMYYYY(dateOfBirth)}
+                        </Text>
+                      </View>
+                    )}
+                    {!dateOfBirth && (
+                      <View className="flex items-center">
+                        <Text className="text-white text-center font-semibold bg-blue-400 rounded-lg w-[80%] m-4 p-2 ">
+                          Choisir la date de naissance
+                        </Text>
+                      </View>
+                    )}
+                  </TouchableOpacity>
+                  {showDatePicker && (
+                    <DateTimePicker
+                      value={dateOfBirth || new Date()}
+                      mode="date"
+                      display="default"
+                      maximumDate={new Date()}
+                      onChange={(event, selectedDate) => {
+                        setShowDatePicker(false);
+                        if (selectedDate) {
+                          setDateOfBirth(selectedDate);
+                        }
+                      }}
+                    />
                   )}
-
                   <Input
                     label="Poids (kg)"
                     labelStyle={styles.label}
@@ -325,14 +325,6 @@ export default function ModifyProfile({ navigation }: IModifyProps) {
                       Le poids doit être contenu entre 1 et 999kg.
                     </Text>
                   )}
-
-                  {/*<Input
-        label="Preference/Allergies"
-        placeholder="Preference/Allergies"
-        leftIcon={{ type: "font-awesome", name: "heart" }}
-        onChangeText={(text) => setPreference(text)}
-        value={preference}
-      />*/}
 
                   <TouchableOpacity
                     onPress={() => {
@@ -353,18 +345,18 @@ export default function ModifyProfile({ navigation }: IModifyProps) {
                     keyExtractor={(_item, index) => index.toString()}
                     renderItem={({ item }) => (
                       <View className=" bg-blue-200 m-1 p-1 rounded-lg flex flex-row justify-center align-middle">
-                        <Text className=" text-blue-500">{item}</Text>
+                        <Text className=" text-blue-400">{item}</Text>
                       </View>
                     )}
                   />
 
                   <View className=" flex items-center justify-center mt-auto mb-2">
-                    <View className=" scale-75 w-max ">
+                    <View className=" m-3 w-max ">
                       <CustomButton
                         title="Retour"
                         onPress={handleFirstSumbit}
                         disabled={false}
-                        color={"#dddddd"}
+                        color={"#4296E4"}
                       />
                     </View>
                     <CustomButton
@@ -390,11 +382,12 @@ export default function ModifyProfile({ navigation }: IModifyProps) {
 
       {!profileSelected && users && (
         <>
-          <Text className=" text-2xl font-semibold py-2">
+          <Text className=" text-2xl font-semibold py-2  mx-auto">
             Supprimer un profil
           </Text>
           <FlatList
             data={users}
+            className=" p-2"
             keyExtractor={(_item, index) => index.toString()}
             renderItem={({ item }) => (
               <TouchableOpacity
@@ -418,20 +411,43 @@ export default function ModifyProfile({ navigation }: IModifyProps) {
               </TouchableOpacity>
             )}
           />
-          <View className=" flex justify-center items-center">
-            <CustomButton
-              title={
-                userToDelete
-                  ? `Supprimer le profil #${userToDelete?.id} `
-                  : "Selectionner un profil à supprimer"
-              }
-              onPress={() => {
-                deleteUser(userToDelete.id);
-                navigation.navigate("Settings");
-              }}
-              disabled={userToDelete === null}
-              color={"#4296E4"}
-            ></CustomButton>
+          <View className=" flex justify-center items-center mb-3">
+            {users.length === 1 && (
+              <CustomButton
+                title={"Vous ne pouvez pas supprimer\n le dernier profil"}
+                disabled={true}
+                onPress={() => {}}
+                color={"#4296E4"}
+              ></CustomButton>
+            )}
+            {userToDelete === null && (
+              <CustomButton
+                title={
+                  userToDelete
+                    ? `Supprimer le profil #${userToDelete?.id} `
+                    : "Selectionner un profil à supprimer"
+                }
+                onPress={() => {}}
+                disabled={userToDelete === null}
+                color={""}
+              ></CustomButton>
+            )}
+            {users.length > 1 && userToDelete !== null && (
+              <TouchableOpacity
+                className="bg-[#4296E4] rounded-2xl flex flex-row justify-center items-center p-2 w-[80%] "
+                onPress={() => {
+                  deleteUser(userToDelete.id);
+                  navigation.goBack();
+                }}
+              >
+                <Text className="text-center text-white p-2">
+                  {userToDelete
+                    ? `Supprimer le profil #${userToDelete?.id} `
+                    : "Selectionner un profil à supprimer"}
+                </Text>
+                <Trash color="white" height={20} width={20} />
+              </TouchableOpacity>
+            )}
           </View>
         </>
       )}

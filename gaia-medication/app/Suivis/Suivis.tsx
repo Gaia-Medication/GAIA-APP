@@ -28,6 +28,8 @@ import { BlurView } from "expo-blur";
 import * as Notifications from "expo-notifications";
 import TutorialBubble from "../component/TutorialBubble";
 
+import { ArrowRightCircle, XCircle } from "react-native-feather";
+
 export default function Suivis({ navigation }) {
   const isFocused = useIsFocused();
   const [treatments, setTreatments] = useState<Treatment[]>([]);
@@ -121,15 +123,21 @@ export default function Suivis({ navigation }) {
         ))
       : null;
 
-    console.log(actualIndex);
     setScroll(actualIndex);
+    console.log("Takes");
+  }
+
+  const init = async () => {
+    setTutoTreatment(await AsyncStorage.getItem("TutoTreatment"));
+    await getTreatments();
+    await getTakes();
+    setIsLoading(false);
   };
 
   useEffect(() => {
     if (isFocused) {
-      console.log("Nav on Suivis Page");
       setIsLoading(true);
-
+      console.log("Nav on Suivis Page");
       init();
     }
   }, [isFocused]);
@@ -183,7 +191,7 @@ export default function Suivis({ navigation }) {
           className="px-0"
         >
           <Image
-            className=" object-cover h-24 w-48 self-center"
+            className=" object-cover h-24 w-48 self-center -mt-[50%]"
             source={require("../../assets/logo_title_gaia.png")}
           />
           <ActivityIndicator size={40} color="#9CDE00" />
@@ -224,7 +232,6 @@ export default function Suivis({ navigation }) {
               paddingHorizontal: 20,
               paddingBottom: 160,
             }}
-            //initialScrollIndex={scroll}
             ref={(ref) => (this.flatList = ref)}
             showsVerticalScrollIndicator={false}
             data={takes}
@@ -243,6 +250,7 @@ export default function Suivis({ navigation }) {
             renderItem={({ item }) => {
               return (
                 <Treatment
+                  navigation={navigation}
                   onPress={null}
                   status={compareDates(item.take.date)}
                   take={item.take}
@@ -257,49 +265,22 @@ export default function Suivis({ navigation }) {
           />
         </View>
       ) : (
-        <View
-          style={{
-            padding: 10,
-            width: "100%",
-            height: "100%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            marginBottom: 200,
-          }}
-        >
-          <Text
-            style={{
-              color: "rgb(103, 33, 236)",
-              fontSize: 20,
-              marginBottom: 100,
-            }}
-          >
+        <View className="flex flex-col justify-around items-center h-[98%] w-full">
+          <Text className="text-2xl font-medium text-center text-neutral-300">
             Aucun traitement à venir
           </Text>
           <Image
-            source={require("./../../assets/heureux.png")}
-            style={{
-              width: 200,
-              height: 200,
-              resizeMode: "contain",
-              marginBottom: 100,
-            }}
+            className=" h-[150px] w-[150px] -mt-[40%] -mb-[20%]"
+            source={require("../../assets/prescription(1).png")}
           />
           <TouchableOpacity
-            style={{ backgroundColor: "rgb(103, 33, 236)", borderRadius: 10 }}
+            className="bg-lime-400 rounded-2xl flex flex-row justify-center items-center p-2 px-8 "
             onPress={() => navigation.navigate("AddTreatment")}
           >
-            <Text
-              style={{
-                color: "white",
-                fontSize: 20,
-                textAlign: "center",
-                padding: 10,
-              }}
-            >
+            <Text className="text-center text-white font-semibold text-lg p-2">
               Ajouter un traitement
             </Text>
+            <ArrowRightCircle color="white" height={30} width={30} />
           </TouchableOpacity>
         </View>
       )}

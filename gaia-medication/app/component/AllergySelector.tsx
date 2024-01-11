@@ -10,7 +10,7 @@ const AllergySelector = ({ isAllergySelectorValid, preference, onPreferenceChang
   const [searchAllergy, setSearchAllergy] = useState([]);
 
   return (
-    <View className=" bg-white h-full w-full p-4 flex justify-center items-center">
+    <View className=" bg-white h-[90%] w-full p-4 flex justify-center items-center">
       <Input
         label="Allergies médicamenteuses"
         placeholder="Rechercher"
