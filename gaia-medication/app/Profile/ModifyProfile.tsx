@@ -190,6 +190,9 @@ export default function ModifyProfile({ navigation }: IModifyProps) {
 
       {profileSelected && (
         <>
+          <Text className=" text-center my-6 text-2xl text-neutral-700 font-bold">
+            Modification de profil
+          </Text>
           {!validFirstPart && (
             <>
               <Input
@@ -271,11 +274,20 @@ export default function ModifyProfile({ navigation }: IModifyProps) {
                     Date de naissance
                   </Text>
                   <TouchableOpacity onPress={() => setShowDatePicker(true)}>
-                    <View className="flex items-center">
-                      <Text className="text-white text-center font-semibold bg-blue-400 rounded-lg w-[90%] m-2 p-1 ">
-                        Choisir la date de naissance
-                      </Text>
-                    </View>
+                    {dateOfBirth && (
+                      <View className="flex items-center">
+                        <Text className="text-white text-center font-semibold bg-lime-400 rounded-lg w-[80%] m-4 p-2 ">
+                          {formatDateToDDMMYYYY(dateOfBirth)}
+                        </Text>
+                      </View>
+                    )}
+                    {!dateOfBirth && (
+                      <View className="flex items-center">
+                        <Text className="text-white text-center font-semibold bg-blue-400 rounded-lg w-[80%] m-4 p-2 ">
+                          Choisir la date de naissance
+                        </Text>
+                      </View>
+                    )}
                   </TouchableOpacity>
                   {showDatePicker && (
                     <DateTimePicker
@@ -290,16 +302,6 @@ export default function ModifyProfile({ navigation }: IModifyProps) {
                         }
                       }}
                     />
-                  )}
-                  {dateOfBirth && (
-                    <>
-                      <View className="flex flex-row items-center m-2">
-                        <Text style={styles.label}>Né le : </Text>
-                        <Text className=" text-lg text-blue-400 font-medium text">
-                          {formatDateToDDMMYYYY(dateOfBirth)}
-                        </Text>
-                      </View>
-                    </>
                   )}
                   <Input
                     label="Poids (kg)"

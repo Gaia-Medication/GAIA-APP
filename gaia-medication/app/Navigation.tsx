@@ -43,10 +43,17 @@ export default function Navigation() {
           component={ModifyProfile}
           options={{ headerShown: false }}
         />
-        <Stack.Screen name="AddTreatment" component={AddTreatment} />
+        <Stack.Screen
+          name="AddTreatment"
+          component={AddTreatment}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen name="Settings" component={Settings} />
         <Stack.Screen name="Notifications" component={Notifications} />
-        <Stack.Screen name="NotificationsSettings" component={NotificationsSettings}/>
+        <Stack.Screen
+          name="NotificationsSettings"
+          component={NotificationsSettings}
+        />
         <Stack.Screen name="Profile" component={Profile} />
         <Stack.Screen
           name="Drug"
