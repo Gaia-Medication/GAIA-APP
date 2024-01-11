@@ -8,7 +8,6 @@ import Settings from "./Home/Settings";
 import Suivis from "./Suivis/Suivis";
 import CreateProfile from "./Profile/CreateProfile";
 import Stock from "./Suivis/Stock";
-import Profile from "./Profile/Profile";
 import * as Icon from "react-native-feather";
 import Search from "./Meds/Search";
 import Drug from "./Meds/Drug";
@@ -48,13 +47,21 @@ export default function Navigation() {
           component={AddTreatment}
           options={{ headerShown: false }}
         />
-        <Stack.Screen name="Settings" component={Settings} />
-        <Stack.Screen name="Notifications" component={Notifications} />
+        <Stack.Screen
+          name="Settings"
+          component={Settings}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Notifications"
+          component={Notifications}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen
           name="NotificationsSettings"
           component={NotificationsSettings}
+          options={{ headerShown: false}}
         />
-        <Stack.Screen name="Profile" component={Profile} />
         <Stack.Screen
           name="Drug"
           component={Drug}

@@ -40,6 +40,7 @@ import {
 } from "react-native-alert-notification";
 import { Input } from "react-native-elements";
 import { ArrowRightCircle } from "react-native-feather";
+import GoBackButton from "../component/GoBackButton";
 
 export default function AddTreatment({route, navigation}) {
   const isFocused = useIsFocused();
@@ -1397,13 +1398,15 @@ export default function AddTreatment({route, navigation}) {
   }, []);
 
   return (
-    <SafeAreaView className="flex w-full bg-white flex-1 p-2">
+    <SafeAreaView className="flex w-full bg-white flex-1 pt-[2px] pb-2 px-2">
+      <GoBackButton navigation={navigation}></GoBackButton>
+
       <AlertNotificationRoot>
         <Text className=" text-center my-6 text-2xl text-neutral-700 font-bold">
           Ajouter un Traitement
         </Text>
 
-        <View className=" flex w-full h-[86%] -mt-[10%] -mb-[8%] scale-90">
+        <View className=" flex w-full h-[86%] -mt-[5%] -mb-[8%] scale-95">
           <Input
             label="Nom du traitement*"
             labelStyle={styles.label}

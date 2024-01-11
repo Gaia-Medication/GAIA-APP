@@ -18,6 +18,8 @@ import CustomButton from "../component/CustomButton";
 import AllergySelector from "../component/AllergySelector";
 import TutorialBubble from "../component/TutorialBubble";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { ArrowLeft } from "react-native-feather";
+import GoBackButton from "../component/GoBackButton";
 
 interface ICreateProps {
   navigation: NavigationProp<ParamListBase>;
@@ -171,6 +173,8 @@ export default function CreateProfile({ navigation }: ICreateProps) {
           text={"Veuillez renseigner ces autres champs. 1/1"}
         ></TutorialBubble>
       )}
+
+      <GoBackButton navigation={navigation}></GoBackButton>
 
       <Text className=" text-center my-6 text-2xl text-neutral-700 font-bold">
         Création de profil
@@ -328,12 +332,12 @@ export default function CreateProfile({ navigation }: ICreateProps) {
               />
 
               <View className=" flex items-center justify-center mt-auto mb-2">
-                <View className=" scale-75 w-max ">
+                <View className=" m-3 w-max ">
                   <CustomButton
                     title="Retour"
                     onPress={handleFirstSumbit}
                     disabled={false}
-                    color={"#dddddd"}
+                    color={"#4296E4"}
                   />
                 </View>
                 <CustomButton

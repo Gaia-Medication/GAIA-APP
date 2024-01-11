@@ -16,6 +16,8 @@ import { styles } from "../../style/style";
 import AllergySelector from "../component/AllergySelector";
 import CustomButton from "../component/CustomButton";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import GoBackButton from "../component/GoBackButton";
+import { Trash } from "react-native-feather";
 
 interface IModifyProps {
   navigation: NavigationProp<ParamListBase>;
@@ -145,7 +147,7 @@ export default function ModifyProfile({ navigation }: IModifyProps) {
           // Enregistrez la liste mise à jour dans AsyncStorage
           await AsyncStorage.setItem("users", JSON.stringify(updatedUsers));
           setProfileSelected(null);
-          navigation.navigate("Settings");
+          navigation.goBack();
         } else {
           console.log("Utilisateur non trouvé.");
         }
@@ -156,14 +158,17 @@ export default function ModifyProfile({ navigation }: IModifyProps) {
   };
 
   return (
-    <SafeAreaView style={styles.container} className="p-4">
+    <SafeAreaView style={styles.container}>
+      <GoBackButton navigation={navigation}></GoBackButton>
+
       {!profileSelected && users && (
-        <>
-          <Text className=" text-2xl font-semibold py-2">
+        <View className="mt-[16px]" style={styles.container}>
+          <Text className=" text-2xl font-semibold py-2 mx-auto">
             Modifier un profil
           </Text>
           <FlatList
             data={users}
+            className=" p-2"
             keyExtractor={(_item, index) => index.toString()}
             renderItem={({ item }) => (
               <TouchableOpacity
@@ -185,7 +190,7 @@ export default function ModifyProfile({ navigation }: IModifyProps) {
               </TouchableOpacity>
             )}
           />
-        </>
+        </View>
       )}
 
       {profileSelected && (
@@ -346,12 +351,12 @@ export default function ModifyProfile({ navigation }: IModifyProps) {
                   />
 
                   <View className=" flex items-center justify-center mt-auto mb-2">
-                    <View className=" scale-75 w-max ">
+                    <View className=" m-3 w-max ">
                       <CustomButton
                         title="Retour"
                         onPress={handleFirstSumbit}
                         disabled={false}
-                        color={"#dddddd"}
+                        color={"#4296E4"}
                       />
                     </View>
                     <CustomButton
@@ -377,11 +382,12 @@ export default function ModifyProfile({ navigation }: IModifyProps) {
 
       {!profileSelected && users && (
         <>
-          <Text className=" text-2xl font-semibold py-2">
+          <Text className=" text-2xl font-semibold py-2  mx-auto">
             Supprimer un profil
           </Text>
           <FlatList
             data={users}
+            className=" p-2"
             keyExtractor={(_item, index) => index.toString()}
             renderItem={({ item }) => (
               <TouchableOpacity
@@ -405,20 +411,43 @@ export default function ModifyProfile({ navigation }: IModifyProps) {
               </TouchableOpacity>
             )}
           />
-          <View className=" flex justify-center items-center">
-            <CustomButton
-              title={
-                userToDelete
-                  ? `Supprimer le profil #${userToDelete?.id} `
-                  : "Selectionner un profil à supprimer"
-              }
-              onPress={() => {
-                deleteUser(userToDelete.id);
-                navigation.navigate("Settings");
-              }}
-              disabled={userToDelete === null}
-              color={"#4296E4"}
-            ></CustomButton>
+          <View className=" flex justify-center items-center mb-3">
+            {users.length === 1 && (
+              <CustomButton
+                title={"Vous ne pouvez pas supprimer\n le dernier profil"}
+                disabled={true}
+                onPress={() => {}}
+                color={"#4296E4"}
+              ></CustomButton>
+            )}
+            {userToDelete === null && (
+              <CustomButton
+                title={
+                  userToDelete
+                    ? `Supprimer le profil #${userToDelete?.id} `
+                    : "Selectionner un profil à supprimer"
+                }
+                onPress={() => {}}
+                disabled={userToDelete === null}
+                color={""}
+              ></CustomButton>
+            )}
+            {users.length > 1 && userToDelete !== null && (
+              <TouchableOpacity
+                className="bg-[#4296E4] rounded-2xl flex flex-row justify-center items-center p-2 w-[80%] "
+                onPress={() => {
+                  deleteUser(userToDelete.id);
+                  navigation.goBack();
+                }}
+              >
+                <Text className="text-center text-white p-2">
+                  {userToDelete
+                    ? `Supprimer le profil #${userToDelete?.id} `
+                    : "Selectionner un profil à supprimer"}
+                </Text>
+                <Trash color="white" height={20} width={20} />
+              </TouchableOpacity>
+            )}
           </View>
         </>
       )}
