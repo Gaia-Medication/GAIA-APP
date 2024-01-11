@@ -29,6 +29,7 @@ import Loading from "../component/Loading";
 import { initDailyNotifications } from "../Handlers/NotificationsHandler";
 import TutorialBubble from "../component/TutorialBubble";
 import ModalComponent from "../component/Modal";
+import { ALERT_TYPE, Dialog, AlertNotificationRoot } from 'react-native-alert-notification';
 
 export default function Home({ navigation }) {
   const isFocused = useIsFocused();
@@ -150,7 +151,12 @@ export default function Home({ navigation }) {
         }
       } else {
         setLoading(false);
-        alert("Aucun détecté");
+        Dialog.show({
+          type: ALERT_TYPE.WARNING, 
+          title: "Aucun médicament détecté", 
+          textBody: "Veuillez réessayer avec une autre photo",
+          button: 'Fermer'
+        });
       }
     }
   };
@@ -183,6 +189,7 @@ export default function Home({ navigation }) {
 
   return (
     <View className=" flex bg-white w-full h-full" style={{ gap: 0 }}>
+    <AlertNotificationRoot>
       <Image
         className=" object-cover h-12 w-24 self-center mt-2"
         source={require("../../assets/logo_title_gaia.png")}
@@ -376,6 +383,7 @@ export default function Home({ navigation }) {
         <View className="flex">
         </View>
       </ModalComponent> */}
+    </AlertNotificationRoot>
     </View>
   );
 }
