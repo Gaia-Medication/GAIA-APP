@@ -11,7 +11,7 @@ const GoBackButton = ({ navigation }) => {
         navigation.goBack();
       }}
     >
-      <ArrowLeft height={40} width={40} color={"#4296E4"}></ArrowLeft>
+      <ArrowLeft height={30} width={30} color={"#4296E4"}></ArrowLeft>
     </TouchableOpacity>
   );
 };

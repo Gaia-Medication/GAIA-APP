@@ -146,7 +146,7 @@ export default function ModifyProfile({ navigation }: IModifyProps) {
           // Enregistrez la liste mise à jour dans AsyncStorage
           await AsyncStorage.setItem("users", JSON.stringify(updatedUsers));
           setProfileSelected(null);
-          navigation.navigate("Settings");
+          navigation.navigate("Home");
         } else {
           console.log("Utilisateur non trouvé.");
         }
@@ -157,16 +157,17 @@ export default function ModifyProfile({ navigation }: IModifyProps) {
   };
 
   return (
-    <SafeAreaView style={styles.container} className="p-4">
+    <SafeAreaView style={styles.container}>
       <GoBackButton navigation={navigation}></GoBackButton>
 
       {!profileSelected && users && (
-        <>
+        <View className="mt-[16px]" style={styles.container}>
           <Text className=" text-2xl font-semibold py-2 mx-auto">
             Modifier un profil
           </Text>
           <FlatList
             data={users}
+            className=" p-2"
             keyExtractor={(_item, index) => index.toString()}
             renderItem={({ item }) => (
               <TouchableOpacity
@@ -188,7 +189,7 @@ export default function ModifyProfile({ navigation }: IModifyProps) {
               </TouchableOpacity>
             )}
           />
-        </>
+        </View>
       )}
 
       {profileSelected && (
@@ -385,6 +386,7 @@ export default function ModifyProfile({ navigation }: IModifyProps) {
           </Text>
           <FlatList
             data={users}
+            className=" p-2"
             keyExtractor={(_item, index) => index.toString()}
             renderItem={({ item }) => (
               <TouchableOpacity
