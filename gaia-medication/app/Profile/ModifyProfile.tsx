@@ -16,6 +16,7 @@ import { styles } from "../../style/style";
 import AllergySelector from "../component/AllergySelector";
 import CustomButton from "../component/CustomButton";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import GoBackButton from "../component/GoBackButton";
 
 interface IModifyProps {
   navigation: NavigationProp<ParamListBase>;
@@ -157,9 +158,11 @@ export default function ModifyProfile({ navigation }: IModifyProps) {
 
   return (
     <SafeAreaView style={styles.container} className="p-4">
+      <GoBackButton navigation={navigation}></GoBackButton>
+
       {!profileSelected && users && (
         <>
-          <Text className=" text-2xl font-semibold py-2">
+          <Text className=" text-2xl font-semibold py-2 mx-auto">
             Modifier un profil
           </Text>
           <FlatList
@@ -346,12 +349,12 @@ export default function ModifyProfile({ navigation }: IModifyProps) {
                   />
 
                   <View className=" flex items-center justify-center mt-auto mb-2">
-                    <View className=" scale-75 w-max ">
+                    <View className=" m-3 w-max ">
                       <CustomButton
                         title="Retour"
                         onPress={handleFirstSumbit}
                         disabled={false}
-                        color={"#dddddd"}
+                        color={"#4296E4"}
                       />
                     </View>
                     <CustomButton
@@ -377,7 +380,7 @@ export default function ModifyProfile({ navigation }: IModifyProps) {
 
       {!profileSelected && users && (
         <>
-          <Text className=" text-2xl font-semibold py-2">
+          <Text className=" text-2xl font-semibold py-2  mx-auto">
             Supprimer un profil
           </Text>
           <FlatList
