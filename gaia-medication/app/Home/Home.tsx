@@ -210,7 +210,7 @@ export default function Home({ navigation }) {
               isClicked={handleTuto}
               styleAdded={{ top: "20%", left: "18%" }}
               text={
-                "Voici votre avatar,\ncliquer dessus\npour accéder à vos profils,\n ou en ajouter d'autre, 2/3"
+                "Voici votre avatar,\ncliquer dessus\npour accéder à vos profils,\nou en ajouter d'autre, 2/3"
               }
             ></TutorialBubble>
           )}

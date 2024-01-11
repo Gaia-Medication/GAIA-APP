@@ -165,7 +165,7 @@ export default function Settings({ navigation }) {
       {tutoSettings === "0" && (
         <TutorialBubble
           isClicked={handleTuto}
-          styleAdded={{ top: "100%", left: "1%" }}
+          styleAdded={{ top: "70%", left: "1%" }}
           text={
             "Nous arrivons déjà à la fin, avec la page des réglages, maintenant vous pouvez profiter et découvrir de tout ce que Gaïa à vous offrir!"
           }
