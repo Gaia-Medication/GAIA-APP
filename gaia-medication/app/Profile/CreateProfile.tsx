@@ -17,6 +17,7 @@ import { styles } from "../../style/style";
 import CustomButton from "../component/CustomButton";
 import AllergySelector from "../component/AllergySelector";
 import TutorialBubble from "../component/TutorialBubble";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 interface ICreateProps {
   navigation: NavigationProp<ParamListBase>;
@@ -25,14 +26,14 @@ interface ICreateProps {
 export default function CreateProfile({ navigation }: ICreateProps) {
   const [lastname, setLastname] = useState("");
   const [firstname, setFirstname] = useState("");
-  const [age, setAge] = useState<number>();
+  const [dateOfBirth, setDateOfBirth] = useState<Date | null>(null);
   const [weight, setWeight] = useState<number>();
   const [gender, setGender] = useState("");
   const [preference, setPreference] = useState([]);
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   const [isValidFirstname, setIsValidFirstname] = useState(true);
   const [isValidLastname, setIsValidLastname] = useState(true);
-  const [isValidAge, setIsValidAge] = useState(true);
   const [isValidWeight, setIsValidWeight] = useState(true);
 
   const [validFirstPart, setValidFirstPart] = useState(false);
@@ -48,9 +49,8 @@ export default function CreateProfile({ navigation }: ICreateProps) {
     !firstname ||
     !lastname ||
     !gender ||
-    !age ||
+    !dateOfBirth ||
     !weight ||
-    !isValidAge ||
     !isValidWeight;
 
   const validateFirstname = () => {
@@ -59,14 +59,6 @@ export default function CreateProfile({ navigation }: ICreateProps) {
 
   const validateLastname = () => {
     setIsValidLastname(lastname.length >= 2);
-  };
-
-  const validateAge = () => {
-    if (age > 0 || age <= 115) {
-      setIsValidAge(true);
-    } else {
-      setIsValidAge(false);
-    }
   };
 
   const validateWeight = () => {
@@ -81,6 +73,17 @@ export default function CreateProfile({ navigation }: ICreateProps) {
     setIsAllergySelectorValid(isValid);
   };
 
+  function formatDateToDDMMYYYY(date: Date) {
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+    const year = date.getFullYear();
+    const formattedDay = day < 10 ? `0${day}` : day;
+    const formattedMonth = month < 10 ? `0${month}` : month;
+    const formattedDate = `${formattedDay}/${formattedMonth}/${year}`;
+
+    return formattedDate;
+  }
+
   const init = async () => {
     setFirstConnection(await AsyncStorage.getItem("isFirstConnection"));
     setTutoCreate(await AsyncStorage.getItem("TutoCreate"));
@@ -89,32 +92,13 @@ export default function CreateProfile({ navigation }: ICreateProps) {
   useEffect(() => {
     console.log("Nav on CreationProfile Page");
     init();
-    //Empecher le redirection, on reste sur la page creation de profile tant qu'il y a 0 Users -> a finir
-    /*navigation.addListener("beforeRemove", (e) => {
-      e.preventDefault();
-      Alert.alert(
-        "Discard changes?",
-        "You have unsaved changes. Are you sure to discard them and leave the screen?",
-        [
-          { text: "Don't leave", style: "cancel", onPress: () => {} },
-          {
-            text: "Discard",
-            style: "destructive",
-            // If the user confirmed, then we dispatch the action we blocked earlier
-            // This will continue the action that had triggered the removal of the screen
-            onPress: () => navigation.dispatch(e.data.action),
-          },
-        ]
-      );
-    });*/
   }, []);
 
   const handleTuto = (isClicked, step) => {
     if (isClicked) {
-      if(step === 2){
+      if (step === 2) {
         setTutoStep(2);
-      }
-      else if (tutoStep < 1){
+      } else if (tutoStep < 1) {
         setTutoStep(tutoStep + 1);
       }
     }
@@ -146,7 +130,7 @@ export default function CreateProfile({ navigation }: ICreateProps) {
           id: await UserIdAutoIncrement(),
           firstname,
           lastname,
-          age,
+          dateOfBirth,
           weight,
           gender,
           preference,
@@ -196,7 +180,7 @@ export default function CreateProfile({ navigation }: ICreateProps) {
           <Input
             label="Prénom"
             labelStyle={styles.label}
-            placeholder="Entrez votre prenom"
+            placeholder="Entrez votre prénom"
             placeholderTextColor={"#dedede"}
             onChangeText={(text) =>
               setFirstname(text.charAt(0).toUpperCase() + text.slice(1))
@@ -249,7 +233,8 @@ export default function CreateProfile({ navigation }: ICreateProps) {
               { label: "Autre", value: "other" },
             ]}
           />
-          <View className=" flex justify-center items-center">
+
+          <View className=" flex items-center justify-center mt-auto mb-2">
             <CustomButton
               title="Suivant"
               onPress={handleFirstSumbit}
@@ -267,24 +252,40 @@ export default function CreateProfile({ navigation }: ICreateProps) {
               <Text className=" m-4 text-gray-300 text-lg">
                 {firstname} {lastname}
               </Text>
-              <Input
-                label="Âge"
-                labelStyle={styles.label}
-                placeholder="Votre Âge"
-                placeholderTextColor={"#dedede"}
-                onChangeText={(text) => setAge(parseInt(text))}
-                onBlur={validateAge}
-                value={age ? age.toString() : ""}
-                maxLength={3}
-                renderErrorMessage={isValidAge}
-                keyboardType="numeric"
-              ></Input>
-              {!isValidAge && (
-                <Text style={stylesProfile.errorText}>
-                  L'âge doit être contenu entre 1 et 125 ans.
-                </Text>
+              <Text style={styles.label} className="m-2">
+                Date de naissance
+              </Text>
+              <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+                <View className="flex items-center">
+                  <Text className="text-white text-center font-semibold bg-blue-400 rounded-lg w-[90%] m-2 p-1 ">
+                    Choisir la date de naissance
+                  </Text>
+                </View>
+              </TouchableOpacity>
+              {showDatePicker && (
+                <DateTimePicker
+                  value={dateOfBirth || new Date()}
+                  mode="date"
+                  display="default"
+                  maximumDate={new Date()}
+                  onChange={(event, selectedDate) => {
+                    setShowDatePicker(false);
+                    if (selectedDate) {
+                      setDateOfBirth(selectedDate);
+                    }
+                  }}
+                />
               )}
-
+              {dateOfBirth && (
+                <>
+                  <View className="flex flex-row items-center m-2">
+                    <Text style={styles.label}>Né le : </Text>
+                    <Text className=" text-lg text-blue-400 font-medium text">
+                      {formatDateToDDMMYYYY(dateOfBirth)}
+                    </Text>
+                  </View>
+                </>
+              )}
               <Input
                 label="Poids (kg)"
                 labelStyle={styles.label}
@@ -302,14 +303,6 @@ export default function CreateProfile({ navigation }: ICreateProps) {
                   Le poids doit être contenu entre 1 et 999kg.
                 </Text>
               )}
-
-              {/*<Input
-        label="Preference/Allergies"
-        placeholder="Preference/Allergies"
-        leftIcon={{ type: "font-awesome", name: "heart" }}
-        onChangeText={(text) => setPreference(text)}
-        value={preference}
-      />*/}
 
               <TouchableOpacity
                 onPress={() => {
@@ -330,7 +323,7 @@ export default function CreateProfile({ navigation }: ICreateProps) {
                 keyExtractor={(_item, index) => index.toString()}
                 renderItem={({ item }) => (
                   <View className=" bg-blue-200 m-1 p-1 rounded-lg flex flex-row justify-center align-middle">
-                    <Text className=" text-blue-500">{item}</Text>
+                    <Text className=" text-blue-400">{item}</Text>
                   </View>
                 )}
               />
