@@ -210,7 +210,7 @@ export default function Home({ navigation }) {
               isClicked={handleTuto}
               styleAdded={{ top: "20%", left: "18%" }}
               text={
-                "Voici votre avatar,\ncliquez dessus\npour accéder à vos profils,\n ou en ajouter d'autre, 2/3"
+                "Voici votre avatar,\ncliquer dessus\npour accéder à vos profils,\n ou en ajouter d'autre, 2/3"
               }
             ></TutorialBubble>
           )}
@@ -220,7 +220,7 @@ export default function Home({ navigation }) {
               isClicked={handleTuto}
               styleAdded={{ top: "35%", left: "6%" }}
               text={
-                "Voici la barre de recherche,\nvous pouvez chercher et scannez des médicaments, 3/3"
+                "Voici la barre de recherche,\nvous pouvez chercher et scanner des médicaments, 3/3"
               }
             ></TutorialBubble>
           )}
