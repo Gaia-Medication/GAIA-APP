@@ -248,7 +248,7 @@ export default function Home({ navigation }) {
               <>
                 <View style={styles.titleContainer}>
                   <Text style={styles.subtitle}>Welcome back</Text>
-                  <Text style={styles.title}>{user?.firstname}</Text>
+                  <Text style={styles.title} className="text-neutral-800">{user?.firstname}</Text>
                 </View>
                 <TouchableOpacity style={{ marginHorizontal: 13 }} onPress={() => navigation.navigate("Notifications", { data: JSON.stringify(notificationsList) })}>
                   <Icon.Bell stroke="#242424" width={24} height={24}></Icon.Bell>
@@ -259,7 +259,7 @@ export default function Home({ navigation }) {
             )}
           </View>
           <View style={styles.searchContainer}>
-            <Text style={styles.title2}>Recherche d’un médicament</Text>
+            <Text style={styles.title2} className="text-neutral-700">Recherche d’un médicament</Text>
             <View style={styles.searchBarwQR}>
               <View style={styles.searchBar}>
                 <Input
@@ -287,7 +287,7 @@ export default function Home({ navigation }) {
             </View>
           </View>
           <View style={styles.traitementContainer}>
-            <Text style={styles.title2}>Suivis d'un traitement</Text>
+            <Text style={styles.title2} className="text-neutral-700">Suivis d'un traitement</Text>
           </View>
           <FlatList
           className=" flex-grow-0" 
