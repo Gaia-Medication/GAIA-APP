@@ -298,14 +298,17 @@ export default function Home({ navigation }) {
           contentContainerStyle={{paddingHorizontal:25}}
           ref={(ref) => (this.flatList = ref)}
           onContentSizeChange={() => {
-            if (
-              this.flatList &&
-              this.flatList.scrollToIndex &&
-              takes &&
-              takes.length
-            ) {
-              this.flatList.scrollToIndex({ index: nextTake<0?takes.length-1:nextTake });
+            try{
+              if (
+                this.flatList &&
+                this.flatList.scrollToIndex &&
+                takes &&
+                takes.length
+              ) {
+                this.flatList.scrollToIndex({ index: nextTake<0?takes.length-1:nextTake });
+              }
             }
+            catch{}
           }}
           data={takes}
           horizontal={true}

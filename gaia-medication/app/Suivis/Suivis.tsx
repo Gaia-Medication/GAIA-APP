@@ -100,7 +100,8 @@ export default function Suivis({ navigation }) {
       const dateB = new Date(b.take.date);
       return dateA.getTime() - dateB.getTime();
     });
-    setTakes(takes);
+    const currentId = await AsyncStorage.getItem("currentUser");
+    setTakes(takes.filter((take) => take.take.userId == currentId));
     console.log("Takes");
   }
 
@@ -228,14 +229,17 @@ export default function Suivis({ navigation }) {
             data={takes}
             keyExtractor={(take, index) => index.toString()}
             onContentSizeChange={() => {
-              if (
-                this.flatList &&
-                this.flatList.scrollToIndex &&
-                takes &&
-                takes.length
-              ) {
-                this.flatList.scrollToIndex({ index: scroll });
+              try{
+                if (
+                  this.flatList &&
+                  this.flatList.scrollToIndex &&
+                  takes &&
+                  takes.length
+                ) {
+                  this.flatList.scrollToIndex({ index: scroll });
+                }
               }
+              catch{}
             }}
             onScrollToIndexFailed={() => { }}
             renderItem={({ item }) => {
