@@ -27,6 +27,8 @@ import { BlurView } from "expo-blur";
 import * as Notifications from "expo-notifications";
 import TutorialBubble from "../component/TutorialBubble";
 
+import { ArrowRightCircle, XCircle } from "react-native-feather";
+
 export default function Suivis({ navigation }) {
   const isFocused = useIsFocused();
   const [treatments, setTreatments] = useState<Treatment[]>([]);
@@ -117,8 +119,8 @@ export default function Suivis({ navigation }) {
       return dateA.getTime() - dateB.getTime();
     });
     const currentId = await AsyncStorage.getItem("currentUser");
-    setTakes(takes.filter(take=>take.take.userId==currentId));
-    
+    setTakes(takes.filter((take) => take.take.userId == currentId));
+
     let actualIndex = null;
     takes.length !== 0
       ? takes.findIndex((take) => compareDates(take.take.date) === "actual")
@@ -129,7 +131,7 @@ export default function Suivis({ navigation }) {
             (take) => compareDates(take.take.date) === "previous"
           ))
       : null;
-      
+
     setScroll(actualIndex);
     console.log("Takes");
   }
@@ -143,7 +145,7 @@ export default function Suivis({ navigation }) {
 
   useEffect(() => {
     if (isFocused) {
-      setIsLoading(true)
+      setIsLoading(true);
       console.log("Nav on Suivis Page");
       init();
     }
@@ -263,49 +265,22 @@ export default function Suivis({ navigation }) {
           />
         </View>
       ) : (
-        <View
-          style={{
-            padding: 10,
-            width: "100%",
-            height: "100%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            marginBottom: 200,
-          }}
-        >
-          <Text
-            style={{
-              color: "rgb(103, 33, 236)",
-              fontSize: 20,
-              marginBottom: 100,
-            }}
-          >
+        <View className="flex flex-col justify-around items-center h-[98%] w-full">
+          <Text className="text-2xl font-medium text-center text-neutral-300">
             Aucun traitement à venir
           </Text>
           <Image
-            source={require("./../../assets/heureux.png")}
-            style={{
-              width: 200,
-              height: 200,
-              resizeMode: "contain",
-              marginBottom: 100,
-            }}
+            className=" h-[150px] w-[150px] -mt-[40%] -mb-[20%]"
+            source={require("../../assets/prescription(1).png")}
           />
           <TouchableOpacity
-            style={{ backgroundColor: "rgb(103, 33, 236)", borderRadius: 10 }}
+            className="bg-lime-400 rounded-2xl flex flex-row justify-center items-center p-2 px-8 "
             onPress={() => navigation.navigate("AddTreatment")}
           >
-            <Text
-              style={{
-                color: "white",
-                fontSize: 20,
-                textAlign: "center",
-                padding: 10,
-              }}
-            >
+            <Text className="text-center text-white font-semibold text-lg p-2">
               Ajouter un traitement
             </Text>
+            <ArrowRightCircle color="white" height={30} width={30} />
           </TouchableOpacity>
         </View>
       )}
