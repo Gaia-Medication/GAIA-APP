@@ -24,7 +24,7 @@ export default function Settings({ navigation }) {
   const dateNotification = new Date();
   const settingsData = [
     { id: "ModifyProfile", title: "Paramètres des Profils" },
-    { id: "NotificationsSettings", title: "Pramètres des notifications" },
+    { id: "NotificationsSettings", title: "Pramètres des Notifications" },
   ];
   const handleItemClick = (pageId) => {
     // Navigate to the selected settings page
