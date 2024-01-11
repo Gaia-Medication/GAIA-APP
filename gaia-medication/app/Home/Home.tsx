@@ -26,7 +26,7 @@ import AvatarButton from "../component/Avatar";
 import * as Icon from "react-native-feather";
 import { trouverNomMedicament } from "../../dao/Search";
 import Loading from "../component/Loading";
-import { initDailyNotifications } from "../Handlers/NotificationsHandler";
+import { initDailyNotifications, initTakeNotifications } from "../Handlers/NotificationsHandler";
 import TutorialBubble from "../component/TutorialBubble";
 import Stock from "../Suivis/Stock";
 
@@ -39,6 +39,7 @@ export default function Home({ navigation }) {
   const [users, setUsers] = useState<User[]>([]);
   const [header, setHeader] = useState(true);
   const [notificationsList, setNotificationsList] = useState<Notif[]>([]);
+  
 
   const [smallTutoStep, setSmallTutoStep] = useState(0);
   const [tutoHome, setTutoHome] = useState(null);
@@ -97,9 +98,12 @@ export default function Home({ navigation }) {
       console.log(current);
       setUser(current);
     }
-    const notifs = await initDailyNotifications(user?.firstname, user?.id);
-    setNotificationsList(notifs);
-    console.log("Notifs Totales :", notifs.length);
+    const notifsDaily = await initDailyNotifications(user?.firstname, user?.id);
+    const notifsTakes = await initTakeNotifications(user?.firstname, user?.id);
+
+    setNotificationsList(notifsDaily);
+    console.log("Notifs Quotidiennes Totales :", notifsDaily.length);
+    console.log("Notifs Prises Totales :", notifsTakes.length);
   };
 
   const handleAvatarButton = () => {

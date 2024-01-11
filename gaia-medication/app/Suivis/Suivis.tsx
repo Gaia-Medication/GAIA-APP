@@ -13,6 +13,7 @@ import * as Icon from "react-native-feather";
 import { getAllMed } from "../../dao/Meds";
 import {
   addItemToList,
+  changeTreatments,
   getAllTreatments,
   getTreatmentByName,
   initTreatments,
@@ -47,26 +48,6 @@ export default function Suivis({ navigation }) {
     }
   };
 
-  const changeTreatments = async (tak: Take) => {
-    console.log(tak);
-    treatments.forEach((treatment) => {
-      if (treatment.name === tak.treatmentName) {
-        treatment.instructions.forEach((instruction) => {
-          if (Number(instruction.CIS) === tak.CIS) {
-            instruction.takes.forEach((take) => {
-              if (take.date === tak.date) {
-                take.taken = tak.taken;
-                take.review = tak.review;
-              }
-            });
-          }
-        });
-      }
-    });
-    setTreatments(treatments);
-    AsyncStorage.setItem("treatments", JSON.stringify(treatments));
-  };
-
   const toggleTakeTaken = (tak: Take) => {
     let takesUpdate = [...takes];
     takesUpdate.forEach((take) => {
@@ -78,7 +59,9 @@ export default function Suivis({ navigation }) {
       }
     });
     setTakes(takesUpdate);
-    changeTreatments(tak);
+    const newTreatments = changeTreatments(tak).then((res) => {
+      setTreatments(res);
+    });
   };
 
   function compareDates(
@@ -106,16 +89,17 @@ export default function Suivis({ navigation }) {
   async function getTreatments() {
     const treatments = await getAllTreatments();
     setTreatments(treatments);
-    console.log("Treatments");
   }
 
   async function getTakes() {
     const takes = await initTreatments();
+    console.log("Takes", takes.length)
     takes.sort((a, b) => {
       const dateA = new Date(a.take.date);
       const dateB = new Date(b.take.date);
       return dateA.getTime() - dateB.getTime();
     });
+    console.log("Takes", takes)
     setTakes(takes);
     console.log("Takes");
   }

@@ -193,7 +193,6 @@ async function mongoToApp() {
 }
 
 export async function getDaysTakes() {
-  // Create an object to store the grouped takes by day
   const groupedTakesByDay = {};
   const allTreatments = await getAllTreatments();
 
@@ -202,18 +201,15 @@ export async function getDaysTakes() {
     treatment ? treatment.instructions.forEach((instruction) => {
       let medName = instruction.name;
       instruction ? instruction.takes.forEach((take) => {
+
         let date = new Date(take.date);
         if (date instanceof Date) {
           const dateKey = date.toDateString(); // Use the date as the key
-          console.log("datekeys", dateKey);
 
-          // Check if the dateKey exists in the groupedTakesByDay object
           if (!groupedTakesByDay[dateKey]) {
-            // If not, create a new array for that date
             groupedTakesByDay[dateKey] = [];
           }
 
-          // Add the take to the corresponding date's array
           groupedTakesByDay[dateKey].push({ ...take, medName: medName });
         } else {
           console.error("Date invalide");
@@ -231,29 +227,49 @@ export async function dropTake(take) {
     if (treatment.name === take.treatmentName) {
       treatment ? treatment.instructions.forEach((instruction) => {
         instruction ? instruction.takes.forEach((tak, index) => {
-          if (new Date(tak.date).toISOString() === new Date(take.date).toISOString()){
+          if (new Date(tak.date).toISOString() === new Date(take.date).toISOString()) {
             instruction.takes.splice(index, 1);
           }
-            
+
         }) : null;
       }) : null;
     }
-    
+
   }) : null;
   await AsyncStorage.setItem("treatments", JSON.stringify(allTreatments));
 }
 
 
 export async function addTake(take) {
-  
-    const allTreatments = await getAllTreatments();
-    allTreatments ? allTreatments.forEach((treatment) => {
-      if (treatment.name === take.treatmentName) {
-        treatment ? treatment.instructions.forEach((instruction) => {
-          instruction ? instruction.takes.push(take) : null;
-        }) : null;
-      }
-      
-    }) : null;
-    await AsyncStorage.setItem("treatments", JSON.stringify(allTreatments));
-  }
+
+  const allTreatments = await getAllTreatments();
+  allTreatments ? allTreatments.forEach((treatment) => {
+    if (treatment.name === take.treatmentName) {
+      treatment ? treatment.instructions.forEach((instruction) => {
+        instruction ? instruction.takes.push(take) : null;
+      }) : null;
+    }
+
+  }) : null;
+  await AsyncStorage.setItem("treatments", JSON.stringify(allTreatments));
+}
+
+export const changeTreatments = async (tak: Take) => {
+  const treatments = await getAllTreatments();
+  treatments.forEach((treatment) => {
+    if (treatment.name === tak.treatmentName) {
+      treatment.instructions.forEach((instruction) => {
+        if (Number(instruction.CIS) === tak.CIS) {
+          instruction.takes.forEach((take) => {
+            if (take.date === tak.date) {
+              take.taken = tak.taken;
+              take.review = tak.review;
+            }
+          });
+        }
+      });
+    }
+  });
+  AsyncStorage.setItem("treatments", JSON.stringify(treatments));
+  return treatments;
+};
