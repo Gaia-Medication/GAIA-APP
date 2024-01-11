@@ -224,52 +224,58 @@ export default function Settings({ navigation }) {
           TOGGLE DEBUG
         </Text>
       </TouchableOpacity>
-      <FlatList
-        data={settingsData}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            onPress={() => handleItemClick(item.id)}
-            style={{
-              padding: 18,
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <Text style={{ color: "#333333", fontWeight: "400", fontSize: 18 }}>
-              {item.title}
-            </Text>
-            <Icon.ChevronRight color="#363636" width={23} height={23} />
-          </TouchableOpacity>
-        )}
-      />
-      <View
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "center",
-          marginVertical: 15,
-        }}
-      >
-        <View style={{ width: "90%", height: 1, backgroundColor: "#444444" }} />
+      <View>
+        <FlatList
+          data={settingsData}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              onPress={() => handleItemClick(item.id)}
+              style={{
+                padding: 18,
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Text
+                style={{ color: "#333333", fontWeight: "400", fontSize: 18 }}
+              >
+                {item.title}
+              </Text>
+              <Icon.ChevronRight color="#363636" width={23} height={23} />
+            </TouchableOpacity>
+          )}
+        />
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "center",
+            marginVertical: 15,
+          }}
+        >
+          <View
+            style={{ width: "90%", height: 1, backgroundColor: "#444444" }}
+          />
+        </View>
+        <TouchableOpacity
+          onPress={() => console.log("DELETE ACC")}
+          style={{
+            padding: 18,
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <Text style={{ color: "#FF0000", fontWeight: "400", fontSize: 18 }}>
+            Delete Account
+          </Text>
+          <Icon.Trash color="#FF0000" width={23} height={23} />
+        </TouchableOpacity>
       </View>
-      <TouchableOpacity
-        onPress={() => console.log("DELETE ACC")}
-        style={{
-          padding: 18,
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <Text style={{ color: "#FF0000", fontWeight: "400", fontSize: 18 }}>
-          Delete Account
-        </Text>
-        <Icon.Trash color="#FF0000" width={23} height={23} />
-      </TouchableOpacity>
     </SafeAreaView>
   );
 }
