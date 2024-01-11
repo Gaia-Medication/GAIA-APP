@@ -23,8 +23,8 @@ export default function Settings({ navigation }) {
   const [debug, setDebug] = useState(false);
   const dateNotification = new Date();
   const settingsData = [
-    { id: "ModifyProfile", title: "Profile Settings" },
-    { id: "NotificationsSettings", title: "Notifications Settings" },
+    { id: "ModifyProfile", title: "Paramètres des Profils" },
+    { id: "NotificationsSettings", title: "Pramètres des Notifications" },
   ];
   const handleItemClick = (pageId) => {
     // Navigate to the selected settings page
@@ -260,21 +260,6 @@ export default function Settings({ navigation }) {
             style={{ width: "80%", height: 1, backgroundColor: "#dbdbdb" }}
           />
         </View>
-        <TouchableOpacity
-          onPress={() => console.log("DELETE ACC")}
-          style={{
-            padding: 18,
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <Text style={{ color: "#f54a3d", fontWeight: "400", fontSize: 16 }}>
-            Delete Account
-          </Text>
-          <Icon.Trash color="#f54a3d" width={23} height={23} />
-        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
