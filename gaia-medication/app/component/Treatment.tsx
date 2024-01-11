@@ -18,7 +18,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import ModalComponent from "./Modal";
 import { validatePathConfig } from "@react-navigation/native";
 
-const Treatment = ({ onPress, status = "actual" as "actual" | "next" | "previous", take, treatmentName, treatmentDescription, med, onTakePress, validateModalFun }) => {
+const Treatment = ({ navigation, onPress, status = "actual" as "actual" | "next" | "previous", take, treatmentName, treatmentDescription, med, onTakePress, validateModalFun }) => {
   const [expanded, setExpanded] = useState(false);
 
   const [date, setDate] = useState<Date>(new Date());
@@ -166,10 +166,11 @@ const Treatment = ({ onPress, status = "actual" as "actual" | "next" | "previous
           <Text className="mx-2" style={{ fontWeight: "700",fontSize:16, }}>{formatHour(date)}</Text>
         </View>
 
-        <View style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 10, width: "100%", padding: 10, backgroundColor: status === "previous" ? "#BCBCBC40" : "#9CDE0040", borderRadius: 50 }}>
+        <TouchableOpacity onPress={()=>navigation.navigate("Drug", { drugCIS: take.CIS })}
+        style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 10, width: "100%", padding: 10, backgroundColor: status === "previous" ? "#BCBCBC40" : "#9CDE0040", borderRadius: 50 }}>
           <Icon.Info color={status === "previous" ? "#BCBCBC" : "#9CDE00"} width={25} height={25} />
-          <Text style={{ fontWeight: "bold", color: "#444444" }} ellipsizeMode="tail" numberOfLines={1}>{med ? med + " x " + take.quantity : null}</Text>
-        </View>
+          <Text style={{ fontWeight: "bold", color: "#444444" }} ellipsizeMode="tail" numberOfLines={1}>{med ? "x" + take.quantity+" "+med  : null}</Text>
+        </TouchableOpacity>
 
         <View style={{ padding: 30, display: "flex", flexDirection: "row", gap: 15 }} >
           <View style={{

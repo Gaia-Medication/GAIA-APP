@@ -310,7 +310,7 @@ export default function Home({ navigation }) {
               borderColor:  nextTake !== index ? "#BCBCBC90" : "#9CDE00",
               padding: 15,
             }}
-              onPress={()=>navigation.navigate("SuivisHandler")}
+              onPress={()=>navigation.navigate("SuivisHandler",{screen:"Suivis"})}
             >
               <View style={{ width: "100%", alignItems: "center", flexDirection: "row", justifyContent: "space-between", margin: 10 }}>
                 <View className="flex-1 items-center mx-2"
@@ -352,10 +352,12 @@ export default function Home({ navigation }) {
               <Text className="mt-2 text-base">Aucune prise à prendre aujoud'hui</Text>
             </TouchableOpacity>
           )}
-          
-          <View style={styles.traitementContainer}>
-            <Text style={styles.title2}>Stock</Text>
-            <Text>Medicaments en stock : {stock.length}</Text>
+          <View className="flex justify-center items-center mt-2">
+            <TouchableOpacity onPress={()=>navigation.navigate("SuivisHandler",{screen:"Stock"})} 
+            className=" rounded-3xl bg-[#9CDE00] flex-row items-center justify-center p-4 w-68">
+              <Image className="h-5 w-5" source={require("../../assets/stock.png")} />
+              <Text className="ml-2 text-base text-white font-bold">{stock.length} Medicaments en stock</Text>
+            </TouchableOpacity>
           </View>
         </>
       )}

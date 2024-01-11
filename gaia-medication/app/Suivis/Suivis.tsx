@@ -248,6 +248,7 @@ export default function Suivis({ navigation }) {
             renderItem={({ item }) => {
               return (
                 <Treatment
+                  navigation={navigation}
                   onPress={null}
                   status={compareDates(item.take.date)}
                   take={item.take}

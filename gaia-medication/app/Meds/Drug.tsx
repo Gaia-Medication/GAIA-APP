@@ -188,6 +188,7 @@ export default function Drug({ route, navigation }) {
       )}
       {drug && stock && user && (
         <>
+          <ScrollView className="gap-2" showsVerticalScrollIndicator={false}>
           <View className="flex-row justify-between pt-4 px-6">
             <Icon.ArrowLeft
               color={"#363636"}
@@ -199,7 +200,6 @@ export default function Drug({ route, navigation }) {
               onPress={handlePress}
             />
           </View>
-          <ScrollView className="gap-2" showsVerticalScrollIndicator={false}>
             <View className="flex-row justify-center">
               <MedIconByType type={drug.Shape} size={"h-24 w-24"} />
             </View>
@@ -375,7 +375,7 @@ export default function Drug({ route, navigation }) {
                 )}
               </View>
             )}
-            <View className=" mb-24" />
+            <View className={stock.find((stockItem) => stockItem.CIS === drugCIS) != null?" mb-40":"mb-24"} />
           </ScrollView>
           
           {stock.find((stockItem) => stockItem.CIS === drugCIS) != null?(
