@@ -219,7 +219,7 @@ export default function Home({ navigation }) {
           {tutoHome === "1" && (
             <TutorialBubble
               isClicked={handleTuto}
-              styleAdded={{ top: "75%", left: "8%" }}
+              styleAdded={{ top: "70%", left: "8%" }}
               text={
                 "Voici la barre de navigation, \nnous allons y faire un petit détour, 1/1"
               }
