@@ -417,19 +417,19 @@ export default function Drug({ route, navigation }) {
               backgroundColor: "white",
               borderRadius: 10,
               paddingHorizontal: 20,
-              maxWidth: "80%",
+              width: "80%",
               maxHeight: "60%",
             }}
             visible={drugModalVisible}
             onClose={() => setDrugModalVisible(!drugModalVisible)}
           >
-            <View className="flex grow">
+            <View className="w-full py-3">
               {drug.Values.map((item, index) => {
                 const alreadyStocked =
                   stock.find((stockItem) => stockItem.CIP === item.CIP) != null;
                 return (
-                  <View key={index} className="flex py-2 border-b border-gray-200">
-                    <View className="flex">
+                  <View key={index} className="flex py-2 flex-row items-center justify-between border-b border-gray-200">
+                    <View className="flex flex-1">
                       <Text className=" font-light">{item.CIP}</Text>
                       <Text className=" text-xs">{item.Denomination}</Text>
                     </View>
@@ -454,6 +454,7 @@ export default function Drug({ route, navigation }) {
                         </TouchableOpacity>
                       </>
                     ) : (
+                      <>
                       <TouchableOpacity
                         className="px-2"
                         onPress={() => {
@@ -462,11 +463,13 @@ export default function Drug({ route, navigation }) {
                       >
                         <Text className="">➕</Text>
                       </TouchableOpacity>
+                      </>
                     )}
                   </View>
                 );
               })}
               <View className="mt-4">
+                {stock.length>0&&<Text className=" text-xs">Dans le Stock:</Text>}
                 {stock.map((item, index) => {
                   return(
                     <View key={index}className="flex-row">

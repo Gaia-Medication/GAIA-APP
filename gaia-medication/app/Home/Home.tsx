@@ -349,9 +349,9 @@ export default function Home({ navigation }) {
           />
           {takes && takes.length<1 && (
             <TouchableOpacity className="flex justify-center items-center"
-            onPress={()=>navigation.navigate("SuivisHandler")}>
+            onPress={()=>navigation.navigate("SuivisHandler",{screen:"Suivis"})}>
               <Image className="w-24 h-24 -mt-4" source={require("../../assets/prescription.png")} />
-              <Text className="mt-2 text-base">Aucune prise à prendre aujoud'hui</Text>
+              <Text className="mt-2 text-base text-[#51a6ec]">Aucune prise à prendre aujoud'hui</Text>
             </TouchableOpacity>
           )}
           <View className="flex justify-center items-center mt-2">
