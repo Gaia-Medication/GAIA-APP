@@ -95,13 +95,11 @@ export default function Suivis({ navigation }) {
 
   async function getTakes() {
     const takes = await initTreatments();
-    console.log("Takes", takes.length)
     takes.sort((a, b) => {
       const dateA = new Date(a.take.date);
       const dateB = new Date(b.take.date);
       return dateA.getTime() - dateB.getTime();
     });
-    console.log("Takes", takes)
     setTakes(takes);
     console.log("Takes");
   }
@@ -126,13 +124,6 @@ export default function Suivis({ navigation }) {
     setScroll(actualIndex);
     console.log("Takes");
   }
-
-  const init = async () => {
-    setTutoTreatment(await AsyncStorage.getItem("TutoTreatment"));
-    await getTreatments();
-    await getTakes();
-    setIsLoading(false);
-  };
 
   useEffect(() => {
     if (isFocused) {
@@ -216,7 +207,7 @@ export default function Suivis({ navigation }) {
               <TouchableOpacity
                 onPress={() => navigation.navigate("ManageTreatments")}
               >
-                <Text className=" text-[#9CDE00] text-lg font-bold">Gestion des traitements</Text>
+                <Text className=" text-[#9CDE00] text-lg font-bold">Gestion</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => navigation.navigate("AddTreatment")}
