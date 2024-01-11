@@ -94,17 +94,19 @@ export const notificationDaily = async (userName, data: NotifData[], date) => {
   );
 }
 
-export const notificationNow = async () => {
-  scheduleLocalNotification(
-    "🦠 Rappel ",
-    "Votre traitement",
-    "C'est le moment ! : \n💊 Doliprane 700",
-    { data: "data" },
+export const notificationNow = async (userName, data: NotifData) => {
+  const notificationTime = new Date(data.take.date);
+  notificationTime.setHours(notificationTime.getHours(), notificationTime.getMinutes(), 0, 0);
+  return await scheduleLocalNotification(
+    "C'est le moment !",
+    userName,
+    `💊 ${data.medName} à ${formatDate(new Date(data.take.date)).hours}h${formatDate(new Date(data.take.date)).minutes}`,
+    { notifData: data, userName: userName },
     "default",
     "default",
-    Notifications.AndroidNotificationPriority.DEFAULT,
+    Notifications.AndroidNotificationPriority.HIGH,
     "reminder",
-    new Date()
+    notificationTime
   );
 }
 
@@ -135,7 +137,7 @@ Notifications.setNotificationCategoryAsync('reminder', [
   },
   {
     identifier: 'snooze',
-    buttonTitle: 'Rappeler dans 30 minutes',
+    buttonTitle: 'Rappeler dans 5 minutes',
     options: {
       isDestructive: false,
       isAuthenticationRequired: false,
@@ -164,7 +166,7 @@ Notifications.setNotificationCategoryAsync('alertReminder', [
 
 //--------------------//
 
-export const initDailyNotifications = async (userName) => {
+export const initDailyNotifications = async (userName, userId) => {
   console.log("initDailyNotifications");
   const notificationTime = await getDailyNotificationTime();
   const treatmentsDays = await getDaysTakes();
@@ -179,21 +181,21 @@ export const initDailyNotifications = async (userName) => {
     if (treatmentsDays.hasOwnProperty(dateKey)) {
       const takesForDate = treatmentsDays[dateKey];
 
-      const d =new Date(dateKey)
+      const d = new Date(dateKey)
       d.setHours(notificationTime.getHours(), notificationTime.getMinutes(), 0, 0);
-      
+
       takesForDate.forEach((take) => {
-        dataArray.push({medName: take.medName, take: take})
+        dataArray.push({ medName: take.medName, take: take })
       });
     }
-    try { 
+    try {
       let dateNotification = new Date(dateKey);
       dateNotification.setHours(notificationTime.getHours(), notificationTime.getMinutes(), 0, 0);
       const notif = await notificationDaily(userName, dataArray, dateNotification)
       console.log('dateNotification', dateNotification)
       const returnedNotif: Notif = {
         notifId: notif,
-        userName: userName,
+        userId: userName,
         date: dateNotification,
         type: "daily",
         datas: dataArray,
@@ -205,5 +207,49 @@ export const initDailyNotifications = async (userName) => {
       dataArray = [];
     }
   }
+  return arrayOfNotifications;
+}
+
+export const initTakeNotifications = async (userName, userId) => {
+  console.log("initTakeNotifications");
+  const notificationTime = await getDailyNotificationTime();
+  const treatmentsDays = await getDaysTakes();
+  console.log("treatmentsDays", treatmentsDays);
+  const arrayOfNotifications: Notif[] = [];
+  Notifications.cancelAllScheduledNotificationsAsync();
+
+  for (const dateKey in treatmentsDays) {
+
+    for (const take of treatmentsDays[dateKey]) {
+      console.log("take", take);
+      
+      try {
+        const dateNotification = new Date(take.date);
+        dateNotification.setHours(dateNotification.getHours(), dateNotification.getMinutes(), 0, 0);
+        console.log("dateNotification", dateNotification);
+        if (dateNotification >= new Date()) {
+          console.log("take", take);
+          
+          const notif = await notificationNow(userName, { medName: take.medName, take: take })
+          const returnedNotif: Notif = {
+            notifId: notif,
+            userId: userName,
+            date: dateNotification,
+            type: "take",
+            datas: [{
+              medName: take.medName,
+              take: take,
+            }]
+          };
+          arrayOfNotifications.push(returnedNotif);
+        }
+
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+  }
+  console.log("END");
   return arrayOfNotifications;
 }

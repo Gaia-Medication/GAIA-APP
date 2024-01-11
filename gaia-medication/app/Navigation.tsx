@@ -18,6 +18,7 @@ import ModifyProfile from "./Profile/ModifyProfile";
 import NotificationsSettings from "./Home/Settings/NotificationsSettings";
 import Notifications from "./Home/Notifications";
 import AllergySelector from "./component/AllergySelector";
+import ManageTreatments from "./Suivis/ManageTreatments";
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -42,6 +43,13 @@ export default function Navigation() {
           component={ModifyProfile}
           options={{ headerShown: false }}
         />
+        <Stack.Screen name="AddTreatment" component={AddTreatment} />
+        <Stack.Screen name="ManageTreatments" component={ManageTreatments} />
+        <Stack.Screen name="Settings" component={Settings} />
+        <Stack.Screen name="Notifications" component={Notifications} />
+        <Stack.Screen name="NotificationsSettings" component={NotificationsSettings}/>
+        <Stack.Screen name="UsersSettings" component={UsersSettings}/>
+        <Stack.Screen name="Profile" component={Profile} />
         <Stack.Screen
           name="AddTreatment"
           component={AddTreatment}

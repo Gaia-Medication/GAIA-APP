@@ -49,7 +49,7 @@ type Take = {
 
 type Notif = {
   notifId: string,
-  userName: string,
+  userId: number,
   date: Date,
   type: string,
   datas: NotifData[],
