@@ -240,11 +240,11 @@ export default function Settings({ navigation }) {
               }}
             >
               <Text
-                style={{ color: "#333333", fontWeight: "400", fontSize: 18 }}
+                style={{ color: "#404040", fontWeight: "400", fontSize: 16 }}
               >
                 {item.title}
               </Text>
-              <Icon.ChevronRight color="#363636" width={23} height={23} />
+              <Icon.ChevronRight color="#404040" width={23} height={23} />
             </TouchableOpacity>
           )}
         />
@@ -257,7 +257,7 @@ export default function Settings({ navigation }) {
           }}
         >
           <View
-            style={{ width: "90%", height: 1, backgroundColor: "#444444" }}
+            style={{ width: "80%", height: 1, backgroundColor: "#dbdbdb" }}
           />
         </View>
         <TouchableOpacity
@@ -270,10 +270,10 @@ export default function Settings({ navigation }) {
             alignItems: "center",
           }}
         >
-          <Text style={{ color: "#FF0000", fontWeight: "400", fontSize: 18 }}>
+          <Text style={{ color: "#f54a3d", fontWeight: "400", fontSize: 16 }}>
             Delete Account
           </Text>
-          <Icon.Trash color="#FF0000" width={23} height={23} />
+          <Icon.Trash color="#f54a3d" width={23} height={23} />
         </TouchableOpacity>
       </View>
     </SafeAreaView>
