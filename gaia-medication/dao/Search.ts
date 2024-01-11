@@ -71,13 +71,13 @@ export function trouverNomMedicament(texte: string) {
   if (texte.toLowerCase().includes("ordo")||texte.toLowerCase().includes("doct")||texte.toLowerCase().includes("presc")||texte.toLowerCase().includes("medec"))ordonnanceBool=true
   for (const medicament of medicaments) {
     if (texte.toLowerCase().includes(medicament.Name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(',', '').split(" ")[0].toLowerCase())&&texte.toLowerCase().includes(medicament.Name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(',', '').split(" ")[1].toLowerCase())) {
-      Filter.push(medicament.Name.normalize('NFD').replace(/[\u0300-\u036f]/g, ''));
+      Filter.push({Name:medicament.Name.normalize('NFD').replace(/[\u0300-\u036f]/g, ''),CIS:medicament.CIS});
     }
   }
   Filter=Filter.map((medicament)=>{
     return {
       med:medicament,
-      score:calculateScore(texte, medicament).toFixed(2)
+      score:calculateScore(texte, medicament.Name).toFixed(2)
     }
   })
   Filter=Filter.sort(
@@ -85,10 +85,10 @@ export function trouverNomMedicament(texte: string) {
   );
   console.log(ordonnanceBool)
   console.log(Filter)
-  if(ordonnanceBool)Filter.slice(0,10)
+  if(ordonnanceBool)return { ordonnanceBool: ordonnanceBool, meds: Filter.slice(0,10)}
   const highScoreMeds = Filter.filter(medicament => medicament.score > 99);
-  if (highScoreMeds.length>0)return highScoreMeds
-  return Filter.slice(0,3)
+  if (highScoreMeds.length>0)return { ordonnanceBool: ordonnanceBool, meds: highScoreMeds}
+  return { ordonnanceBool: ordonnanceBool, meds: Filter.slice(0,3)}
 }
 
 function calculateScore(text: string, searchText: string): number {

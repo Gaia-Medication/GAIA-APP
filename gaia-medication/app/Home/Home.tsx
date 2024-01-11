@@ -28,12 +28,14 @@ import { trouverNomMedicament } from "../../dao/Search";
 import Loading from "../component/Loading";
 import { initDailyNotifications } from "../Handlers/NotificationsHandler";
 import TutorialBubble from "../component/TutorialBubble";
+import ModalComponent from "../component/Modal";
 
 export default function Home({ navigation }) {
   const isFocused = useIsFocused();
   const [loading, setLoading] = useState(false);
   const [takes, setTakes] = useState(null);
   const [stock, setStock] = useState(null);
+  const [scannedMeds, setScannedMeds] = useState(null);
   const [nextTake, setNextTake] = useState(-1);
   const [user, setUser] = useState<User | null>(null);
   const [users, setUsers] = useState<User[]>([]);
@@ -133,22 +135,22 @@ export default function Home({ navigation }) {
       setLoading(true);
       const googleText = await callGoogleVisionAsync(result.assets[0].base64);
       //console.log("OCR :", googleText.text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace('Ⓡ',''));
-      const list = trouverNomMedicament(
+      const scanMedsFinded = trouverNomMedicament(
         googleText.text
           .normalize("NFD")
           .replace(/[\u0300-\u036f]/g, "")
           .replace("Ⓡ", "")
       );
-      if (list.length > 0) {
-        let msg: string = "";
-        for (const med of list) {
-          msg += med.med + "\nAcc : " + med.score + "%\n\n";
-        }
+      if (scanMedsFinded.meds.length > 0) {
         setLoading(false);
-        alert(msg);
+        if(scanMedsFinded.ordonnanceBool==null){
+
+        }else{
+          navigation.navigate("Drug", { drugCIS: scanMedsFinded.meds[0].med.CIS })
+        }
       } else {
         setLoading(false);
-        alert("Rien");
+        alert("Aucun détecté");
       }
     }
   };
@@ -363,6 +365,17 @@ export default function Home({ navigation }) {
       )}
       </View>
       {loading && <Loading />}
+      {/* <ModalComponent
+        styleAdded={{
+          backgroundColor: "white",
+          paddingHorizontal: 20,
+        }}
+        visible={scannedMeds}
+        onClose={() => setScannedMeds(null)}
+      >
+        <View className="flex">
+        </View>
+      </ModalComponent> */}
     </View>
   );
 }
