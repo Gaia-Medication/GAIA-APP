@@ -91,15 +91,7 @@
                 },
                 {
                     "CIS": 63283736,
-                    "date": "2024-01-09T17:45:00.000Z",
-                    "quantity": 0,
-                    "taken": false,
-                    "treatmentName": "TraitementTest1",
-                    "userId": 1
-                },
-                {
-                    "CIS": 63283736,
-                    "date": "2024-01-8T17:45:00.000Z",
+                    "date": "2024-01-11T22:47:00.222Z",
                     "quantity": 0,
                     "taken": false,
                     "treatmentName": "TraitementTest1",

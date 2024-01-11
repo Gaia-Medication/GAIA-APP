@@ -26,7 +26,7 @@ import AvatarButton from "../component/Avatar";
 import * as Icon from "react-native-feather";
 import { trouverNomMedicament } from "../../dao/Search";
 import Loading from "../component/Loading";
-import { initDailyNotifications } from "../Handlers/NotificationsHandler";
+import { initDailyNotifications, initTakeNotifications } from "../Handlers/NotificationsHandler";
 import TutorialBubble from "../component/TutorialBubble";
 import ModalComponent from "../component/Modal";
 import { ALERT_TYPE, Dialog, AlertNotificationRoot } from 'react-native-alert-notification';
@@ -42,6 +42,7 @@ export default function Home({ navigation }) {
   const [users, setUsers] = useState<User[]>([]);
   const [header, setHeader] = useState(true);
   const [notificationsList, setNotificationsList] = useState<Notif[]>([]);
+  
 
   const [smallTutoStep, setSmallTutoStep] = useState(0);
   const [tutoHome, setTutoHome] = useState(null);
@@ -77,9 +78,12 @@ export default function Home({ navigation }) {
       console.log(current);
       setUser(current);
     }
-    const notifs = await initDailyNotifications(user?.firstname);
-    setNotificationsList(notifs);
-    console.log("Notifs Totales :", notifs.length);
+    const notifsDaily = await initDailyNotifications(user?.firstname, user?.id);
+    const notifsTakes = await initTakeNotifications(user?.firstname, user?.id);
+
+    setNotificationsList(notifsDaily);
+    console.log("Notifs Quotidiennes Totales :", notifsDaily.length);
+    console.log("Notifs Prises Totales :", notifsTakes.length);
   };
 
   const initUserInfo = async ()=>{
@@ -210,7 +214,7 @@ export default function Home({ navigation }) {
               isClicked={handleTuto}
               styleAdded={{ top: "20%", left: "18%" }}
               text={
-                "Voici votre avatar,\ncliquez dessus\npour accéder à vos profils,\n ou en ajouter d'autre, 2/3"
+                "Voici votre avatar,\ncliquer dessus\npour accéder à vos profils,\nou en ajouter d'autre, 2/3"
               }
             ></TutorialBubble>
           )}
@@ -220,7 +224,7 @@ export default function Home({ navigation }) {
               isClicked={handleTuto}
               styleAdded={{ top: "35%", left: "6%" }}
               text={
-                "Voici la barre de recherche,\nvous pouvez chercher et scannez des médicaments, 3/3"
+                "Voici la barre de recherche,\nvous pouvez chercher et scanner des médicaments, 3/3"
               }
             ></TutorialBubble>
           )}

@@ -23,8 +23,8 @@ export default function Settings({ navigation }) {
   const [debug, setDebug] = useState(false);
   const dateNotification = new Date();
   const settingsData = [
-    { id: "ModifyProfile", title: "Profile Settings" },
-    { id: "NotificationsSettings", title: "Notifications Settings" },
+    { id: "ModifyProfile", title: "Paramètres des Profils" },
+    { id: "NotificationsSettings", title: "Pramètres des Notifications" },
   ];
   const handleItemClick = (pageId) => {
     // Navigate to the selected settings page
@@ -165,12 +165,68 @@ export default function Settings({ navigation }) {
       {tutoSettings === "0" && (
         <TutorialBubble
           isClicked={handleTuto}
-          styleAdded={{ top: "100%", left: "1%" }}
+          styleAdded={{ top: "70%", left: "1%" }}
           text={
             "Nous arrivons déjà à la fin, avec la page des réglages, maintenant vous pouvez profiter et découvrir de tout ce que Gaïa à vous offrir!"
           }
         ></TutorialBubble>
       )}
+      <Text>Settings</Text>
+      <Button
+        title="CLEAR USERS DATA"
+        onPress={() => (
+          AsyncStorage.removeItem("users"), AsyncStorage.removeItem("stock")
+        )}
+      />
+      <Button
+        title="CLEAR STOCK DATA"
+        onPress={() => AsyncStorage.removeItem("stock")}
+      />
+      <Button
+        title="ADD PROFILE"
+        onPress={() => navigation.navigate("CreateProfile")}
+      ></Button>
+      <Button
+        title="MODIFY PROFILE"
+        onPress={() => navigation.navigate("ModifyProfile")}
+      ></Button>
+      <Button onPress={notificationForgot} title="Notification oubli" />
+      <Button onPress={showTreatments} title="Liste des traitements" />
+      <Button onPress={deleteTreatments} title="Supprimer traitements" />
+      <Button onPress={createTreatmentTest1} title="TraitementTest 1" />
+      <Button onPress={reset} title="reset" />
+      {treatments &&
+        treatments.map((treatment) => {
+          return (
+            <View key={treatment.name}>
+              <Text>{treatment.name}</Text>
+              <Text>{treatment.instructions.length}</Text>
+            </View>
+          );
+        })}
+      {!treatments ? (
+        <Text>PAS DE VARIABLE ASYNC TREATMENT</Text>
+      ) : treatments.length == 0 ? (
+        <Text>TREATMENTS VIDE</Text>
+      ) : null}
+      <FlatList
+        data={settingsData}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <TouchableOpacity onPress={() => handleItemClick(item.id)} style={{ padding: 18, display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+            <Text style={{ color: "#333333", fontWeight: "700", fontSize: 18 }}>{item.title}</Text>
+            <Icon.ChevronRight color="#363636" width={23} height={23} />
+          </TouchableOpacity>
+        )}
+      />
+      <View style={{ display: "flex", flexDirection: "row", justifyContent: "center", marginVertical: 15 }}>
+        <View style={{ width: "90%", height: 1, backgroundColor: "#444444" }} />
+      </View>
+      <TouchableOpacity onPress={() => console.log("DELETE ACC")} style={{ padding: 18, display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+        <Text style={{ color: "#FF0000", fontWeight: "700", fontSize: 18 }}>Delete Account</Text>
+        <Icon.Trash color="#FF0000" width={23} height={23} />
+      </TouchableOpacity>
+
 
       {debug && (
         <>
@@ -260,21 +316,6 @@ export default function Settings({ navigation }) {
             style={{ width: "80%", height: 1, backgroundColor: "#dbdbdb" }}
           />
         </View>
-        <TouchableOpacity
-          onPress={() => console.log("DELETE ACC")}
-          style={{
-            padding: 18,
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <Text style={{ color: "#f54a3d", fontWeight: "400", fontSize: 16 }}>
-            Delete Account
-          </Text>
-          <Icon.Trash color="#f54a3d" width={23} height={23} />
-        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
