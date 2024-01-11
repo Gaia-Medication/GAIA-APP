@@ -265,15 +265,16 @@ export default function Suivis({ navigation }) {
           />
         </View>
       ) : (
-        <View
-        className="flex flex-col justify-around items-center h-[80%] w-full mt-[20%]"
-        >
-          <Text className="text-2xl font-medium text-center text-neutral-200">
+        <View className="flex flex-col justify-around items-center h-[98%] w-full">
+          <Text className="text-2xl font-medium text-center text-neutral-300">
             Aucun traitement à venir
           </Text>
-          <XCircle className=" -mt-[20%]" color="#ededed" height={160} width={160} />
+          <Image
+            className=" h-[150px] w-[150px] -mt-[40%] -mb-[20%]"
+            source={require("../../assets/prescription(1).png")}
+          />
           <TouchableOpacity
-            className="bg-lime-400 rounded-2xl flex flex-row justify-center items-center p-2 px-8"
+            className="bg-lime-400 rounded-2xl flex flex-row justify-center items-center p-2 px-8 "
             onPress={() => navigation.navigate("AddTreatment")}
           >
             <Text className="text-center text-white font-semibold text-lg p-2">
