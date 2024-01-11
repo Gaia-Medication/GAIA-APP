@@ -29,6 +29,7 @@ const Treatment = ({ navigation, onPress, status = "actual" as "actual" | "next"
   const init = () => {
     setNewTxt(take.review);
     setDate(new Date(take.date));
+    console.log(take)
   };
 
   const formatHour = (hour) => {
@@ -189,12 +190,14 @@ const Treatment = ({ navigation, onPress, status = "actual" as "actual" | "next"
             <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
               {take.taken ? (
                 <View style={{ display: "flex", flexDirection: "row", justifyContent: "center", gap: 5, alignItems: "center", paddingVertical: 3 }}>
+                  {take.review&&take.review.length>0&&<Icon.BookOpen className="mr-2" color={status === "previous" ? "#333333" : "#9CDE00"} width={30} height={30} />}
                   <Icon.CheckCircle color="#9CDE00" width={22} height={22} />
                   <Text style={{ color: "#9CDE00", fontWeight: "bold" }}>Pris</Text>
                 </View>
 
               ) : (
                 <View style={{ display: "flex", flexDirection: "row", justifyContent: "center", gap: 5, alignItems: "center", paddingVertical: 3, }}>
+                  {take.review&&take.review.length>0&&<Icon.BookOpen className="mr-2" color={status === "previous" ? "#333333" : "#9CDE00"} width={30} height={30} />}
                   <Icon.AlertCircle color={status === "previous" ? "#333333" : "#FF000090"} width={22} height={22} />
                   <Text style={{ color: status === "previous" ? "#333333" : "#FF000090", fontWeight: "bold" }}>Non pris</Text>
                 </View>
