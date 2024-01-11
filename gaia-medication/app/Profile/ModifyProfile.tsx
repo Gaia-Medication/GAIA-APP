@@ -190,6 +190,9 @@ export default function ModifyProfile({ navigation }: IModifyProps) {
 
       {profileSelected && (
         <>
+          <Text className=" text-center my-6 text-2xl text-neutral-700 font-bold">
+            Modification de profil
+          </Text>
           {!validFirstPart && (
             <>
               <Input
