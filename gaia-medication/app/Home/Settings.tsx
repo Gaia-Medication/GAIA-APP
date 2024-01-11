@@ -161,7 +161,7 @@ export default function Settings({ navigation }) {
   };
 
   return (
-    <SafeAreaView>
+    <SafeAreaView className="h-full w-full bg-white">
       {tutoSettings === "0" && (
         <TutorialBubble
           isClicked={handleTuto}
