@@ -423,7 +423,7 @@ export default function ModifyProfile({ navigation }: IModifyProps) {
                 color={"#4296E4"}
               ></CustomButton>
             )}
-            {userToDelete === null && (
+            {userToDelete === null && users.length !== 1 && (
               <CustomButton
                 title={
                   userToDelete

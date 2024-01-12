@@ -58,12 +58,12 @@ export default function AddTreatment({route, navigation}) {
   const [search, setSearch] = useState(searchMed("E"));
   const [searchText, setSearchText] = useState("");
   const [endDate, setEndDate] = useState(new Date());
-  const [endNumber, setEndNumber] = useState("");
+  const [endNumber, setEndNumber] = useState("1");
   const [quantity, setQuantity] = useState("");
   const [digitInput, setDigitInput] = useState("0");
   const [customPeriodicityBisNumber, setCustomPeriodicityBisNumber] =
-    useState("0");
-  const [customPeriodicityNumber, setCustomPeriodicityNumber] = useState("0");
+    useState("1");
+  const [customPeriodicityNumber, setCustomPeriodicityNumber] = useState("1");
 
   // CHECKBOXES, RADIO BUTTONS, PICKERS
   const [checkFrequency, setCheckFrequency] = useState("");
@@ -191,7 +191,8 @@ export default function AddTreatment({route, navigation}) {
   };
 
   // ASSOCIATE UN DIGIT (QUANTITE) A UNE DATE
-  const associateDigitWithDates = (input: String) => {
+  const addInstruction = async () => {
+    let updatedTakes=[]
     if (checkQty === "custom") {
       // Convert checkedDates to a map for quick lookup
       const checkedDatesMap = new Map(
@@ -209,13 +210,13 @@ export default function AddTreatment({route, navigation}) {
         treatmentName: treatmentName,
         CIS: Number(selectedMedCIS),
         date: date.toISOString(),
-        quantity: Number(input),
+        quantity: Number(quantity),
         taken: false,
         review: "",
       }));
 
       // Combine the remaining takes with the new takes and sort them by date
-      const updatedTakes = [...remainingTakes, ...newTakes].sort(
+      updatedTakes = [...remainingTakes, ...newTakes].sort(
         (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
       );
 
@@ -224,7 +225,7 @@ export default function AddTreatment({route, navigation}) {
       // Update the takes state
       setTakes(updatedTakes);
     } else {
-      const updatedTakes = [...takes];
+      updatedTakes = [];
 
       arrayOfDates.map((date) => {
         updatedTakes.push({
@@ -241,6 +242,45 @@ export default function AddTreatment({route, navigation}) {
       console.log("UPDATED TAKES => ", updatedTakes);
       setTakes(updatedTakes);
     }
+    addDates();
+    console.log("ADD INSTRUCTION");
+    console.log("TAKES", updatedTakes);
+    const newInstruction: Instruction = {
+      CIS: selectedMedCIS,
+      name: selectedMedName,
+      regularFrequency: checkFrequency === "regular", // CE MÉDICAMENT EST-IL À PRENDRE RÉGULIÈREMENT ?
+
+      // REGULIER
+      regularFrequencyMode: frequencyMode ? frequencyMode : null, // COMMENT ? (X FOIS PAR JOUR/SEMAINE/MOIS OU TOUS LES X JOURS)
+      regularFrequencyNumber: frequencyMode
+        ? customPeriodicityNumber
+          ? Number(customPeriodicityNumber)
+          : Number(customPeriodicityBisNumber)
+        : null, // X ?
+      regularFrequencyPeriods:
+        frequencyMode === "regular"
+          ? customPeriodicity
+            ? customPeriodicity
+            : "day"
+          : null, // SI X FOIS PAR (JOUR/SEMAINE/MOIS), PÉRIODICITÉ
+      regularFrequencyContinuity: checkDaily ? checkDaily : null, // EST-CE QUOTIDIEN OU SEULEMENT CERTAINS JOURS ? (DAILY/CUSTOM)
+      regularFrequencyDays:
+        checkDaily === "custom"
+          ? weekDays.filter((day) => day.checked).map((day) => day.day)
+          : null, // SI CERTAINS JOURS, LESQUELS ?
+
+      // PERSONNALISÉ
+
+      endModality: checkLast, // COMMENT S'ARRÊTE LE TRAITEMENT ? (NOMBRE DE PRIS OU DATE DE FIN)
+      endDate: checkLast === "last" ? endDate : null, // DATE DE FIN SI FIN À UNE DATE PRÉCISE
+      endQuantity: checkLast === "number" ? Number(endNumber) : null, // NOMBRE DE PRIS SI FIN AU BOUT D'UN CERTAIN NOMBRE DE PRIS
+      quantity: checkQty === "regular" ? Number(quantity) : null, // QUANTITÉ À PRENDRE À CHAQUE PRISE SI QUANTITÉ RÉGULIÈRE
+      takes: updatedTakes, // TABLEAU DES PRISES
+    };
+    await addItemToList("instructions", newInstruction);
+    console.log(newInstruction)
+    setInstructionsList([...instructionsList, newInstruction]);
+    setInstructionModalVisible(false);
   };
 
   // SETUP UN MEDICAMENT
@@ -269,8 +309,6 @@ export default function AddTreatment({route, navigation}) {
     setSelectedMed(med);
     setSelectedMedCIS(CIS);
     setSelectedMedName(med.Name);
-    setIsVisible(false);
-    setSearch(searchMed("E"));
     setInstructionModalVisible(true);
   };
 
@@ -904,7 +942,7 @@ export default function AddTreatment({route, navigation}) {
 
   const handleInputChange = (text) => {
     if (!isNaN(parseFloat(text)) && isFinite(text)) {
-      associateDigitWithDates(text);
+        setQuantity(text)
     } else {
       console.log("NOT A NUMBER");
       if (text != "") {
@@ -930,7 +968,6 @@ export default function AddTreatment({route, navigation}) {
           }}
           onChangeText={(text) => {
             setQuantity(text);
-            associateDigitWithDates(text);
           }}
           value={quantity ? quantity.toString() : ""}
           keyboardType="numeric"
@@ -1039,50 +1076,11 @@ export default function AddTreatment({route, navigation}) {
       </View>
     ) : null;
 
-  const addInstruction = async () => {
-    addDates();
-    console.log("ADD INSTRUCTION");
-    console.log("TAKES", takes);
-    const newInstruction: Instruction = {
-      CIS: selectedMedCIS,
-      name: selectedMedName,
-      regularFrequency: checkFrequency === "regular", // CE MÉDICAMENT EST-IL À PRENDRE RÉGULIÈREMENT ?
 
-      // REGULIER
-      regularFrequencyMode: frequencyMode ? frequencyMode : null, // COMMENT ? (X FOIS PAR JOUR/SEMAINE/MOIS OU TOUS LES X JOURS)
-      regularFrequencyNumber: frequencyMode
-        ? customPeriodicityNumber
-          ? Number(customPeriodicityNumber)
-          : Number(customPeriodicityBisNumber)
-        : null, // X ?
-      regularFrequencyPeriods:
-        frequencyMode === "regular"
-          ? customPeriodicity
-            ? customPeriodicity
-            : "day"
-          : null, // SI X FOIS PAR (JOUR/SEMAINE/MOIS), PÉRIODICITÉ
-      regularFrequencyContinuity: checkDaily ? checkDaily : null, // EST-CE QUOTIDIEN OU SEULEMENT CERTAINS JOURS ? (DAILY/CUSTOM)
-      regularFrequencyDays:
-        checkDaily === "custom"
-          ? weekDays.filter((day) => day.checked).map((day) => day.day)
-          : null, // SI CERTAINS JOURS, LESQUELS ?
-
-      // PERSONNALISÉ
-
-      endModality: checkLast, // COMMENT S'ARRÊTE LE TRAITEMENT ? (NOMBRE DE PRIS OU DATE DE FIN)
-      endDate: checkLast === "last" ? endDate : null, // DATE DE FIN SI FIN À UNE DATE PRÉCISE
-      endQuantity: checkLast === "number" ? Number(endNumber) : null, // NOMBRE DE PRIS SI FIN AU BOUT D'UN CERTAIN NOMBRE DE PRIS
-      quantity: checkQty === "regular" ? Number(quantity) : null, // QUANTITÉ À PRENDRE À CHAQUE PRISE SI QUANTITÉ RÉGULIÈRE
-      takes: takes, // TABLEAU DES PRISES
-    };
-    await addItemToList("instructions", newInstruction);
-    setInstructionsList([...instructionsList, newInstruction]);
-    setInstructionModalVisible(false);
-  };
 
   const addTreatment = async () => {
-    let asyncInstructions = await readList("instructions");
-    console.log("ASYNC INSTRUCTIONS => ", await asyncInstructions);
+    const asyncInstructions = await readList("instructions");
+    console.log("ASYNC INSTRUCTIONS => ", asyncInstructions);
     AsyncStorage.setItem("instructions", JSON.stringify([]));
     const newTreatment = {
       name: treatmentName,
@@ -1090,10 +1088,10 @@ export default function AddTreatment({route, navigation}) {
       userId: user.id,
       description: treatmentDescription,
       startDate: startDate,
-      instructions: await asyncInstructions,
+      instructions: asyncInstructions,
     };
     await addItemToList("treatments", newTreatment);
-    navigation.navigate("Home");
+    navigation.navigate("SuivisHandler",{screen:"Suivis"})
   };
 
   const handleValidate = () => {
@@ -1240,6 +1238,7 @@ export default function AddTreatment({route, navigation}) {
       >
         <TouchableOpacity
           onPress={() => {
+            setIsVisible(false);
             handleValidate();
             // Reset the state first
           }}
@@ -1333,7 +1332,7 @@ export default function AddTreatment({route, navigation}) {
           {selectedInstruction.endModality === "number" ? (
             <Text>
               Il est à prendre {selectedInstruction.endQuantity} fois, jusqu'au{" "}
-              {formatDate(
+              {selectedInstruction.takes[selectedInstruction.takes.length]&&formatDate(
                 selectedInstruction.takes[selectedInstruction.takes.length].date
               )}
             </Text>
@@ -1524,7 +1523,7 @@ export default function AddTreatment({route, navigation}) {
           )}
 
           {instructionsList.length > 0
-            ? instructionsList.map((instruction, index) => (
+            && instructionsList.map((instruction, index) => (
                 <View
                   key={index}
                   style={{
@@ -1581,11 +1580,13 @@ export default function AddTreatment({route, navigation}) {
                   />
                 </View>
               ))
-            : null}
+            }
         </View>
         <View className="absolute w-full" style={{ top: windowHeight * 0.85 }}>
           <TouchableOpacity
+            disabled={!(instructionsList.length > 0)}
             className="flex flex-row items-center justify-between bg-lime-400 rounded-2xl p-4 mb-2"
+            
             onPress={() => addTreatment()}
           >
             <Text className="text-white text-lg ml-[10%]">

@@ -44,7 +44,7 @@ export default function Stock({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      {stock && (
+      {stock && stock.length !== 0 ? (
         <FlatList
           data={stock}
           keyExtractor={(item, index) => index.toString()}
@@ -76,6 +76,17 @@ export default function Stock({ navigation }) {
             );
           }}
         />
+      ): (
+        <View className="flex flex-col justify-around items-center h-[98%] w-full">
+          <Text className="text-2xl font-medium text-center text-neutral-300">
+            Aucun médicament
+          </Text>
+          <Image
+            className=" h-[150px] w-[150px] -mt-[40%] -mb-[20%]"
+            source={require("../../assets/stock.png")}
+          />
+          <View className=" h-12"/>
+        </View>
       )}
       {!stock && <Loading />}
     </SafeAreaView>

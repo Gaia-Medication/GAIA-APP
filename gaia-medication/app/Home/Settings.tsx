@@ -63,7 +63,6 @@ export default function Settings({ navigation }) {
             const takenStatus = take.taken ? "pris" : "non pris";
             const review = take.review ? take.review : "";
             return `
-            <span style="width: 100%; height: 1px; background-color: black; display: block; margin: 10px 0;"></span>
             <p>${user.firstname} ${user.lastname}</p>
             <p>Médicament: ${medic.Name}</p>
             <p>Status: ${takenStatus}</p>
@@ -93,17 +92,80 @@ export default function Settings({ navigation }) {
     const html = `
       <html>
       <head>
-          <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
-        </head>
-        <body style="text-align: center;">
-          <h1 style="font-size: 30px; font-weight: normal;">
-            Traitement ${treatment.name}
-          </h1>
-          <h2 style="font-size: 24px; font-weight: normal;">Description</h2>
-          <p>${treatment.description}</p>
-          <h2 style="font-size: 24px; font-weight: normal;">Ressenti</h2>
-          <div style="font-size:16px;>${instructionsHtml}</div>
-        </body>
+          <meta charset="UTF-8">
+          <title>Traitement ${treatment.name}</title>
+          <style>
+              body {
+                  text-align: center;
+                  font-family: Arial, sans-serif;
+                  margin: 0;
+                  padding: 0;
+              }
+      
+              .header {
+                  background-color: #9CDE00;
+                  color: #fff;
+                  padding: 20px;
+              }
+      
+              .header h1 {
+                  font-size: 30px;
+                  font-weight: normal;
+                  margin: 0;
+              }
+      
+              .description {
+                  margin: 20px;
+                  text-align: left;
+              }
+      
+              .description h2 {
+                  font-size: 24px;
+                  font-weight: normal;
+              }
+      
+              .ressenti {
+                  margin: 20px;
+                  text-align: left;
+              }
+      
+              .ressenti h2 {
+                  font-size: 24px;
+                  font-weight: normal;
+              }
+      
+              .instructions {
+                  font-size: 16px;
+                  border-left: black 1px solid;
+                  padding-left: 2rem;
+              }
+      
+              .logo {
+                  display: block;
+                  margin: 20px auto;
+                  width: 100px; /* Ajustez la taille selon vos besoins */
+                  filter: brightness(0) invert(1); /* Appliquer un filtre blanc */
+              }
+          </style>
+      </head>
+      <body>
+          <div class="header">
+              <img class="logo" src="logo_title_gaia.png" alt="Logo de la marque">
+              <h1>Traitement ${treatment.name}</h1>
+          </div>
+          
+          <div class="description">
+              <h2>Description</h2>
+              <p>${treatment.description}</p>
+          </div>
+      
+          <div class="ressenti">
+              <h2>Suivis du traitement :</h2>
+              <div class="instructions">
+                  ${instructionsHtml}
+              </div>
+          </div>
+      </body>
       </html>
     `;
     const { uri } = await Print.printToFileAsync({ html });

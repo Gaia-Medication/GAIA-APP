@@ -78,24 +78,24 @@ export default function Drug({ route, navigation }) {
     }
   }, [isFocused && drug]);
 
-  const updateStock = async (cis, cip,addQte) => {
+  const updateStock = async (cis, cip, addQte) => {
     try {
-      const product=stock.find((stockItem) => stockItem.CIP === cip)
-      if(product){
+      const product = stock.find((stockItem) => stockItem.CIP === cip);
+      if (product) {
         await removeItemFromStock(cis, cip, user.id);
-        if(product.qte+addQte>0){
+        if (product.qte + addQte > 0) {
           const addstock: Stock = {
             idUser: user.id,
             CIP: cip,
             CIS: cis,
-            qte: product.qte+addQte,
+            qte: product.qte + addQte,
           };
           console.log(addstock);
-    
+
           await addItemToList("stock", addstock);
           //setStock([...stock, addstock]);
         }
-      }else{
+      } else {
         const addstock: Stock = {
           idUser: user.id,
           CIP: cip,
@@ -103,7 +103,7 @@ export default function Drug({ route, navigation }) {
           qte: 1,
         };
         console.log(addstock);
-  
+
         await addItemToList("stock", addstock);
         //setStock([...stock, addstock]);
       }
@@ -151,30 +151,34 @@ export default function Drug({ route, navigation }) {
         <TutorialBubble
           isClicked={handleTuto}
           styleAdded={{ top: "85%", left: "5%" }}
-          text={"Vous avez à votre disposition\nles informations du médicaments, 3/4"}
+          text={
+            "Vous avez à votre disposition\nles informations du médicaments, 3/4"
+          }
         ></TutorialBubble>
       )}
       {tutoStep === 3 && tutoMedic === "0" && (
         <TutorialBubble
           isClicked={handleTuto}
           styleAdded={{ top: "72%", left: "9%" }}
-          text={"Et pour finir,vous avez la possibilité\n d'ajouté ce médicament, 4/4"}
+          text={
+            "Et pour finir,vous avez la possibilité\n d'ajouté ce médicament, 4/4"
+          }
         ></TutorialBubble>
       )}
       {drug && stock && user && (
         <>
           <ScrollView className="gap-2" showsVerticalScrollIndicator={false}>
-          <View className="flex-row justify-between pt-4 px-6">
-            <Icon.ArrowLeft
-              color={"#363636"}
-              onPress={() => navigation.goBack()}
-            />
-            <Icon.AlertCircle
-              className=" z-10"
-              color={"#363636"}
-              onPress={handlePress}
-            />
-          </View>
+            <View className="flex-row justify-between pt-4 px-6">
+              <Icon.ArrowLeft
+                color={"#363636"}
+                onPress={() => navigation.goBack()}
+              />
+              <Icon.AlertCircle
+                className=" z-10"
+                color={"#363636"}
+                onPress={handlePress}
+              />
+            </View>
             <View className="flex-row justify-center">
               <MedIconByType type={drug.Shape} size={"h-24 w-24"} />
             </View>
@@ -350,31 +354,38 @@ export default function Drug({ route, navigation }) {
                 )}
               </View>
             )}
-            <View className={stock.find((stockItem) => stockItem.CIS === drugCIS) != null?" mb-40":"mb-24"} />
+            <View
+              className={
+                stock.find((stockItem) => stockItem.CIS === drugCIS) != null
+                  ? " mb-40"
+                  : "mb-24"
+              }
+            />
           </ScrollView>
-          
-          {stock.find((stockItem) => stockItem.CIS === drugCIS) != null?(
-            <><TouchableOpacity
-              disabled={true}
-              className=" bg-white rounded-[19px] absolute bottom-24 left-6 right-6 border border-[#9CDE00]"
-              onPress={() => {
-              } }
-            >
-              <Text className="text-center text-[#9CDE00] text-lg py-3 pt-2">
-                Déjà dans le stock
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              className=" bg-[#D5F48A] rounded-[19px] absolute bottom-8 left-6 right-6"
-              onPress={() => {
-                setDrugModalVisible(true);
-              } }
-            >
+
+          {stock.find((stockItem) => stockItem.CIS === drugCIS) != null ? (
+            <>
+              <TouchableOpacity
+                disabled={true}
+                className=" bg-white rounded-[19px] absolute bottom-24 left-6 right-6 border border-[#9CDE00]"
+                onPress={() => {}}
+              >
+                <Text className="text-center text-[#9CDE00] text-lg py-3 pt-2">
+                  Déjà dans le stock
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                className=" bg-[#D5F48A] rounded-[19px] absolute bottom-8 left-6 right-6"
+                onPress={() => {
+                  setDrugModalVisible(true);
+                }}
+              >
                 <Text className="text-center text-[#9CDE00] text-lg py-3 pt-2">
                   Modifier
                 </Text>
-              </TouchableOpacity></>
-          ):(
+              </TouchableOpacity>
+            </>
+          ) : (
             <TouchableOpacity
               className=" bg-[#9CDE00] rounded-[19px] absolute bottom-8 left-6 right-6"
               onPress={() => {
@@ -403,7 +414,10 @@ export default function Drug({ route, navigation }) {
                 const alreadyStocked =
                   stock.find((stockItem) => stockItem.CIP === item.CIP) != null;
                 return (
-                  <View key={index} className="flex py-2 flex-row items-center justify-between border-b border-gray-200">
+                  <View
+                    key={index}
+                    className="flex py-2 flex-row items-center justify-between border-b border-gray-200"
+                  >
                     <View className="flex flex-1">
                       <Text className=" font-light">{item.CIP}</Text>
                       <Text className=" text-xs">{item.Denomination}</Text>
@@ -414,46 +428,59 @@ export default function Drug({ route, navigation }) {
                         <TouchableOpacity
                           className="px-2"
                           onPress={() => {
-                            updateStock(item.CIS, item.CIP,+1)
+                            updateStock(item.CIS, item.CIP, +1);
                           }}
                         >
                           <Text className="">➕</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                           className="px-2"
-                          onPress={() =>
-                            updateStock(item.CIS, item.CIP,-1)
-                          }
+                          onPress={() => updateStock(item.CIS, item.CIP, -1)}
                         >
                           <Text className="">❌</Text>
                         </TouchableOpacity>
                       </>
                     ) : (
                       <>
-                      <TouchableOpacity
-                        className="px-2"
-                        onPress={() => {
-                          updateStock(item.CIS, item.CIP,+1)
-                        }}
-                      >
-                        <Text className="">➕</Text>
-                      </TouchableOpacity>
+                        <TouchableOpacity
+                          className="px-2"
+                          onPress={() => {
+                            updateStock(item.CIS, item.CIP, +1);
+                          }}
+                        >
+                          <Text className="">➕</Text>
+                        </TouchableOpacity>
                       </>
                     )}
                   </View>
                 );
               })}
               <View className="mt-4">
-                {stock.length>0&&<Text className=" text-xs">Dans le Stock:</Text>}
+                {stock.length > 0 && (
+                  <Text className=" text-xs">Dans le Stock:</Text>
+                )}
                 {stock.map((item, index) => {
-                  return(
-                    <View key={index}className="flex-row">
-                      <Text className=" text-xs">x{item.qte} - {drug.Values.find(prod=>prod.CIP==item.CIP).Denomination}</Text>
+                  return (
+                    <View key={index} className="flex-row">
+                      <Text className=" text-xs">
+                        x{item.qte} -{" "}
+                        {
+                          drug.Values.find((prod) => prod.CIP == item.CIP)
+                            .Denomination
+                        }
+                      </Text>
                     </View>
-                  )
+                  );
                 })}
               </View>
             </View>
+              <TouchableOpacity
+                onPress={() => {
+                  setDrugModalVisible(!drugModalVisible);
+                }}
+              >
+                <Text className="text-red-500">Fermer</Text>
+              </TouchableOpacity>
           </ModalComponent>
         </>
       )}
