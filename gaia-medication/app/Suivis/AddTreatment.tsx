@@ -58,12 +58,12 @@ export default function AddTreatment({route, navigation}) {
   const [search, setSearch] = useState(searchMed("E"));
   const [searchText, setSearchText] = useState("");
   const [endDate, setEndDate] = useState(new Date());
-  const [endNumber, setEndNumber] = useState("");
-  const [quantity, setQuantity] = useState("");
+  const [endNumber, setEndNumber] = useState("1");
+  const [quantity, setQuantity] = useState("1");
   const [digitInput, setDigitInput] = useState("0");
   const [customPeriodicityBisNumber, setCustomPeriodicityBisNumber] =
-    useState("0");
-  const [customPeriodicityNumber, setCustomPeriodicityNumber] = useState("0");
+    useState("1");
+  const [customPeriodicityNumber, setCustomPeriodicityNumber] = useState("1");
 
   // CHECKBOXES, RADIO BUTTONS, PICKERS
   const [checkFrequency, setCheckFrequency] = useState("");
