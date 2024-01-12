@@ -168,7 +168,7 @@ export default function Suivis({ navigation }) {
           text={"On va passer ensuite\nau prochain onglet, 4/4"}
         ></TutorialBubble>
       )}
-      {isLoading ? (
+      {isLoading && (
         <View
           style={{
             backgroundColor: "white",
@@ -199,7 +199,7 @@ export default function Suivis({ navigation }) {
             Chargement des traitements...
           </Text>
         </View>
-      ) : null}
+      )}
       {takes && takes.length !== 0 ? (
         <View className=" flex border-1">
           <View className="flex-row justify-between items-center px-5 py-2 border-b border-gray-200">

@@ -7,30 +7,6 @@ import { styles } from '../../style/style';
 import ModalComponent from '../component/Modal';
 import TakeItem from '../component/TakeItem';
 
-const Tile = ({ treatment, onPress }) => {
-    const item: Treatment = treatment;
-    const generateRandomHeight = () => {
-        const minHeight = 100;
-        const maxHeight = 200;
-        return Math.floor(Math.random() * (maxHeight - minHeight + 1)) + minHeight;
-    };
-
-    const predefinedColors = ['#1ABC9C', '#27AE60', '#117864', '#45B39D', '#58D68D'];
-
-    const tileHeight = generateRandomHeight();
-    const contentMinHeight = 200; // Adjust this value as needed
-
-    return (
-        <TouchableOpacity onPress={() => onPress(true, treatment)} style={[styles.square, { backgroundColor: predefinedColors[item.startDate.getHours() % predefinedColors.length], height: Math.max(tileHeight, contentMinHeight) }]}>
-            <Text style={{ fontWeight: "700", marginBottom: 10 }}>{item.name}</Text>
-            <View style={{ flexDirection: "row", alignItems: "flex-start", justifyContent: "flex-start", marginBottom: 10 }}>
-                <View style={{ width: 5, height: "100%", borderRadius: 5, backgroundColor: "#00000070" }} />
-                <Text style={{ fontWeight: "700", color: "#00000070", paddingLeft: 4 }} numberOfLines={4} ellipsizeMode='tail'>{item.description || "Aucune description renseignéeAucune des renseignée hghdihqihf"}</Text>
-            </View>
-        </TouchableOpacity>
-    );
-};
-
 export default function ManageTreatments() {
     const isFocused = useIsFocused();
     const [treatments, setTreatments] = useState<Treatment[]>([]);
@@ -89,43 +65,49 @@ export default function ManageTreatments() {
     }
 
     return (
-        <ImageBackground
-            source={require('./../../assets/logo_gaia_loading.png')} // Replace with your logo image source
-            style={styles.customContainer}
-        >
-            <View style={styles.customContent}>
-                {treatments ? (
-                    <View>
-                        <FlatList
-                            key={treatments.length}
-                            data={treatments}
-                            keyExtractor={(item) => item.name}
-                            numColumns={2} // Display two items in each row
-                            renderItem={({ item }) => <Tile treatment={item} onPress={handleModalActivation} />}
-                        />
-                        <ModalComponent
-                            visible={modifModalVisible}
-                            onClose={() => {
+        <SafeAreaView style={styles.container}>
+            {treatments ? (
+                <View>
+                    
+                    <FlatList
+                    data={treatments}
+                    keyExtractor={(item, index) => index.toString()}
+                    renderItem={({ item }) => {
+                        return (
+                            <TouchableOpacity
+                                style={styles.listItem}
+                                className="flex justify-start align-middle"
+                                onPress={() => handleModalActivation(true, item)}
+                            >
+                                <View className="ml-4 flex-1 flex-row justify-between items-center">
+                                    <Text className="flex-1">{item.name}</Text>
+                                </View>
+                            </TouchableOpacity>
+                        );
+                    }}
+                    />
+                    <ModalComponent
+                        visible={modifModalVisible}
+                        onClose={() => {
 
-                                setModifModalVisible(false);
-                            }}
-                            styleAdded={{
-                                backgroundColor: "white",
-                                borderRadius: 10,
-                                padding: 20,
-                                maxHeight: "80%",
-                            }}
-                            children={modalModif}
-                        />
-                    </View>
+                            setModifModalVisible(false);
+                        }}
+                        styleAdded={{
+                            backgroundColor: "white",
+                            borderRadius: 10,
+                            padding: 20,
+                            maxHeight: "80%",
+                        }}
+                        children={modalModif}
+                    />
+                </View>
 
-                ) : (
-                    <Text>Vous n'avez pas de traitement</Text>
-                )}
+            ) : (
+                <Text>Vous n'avez pas de traitement</Text>
+            )}
 
-            </View>
 
-        </ImageBackground>
+        </SafeAreaView>
     );
 }
 
