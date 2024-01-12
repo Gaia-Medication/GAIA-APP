@@ -6,6 +6,7 @@ import { getAllTreatments } from '../../dao/Storage';
 import { styles } from '../../style/style';
 import ModalComponent from '../component/Modal';
 import TakeItem from '../component/TakeItem';
+import CustomButton from '../component/CustomButton';
 
 export default function ManageTreatments() {
     const isFocused = useIsFocused();
@@ -41,8 +42,8 @@ export default function ManageTreatments() {
     };
 
     const modalModif = selectedTreatment ? (
-        <View style={{ gap: 30, paddingBottom: 100 }}>
-            <Text>{selectedTreatment.name}</Text>
+        <View style={{ gap: 30, paddingBottom: 100, width: "95%", display: "flex", alignItems: "center"}}>
+            <Text className=' text-neutral-700 text-xl font-medium'>{selectedTreatment.name}</Text>
             <View style={styles.container}>
                 {selectedTreatment.instructions.map((instruction, index) => (
                     <View>
@@ -52,9 +53,8 @@ export default function ManageTreatments() {
                     </View>
                 ))}
             </View>
-            <TouchableOpacity onPress={() => setModifModalVisible(false) }style={{ backgroundColor: "red" }}>
-                <Text>Close</Text>
-            </TouchableOpacity>
+                <CustomButton title={"Close"} color={"#eb4034"} disabled={false} onPress={() => setModifModalVisible(false) }>
+                </CustomButton>
         </View>
     ) : null;
 
@@ -93,10 +93,12 @@ export default function ManageTreatments() {
                             setModifModalVisible(false);
                         }}
                         styleAdded={{
+                            display: "flex",
                             backgroundColor: "white",
                             borderRadius: 10,
                             padding: 20,
                             maxHeight: "80%",
+                            width: "90%",
                         }}
                         children={modalModif}
                     />
