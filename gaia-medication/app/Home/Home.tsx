@@ -26,10 +26,11 @@ import AvatarButton from "../component/Avatar";
 import * as Icon from "react-native-feather";
 import { trouverNomMedicament } from "../../dao/Search";
 import Loading from "../component/Loading";
-import { initDailyNotifications, initTakeNotifications } from "../Handlers/NotificationsHandler";
+import { initDailyNotifications, initLateNotifications, initTakeNotifications } from "../Handlers/NotificationsHandler";
 import TutorialBubble from "../component/TutorialBubble";
 import ModalComponent from "../component/Modal";
 import { ALERT_TYPE, Dialog, AlertNotificationRoot } from 'react-native-alert-notification';
+import * as Notifications from 'expo-notifications';
 
 export default function Home({ navigation }) {
   const isFocused = useIsFocused();
@@ -80,10 +81,13 @@ export default function Home({ navigation }) {
     }
     const notifsDaily = await initDailyNotifications(user?.firstname, user?.id);
     const notifsTakes = await initTakeNotifications(user?.firstname, user?.id);
+    const notifsLate = await initLateNotifications(user?.firstname, user?.id);
 
     setNotificationsList(notifsDaily);
     console.log("Notifs Quotidiennes Totales :", notifsDaily.length);
     console.log("Notifs Prises Totales :", notifsTakes.length);
+    console.log("Notifs Retards Totales :", notifsLate.length);
+    console.log("TOUTES NOTIF ", (await Notifications.getAllScheduledNotificationsAsync()).length);
   };
 
   const initUserInfo = async ()=>{

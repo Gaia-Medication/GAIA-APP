@@ -94,9 +94,9 @@ export const notificationDaily = async (userName, data: NotifData[], date) => {
   );
 }
 
-export const notificationNow = async (userName, data: NotifData) => {
+export const notificationNow = async (userName, data: NotifData, remainigTime) => {
   const notificationTime = new Date(data.take.date);
-  notificationTime.setHours(notificationTime.getHours(), notificationTime.getMinutes(), 0, 0);
+  notificationTime.setHours(notificationTime.getHours(), notificationTime.getMinutes() + remainigTime, 0, 0);
   return await scheduleLocalNotification(
     "C'est le moment !",
     userName,
@@ -104,23 +104,35 @@ export const notificationNow = async (userName, data: NotifData) => {
     { notifData: data, userName: userName },
     "default",
     "default",
-    Notifications.AndroidNotificationPriority.HIGH,
+    Notifications.AndroidNotificationPriority.DEFAULT,
     "reminder",
     notificationTime
   );
 }
 
-export const notificationForgot = async () => {
-  scheduleLocalNotification(
+export const notificationForgot = async (userName, data: NotifData, remainigTime) => {
+  let notificationTime = new Date(data.take.date);
+  if (remainigTime > 60) {
+    notificationTime.setHours(notificationTime.getHours(), notificationTime.getMinutes() + remainigTime, 0, 0);
+  } else {
+    let addTime = Math.floor(remainigTime / 10) * 10;
+    console.log("Notif in ", remainigTime - addTime, "minutes");
+    console.log("addTime", addTime);
+    notificationTime = new Date();  
+    notificationTime.setHours(notificationTime.getHours(), notificationTime.getMinutes() + (remainigTime - addTime), 0, 0);
+  }
+  
+
+  return scheduleLocalNotification(
     "⚠️ N'oubliez pas !",
-    "Votre traitement",
-    "Avez vous pensé à prendre votre : \n\n 💊 Doliprane 700 ?",
-    { data: "data" },
+    userName,
+    `💊 ${data.medName}`,
+    { notifData: data, userName: userName, remainigTime: remainigTime },
     "default",
     "red",
     Notifications.AndroidNotificationPriority.HIGH,
     "alertReminder",
-    new Date()
+    notificationTime
   );
 }
 
@@ -137,7 +149,7 @@ Notifications.setNotificationCategoryAsync('reminder', [
   },
   {
     identifier: 'snooze',
-    buttonTitle: 'Rappeler dans 5 minutes',
+    buttonTitle: 'Rappeler dans 10 minutes',
     options: {
       isDestructive: false,
       isAuthenticationRequired: false,
@@ -147,7 +159,7 @@ Notifications.setNotificationCategoryAsync('reminder', [
 
 Notifications.setNotificationCategoryAsync('alertReminder', [
   {
-    identifier: 'take',
+    identifier: 'lateTake',
     buttonTitle: 'Pris !',
     options: {
       isDestructive: false,
@@ -155,8 +167,8 @@ Notifications.setNotificationCategoryAsync('alertReminder', [
     },
   },
   {
-    identifier: 'snooze',
-    buttonTitle: 'Rappeler dans 15 minutes',
+    identifier: 'lateSnooze',
+    buttonTitle: 'Rappeler dans 1O minutes',
     options: {
       isDestructive: false,
       isAuthenticationRequired: false,
@@ -216,7 +228,6 @@ export const initTakeNotifications = async (userName, userId) => {
   const treatmentsDays = await getDaysTakes();
   console.log("treatmentsDays", treatmentsDays);
   const arrayOfNotifications: Notif[] = [];
-  Notifications.cancelAllScheduledNotificationsAsync();
 
   for (const dateKey in treatmentsDays) {
 
@@ -229,8 +240,13 @@ export const initTakeNotifications = async (userName, userId) => {
         console.log("dateNotification", dateNotification);
         if (dateNotification >= new Date()) {
           console.log("take", take);
+          let notif = null
+          try {
+            notif = await notificationNow(userName, { medName: take.medName, take: take }, 1)
+          } catch (error) {
+            console.log(error);
+          }
           
-          const notif = await notificationNow(userName, { medName: take.medName, take: take })
           const returnedNotif: Notif = {
             notifId: notif,
             userId: userName,
@@ -242,6 +258,67 @@ export const initTakeNotifications = async (userName, userId) => {
             }]
           };
           arrayOfNotifications.push(returnedNotif);
+        }
+
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+  }
+  console.log("END");
+  return arrayOfNotifications;
+}
+
+export const initLateNotifications = async (userName, userId) => {
+  console.log("initTakeNotifications");
+  const notificationTime = await getDailyNotificationTime();
+  const treatmentsDays = await getDaysTakes();
+  console.log("treatmentsDays", treatmentsDays);
+  const arrayOfNotifications: Notif[] = [];
+  const currentDate = new Date();
+  currentDate.setHours(currentDate.getHours() - 4, currentDate.getMinutes(), 0, 0);
+
+  for (const dateKey in treatmentsDays) {
+
+    for (const take of treatmentsDays[dateKey]) {
+
+      try {
+        const dateNotification = new Date(take.date);
+        dateNotification.setHours(dateNotification.getHours(), dateNotification.getMinutes(), 0, 0);
+        if (dateNotification.getTime() >= currentDate.getTime() && take.taken === false) {
+          console.log("late", take);
+
+          if (dateNotification.getTime() < new Date().getTime()) {
+            const newDate = new Date();
+            let minDiff = 240 - Math.round((newDate.getTime() - dateNotification.getTime()) / 60000);
+            console.log("minDiff", minDiff);
+            const notif = await notificationForgot(userName, { medName: take.medName, take: take }, minDiff)
+            const returnedNotif: Notif = {
+              notifId: notif,
+              userId: userName,
+              date: dateNotification,
+              type: "late",
+              datas: [{
+                medName: take.medName,
+                take: take,
+              }]
+            };
+            arrayOfNotifications.push(returnedNotif);
+          } else {
+            const notif = await notificationForgot(userName, { medName: take.medName, take: take }, 240)
+            const returnedNotif: Notif = {
+              notifId: notif,
+              userId: userName,
+              date: dateNotification,
+              type: "late",
+              datas: [{
+                medName: take.medName,
+                take: take,
+              }]
+            };
+            arrayOfNotifications.push(returnedNotif);
+          }
         }
 
       } catch (error) {

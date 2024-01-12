@@ -190,7 +190,6 @@ export default function Settings({ navigation }) {
         title="MODIFY PROFILE"
         onPress={() => navigation.navigate("ModifyProfile")}
       ></Button>
-      <Button onPress={notificationForgot} title="Notification oubli" />
       <Button onPress={showTreatments} title="Liste des traitements" />
       <Button onPress={deleteTreatments} title="Supprimer traitements" />
       <Button onPress={createTreatmentTest1} title="TraitementTest 1" />
@@ -248,7 +247,6 @@ export default function Settings({ navigation }) {
             title="MODIFY PROFILE"
             onPress={() => navigation.navigate("ModifyProfile")}
           ></Button>
-          <Button onPress={notificationForgot} title="Notification oubli" />
           <Button onPress={showTreatments} title="Liste des traitements" />
           <Button onPress={deleteTreatments} title="Supprimer traitements" />
           <Button onPress={createTreatmentTest1} title="TraitementTest 1" />
