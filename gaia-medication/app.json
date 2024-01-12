@@ -22,7 +22,8 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "useNextNotificationsApi": true
+      "useNextNotificationsApi": true,
+      "package": "com.helldeal.gaiamedication"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -39,6 +40,11 @@
           ]
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "b05989c6-2347-4223-9f1a-0b2edc407351"
+      }
+    }
   }
 }
