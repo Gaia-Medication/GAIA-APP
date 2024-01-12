@@ -102,6 +102,16 @@ export default function Suivis({ navigation }) {
     });
     const currentId = await AsyncStorage.getItem("currentUser");
     setTakes(takes.filter((take) => take.take.userId == currentId));
+
+    let actualIndex = null;
+    takes.length !== 0&&(actualIndex = takes.findIndex(
+      (take) => compareDates(take.take.date) === "actual"
+    ))
+    actualIndex==-1&&(actualIndex = takes.findIndex(
+      (take) => compareDates(take.take.date) === "next")
+    )
+    console.log(actualIndex)
+    setScroll(actualIndex);
     console.log("Takes");
   }
 
@@ -110,19 +120,6 @@ export default function Suivis({ navigation }) {
     await getTreatments();
     await getTakes();
     setIsLoading(false);
-
-    let actualIndex = null;
-    takes.length !== 0
-      ? takes.findIndex((take) => compareDates(take.take.date) === "actual")
-        ? (actualIndex = takes.findIndex(
-          (take) => compareDates(take.take.date) === "actual"
-        ))
-        : (actualIndex = takes.findIndex(
-          (take) => compareDates(take.take.date) === "previous"
-        ))
-      : null;
-
-    setScroll(actualIndex);
     console.log("Takes");
   }
 
