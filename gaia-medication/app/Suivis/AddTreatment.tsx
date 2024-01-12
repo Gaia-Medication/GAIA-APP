@@ -58,12 +58,12 @@ export default function AddTreatment({route, navigation}) {
   const [search, setSearch] = useState(searchMed("E"));
   const [searchText, setSearchText] = useState("");
   const [endDate, setEndDate] = useState(new Date());
-  const [endNumber, setEndNumber] = useState("1");
-  const [quantity, setQuantity] = useState("1");
+  const [endNumber, setEndNumber] = useState("");
+  const [quantity, setQuantity] = useState("");
   const [digitInput, setDigitInput] = useState("0");
   const [customPeriodicityBisNumber, setCustomPeriodicityBisNumber] =
-    useState("1");
-  const [customPeriodicityNumber, setCustomPeriodicityNumber] = useState("1");
+    useState("0");
+  const [customPeriodicityNumber, setCustomPeriodicityNumber] = useState("0");
 
   // CHECKBOXES, RADIO BUTTONS, PICKERS
   const [checkFrequency, setCheckFrequency] = useState("");
@@ -269,8 +269,6 @@ export default function AddTreatment({route, navigation}) {
     setSelectedMed(med);
     setSelectedMedCIS(CIS);
     setSelectedMedName(med.Name);
-    setIsVisible(false);
-    setSearch(searchMed("E"));
     setInstructionModalVisible(true);
   };
 
@@ -1076,13 +1074,14 @@ export default function AddTreatment({route, navigation}) {
       takes: takes, // TABLEAU DES PRISES
     };
     await addItemToList("instructions", newInstruction);
+    console.log(newInstruction)
     setInstructionsList([...instructionsList, newInstruction]);
     setInstructionModalVisible(false);
   };
 
   const addTreatment = async () => {
-    let asyncInstructions = await readList("instructions");
-    console.log("ASYNC INSTRUCTIONS => ", await asyncInstructions);
+    const asyncInstructions = await readList("instructions");
+    console.log("ASYNC INSTRUCTIONS => ", asyncInstructions);
     AsyncStorage.setItem("instructions", JSON.stringify([]));
     const newTreatment = {
       name: treatmentName,
@@ -1090,10 +1089,10 @@ export default function AddTreatment({route, navigation}) {
       userId: user.id,
       description: treatmentDescription,
       startDate: startDate,
-      instructions: await asyncInstructions,
+      instructions: asyncInstructions,
     };
     await addItemToList("treatments", newTreatment);
-    navigation.navigate("Home");
+    navigation.navigate("SuivisHandler",{screen:"Suivis"})
   };
 
   const handleValidate = () => {
@@ -1240,6 +1239,7 @@ export default function AddTreatment({route, navigation}) {
       >
         <TouchableOpacity
           onPress={() => {
+            setIsVisible(false);
             handleValidate();
             // Reset the state first
           }}
@@ -1333,7 +1333,7 @@ export default function AddTreatment({route, navigation}) {
           {selectedInstruction.endModality === "number" ? (
             <Text>
               Il est à prendre {selectedInstruction.endQuantity} fois, jusqu'au{" "}
-              {formatDate(
+              {selectedInstruction.takes[selectedInstruction.takes.length]&&formatDate(
                 selectedInstruction.takes[selectedInstruction.takes.length].date
               )}
             </Text>
