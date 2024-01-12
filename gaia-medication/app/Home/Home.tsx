@@ -64,6 +64,7 @@ export default function Home({ navigation }) {
     const currentId = await AsyncStorage.getItem("currentUser");
     const isFirstConnection = await AsyncStorage.getItem("isFirstConnection");
     setTutoHome(await AsyncStorage.getItem("TutoHome"));
+    const current = await getUserByID(JSON.parse(currentId));
     if (userList.length < 1 || isFirstConnection === "true") {
       // L'utilisateur se connecte pour la première fois
       AsyncStorage.setItem("TutoHome", "0");
@@ -75,13 +76,12 @@ export default function Home({ navigation }) {
       AsyncStorage.setItem("TutoSettings", "0");
       navigation.navigate("CreateProfile");
     } else {
-      const current = await getUserByID(JSON.parse(currentId));
       console.log(current);
       setUser(current);
     }
-    const notifsDaily = await initDailyNotifications(user?.firstname, user?.id);
-    const notifsTakes = await initTakeNotifications(user?.firstname, user?.id);
-    const notifsLate = await initLateNotifications(user?.firstname, user?.id);
+    const notifsDaily = await initDailyNotifications(current?.firstname, current?.id);
+    const notifsTakes = await initTakeNotifications(current?.firstname, current?.id);
+    const notifsLate = await initLateNotifications(current?.firstname, current?.id);
 
     setNotificationsList(notifsDaily);
     console.log("Notifs Quotidiennes Totales :", notifsDaily.length);

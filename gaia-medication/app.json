@@ -15,7 +15,8 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.helldeal.gaiamedication"
     },
     "android": {
       "adaptiveIcon": {
@@ -33,7 +34,7 @@
         "expo-notifications",
         {
           "icon": "./assets/Scan.png",
-          "color": "red"
+          "color": "#FF0000"
         }
       ]
     ],
