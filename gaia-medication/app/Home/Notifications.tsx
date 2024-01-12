@@ -61,21 +61,12 @@ export default function Notifications({ navigation }) {
         return { day: dayOfWeek, dayOfMonth: dayOfMonth, month: month, year: year };
     };
 
-   
-
-    const a = (index) => {
-        const newNotifs = [...storedNotifications];
-                            newNotifs.splice(index, 1);
-                            setStoredNotifications(newNotifs);
-                            AsyncStorage.setItem("notifications", JSON.stringify(newNotifs));
-    }
-
 
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView>
                 {storedNotifications ? storedNotifications.map((notif, index) => (
-                    <NotificationDisplay key={index} notif={notif} index={index} onFun={a} />
+                    <NotificationDisplay key={index} notif={notif} index={index} onFun={null} />
                 )) : null}
             </ScrollView>
         </SafeAreaView>

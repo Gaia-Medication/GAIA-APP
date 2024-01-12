@@ -88,6 +88,38 @@ export default function Home({ navigation }) {
     console.log("Notifs Prises Totales :", notifsTakes.length);
     console.log("Notifs Retards Totales :", notifsLate.length);
     console.log("TOUTES NOTIF ", (await Notifications.getAllScheduledNotificationsAsync()).length);
+    setNotificationsList(notifsDaily.concat(notifsTakes).concat(notifsLate));
+    console.log("Notifs Totales :", notifsDaily.concat(notifsTakes).concat(notifsLate));
+    AsyncStorage.setItem("notifications", JSON.stringify(notifsDaily.concat(notifsTakes).concat(notifsLate)));
+    saveNotifs();
+  };
+
+  const saveNotifs = async () => {
+    const newNotifs = notificationsList
+    const notifsAlreadySaved: Notif[] = await readList("notifications");
+    const updatedNotifs = [...notifsAlreadySaved];
+    newNotifs.forEach((notif) => {
+      if (notif.type === "daily") {
+        console.log("NOTIF DAILY");
+        if (!notifsAlreadySaved.find((notifAlreadySaved) => ((notifAlreadySaved.type === "daily") && (new Date(notifAlreadySaved.date).getDate() === new Date(notif.date).getDate())))) {
+          updatedNotifs.push(notif);
+        }
+      }
+      if (notif.type === "take") {
+        console.log("NOTIF TAKE");
+        if (!notifsAlreadySaved.find((notifAlreadySaved) => ((notifAlreadySaved.type === "take") && (new Date(notifAlreadySaved.date).getTime() === new Date(notif.date).getTime())))) {
+          console.log("new notif");
+          console.log(notif);
+          console.log(notifsAlreadySaved);
+          updatedNotifs.push(notif);
+        }
+      }
+      if (notif.type === "late") {
+        updatedNotifs.push(notif);
+      }
+    })
+    console.log("Notifs Saved :", updatedNotifs.length);
+    await AsyncStorage.setItem("notifications", JSON.stringify(updatedNotifs));
   };
 
   const initUserInfo = async ()=>{
