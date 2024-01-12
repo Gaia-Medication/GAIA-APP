@@ -78,7 +78,7 @@ export default function Suivis({ navigation }) {
 
     // Compare using ISO date strings
     let fourHoursAgo = new Date(currentDate);
-    fourHoursAgo.setHours(currentDate.getHours() - 6);
+    fourHoursAgo.setHours(currentDate.getHours() - 4);
     if (new Date(targetDate) <= fourHoursAgo) {
       return "previous";
     } else if (dateObj.toISOString() > today.toISOString()) {

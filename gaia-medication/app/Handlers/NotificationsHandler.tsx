@@ -184,7 +184,7 @@ export const initDailyNotifications = async (userName, userId) => {
   const treatmentsDays = await getDaysTakes();
   const arrayOfNotifications: Notif[] = [];
   Notifications.cancelAllScheduledNotificationsAsync();
-
+  if(notificationTime){
   for (const dateKey in treatmentsDays) {
     let dateNotification = new Date(dateKey);
     dateNotification.setHours(notificationTime.getHours(), notificationTime.getMinutes(), 0, 0);
@@ -218,7 +218,7 @@ export const initDailyNotifications = async (userName, userId) => {
     } finally {
       dataArray = [];
     }
-  }
+  }}
   return arrayOfNotifications;
 }
 
@@ -236,6 +236,7 @@ export const initTakeNotifications = async (userName, userId) => {
       
       try {
         const dateNotification = new Date(take.date);
+        if(dateNotification){
         dateNotification.setHours(dateNotification.getHours(), dateNotification.getMinutes(), 0, 0);
         console.log("dateNotification", dateNotification);
         if (dateNotification >= new Date()) {
@@ -258,7 +259,7 @@ export const initTakeNotifications = async (userName, userId) => {
             }]
           };
           arrayOfNotifications.push(returnedNotif);
-        }
+        }}
 
       } catch (error) {
         console.log(error);
