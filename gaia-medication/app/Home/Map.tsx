@@ -181,9 +181,10 @@ export default function Map({ navigation }) {
                   latitude: point.latitude,
                   longitude: point.longitude,
                 }}
+                tracksViewChanges={false}
                 onPress={() => openModal(point)}
               >
-                <Image source={getIcon} style={{ width: 25, height: 25 }} />
+                <Image source={getIcon} style={{ width: 25, height: 25 }}/>
               </Marker>
             );
           })}
