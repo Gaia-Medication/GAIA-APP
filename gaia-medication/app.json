@@ -1,6 +1,7 @@
 {
+  "displayName": "Gaïa",
   "expo": {
-    "name": "gaia-medication",
+    "name": "Gaïa",
     "slug": "gaia-medication",
     "version": "1.0.0",
     "orientation": "portrait",
