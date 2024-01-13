@@ -1,21 +1,41 @@
 # SAE-5
+Technologie :   
+https://expo.dev/   
+https://reactnative.dev/
 
-## Dependencies
-Dans le dossier du projet /SAE-5
+## Dans le dossier du projet /SAE-5
+https://reactnative.dev/docs/environment-setup
 ```
 npm i -g expo-cli
 ```
-Dans le dossier /gaia-medication
+## Dans le dossier /gaia-medication
+La première fois :
+```ts
+cd gaia-medication
+yarn
+npm install -g eas-cli
+eas login
+//username = "HellDeal"
+//pswd = ":m44v_86qv"~=@Z"
+```
+
+De temps en temps :
 ```
 cd gaia-medication
-npm i
+yarn
 ```
 
-https://reactnative.dev/docs/environment-setup
 
+## Lancer l'application en dev
+Avec Expo Go sur Android
+```
+npx-expo start
+```
 
-## Lancer l'emulateur
+## Build l'application
+https://docs.expo.dev/build/introduction/
 ```
-npm start
+eas build -p android --profile preview
 ```
-Option a
+Page du build :   
+https://expo.dev/accounts/helldeal/projects/gaia-medication/builds

@@ -1,6 +1,7 @@
 {
+  "displayName": "Gaïa",
   "expo": {
-    "name": "gaia-medication",
+    "name": "Gaïa",
     "slug": "gaia-medication",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -15,14 +16,19 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.helldeal.gaiamedication"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "useNextNotificationsApi": true,
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyCuOkYs2gzYGZVjDB6Uv_OH_YZspOx2rwk"
+        }
+      },
       "package": "com.helldeal.gaiamedication"
     },
     "web": {
@@ -32,8 +38,8 @@
       [
         "expo-notifications",
         {
-          "icon": "./assets/Scan.png",
-          "color": "red"
+          "icon": "./assets/adaptive-icon.png",
+          "color": "#FF0000"
         }
       ]
     ],
@@ -41,6 +47,12 @@
       "eas": {
         "projectId": "b05989c6-2347-4223-9f1a-0b2edc407351"
       }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/b05989c6-2347-4223-9f1a-0b2edc407351"
     }
   }
 }
