@@ -9,7 +9,7 @@ import {
   Linking,
   Pressable,
 } from "react-native";
-import MapView, { MapType, Marker } from "react-native-maps";
+import MapView, { MapType, Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import * as Location from "expo-location";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getAllPoints, getPointsbyRegion } from "../../dao/MapPoint";
@@ -170,6 +170,7 @@ export default function Map({ navigation }) {
         customMapStyle={standardMapType}
         toolbarEnabled={false}
         showsUserLocation={currentLocation != null}
+        provider={PROVIDER_GOOGLE}
       >
         {points &&
           points.map((point) => {
