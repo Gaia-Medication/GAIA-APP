@@ -30,6 +30,7 @@
     "expo-sharing": "~11.5.0",
     "expo-sqlite": "~11.3.3",
     "expo-status-bar": "~1.6.0",
+    "expo-updates": "~0.18.19",
     "fs": "^0.0.1-security",
     "nativewind": "^2.0.11",
     "react": "18.2.0",
