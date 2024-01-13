@@ -23,7 +23,6 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "useNextNotificationsApi": true,
       "package": "com.helldeal.gaiamedication"
     },
     "web": {
