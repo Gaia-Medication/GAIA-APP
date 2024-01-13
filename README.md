@@ -8,7 +8,8 @@ npm i -g expo-cli
 Dans le dossier /gaia-medication
 ```
 cd gaia-medication
-npm i
+yarn
+yarn add
 ```
 
 https://reactnative.dev/docs/environment-setup
@@ -16,6 +17,6 @@ https://reactnative.dev/docs/environment-setup
 
 ## Lancer l'emulateur
 ```
-npm start
+npx-expo start
 ```
 Option a
