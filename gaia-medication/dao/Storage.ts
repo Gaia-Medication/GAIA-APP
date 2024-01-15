@@ -273,3 +273,32 @@ export const changeTreatments = async (tak: Take) => {
   AsyncStorage.setItem("treatments", JSON.stringify(treatments));
   return treatments;
 };
+
+
+export const saveNotifs = async (notificationsList) => {
+  const newNotifs = notificationsList
+  const notifsAlreadySaved: Notif[] = await readList("notifications");
+  const updatedNotifs = [...notifsAlreadySaved];
+  newNotifs.forEach((notif) => {
+    if (notif.type === "daily") {
+      console.log("NOTIF DAILY");
+      if (!notifsAlreadySaved.find((notifAlreadySaved) => ((notifAlreadySaved.type === "daily") && (new Date(notifAlreadySaved.date).getDate() === new Date(notif.date).getDate())))) {
+        updatedNotifs.push(notif);
+      }
+    }
+    if (notif.type === "take") {
+      console.log("NOTIF TAKE");
+      if (!notifsAlreadySaved.find((notifAlreadySaved) => ((notifAlreadySaved.type === "take") && (new Date(notifAlreadySaved.date).getTime() === new Date(notif.date).getTime())))) {
+        console.log("new notif");
+        console.log(notif);
+        console.log(notifsAlreadySaved);
+        updatedNotifs.push(notif);
+      }
+    }
+    if (notif.type === "late") {
+      updatedNotifs.push(notif);
+    }
+  })
+  console.log("Notifs Saved :", updatedNotifs.length);
+  await AsyncStorage.setItem("notifications", JSON.stringify(updatedNotifs));
+};

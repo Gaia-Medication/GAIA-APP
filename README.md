@@ -19,6 +19,7 @@ eas login
 //pswd = ":m44v_86qv"~=@Z"
 eas build:configure
 // -> android
+eas update:configure
 ```
 
 De temps en temps :

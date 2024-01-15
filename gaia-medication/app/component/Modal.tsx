@@ -11,7 +11,7 @@ const ModalComponent = ({ visible, onClose, children, styleAdded }) => {
       style={{ width: '100%' }}
     >
         <TouchableOpacity
-          style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+          style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.3)' }}
           activeOpacity={1}
           onPress={null}
         >

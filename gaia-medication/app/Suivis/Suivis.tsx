@@ -16,7 +16,9 @@ import {
   changeTreatments,
   getAllTreatments,
   getTreatmentByName,
+  getUserByID,
   initTreatments,
+  saveNotifs,
 } from "../../dao/Storage";
 import { styles } from "../../style/style";
 import Treatment from "../component/Treatment";
@@ -29,6 +31,7 @@ import * as Notifications from "expo-notifications";
 import TutorialBubble from "../component/TutorialBubble";
 
 import { ArrowRightCircle, XCircle } from "react-native-feather";
+import { initDailyNotifications, initLateNotifications, initTakeNotifications } from "../Handlers/NotificationsHandler";
 
 export default function Suivis({ navigation }) {
   const isFocused = useIsFocused();
@@ -112,7 +115,6 @@ export default function Suivis({ navigation }) {
     )
     console.log(actualIndex)
     setScroll(actualIndex);
-    console.log("Takes");
   }
 
   const init = async () => {
@@ -120,7 +122,13 @@ export default function Suivis({ navigation }) {
     await getTreatments();
     await getTakes();
     setIsLoading(false);
-    console.log("Takes");
+    const currentId = await AsyncStorage.getItem("currentUser");
+    const current = await getUserByID(JSON.parse(currentId));
+    const notifsDaily = await initDailyNotifications(current?.firstname, current?.id);
+    const notifsTakes = await initTakeNotifications(current?.firstname, current?.id);
+    const notifsLate = await initLateNotifications(current?.firstname, current?.id);
+    AsyncStorage.setItem("notifications", JSON.stringify(notifsDaily.concat(notifsTakes).concat(notifsLate)));
+    saveNotifs(notifsDaily.concat(notifsTakes).concat(notifsLate));
   }
 
   useEffect(() => {

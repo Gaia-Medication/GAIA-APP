@@ -6,7 +6,7 @@ import { ArrowLeft } from "react-native-feather";
 const GoBackButton = ({ navigation }) => {
   return (
     <TouchableOpacity
-      className="absolute top-1 flex justify-center items-center w-[80px] h-[80px] z-10"
+      className="absolute top-1 flex justify-center items-center w-[80px] h-[80px]"
       onPress={() => {
         navigation.goBack();
       }}
