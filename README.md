@@ -15,8 +15,6 @@ cd gaia-medication
 yarn
 npm install -g eas-cli
 eas login
-//username = "HellDeal"
-//pswd = ":m44v_86qv"~=@Z"
 eas build:configure
 // -> android
 eas update:configure
