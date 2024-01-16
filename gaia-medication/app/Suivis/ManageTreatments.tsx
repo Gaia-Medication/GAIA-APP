@@ -85,7 +85,7 @@ export default function ManageTreatments({navigation}) {
     const htmlParts = await Promise.all(
       instructions.map(async (instruction) => {
         return await Promise.all(
-          instruction.takes.map(async (take) => {
+          instruction.takes.filter((take) => new Date() > new Date(take.date)).map(async (take) => {
             const user = users.find((user) => user.id === take.userId);
             const medic = await getMedbyCIS(take.CIS);
             const date = formaterDate(new Date(take.date));
