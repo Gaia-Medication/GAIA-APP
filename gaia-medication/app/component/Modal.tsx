@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Modal, View, TouchableOpacity, Text, ScrollView } from "react-native";
+import React from "react";
+import { Modal, TouchableOpacity, ScrollView } from "react-native";
 
 const ModalComponent = ({ visible, onClose, children, styleAdded }) => {
   return (

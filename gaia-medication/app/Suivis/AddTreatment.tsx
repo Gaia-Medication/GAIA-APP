@@ -853,15 +853,6 @@ export default function AddTreatment({route, navigation}) {
             }}
           />
           <Text>jours.</Text>
-          {/* <Picker
-                    selectedValue={customPeriodicityBis}
-                    style={{ height: 50, width: 150 }}
-                    onValueChange={(itemValue, itemIndex) => setCustomPeriodicityBis(itemValue)}
-                >
-                    {periodicityBis.map((item, index) => (
-                        <Picker.Item label={item.label} value={item.value} key={index} />
-                    ))}
-                </Picker> */}
         </View>
         {frequencyMode === "bis" ? frequencyForm : null}
         <Text className="text-center text-xl font-bold text-blue-400">
@@ -1364,6 +1355,7 @@ export default function AddTreatment({route, navigation}) {
     </View>
   ) : null;
 
+  // QUAND ON APPUIE SUR LE BOUTON SUPPRIMER
   const handleDeleteInstruction = async (instruction) => {
     const updatedInstructions = instructionsList.filter(
       (item) => item.name !== instruction.name

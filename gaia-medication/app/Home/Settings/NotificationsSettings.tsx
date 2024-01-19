@@ -25,6 +25,7 @@ const NotificationsSettings = () => {
         })
     }
 
+    // Renvoi l'heure au format HH:MM
     const formatHour = (hour) => {
         if (hour instanceof Date) {
           const hours = hour.getHours();

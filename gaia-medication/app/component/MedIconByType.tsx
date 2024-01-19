@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Image, Text, ActivityIndicator } from "react-native";
+import { View, Image } from "react-native";
 
 const MedIconByType = ({ type,size="h-5 w-5" }) => {
   const typeToImage = {

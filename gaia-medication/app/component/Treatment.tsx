@@ -31,6 +31,7 @@ const Treatment = ({ navigation, onPress, status = "actual" as "actual" | "next"
     setDate(new Date(take.date));
   };
 
+  // Renvoi l'heure au format HH:MM
   const formatHour = (hour) => {
     if (hour instanceof Date) {
       const hours = hour.getHours();
@@ -41,6 +42,7 @@ const Treatment = ({ navigation, onPress, status = "actual" as "actual" | "next"
     return "";
   };
 
+  // Renvoi la date au format {day: "Dim", dayOfMonth: 1, month: "Jan", year: 2021}
   const formatDate = (date) => {
     if (!(date instanceof Date)) {
       console.error("Invalid date");
