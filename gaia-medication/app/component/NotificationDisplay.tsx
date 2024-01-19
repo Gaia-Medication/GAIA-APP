@@ -1,22 +1,9 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import React, { useEffect, useMemo, useState } from "react";
-import {
-    Animated,
-    Dimensions,
-    FlatList,
-    Pressable,
-    TextInput,
-    TouchableOpacity,
-    View,
-} from "react-native";
+import React, { useEffect, useState } from "react";
+import { View } from "react-native";
 import { Text } from "react-native-elements";
-import { ChevronDown } from "react-native-feather";
 import { styles } from "../../style/style";
-import { getTreatmentByName, getUserByID } from "../../dao/Storage";
+import { getUserByID } from "../../dao/Storage";
 import * as Icon from "react-native-feather";
-import { SafeAreaView } from "react-native-safe-area-context";
-import ModalComponent from "./Modal";
-import { validatePathConfig } from "@react-navigation/native";
 
 
 const NotificationDisplay = ({ notif, index, onFun }) => {

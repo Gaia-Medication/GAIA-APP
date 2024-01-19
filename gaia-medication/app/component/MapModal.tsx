@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Modal, View, TouchableOpacity, Text, Image } from 'react-native';
-import { styles } from '../../style/style';
 
 const MapModalComponent = ({ visible, onClose, children, icon, color }) => {
   return (

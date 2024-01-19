@@ -1,13 +1,10 @@
 import { StyleSheet, Text, View, StatusBar } from 'react-native';
-import Home from './app/Home/Home';
 import Navigation from './app/Navigation';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import React from 'react';
 import * as Notifications from 'expo-notifications';
 import { PLAYSOUND, SETBADGE, SHOWALERT } from './app/utils/constants';
 import { changeTreatments } from './dao/Storage';
-import { notificationForgot, notificationNow } from './app/Handlers/NotificationsHandler';
-import { XSquare } from 'react-native-feather';
+import { notificationForgot } from './app/Handlers/NotificationsHandler';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -17,6 +14,7 @@ Notifications.setNotificationHandler({
   }),
 });
 
+// Reception des réponses des notifications
 Notifications.addNotificationResponseReceivedListener(response => {
   const takeData: NotifData = response.notification.request.content.data.notifData;
   const minutesDifference = Math.floor((new Date().getTime() - new Date(takeData.take.date).getTime()) / 60000);

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, TextInput, Button, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { addTake, dropTake } from '../../dao/Storage';
 import * as Icon from "react-native-feather";

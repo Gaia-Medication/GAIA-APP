@@ -2,7 +2,7 @@ import * as Notifications from 'expo-notifications';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getDaysTakes } from '../../dao/Storage';
 
-//--------------------//
+// Renvoi la date au format { day: dayOfWeek, dayOfMonth: dayOfMonth, month: month, year: year, hours: hours, minutes: minutes }
 const formatDate = (date) => {
   if (!(date instanceof Date)) {
     console.error("Invalid date");
@@ -22,6 +22,7 @@ const formatDate = (date) => {
   return { day: dayOfWeek, dayOfMonth: dayOfMonth, month: month, year: year, hours: hours, minutes: minutes };
 };
 
+// Renvoi l'heure de notification quotidienne
 export const getDailyNotificationTime = async () => {
   const storedTime = await AsyncStorage.getItem('notificationTime');
   if (storedTime) {
@@ -29,6 +30,7 @@ export const getDailyNotificationTime = async () => {
   }
 }
 
+// Demande les permissions pour les notifications
 export const requestNotificationPermissions = async () => {
   const { status } = await Notifications.getPermissionsAsync();
   if (status !== 'granted') {
@@ -41,6 +43,7 @@ export const requestNotificationPermissions = async () => {
   return true;
 };
 
+// Créer une notification locale
 export const scheduleLocalNotification = async (
   title: string,
   subtitle: string,
@@ -72,6 +75,7 @@ export const scheduleLocalNotification = async (
 
 //--------------------//
 
+// Creer une notification quotidienne
 export const notificationDaily = async (userName, data: NotifData[], date) => {
   const notificationTime = new Date(date);
   notificationTime.setHours(notificationTime.getHours(), notificationTime.getMinutes(), 0, 0);
@@ -94,6 +98,7 @@ export const notificationDaily = async (userName, data: NotifData[], date) => {
   );
 }
 
+// Creer une notification de prise
 export const notificationNow = async (userName, data: NotifData, remainigTime) => {
   const notificationTime = new Date(data.take.date);
   notificationTime.setHours(notificationTime.getHours(), notificationTime.getMinutes() + remainigTime, 0, 0);
@@ -110,6 +115,7 @@ export const notificationNow = async (userName, data: NotifData, remainigTime) =
   );
 }
 
+// Creer une notification de prise oubliée
 export const notificationForgot = async (userName, data: NotifData, remainigTime) => {
   let notificationTime = new Date(data.take.date);
   if (remainigTime > 60) {
@@ -137,6 +143,7 @@ export const notificationForgot = async (userName, data: NotifData, remainigTime
 }
 
 //--------------------//
+// Création des catégories de notifications
 
 Notifications.setNotificationCategoryAsync('reminder', [
   {
@@ -178,8 +185,8 @@ Notifications.setNotificationCategoryAsync('alertReminder', [
 
 //--------------------//
 
+// Initialisation des notifications quotidiennes
 export const initDailyNotifications = async (userName, userId) => {
-  console.log("initDailyNotifications");
   const notificationTime = await getDailyNotificationTime();
   const treatmentsDays = await getDaysTakes();
   const arrayOfNotifications: Notif[] = [];
@@ -214,7 +221,6 @@ export const initDailyNotifications = async (userName, userId) => {
       };
       arrayOfNotifications.push(returnedNotif);
     } catch (error) {
-      console.log(error);
     } finally {
       dataArray = [];
     }
@@ -222,17 +228,16 @@ export const initDailyNotifications = async (userName, userId) => {
   return arrayOfNotifications;
 }
 
+// Initialisation des notifications de prise
 export const initTakeNotifications = async (userName, userId) => {
   console.log("initTakeNotifications");
   const notificationTime = await getDailyNotificationTime();
   const treatmentsDays = await getDaysTakes();
-  console.log("treatmentsDays", treatmentsDays);
   const arrayOfNotifications: Notif[] = [];
 
   for (const dateKey in treatmentsDays) {
 
     for (const take of treatmentsDays[dateKey]) {
-      console.log("take", take);
       
       try {
         const dateNotification = new Date(take.date);
@@ -240,7 +245,6 @@ export const initTakeNotifications = async (userName, userId) => {
         dateNotification.setHours(dateNotification.getHours(), dateNotification.getMinutes(), 0, 0);
         console.log("dateNotification", dateNotification);
         if (dateNotification >= new Date()) {
-          console.log("take", take);
           let notif = null
           try {
             notif = await notificationNow(userName, { medName: take.medName, take: take }, 1)
@@ -267,15 +271,13 @@ export const initTakeNotifications = async (userName, userId) => {
     }
 
   }
-  console.log("END");
   return arrayOfNotifications;
 }
 
+// Initialisation des notifications de prise oubliée
 export const initLateNotifications = async (userName, userId) => {
-  console.log("initTakeNotifications");
   const notificationTime = await getDailyNotificationTime();
   const treatmentsDays = await getDaysTakes();
-  console.log("treatmentsDays", treatmentsDays);
   const arrayOfNotifications: Notif[] = [];
   const currentDate = new Date();
   currentDate.setHours(currentDate.getHours() - 4, currentDate.getMinutes(), 0, 0);
@@ -288,8 +290,6 @@ export const initLateNotifications = async (userName, userId) => {
         const dateNotification = new Date(take.date);
         dateNotification.setHours(dateNotification.getHours(), dateNotification.getMinutes(), 0, 0);
         if (dateNotification.getTime() >= currentDate.getTime() && take.taken === false) {
-          console.log("late", take);
-
           if (dateNotification.getTime() < new Date().getTime()) {
             const newDate = new Date();
             let minDiff = 240 - Math.round((newDate.getTime() - dateNotification.getTime()) / 60000);
@@ -328,6 +328,5 @@ export const initLateNotifications = async (userName, userId) => {
     }
 
   }
-  console.log("END");
   return arrayOfNotifications;
 }
