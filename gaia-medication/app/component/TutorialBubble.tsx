@@ -3,6 +3,7 @@ import { Modal, TouchableOpacity, View } from "react-native";
 import { Text } from "react-native-elements";
 import { ArrowRight } from "react-native-feather";
 
+// COMPOSANT POUR AFFICHER DES BULLES DE TUTORIEL
 const TutorialBubble = ({ styleAdded, text, isClicked }) => {
   const [isVisble, setIsVisble] = useState(true);
 

@@ -26,6 +26,7 @@ interface ICreateProps {
 }
 
 export default function CreateProfile({ navigation }: ICreateProps) {
+  // FORM DU USER
   const [lastname, setLastname] = useState("");
   const [firstname, setFirstname] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState<Date | null>(null);
@@ -34,16 +35,18 @@ export default function CreateProfile({ navigation }: ICreateProps) {
   const [preference, setPreference] = useState([]);
   const [showDatePicker, setShowDatePicker] = useState(false);
 
-  const [isValidFirstname, setIsValidFirstname] = useState(true);
-  const [isValidLastname, setIsValidLastname] = useState(true);
-  const [isValidWeight, setIsValidWeight] = useState(true);
-
-  const [validFirstPart, setValidFirstPart] = useState(false);
-  const [isAllergySelectorValid, setIsAllergySelectorValid] = useState(false);
-
+  // TUTORIEL
   const [firstConnection, setFirstConnection] = useState("");
   const [tutoStep, setTutoStep] = useState(0);
   const [TutoCreate, setTutoCreate] = useState("0");
+
+  // VALIDATION DU FORMULAIRE
+  const [isValidFirstname, setIsValidFirstname] = useState(true);
+  const [isValidLastname, setIsValidLastname] = useState(true);
+  const [isValidWeight, setIsValidWeight] = useState(true);
+  const [validFirstPart, setValidFirstPart] = useState(false);
+  // SELECTION DES ALLERGIES
+  const [isAllergySelectorValid, setIsAllergySelectorValid] = useState(false);
 
   const isFirstFormEmpty = !firstname || !lastname || !gender;
 
@@ -75,6 +78,7 @@ export default function CreateProfile({ navigation }: ICreateProps) {
     setIsAllergySelectorValid(isValid);
   };
 
+  // FORMATE UNE DATE
   function formatDateToDDMMYYYY(date: Date) {
     const day = date.getDate();
     const month = date.getMonth() + 1;
@@ -86,16 +90,17 @@ export default function CreateProfile({ navigation }: ICreateProps) {
     return formattedDate;
   }
 
+  // INITIALISE: RECUPERE LES INFORMATIONS POUR SAVOIR SI PREMIERE CONNEXION
   const init = async () => {
     setFirstConnection(await AsyncStorage.getItem("isFirstConnection"));
     setTutoCreate(await AsyncStorage.getItem("TutoCreate"));
   };
 
   useEffect(() => {
-    console.log("Nav on CreationProfile Page");
     init();
   }, []);
 
+  // GERE LES ETAPES DU TUTORIEL
   const handleTuto = (isClicked, step) => {
     if (isClicked) {
       if (step === 2) {
@@ -106,6 +111,7 @@ export default function CreateProfile({ navigation }: ICreateProps) {
     }
   };
 
+  // GERE LA PREMIERE PARTIE DU FORMULAIRE
   const handleFirstSumbit = () => {
     if (validFirstPart) {
       setValidFirstPart(false);
@@ -119,6 +125,7 @@ export default function CreateProfile({ navigation }: ICreateProps) {
     }
   };
 
+  // GERE LA VALIDATION DU FORMULAIRE ET MISE EN STOCKAGE DU PROIFL
   const handleSumbit = async () => {
     if (!isValidFirstname || !isValidLastname || isFormEmpty) {
       console.log(`error not valid`);
@@ -137,7 +144,6 @@ export default function CreateProfile({ navigation }: ICreateProps) {
           gender,
           preference,
         };
-        console.log(user);
 
         await addItemToList("users", user);
         await AsyncStorage.setItem("currentUser", JSON.stringify(user.id));

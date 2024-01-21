@@ -3,6 +3,7 @@ import { TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { ArrowLeft } from "react-native-feather";
 
+// COMPOSANT BOUTON POUR RETOUR EN ARRIERE DES PAGES
 const GoBackButton = ({ navigation }) => {
   return (
     <TouchableOpacity

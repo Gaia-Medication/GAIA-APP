@@ -52,127 +52,6 @@ export default function Settings({ navigation }) {
     navigation.navigate("Home");
   };
 
-  const genererInstructionsHtml = async (instructions, users) => {
-    const htmlParts = await Promise.all(
-      instructions.map(async (instruction) => {
-        return await Promise.all(
-          instruction.takes.map(async (take) => {
-            const user = users.find((user) => user.id === take.userId);
-            const medic = await getMedbyCIS(take.CIS);
-            const date = formaterDate(new Date(take.date));
-            const takenStatus = take.taken ? "pris" : "non pris";
-            const review = take.review ? take.review : "";
-            return `
-            <p>${user.firstname} ${user.lastname}</p>
-            <p>Médicament: ${medic.Name}</p>
-            <p>Status: ${takenStatus}</p>
-            <p>le ${date}</p>
-            <p>Commentaire:${review}</p>
-            `;
-          })
-        );
-      })
-    );
-    return htmlParts.flat().join("");
-  };
-
-  const pdf = async () => {
-    const treatments = await getAllTreatments();
-    if (treatments.length === 0) {
-      alert("Vous n'avez pas de traitement");
-      return;
-    }
-    const users = await readList("users");
-    const treatment = treatments[0];
-    const instructionsHtml = await genererInstructionsHtml(
-      treatment.instructions,
-      users
-    );
-
-    const html = `
-      <html>
-      <head>
-          <meta charset="UTF-8">
-          <title>Traitement ${treatment.name}</title>
-          <style>
-              body {
-                  text-align: center;
-                  font-family: Arial, sans-serif;
-                  margin: 0;
-                  padding: 0;
-              }
-      
-              .header {
-                  background-color: #9CDE00;
-                  color: #fff;
-                  padding: 20px;
-              }
-      
-              .header h1 {
-                  font-size: 30px;
-                  font-weight: normal;
-                  margin: 0;
-              }
-      
-              .description {
-                  margin: 20px;
-                  text-align: left;
-              }
-      
-              .description h2 {
-                  font-size: 24px;
-                  font-weight: normal;
-              }
-      
-              .ressenti {
-                  margin: 20px;
-                  text-align: left;
-              }
-      
-              .ressenti h2 {
-                  font-size: 24px;
-                  font-weight: normal;
-              }
-      
-              .instructions {
-                  font-size: 16px;
-                  border-left: black 1px solid;
-                  padding-left: 2rem;
-              }
-      
-              .logo {
-                  display: block;
-                  margin: 20px auto;
-                  width: 100px; /* Ajustez la taille selon vos besoins */
-                  filter: brightness(0) invert(1); /* Appliquer un filtre blanc */
-              }
-          </style>
-      </head>
-      <body>
-          <div class="header">
-              <img class="logo" src="logo_title_gaia.png" alt="Logo de la marque">
-              <h1>Traitement ${treatment.name}</h1>
-          </div>
-          
-          <div class="description">
-              <h2>Description</h2>
-              <p>${treatment.description}</p>
-          </div>
-      
-          <div class="ressenti">
-              <h2>Suivis du traitement :</h2>
-              <div class="instructions">
-                  ${instructionsHtml}
-              </div>
-          </div>
-      </body>
-      </html>
-    `;
-    const { uri } = await Print.printToFileAsync({ html });
-    console.log("File has been saved to:", uri);
-    await shareAsync(uri, { UTI: ".pdf", mimeType: "application/pdf" });
-  };
-
   const isFocused = useIsFocused();
   useEffect(() => {
     tuto();
@@ -257,7 +136,6 @@ export default function Settings({ navigation }) {
           <Button onPress={deleteTreatments} title="Supprimer traitements" />
           <Button onPress={createTreatmentTest1} title="TraitementTest 1" />
           <Button onPress={reset} title="reset" />
-          <Button onPress={pdf} title="pdf" />
           {treatments &&
             treatments.map((treatment) => {
               return (

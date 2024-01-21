@@ -67,6 +67,7 @@ export default function Home({ navigation }) {
     const current = await getUserByID(JSON.parse(currentId));
     if (userList.length < 1 || isFirstConnection === "true") {
       // L'utilisateur se connecte pour la première fois
+      // Reinitialisation du tutoriel 
       AsyncStorage.setItem("TutoHome", "0");
       AsyncStorage.setItem("TutoCreate", "0");
       AsyncStorage.setItem("TutoSearch", "0");

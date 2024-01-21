@@ -21,6 +21,7 @@ interface AvatarButtonProps {
   tuto: boolean;
 }
 
+// COMPOSANT POUR LA SELECTION ET REDIRECTION VERS LA CREATION DE PROFIL
 const AvatarButton: React.FC<AvatarButtonProps> = ({
   onPress,
   users,
@@ -33,11 +34,14 @@ const AvatarButton: React.FC<AvatarButtonProps> = ({
   const [dropdownListVisible, setDropdownListVisible] = useState(false);
   const usersNoCurrent = users.filter((user) => user.id !== current.id);
 
+  // TUTORIEL
   const [tutoToggle, setTutoToggle] = useState(false);
-  // const pour le style
+  
+  // STYLE
   const animation = useMemo(() => new Animated.Value(60), []);
   const textOpacity = useMemo(() => new Animated.Value(0), []);
   const windowWidth = Dimensions.get("window").width;
+  // DIFFERENTES COULEURS DES ICONES D'AVATARS
   const avatarColors = [
     "#FFCF26",
     "#268AFF",
@@ -57,6 +61,7 @@ const AvatarButton: React.FC<AvatarButtonProps> = ({
       toggleExpansion();
       setTutoToggle(true);
     }
+    // CONTROLE DE L'ANIMATION
     Animated.timing(textOpacity, {
       toValue: expanded ? 1 : 0,
       duration: 400,
@@ -64,6 +69,7 @@ const AvatarButton: React.FC<AvatarButtonProps> = ({
     }).start();
   });
 
+  // CONTROLE DE EXTENSION DU COMPOSANT
   const toggleExpansion = () => {
     const toValue = expanded ? 60 : 340;
     const config = {
@@ -76,6 +82,7 @@ const AvatarButton: React.FC<AvatarButtonProps> = ({
     onPress();
   };
 
+  // AFFICHAGE DES DES AVATARS ET DU BOUTON DE REDIRECTION VESR LA CREATION DE PROFIL
   const renderItem = (item: User, isLast: boolean) => (
     <>
       <TouchableOpacity
@@ -97,6 +104,7 @@ const AvatarButton: React.FC<AvatarButtonProps> = ({
             item.id
               ? { backgroundColor: avatarColors[item.id - 1] }
               : { backgroundColor: "#8E8E8E" },
+              // Permet de selectionner les couleurs des icones d'avatars
           ]}
         >
           {item.firstname.charAt(0) + item.lastname.charAt(0)}
@@ -116,6 +124,7 @@ const AvatarButton: React.FC<AvatarButtonProps> = ({
     </>
   );
 
+  // PERMET LA SELECTION DU PROFIL ACTUEL
   const handleSelect = async (item) => {
     setUser(item);
     await AsyncStorage.setItem("currentUser", JSON.stringify(item.id));
