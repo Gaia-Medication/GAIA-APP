@@ -1,8 +1,3 @@
-
-  // TUTORIEL
-  const [firstConnection, setFirstConnection] = useState("");
-  const [tutoStep, setTutoStep] = useState(0);
-  const [TutoCreate, setTutoCreate] = useState("0");
 import React, { useEffect, useState } from "react";
 import RNPickerSelect from "react-native-picker-select";
 import {

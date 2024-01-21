@@ -2,6 +2,7 @@ import data from "./pharmacies.json";
 
 const points = JSON.parse(JSON.stringify(data));
 
+//Renvoie le tableau de toutes les établissements avec coord & informations 
 export function getAllPoints() {
   try {
     return points;
@@ -10,6 +11,7 @@ export function getAllPoints() {
   }
 }
 
+//Renvoie les 50 établissements les plus proches de la région visée sur la Carte
 export function getPointsbyRegion(region) {
   try {
     points.forEach((point) => {
@@ -22,7 +24,7 @@ export function getPointsbyRegion(region) {
       }
     });
     points.sort((a, b) => a.distance - b.distance);
-    return points.slice(0, 15);
+    return points.slice(0, 50);
   } catch (error) {
     console.error("Error reading JSON file", error);
   }

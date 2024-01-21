@@ -389,17 +389,6 @@ export default function Home({ navigation }) {
       )}
       </View>
       {loading && <Loading />}
-      {/* <ModalComponent
-        styleAdded={{
-          backgroundColor: "white",
-          paddingHorizontal: 20,
-        }}
-        visible={scannedMeds}
-        onClose={() => setScannedMeds(null)}
-      >
-        <View className="flex">
-        </View>
-      </ModalComponent> */}
     </AlertNotificationRoot>
     </View>
   );

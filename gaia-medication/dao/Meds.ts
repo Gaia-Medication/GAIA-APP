@@ -1,5 +1,6 @@
 import data from './medication.json';
 
+//Tous les médicamenets
 const medicaments=JSON.parse(JSON.stringify(data))
 export function getAllMed(){   
   try {
@@ -9,6 +10,7 @@ export function getAllMed(){
   }
 }
 
+//Return le médicament à partir de son CIS
 export function getMedbyCIS(CIS){   
   try {
     const medicament = medicaments.find(med => med.CIS === CIS);
@@ -18,6 +20,7 @@ export function getMedbyCIS(CIS){
   }
 }
 
+//Return tous les génériques d'un médicament à partir de son CIS
 export function getAllGenOfCIS(CIS){   
   try {
     const medicament = medicaments.find(med => med.CIS === CIS);
@@ -29,6 +32,7 @@ export function getAllGenOfCIS(CIS){
   }
 }
 
+//Return tous les médicaments similaire à partir de son CIS
 export function getAllSameCompOfCIS(CIS){   
   try {
     let areSetsEqual = (set1, set2) => set1.size === set2.size && [...set1].every(val => set2.has(val));
@@ -55,6 +59,7 @@ export function getAllSameCompOfCIS(CIS){
   }
 }
 
+//Tous les principes actifs
 export function getAllPA(){   
   try {
     const allPrincipesActifsUniques = new Set(); // Ensemble global pour tous les principes actifs uniques
@@ -76,6 +81,7 @@ export function getAllPA(){
   }
 }
 
+//Return le/les principe(s) actif(s) d'un medicament à partir de son CIS
 export function getPAfromMed(CIS){   
   try {
     const medicament = medicaments.find(med => med.CIS === CIS);
@@ -92,6 +98,7 @@ export function getPAfromMed(CIS){
   }
 }
 
+//Reformate la composition d'un médicament
 export function getComposition(composition){   
   try {
     const dictionnaireTypes = {};

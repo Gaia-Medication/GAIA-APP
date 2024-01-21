@@ -1,6 +1,9 @@
 import { getAllMed, getAllPA } from "./Meds";
 
+//Tous les médicaments
 const medicaments = getAllMed();
+
+//Tri les medicaments avec un score selon la recherche
 function findMostAccurateMed(meds: any[], search: string) {
   const scores = meds.map((med) => {
     const name = med.Name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -28,8 +31,10 @@ function findMostAccurateMed(meds: any[], search: string) {
   return sortedMeds.filter((med) => med.score > 0);
 }
 
+//Tous les principes actifs
 const pa = Array.from(getAllPA())
 
+//Recherche d'allergie avec score
 function findMostAccurateAllergy(allergies: any[], search: string) {
   const scores = allergies.map((allergy) => {
     const name = allergy.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -55,15 +60,18 @@ function findMostAccurateAllergy(allergies: any[], search: string) {
   return sortedAllergies.filter((allergy) => allergy.score > 0);
 }
 
+//Recherche de medicaments
 export function searchMed(inputText: string, maxResults = 50) {
   // Calcul de la distance pour chaque médicament et tri par proximité
   return findMostAccurateMed(medicaments, inputText).slice(0, maxResults);
 }
 
+//Recherche d'allergie
 export function SearchAllergy(inputText: string, maxResults = 50) {
   return findMostAccurateAllergy(pa, inputText).slice(0, maxResults);
 }
 
+//Recherche de médicaments avec le Scan
 export function trouverNomMedicament(texte: string) {
   console.log(texte)
   var Filter = [];
@@ -97,6 +105,7 @@ export function trouverNomMedicament(texte: string) {
   return { ordonnanceBool: ordonnanceBool, meds: Filter.slice(0,3)}
 }
 
+//Score de recherche pour le Scan
 function calculateScore(text: string, searchText: string): number {
   const textLowerCase = text.toLowerCase();
   const searchTextLowerCase = searchText.toLowerCase();

@@ -1,5 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+//Auto-incrémentation pour l'id d'un profile à sa création
 export const UserIdAutoIncrement = async () => {
   try {
     const jsonValue = await AsyncStorage.getItem("users");
@@ -81,6 +82,7 @@ export const removeItemFromList = async (key: string, index) => {
   }
 };
 
+// Supprimer un élément de la liste Stock dans AsyncStorage
 export const removeItemFromStock = async (cis, cip, idUser) => {
   const key = "stock"
   try {
@@ -98,6 +100,7 @@ export const removeItemFromStock = async (cis, cip, idUser) => {
   }
 };
 
+// Récupétation de tous les traitements
 export const getAllTreatments = async (): Promise<Treatment[]> => {
   const key = "treatments"
   try {
@@ -145,6 +148,7 @@ export const getAllTreatments = async (): Promise<Treatment[]> => {
   }
 }
 
+// Mise en forme d'un traitement pour la lecture
 export const initTreatments = async () => {
   const allTreatments: Treatment[] = await getAllTreatments();
   let takesArray = [];
@@ -163,33 +167,11 @@ export const initTreatments = async () => {
   return takesArray
 };
 
+// Récupérer le traitement par le Nom
 export const getTreatmentByName = async (name: string, userId: number): Promise<Treatment> => {
   const allTreatments = await getAllTreatments();
   const treatment = allTreatments.find(treatment => treatment.name === name);
   return treatment || null;
-}
-
-async function mongoToApp() {
-  try {
-    const mongoUrl = 'mongodb://root@172.26.82.44:27777/?readPreference=primary&serverSelectionTimeoutMS=5000&connectTimeoutMS=10000&authSource=test&authMechanism=SCRAM-SHA-256&3t.uriVersion=3&3t.connection.name=GAIA&3t.ssh=true&3t.sshAddress=172.26.82.25&3t.sshPort=22&3t.sshAuthMode=password&3t.sshUser=s5a06a&3t.alwaysShowAuthDB=true&3t.alwaysShowDBFromUserRole=true';
-    const { MongoClient } = require('mongodb');
-    const fs = require('fs');
-    const client = new MongoClient(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true });
-    await client.connect();
-
-    const database = client.db('dbMedication');
-    const collection = database.collection('medication');
-
-    const data = await collection.find({}).toArray();
-
-    fs.writeFileSync('medication.json', JSON.stringify(data, null, 2));
-
-    console.log('Conversion réussie : medication.json créé.');
-
-    await client.close();
-  } catch (error) {
-    console.error('Erreur lors de la conversion :', error);
-  }
 }
 
 export async function getDaysTakes() {
