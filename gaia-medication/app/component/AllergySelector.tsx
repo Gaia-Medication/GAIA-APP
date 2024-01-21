@@ -6,6 +6,7 @@ import { SearchAllergy } from "../../dao/Search";
 import { X } from "react-native-feather";
 import CustomButton from "./CustomButton";
 
+// COMPOSANT POUR LA SELECTION DES ALLERGIES
 const AllergySelector = ({ isAllergySelectorValid, preference, onPreferenceChange }) => {
   const [searchAllergy, setSearchAllergy] = useState([]);
 

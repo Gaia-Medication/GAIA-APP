@@ -1,3 +1,8 @@
+
+  // TUTORIEL
+  const [firstConnection, setFirstConnection] = useState("");
+  const [tutoStep, setTutoStep] = useState(0);
+  const [TutoCreate, setTutoCreate] = useState("0");
 import React, { useEffect, useState } from "react";
 import RNPickerSelect from "react-native-picker-select";
 import {
@@ -24,6 +29,7 @@ interface IModifyProps {
 }
 
 export default function ModifyProfile({ navigation }: IModifyProps) {
+    // FORM DU USER
   const [lastname, setLastname] = useState("");
   const [firstname, setFirstname] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState<Date>();
@@ -31,17 +37,20 @@ export default function ModifyProfile({ navigation }: IModifyProps) {
   const [gender, setGender] = useState("");
   const [showDatePicker, setShowDatePicker] = useState(false);
 
+  // TUTORIEL
+  const [validFirstPart, setValidFirstPart] = useState(false);
+  const [isAllergySelectorValid, setIsAllergySelectorValid] = useState(false);
+
+  // SELECTION DE L'ACTION DE MODIFICATION
+  const [profileSelected, setProfileSelected] = useState<User>(null);
+  const [users, setUsers] = useState<User[]>([]);
+  const [userToDelete, setUserToDelete] = useState<User>(null);
+
+  // VALIDATION DU FORMULAIRE
   const [preference, setPreference] = useState([]);
   const [isValidFirstname, setIsValidFirstname] = useState(true);
   const [isValidLastname, setIsValidLastname] = useState(true);
   const [isValidWeight, setIsValidWeight] = useState(true);
-
-  const [validFirstPart, setValidFirstPart] = useState(false);
-  const [isAllergySelectorValid, setIsAllergySelectorValid] = useState(false);
-
-  const [profileSelected, setProfileSelected] = useState<User>(null);
-  const [users, setUsers] = useState<User[]>([]);
-  const [userToDelete, setUserToDelete] = useState<User>(null);
 
   const isFirstFormEmpty = !firstname || !lastname || !gender;
 
@@ -52,11 +61,6 @@ export default function ModifyProfile({ navigation }: IModifyProps) {
     !dateOfBirth ||
     !weight ||
     !isValidWeight;
-
-  const init = async () => {
-    const userList = await readList("users");
-    setUsers(userList);
-  };
 
   const validateFirstname = () => {
     setIsValidFirstname(firstname.length >= 2);
@@ -74,10 +78,17 @@ export default function ModifyProfile({ navigation }: IModifyProps) {
     }
   };
 
+  // INITIALISE: RECUPERE LES PROFILS
+  const init = async () => {
+    const userList = await readList("users");
+    setUsers(userList);
+  };
+
   const handleAllergySelectorValidation = (isValid) => {
     setIsAllergySelectorValid(isValid);
   };
 
+  // FORMATE UNE DATE
   function formatDateToDDMMYYYY(date: Date) {
     console.log("date: ", date);
     const day = date.getDate();
@@ -94,6 +105,7 @@ export default function ModifyProfile({ navigation }: IModifyProps) {
     init();
   }, []);
 
+  // PERMET DE SUPPRIMER UN PROFIL DANS LE STOCKAGE
   const deleteUser = async (userId) => {
     try {
       if (users.length > 1) {
@@ -113,6 +125,7 @@ export default function ModifyProfile({ navigation }: IModifyProps) {
     }
   };
 
+  // GERE LA PREMIERE PARTIE DU FORMULAIRE
   const handleFirstSumbit = () => {
     if (validFirstPart) {
       setValidFirstPart(false);
@@ -125,6 +138,7 @@ export default function ModifyProfile({ navigation }: IModifyProps) {
     }
   };
 
+  // GERE LA VALIDATION DU FORMULAIRE ET MISE OU MODIFICATION EN STOCKAGE DU PROFIL
   const handleSumbit = async () => {
     if (!isValidFirstname || !isValidLastname || isFormEmpty) {
       console.log(`error not valid`);

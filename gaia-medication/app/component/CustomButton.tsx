@@ -2,6 +2,7 @@ import React from "react";
 import { TouchableOpacity, Text, StyleSheet } from "react-native";
 import { styles } from "../../style/style";
 
+// COMPOSANT BOUTTON PERSONNALISER
 const CustomButton = ({ title, onPress, disabled, color }) => {
   return (
     <TouchableOpacity
