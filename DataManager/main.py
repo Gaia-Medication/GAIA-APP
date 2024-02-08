@@ -264,7 +264,7 @@ dfPresentation.reset_index(drop=True, inplace=True)
 ######################################################
 
 dfMedication = pd.read_csv("data/CIS_bdpm.txt", sep="\t", header=None, encoding="latin1")
-dfMedication = dfMedication.drop([5,7,9,10], axis=1)
+dfMedication = dfMedication.drop([5,7,9], axis=1)
 dfMedication.columns = [
     'CIS', #0
     'Name', #1
@@ -273,6 +273,7 @@ dfMedication.columns = [
     'Authorization',#4
     'Marketed', #6
     'Stock', #8
+    'Titulaire', #10
     'Warning' #11 
 ]
 
@@ -299,6 +300,8 @@ dfMedication.dropna(subset=['Name'], inplace=True)
 print(BOLD,YELLOW,"\n\n##########################################################\n################### Conversion en JSON ###################\n##########################################################",RESET,'\n\n')
 
 jsonMedication = dfMedication.to_json('out/medication.json', orient="records", indent=4)
+
+print(BOLD,GREEN,"\n\n##########################################################\n########################## DONE ##########################\n##########################################################",RESET,'\n\n')
 
 export=Export("out/medication.json", "dbMedication", "medication")
 try:
