@@ -300,6 +300,7 @@ dfMedication.dropna(subset=['Name'], inplace=True)
 print(BOLD,YELLOW,"\n\n##########################################################\n################### Conversion en JSON ###################\n##########################################################",RESET,'\n\n')
 
 jsonMedication = dfMedication.to_json('out/medication.json', orient="records", indent=4)
+dfMedication.to_csv('out/medication.csv', index=False)
 
 print(BOLD,GREEN,"\n\n##########################################################\n########################## DONE ##########################\n##########################################################",RESET,'\n\n')
 
