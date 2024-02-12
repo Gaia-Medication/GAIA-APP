@@ -4,7 +4,8 @@ import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin, urlparse, parse_qs
 from tqdm import tqdm
-
+import zipfile
+import os
 
 
 BOLD = '\033[1m' # ACTIONS
@@ -35,6 +36,29 @@ class DataManager :
 
         with open('data/pharmacies.csv', 'wb') as f:
             f.write(response.content)
+        return True
+    
+    def getMedicFile(self):
+        try:
+            response = requests.get(self.url)
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            
+        with open('data/medic.zip', 'wb') as f:
+            f.write(response.content)
+
+        chemin_archive_zip = 'data/medic.zip'
+        chemin_destination = 'data'
+        with zipfile.ZipFile(chemin_archive_zip, 'r') as zip_ref:
+            zip_ref.extractall(chemin_destination)
+        print("L'archive a été décompressée.")
+        
+        chemin_dossier = 'data'
+        for nom in os.listdir(chemin_dossier):
+            chemin_complet = os.path.join(chemin_dossier, nom)
+            if os.path.isfile(chemin_complet):
+                if nom.startswith('PS_LibreAcces_Dipl_AutExerc') or nom.startswith("PS_LibreAcces_SavoirFaire") or nom.endswith('.zip'):
+                    os.remove(chemin_complet)
         return True
     
     def getFiles(self):
