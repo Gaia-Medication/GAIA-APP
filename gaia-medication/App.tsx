@@ -14,6 +14,17 @@ Notifications.setNotificationHandler({
   }),
 });
 
+// Remove a scheduled notification
+async function removeNotification(notificationId) {
+  console.log("Removing notification with id: ", notificationId);
+  try {
+    await Notifications.dismissNotificationAsync(notificationId);
+  } catch (error) {
+    console.log("Error removing notification: ", error);
+  }
+  
+}
+
 // Reception des réponses des notifications
 Notifications.addNotificationResponseReceivedListener(response => {
   const takeData: NotifData = response.notification.request.content.data.notifData;
@@ -25,24 +36,19 @@ Notifications.addNotificationResponseReceivedListener(response => {
 
       break;
     case "snooze":
-        notificationForgot(response.notification.request.content.data.userName, { medName: takeData.medName, take: takeData.take }, 1)
+      notificationForgot(response.notification.request.content.data.userName, { medName: takeData.medName, take: takeData.take }, 1)
       break;
     case "lateTake":
       if (minutesDifference <= 240) {
         minutesDifference <= 240 ? takeData.take.taken = true : takeData.take.taken = false;
-      changeTreatments(takeData.take);
+        changeTreatments(takeData.take);
         console.log("STILL OK")
       } else {
         console.log("TOO LATE")
       }
+      console.log(response.notification.request.identifier);
+      removeNotification(response.notification.request.identifier);
       break;
-    case "lateSnooze":
-      if (minutesDifference + 10 <= 240) {
-        console.log("STILL OK")
-        notificationForgot(response.notification.request.content.data.userName, { medName: takeData.medName, take: takeData.take }, 10)
-      } else {
-        console.log("TOO LATE")
-      }
     default:
       console.log("Other");
       break;

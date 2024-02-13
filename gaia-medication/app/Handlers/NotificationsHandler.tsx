@@ -53,6 +53,7 @@ export const scheduleLocalNotification = async (
   color: string,
   priority: Notifications.AndroidNotificationPriority,
   categoryIdentifier: string,
+  sticky: boolean,
   date: Date // Add a new parameter for the notification date
 ) => {
   const notificationId = await Notifications.scheduleNotificationAsync({
@@ -65,6 +66,7 @@ export const scheduleLocalNotification = async (
       color,
       priority,
       categoryIdentifier,
+      sticky,
     },
     trigger: {
       date, // Set the trigger date
@@ -84,7 +86,6 @@ export const notificationDaily = async (userName, data: NotifData[], date) => {
     const str = `💊 ${d.medName} à ${formatDate(new Date(d.take.date)).hours}h${formatDate(new Date(d.take.date)).minutes}\n`
     content += str;
   })
-  console.log("content", content);
   return await scheduleLocalNotification(
     "Bonjour ! ",
     userName,
@@ -94,7 +95,8 @@ export const notificationDaily = async (userName, data: NotifData[], date) => {
     "default",
     Notifications.AndroidNotificationPriority.DEFAULT,
     null,
-    notificationTime
+    false,
+    notificationTime,
   );
 }
 
@@ -111,33 +113,28 @@ export const notificationNow = async (userName, data: NotifData, remainigTime) =
     "default",
     Notifications.AndroidNotificationPriority.DEFAULT,
     "reminder",
+    false,
     notificationTime
   );
 }
 
 // Creer une notification de prise oubliée
-export const notificationForgot = async (userName, data: NotifData, remainigTime) => {
+export const notificationForgot = async (userName, data: NotifData, lateMin) => {
   let notificationTime = new Date(data.take.date);
-  if (remainigTime > 60) {
-    notificationTime.setHours(notificationTime.getHours(), notificationTime.getMinutes() + remainigTime, 0, 0);
-  } else {
-    let addTime = Math.floor(remainigTime / 10) * 10;
-    console.log("Notif in ", remainigTime - addTime, "minutes");
-    console.log("addTime", addTime);
-    notificationTime = new Date();  
-    notificationTime.setHours(notificationTime.getHours(), notificationTime.getMinutes() + (remainigTime - addTime), 0, 0);
-  }
+  notificationTime.setHours(notificationTime.getHours(), notificationTime.getMinutes() + (lateMin + 1), 0, 0);
+  console.log("notificationTime", notificationTime); 
   
 
   return scheduleLocalNotification(
     "⚠️ N'oubliez pas !",
     userName,
     `💊 ${data.medName}`,
-    { notifData: data, userName: userName, remainigTime: remainigTime },
+    { notifData: data, userName: userName, remainigTime: lateMin },
     "default",
     "red",
-    Notifications.AndroidNotificationPriority.HIGH,
+    Notifications.AndroidNotificationPriority.MAX,
     "alertReminder",
+    true,
     notificationTime
   );
 }
@@ -172,21 +169,14 @@ Notifications.setNotificationCategoryAsync('alertReminder', [
       isDestructive: false,
       isAuthenticationRequired: false,
     },
-  },
-  {
-    identifier: 'lateSnooze',
-    buttonTitle: 'Rappeler dans 1O minutes',
-    options: {
-      isDestructive: false,
-      isAuthenticationRequired: false,
-    },
-  },
+  }
 ]);
 
 //--------------------//
 
 // Initialisation des notifications quotidiennes
 export const initDailyNotifications = async (userName, userId) => {
+  console.log("initDailyNotifications");
   const notificationTime = await getDailyNotificationTime();
   const treatmentsDays = await getDaysTakes();
   const arrayOfNotifications: Notif[] = [];
@@ -276,7 +266,7 @@ export const initTakeNotifications = async (userName, userId) => {
 
 // Initialisation des notifications de prise oubliée
 export const initLateNotifications = async (userName, userId) => {
-  const notificationTime = await getDailyNotificationTime();
+  console.log("initLateNotifications");
   const treatmentsDays = await getDaysTakes();
   const arrayOfNotifications: Notif[] = [];
   const currentDate = new Date();
@@ -291,9 +281,10 @@ export const initLateNotifications = async (userName, userId) => {
         dateNotification.setHours(dateNotification.getHours(), dateNotification.getMinutes(), 0, 0);
         if (dateNotification.getTime() >= currentDate.getTime() && take.taken === false) {
           if (dateNotification.getTime() < new Date().getTime()) {
+            console.log("YOU'RE LATE")
             const newDate = new Date();
-            let minDiff = 240 - Math.round((newDate.getTime() - dateNotification.getTime()) / 60000);
-            console.log("minDiff", minDiff);
+            let minDiff = Math.round((newDate.getTime() - dateNotification.getTime()) / 60000);
+            console.log("AND YOU'RE LATE BY", minDiff, "MINUTES")
             const notif = await notificationForgot(userName, { medName: take.medName, take: take }, minDiff)
             const returnedNotif: Notif = {
               notifId: notif,
@@ -307,6 +298,7 @@ export const initLateNotifications = async (userName, userId) => {
             };
             arrayOfNotifications.push(returnedNotif);
           } else {
+            console.log("YOU LL BE LATE")
             const notif = await notificationForgot(userName, { medName: take.medName, take: take }, 240)
             const returnedNotif: Notif = {
               notifId: notif,
