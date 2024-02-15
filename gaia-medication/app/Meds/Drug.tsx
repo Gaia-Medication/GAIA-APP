@@ -226,8 +226,12 @@ export default function Drug({ route, navigation }) {
                 {drug.Name.split(" ")[0].charAt(0).toUpperCase() +
                   drug.Name.split(" ")[0].slice(1).toLowerCase()}
               </Text>
-              <Text className="text-lg">
+              <Text className="text-lg mb-4">
                 {drug.Name.split(" ").slice(1).join(" ")}
+              </Text>
+              <Text>
+                Titulaire:{" "}
+                <Text className=" font-light">{drug.Titulaire}</Text>
               </Text>
               <Text>
                 Administration:{" "}
@@ -245,7 +249,7 @@ export default function Drug({ route, navigation }) {
                 </Text>
               </View>
             )}
-            <Text className=" px-6">Boite(s) disponible(s):</Text>
+            <Text className="px-6 pt-4">Boite(s) disponible(s):</Text>
             <View className=" px-6">
               {drug.Values.map((item, index) => {
                 const alreadyStocked =
@@ -285,7 +289,7 @@ export default function Drug({ route, navigation }) {
                 );
               })}
             </View>
-            <Text className=" px-6">Composition:</Text>
+            <Text className=" px-6 pt-4">Composition:</Text>
             {Object.keys(getComposition(drug.Composition)).map((type) => (
               <View className=" px-6" key={type}>
                 <Text className=" text-xs">
@@ -306,7 +310,7 @@ export default function Drug({ route, navigation }) {
             ))}
             {sameComp.length > 0 && (
               <View className="px-0">
-                <Text className=" px-6">Meme composition:</Text>
+                <Text className=" px-6 pt-4">Meme composition:</Text>
                 <View>
                   {sameComp.slice(0, showMore).map((item, index) => (
                     <TouchableOpacity

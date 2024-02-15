@@ -8,8 +8,8 @@ url = 'https://www.data.gouv.fr/fr/datasets/r/98f3161f-79ff-4f16-8f6a-6d571a80fe
 
 # INITIALISATION
 dataManager = DataManager(url)
-#files = dataManager.getPharmacyFile()
-df = pd.read_csv('data/pharmacies', sep=';', encoding='latin-1', header=None, skiprows=1, low_memory=False) 
+files = dataManager.getPharmacyFile()
+df = pd.read_csv('data/pharmacies.csv', sep=';', encoding='latin-1', header=None, skiprows=1, low_memory=False) 
 print("COLONNES => ", df.columns, "\n")
 
 # --------  DATAFRAME  ----------#
@@ -192,7 +192,8 @@ df['phone'] = df['phone'].apply(format_with_zeros)
 df[['latitude', 'longitude']] = df.apply(lambda x: convert_coordinates(x['latitude'], x['longitude']), axis=1)
 
 # --------  EXPORT  ----------#
-df.to_json('data/out/pharmacies.json', orient='records')
+df.to_json('out/pharmacies.json', orient='records')
+df.to_csv('out/pharmacies.csv', index=False)
 
 
 
