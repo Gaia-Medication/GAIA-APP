@@ -33,6 +33,7 @@
     "expo-updates": "~0.18.19",
     "fs": "^0.0.1-security",
     "nativewind": "^2.0.11",
+    "papaparse": "^5.4.1",
     "react": "18.2.0",
     "react-native": "0.72.6",
     "react-native-alert-notification": "^0.4.0",
