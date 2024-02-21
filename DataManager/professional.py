@@ -4,8 +4,6 @@ import datetime
 import time
 import os
 
-#Identifiant PP,Code postal (coord. structure),LibellÃ© commune (coord. structure),LibellÃ© DÃ©partement (structure),TÃ©lÃ©phone (coord. structure),Adresse e-mail (coord. structure)
-#2 3 456 89
 BOLD = '\033[1m' # ACTIONS
 BLUE = '\033[94m' # ACTIONS
 RESET = '\033[0m'
@@ -43,8 +41,10 @@ dfPersonel = pd.read_csv("./data/"+file_name, sep="|", header=0,low_memory=False
 dfPersonel = dfPersonel[dfPersonel["Code profession"] == 10]
 dfPersonel = dfPersonel.iloc[:, [ 1, 7, 8, 16 ,28, 31,32, 35 ,37 ,45 , 40 ,43]]
 dfPersonel=dfPersonel.sort_values(by='Identifiant PP')
+
 columns_to_drop=dfPersonel.columns[[2,3,4,5,6,8,9]]
 dfPersonel=dfPersonel.drop(columns_to_drop, axis='columns')
+
 
 
 datas=dfPersonel.astype(str)
