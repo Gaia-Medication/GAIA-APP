@@ -40,6 +40,7 @@
     "react-native-csv": "^0.2.0",
     "react-native-elements": "^3.4.3",
     "react-native-feather": "^1.1.2",
+    "react-native-fs": "^2.20.0",
     "react-native-maps": "1.7.1",
     "react-native-multiple-select": "^0.5.12",
     "react-native-pager-view": "6.2.0",
