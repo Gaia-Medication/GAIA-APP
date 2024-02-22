@@ -86,55 +86,65 @@ export const notificationDaily = async (userName, data: NotifData[], date) => {
     const str = `💊 ${d.medName} à ${formatDate(new Date(d.take.date)).hours}h${formatDate(new Date(d.take.date)).minutes}\n`
     content += str;
   })
-  return await scheduleLocalNotification(
-    "Bonjour ! ",
-    userName,
-    content,
-    { data: null },
-    "default",
-    "default",
-    Notifications.AndroidNotificationPriority.DEFAULT,
-    null,
-    false,
-    notificationTime,
-  );
+  try {
+    let notif = await scheduleLocalNotification(
+      "Bonjour ! ",
+      userName,
+      content,
+      { data: null },
+      "default",
+      "default",
+      Notifications.AndroidNotificationPriority.HIGH,
+      null,
+      false,
+      notificationTime,
+    );
+    return notif;
+  } catch (error) {
+    console.log(error);
+  }
+
 }
 
 // Creer une notification de prise
 export const notificationNow = async (userName, data: NotifData, remainigTime) => {
   const notificationTime = new Date(data.take.date);
   notificationTime.setHours(notificationTime.getHours(), notificationTime.getMinutes() + remainigTime, 0, 0);
-  return await scheduleLocalNotification(
-    "C'est le moment !",
-    userName,
-    `💊 ${data.medName} à ${formatDate(new Date(data.take.date)).hours}h${formatDate(new Date(data.take.date)).minutes}`,
-    { notifData: data, userName: userName },
-    "default",
-    "default",
-    Notifications.AndroidNotificationPriority.DEFAULT,
-    "reminder",
-    false,
-    notificationTime
-  );
+  try {
+    return await scheduleLocalNotification(
+      "C'est le moment !",
+      userName,
+      `💊 ${data.medName} à ${formatDate(new Date(data.take.date)).hours}h${formatDate(new Date(data.take.date)).minutes}`,
+      { notifData: data, userName: userName },
+      "default",
+      "default",
+      Notifications.AndroidNotificationPriority.HIGH,
+      "reminder",
+      false,
+      notificationTime
+    );
+  } catch (error) {
+    console.log("FAIL");
+  }
+
 }
 
 // Creer une notification de prise oubliée
-export const notificationForgot = async (userName, data: NotifData, lateMin) => {
+export const notificationForgot = async (userName, data: NotifData, delayTime) => {
   let notificationTime = new Date(data.take.date);
-  notificationTime.setHours(notificationTime.getHours(), notificationTime.getMinutes() + (lateMin + 1), 0, 0);
-  console.log("notificationTime", notificationTime); 
-  
 
+  notificationTime.setHours(notificationTime.getHours(), notificationTime.getMinutes() + (delayTime), 0, 0);
+  console.log("notificationTime", notificationTime);
   return scheduleLocalNotification(
     "⚠️ N'oubliez pas !",
     userName,
     `💊 ${data.medName}`,
-    { notifData: data, userName: userName, remainigTime: lateMin },
+    { notifData: data, userName: userName, remainigTime: delayTime },
     "default",
     "red",
     Notifications.AndroidNotificationPriority.MAX,
     "alertReminder",
-    true,
+    false, // SET TRUE FOR PRODUCTION
     notificationTime
   );
 }
@@ -153,7 +163,7 @@ Notifications.setNotificationCategoryAsync('reminder', [
   },
   {
     identifier: 'snooze',
-    buttonTitle: 'Rappeler dans 10 minutes',
+    buttonTitle: 'Rappeler dans 1 minutes', // REMETTRE A 10 MINUTES EN PRODUCTION
     options: {
       isDestructive: false,
       isAuthenticationRequired: false,
@@ -177,50 +187,58 @@ Notifications.setNotificationCategoryAsync('alertReminder', [
 // Initialisation des notifications quotidiennes
 export const initDailyNotifications = async (userName, userId) => {
   console.log("initDailyNotifications");
-  const notificationTime = await getDailyNotificationTime();
-  const treatmentsDays = await getDaysTakes();
-  const arrayOfNotifications: Notif[] = [];
-  Notifications.cancelAllScheduledNotificationsAsync();
-  if(notificationTime){
-  for (const dateKey in treatmentsDays) {
-    let dateNotification = new Date(dateKey);
-    dateNotification.setHours(notificationTime.getHours(), notificationTime.getMinutes(), 0, 0);
+  const notificationTime = await getDailyNotificationTime(); // HEURE DE NOTIFICATION QUOTIDIENNE
+  const treatmentsDays = await getDaysTakes(); // PRISES À VENIR
+  const arrayOfNotifications: Notif[] = []; // TABLEAU RETOUR
+  Notifications.cancelAllScheduledNotificationsAsync(); // ANNULER TOUTES LES NOTIFICATIONS
 
-    let dataArray: NotifData[] = [];
-    if (treatmentsDays.hasOwnProperty(dateKey)) {
-      const takesForDate = treatmentsDays[dateKey];
-
-      const d = new Date(dateKey)
-      d.setHours(notificationTime.getHours(), notificationTime.getMinutes(), 0, 0);
-
-      takesForDate.forEach((take) => {
-        dataArray.push({ medName: take.medName, take: take })
-      });
-    }
-    try {
+  if (notificationTime) {
+    for (const dateKey in treatmentsDays) {
       let dateNotification = new Date(dateKey);
       dateNotification.setHours(notificationTime.getHours(), notificationTime.getMinutes(), 0, 0);
-      const notif = await notificationDaily(userName, dataArray, dateNotification)
-      console.log('dateNotification', dateNotification)
-      const returnedNotif: Notif = {
-        notifId: notif,
-        userId: userName,
-        date: dateNotification,
-        type: "daily",
-        datas: dataArray,
-      };
-      arrayOfNotifications.push(returnedNotif);
-    } catch (error) {
-    } finally {
-      dataArray = [];
+
+      let dataArray: NotifData[] = [];
+      if (treatmentsDays.hasOwnProperty(dateKey)) {
+        const takesForDate = treatmentsDays[dateKey];
+
+        const d = new Date(dateKey)
+        d.setHours(notificationTime.getHours(), notificationTime.getMinutes(), 0, 0);
+
+        takesForDate.forEach((take) => {
+          dataArray.push({ medName: take.medName, take: take })
+        });
+      }
+      try {
+        let dateNotification = new Date(dateKey);
+        dateNotification.setHours(notificationTime.getHours(), notificationTime.getMinutes(), 0, 0);
+        let notif;
+        if (dateNotification >= new Date()) {
+          console.log("dateNotification", dateNotification);
+          notif = await notificationDaily(userName, dataArray, dateNotification)
+          console.log("notif", notif);
+          const returnedNotif: Notif = {
+            notifId: notif,
+            userId: userName,
+            date: dateNotification,
+            type: "daily",
+            datas: dataArray,
+          };
+          arrayOfNotifications.push(returnedNotif);
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        dataArray = [];
+      }
     }
-  }}
+  }
+  let all = await Notifications.getAllScheduledNotificationsAsync();
+  console.log(all);
   return arrayOfNotifications;
 }
 
 // Initialisation des notifications de prise
 export const initTakeNotifications = async (userName, userId) => {
-  console.log("initTakeNotifications");
   const notificationTime = await getDailyNotificationTime();
   const treatmentsDays = await getDaysTakes();
   const arrayOfNotifications: Notif[] = [];
@@ -228,20 +246,13 @@ export const initTakeNotifications = async (userName, userId) => {
   for (const dateKey in treatmentsDays) {
 
     for (const take of treatmentsDays[dateKey]) {
-      
-      try {
-        const dateNotification = new Date(take.date);
-        if(dateNotification){
+
+      const dateNotification = new Date(take.date);
+      if (dateNotification) {
         dateNotification.setHours(dateNotification.getHours(), dateNotification.getMinutes(), 0, 0);
-        console.log("dateNotification", dateNotification);
+        let notif;
         if (dateNotification >= new Date()) {
-          let notif = null
-          try {
-            notif = await notificationNow(userName, { medName: take.medName, take: take }, 1)
-          } catch (error) {
-            console.log(error);
-          }
-          
+          notif = await notificationNow(userName, { medName: take.medName, take: take }, 0) // UN MINUTE APRES LA PRISE, METTRE 0 EN PRODUCTION
           const returnedNotif: Notif = {
             notifId: notif,
             userId: userName,
@@ -250,13 +261,11 @@ export const initTakeNotifications = async (userName, userId) => {
             datas: [{
               medName: take.medName,
               take: take,
-            }]
+            }],
           };
           arrayOfNotifications.push(returnedNotif);
-        }}
+        }
 
-      } catch (error) {
-        console.log(error);
       }
     }
 
@@ -280,12 +289,12 @@ export const initLateNotifications = async (userName, userId) => {
         const dateNotification = new Date(take.date);
         dateNotification.setHours(dateNotification.getHours(), dateNotification.getMinutes(), 0, 0);
         if (dateNotification.getTime() >= currentDate.getTime() && take.taken === false) {
-          if (dateNotification.getTime() < new Date().getTime()) {
+          const newDate = new Date();
+          let minDiff = Math.round((newDate.getTime() - dateNotification.getTime()) / 60000);
+          if (dateNotification.getTime() < new Date().getTime() && minDiff > 60) {
             console.log("YOU'RE LATE")
-            const newDate = new Date();
-            let minDiff = Math.round((newDate.getTime() - dateNotification.getTime()) / 60000);
             console.log("AND YOU'RE LATE BY", minDiff, "MINUTES")
-            const notif = await notificationForgot(userName, { medName: take.medName, take: take }, minDiff)
+            const notif = await notificationForgot(userName, { medName: take.medName, take: take }, (minDiff + 1)) // On programme une notification dans 5 minutes
             const returnedNotif: Notif = {
               notifId: notif,
               userId: userName,
@@ -299,7 +308,7 @@ export const initLateNotifications = async (userName, userId) => {
             arrayOfNotifications.push(returnedNotif);
           } else {
             console.log("YOU LL BE LATE")
-            const notif = await notificationForgot(userName, { medName: take.medName, take: take }, 240)
+            const notif = await notificationForgot(userName, { medName: take.medName, take: take }, 60) // On programme une notification pour 60 minutes après l'heure de prise
             const returnedNotif: Notif = {
               notifId: notif,
               userId: userName,

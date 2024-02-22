@@ -100,6 +100,8 @@ export default function Notifications({ navigation }) {
                         return null;
                     }) : null}
                 </View>
+                {storedNotifications.length === 0 ? <Text>Aucune notification ENREGISTREE</Text> : 
+                <Text>Notifications enregistrées : {storedNotifications.length}</Text>}
             </ScrollView>
         </SafeAreaView>
     );

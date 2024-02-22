@@ -88,7 +88,7 @@ export default function Home({ navigation }) {
     console.log("Notifs Take Totales :", notifsTakes.length);
     console.log("Notifs Late Totales :", notifsLate.length);
     console.log("NOTIFS ACTIVES : ", (await Notifications.getAllScheduledNotificationsAsync()).length);
-    setNotificationsList(notifsDaily.concat(notifsTakes).concat(notifsLate));
+    //setNotificationsList(notifsDaily.concat(notifsTakes).concat(notifsLate));
     console.log("NOTIFS ENREGISTREES : ", notificationsList.length);
     AsyncStorage.setItem("notifications", JSON.stringify(notificationsList));
     saveNotifs(notificationsList);
