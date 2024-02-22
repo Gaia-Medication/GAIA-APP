@@ -81,7 +81,7 @@ class DataManager :
     def getTherapeutics(self, cis):
         response = None
         try:
-            response = requests.get(self.url + cis)
+            response = requests.get(self.url + str(cis))
         except Exception as e:
             print(f"An error occurred: {e}")
 
@@ -91,13 +91,13 @@ class DataManager :
         # Find all anchor tags with href attributes
         for title2 in soup.find_all('h2'):
             if title2.text == "Indications thérapeutiques":
-               print(f"{BOLD}{GREEN}Indications thérapeutiques de {cis} trouvées{RESET}")
+               #print(f"{BOLD}{GREEN}Indications thérapeutiques de {cis} trouvées{RESET}")
                return title2.next_sibling.next_sibling.text
             
     def getATC(self, name, cis):
         response = None
         try:
-            response = requests.get(self.url + name + "--" + cis)
+            response = requests.get(self.url + name.split(",")[0].lower().replace(" ", "-").replace("/","") + "--" + str(cis))
         except Exception as e:
             print(f"An error occurred: {e}")
 
@@ -114,7 +114,7 @@ class DataManager :
                             content = sibling.text.split(" ")
                             for i in range(len(content)):
                                 if content[i] == "ATC":
-                                    print(f"{BOLD}{GREEN}ATC de {name} est : {content[i+2]}{RESET}", sibling.text)
+                                    #print(f"{BOLD}{GREEN}ATC de {name} est : {content[i+2]}{RESET}", sibling.text)
                                     return(content[i+2])
 
     

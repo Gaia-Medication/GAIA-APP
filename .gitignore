@@ -1,4 +1,5 @@
 DataManager/data/*
+!DataManager/data/interaction.txt
 DataManager/out/*
 .DS_Store
 DataManager/__pycache__/*
