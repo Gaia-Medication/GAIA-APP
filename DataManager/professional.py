@@ -42,7 +42,7 @@ dfPersonel = dfPersonel[dfPersonel["Code profession"] == 10]
 dfPersonel = dfPersonel.iloc[:, [ 1, 7, 8, 16 ,28, 31,32, 35 ,37 ,45 , 40 ,43]]
 dfPersonel=dfPersonel.sort_values(by='Identifiant PP')
 
-columns_to_drop=dfPersonel.columns[[2,3,4,5,6,8,9]]
+columns_to_drop=dfPersonel.columns[[3,4,5,6,8,9]]
 dfPersonel=dfPersonel.drop(columns_to_drop, axis='columns')
 
 
