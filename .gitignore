@@ -1,6 +1,6 @@
 DataManager/data/*
 !DataManager/data/interaction.txt
-!DataManager/out/atc.json
 DataManager/out/*
+!DataManager/out/atc.json
 .DS_Store
 DataManager/__pycache__/*
