@@ -1,4 +1,5 @@
 import data from './medication.json';
+import data2 from './interaction.json';
 
 //Tous les médicamenets
 const medicaments=JSON.parse(JSON.stringify(data))
@@ -9,6 +10,16 @@ export function getAllMed(){
     console.error('Error reading JSON file', error);
   }
 }
+
+const interactions=JSON.parse(JSON.stringify(data2))
+export function getAllInteractions(){   
+  try {
+    return interactions
+  } catch (error) {
+    console.error('Error reading JSON file', error);
+  }
+}
+
 
 //Return le médicament à partir de son CIS
 export function getMedbyCIS(CIS){   
@@ -97,6 +108,34 @@ export function getPAfromMed(CIS){
     console.error('Error reading JSON file', error);
   }
 }
+
+
+//Return le/les intéractions médicamenteuses d'un medicament à partir de son CIS
+export function getIMfromMed(CIS){   
+  try {
+    const principesActifsUniques=getPAfromMed(CIS)
+    const interactionsMed = []
+    principesActifsUniques.forEach((pa:string) => {
+      if (interactions[`${pa.normalize('NFD').replace(/[\u0300-\u036f]/g, '')}`]) { // Check if there are interactions listed for this active substance
+        interactions[`${pa.normalize('NFD').replace(/[\u0300-\u036f]/g, '')}`].forEach((interaction) => {
+          interactionsMed.push(interaction); // Add each interaction to the IM array
+        });
+      }else{
+        pa.split(/[\s']/).forEach((pa:string) => {
+          if (interactions[`${pa.normalize('NFD').replace(/[\u0300-\u036f]/g, '')}`]) { // Check if there are interactions listed for this active substance
+            interactions[`${pa.normalize('NFD').replace(/[\u0300-\u036f]/g, '')}`].forEach((interaction) => {
+              interactionsMed.push(interaction); // Add each interaction to the IM array
+            });
+          }
+        });
+      }
+    });
+    return interactionsMed; // Return the array of interactions
+  } catch (error) {
+    console.error('Error reading JSON file', error);
+  }
+}
+
 
 //Reformate la composition d'un médicament
 export function getComposition(composition){   

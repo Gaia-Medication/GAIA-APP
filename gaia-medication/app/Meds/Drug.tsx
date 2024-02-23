@@ -18,6 +18,7 @@ import {
   getAllGenOfCIS,
   getAllSameCompOfCIS,
   getComposition,
+  getIMfromMed,
   getMedbyCIS,
   getPAfromMed,
 } from "../../dao/Meds";
@@ -43,6 +44,7 @@ export default function Drug({ route, navigation }) {
   const [showMore, setShowMore] = useState(5);
   const [stock, setStock] = useState(null);
   const [allergique, setAllergique] = useState(false);
+  const [iM, setIM] = useState([]);
   const [sameComp, setSameComp] = useState([]);
 
   const { drugCIS, context } = route.params;
@@ -63,6 +65,7 @@ export default function Drug({ route, navigation }) {
         .some((bool) => bool)
     );
     setSameComp(getAllSameCompOfCIS(drugCIS));
+    setIM(getIMfromMed(drugCIS))
     setStock(
       stockList.filter(
         (item) => item.idUser == currentId && item.CIS == drugCIS
@@ -73,7 +76,6 @@ export default function Drug({ route, navigation }) {
   useEffect(() => {
     if (isFocused) {
       console.log("Nav on Drug Page :", drugCIS, "-", drug.Name);
-      getComposition(drug.Composition);
       init();
     }
   }, [isFocused && drug]);
@@ -251,7 +253,7 @@ export default function Drug({ route, navigation }) {
             )}
             <Text className="px-6 pt-4">Boite(s) disponible(s):</Text>
             <View className=" px-6">
-              {drug.Values.map((item, index) => {
+              {drug.Values&&drug.Values.map((item, index) => {
                 const alreadyStocked =
                   stock.find((stockItem) => stockItem.CIP === item.CIP) != null;
 
@@ -308,6 +310,18 @@ export default function Drug({ route, navigation }) {
                 )}
               </View>
             ))}
+            {iM.length > 0 && (
+              <View className="px-0">
+                <Text className=" px-6 pt-4 text-orange-400">🚫 Interactions médicamenteuses:</Text>
+                {iM.map((item, index) => (
+                  <View className=" px-6" key={index}>
+                    <Text className=" text-xs">- {item.interacting_substance}</Text>
+                    <Text className="px-3 text-xs">{item.association}</Text>
+                    <Text className="px-3 text-xs">{item.details}</Text>
+                  </View>
+                ))}
+              </View>
+            )}
             {sameComp.length > 0 && (
               <View className="px-0">
                 <Text className=" px-6 pt-4">Meme composition:</Text>
@@ -414,7 +428,7 @@ export default function Drug({ route, navigation }) {
             onClose={() => setDrugModalVisible(!drugModalVisible)}
           >
             <View className="w-full py-3">
-              {drug.Values.map((item, index) => {
+              {drug.Values&&drug.Values.map((item, index) => {
                 const alreadyStocked =
                   stock.find((stockItem) => stockItem.CIP === item.CIP) != null;
                 return (
