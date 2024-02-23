@@ -1,3 +1,4 @@
+import json
 from dataManager import DataManager
 import pandas as pd
 import numpy as np
@@ -67,7 +68,6 @@ brut_data = lecture_base("data/CIS_CIP_bdpm.txt").iloc[:,2:3].values[:,0]
 string_data = brut_data.astype(str)
 all_dict=[]
 for description in string_data:
-    pop_index=[]
     list_str_meds=[]
     low_descript = description.lower()
     no_acc_descript = replace_accents(low_descript)
@@ -256,13 +256,31 @@ dfPresentation=dfPresentation.merge(dfDescription, on='CIP', how='inner')
 dfPresentation = dfPresentation.sort_values(by=['CIS'])
 actCIS = dfPresentation.iloc[0,0]
 dfPresentation = dfPresentation.groupby('CIS').apply(group_by_cis)
-dfPresentation = pd.DataFrame({'CIS': dfPresentation.index, 'Values': dfPresentation.values}) 
+dfPresentation = pd.DataFrame({'CIS': dfPresentation.index, 'Values': dfPresentation.values})
 dfPresentation.reset_index(drop=True, inplace=True)
+
+
+######################################################
+###########               ATC            #############
+###########  INDICATIONS THERAPEUTIQUES  #############
+######################################################
+
+print(BOLD,YELLOW,"\n\n##########################################################\n################# Création des ATC & TH #################\n##########################################################",RESET,'\n\n')
+filename = 'therapeutic.py'
+with open(filename, 'r') as file:
+    exec(file.read())
+    
+with open('out/atc.json', 'r') as file:
+    data = json.load(file)
+
+dfATC = pd.DataFrame(data)
+dfATC=dfATC.drop(columns=["name"])
+
 
 ######################################################
 #############  MERGE & FINAL DF CREATION  ############
 ######################################################
-
+print(BOLD,YELLOW,"\n\n##########################################################\n################# Création du dataframe final #############\n##########################################################",RESET,'\n\n')
 dfMedication = pd.read_csv("data/CIS_bdpm.txt", sep="\t", header=None, encoding="latin1")
 dfMedication = dfMedication.drop([5,7,9], axis=1)
 dfMedication.columns = [
@@ -283,6 +301,7 @@ dfInformation = pd.DataFrame({'CIS': dfInformation.index, 'infos': dfInformation
 dfInformation.reset_index(drop=True, inplace=True)
 
 
+dfMedication = dfMedication.merge(dfATC, on='CIS', how='outer')
 dfMedication = dfMedication.merge(dfGener, on='CIS', how='outer')
 dfMedication = dfMedication.merge(dfPrescription, on='CIS', how='outer')
 dfMedication = dfMedication.merge(dfInformation, on='CIS', how='outer')
@@ -304,8 +323,8 @@ dfMedication.to_csv('out/medication.csv', index=False)
 
 print(BOLD,GREEN,"\n\n##########################################################\n########################## DONE ##########################\n##########################################################",RESET,'\n\n')
 
-export=Export("out/medication.json", "dbMedication", "medication")
-try:
-    export.export_json()
-except Exception as e:
-    print(BOLD,RED,"Error: ",RESET,e)
+# export=Export("out/medication.json", "dbMedication", "medication")
+# try:
+#     export.export_json()
+# except Exception as e:
+#     print(BOLD,RED,"Error: ",RESET,e)
