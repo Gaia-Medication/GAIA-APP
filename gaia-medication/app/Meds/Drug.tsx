@@ -239,6 +239,19 @@ export default function Drug({ route, navigation }) {
                 Administration:{" "}
                 <Text className=" font-light">{drug.Administration_way}</Text>
               </Text>
+              
+              {drug.ATC&&(
+              <Text>
+                Code ATC:{" "}
+                <Text className=" font-light">{drug.ATC}</Text>
+              </Text>
+              )}
+              {drug.Indications_therapeutiques&&(
+              <Text>
+                Indication thérapeutique:{" "}
+                <Text className=" font-light">{drug.Indications_therapeutiques.includes(drug.ATC)?drug.Indications_therapeutiques.split(drug.ATC)[1].replaceAll('\u0092',"'"):drug.Indications_therapeutiques.replaceAll('\u0092',"'")}</Text>
+              </Text>
+              )}
             </View>
             {allergique && (
               <View className=" flex-row px-6">

@@ -65,6 +65,7 @@ for _, row in dfPersonel.iterrows():
         returned_list.append(listPP_triee[0])
         listPP=[row]
 dfPersonel = pd.DataFrame(returned_list, columns=datas.columns)
+dfPersonel.columns = ['IDPP', 'Nom', 'Prenom', 'CodePostal', 'Telephone', 'mail']
 
 # dfPersonel.to_json('out/personnel.json', orient="records", indent=4)
 dfPersonel.to_csv('out/personnel.csv', index=False)

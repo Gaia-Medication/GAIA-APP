@@ -266,9 +266,9 @@ dfPresentation.reset_index(drop=True, inplace=True)
 ######################################################
 
 print(BOLD,YELLOW,"\n\n##########################################################\n################# Création des ATC & TH #################\n##########################################################",RESET,'\n\n')
-filename = 'therapeutic.py'
-with open(filename, 'r') as file:
-    exec(file.read())
+# filename = 'therapeutic.py'
+# with open(filename, 'r') as file:
+#     exec(file.read())
     
 with open('out/atc.json', 'r') as file:
     data = json.load(file)
@@ -282,17 +282,15 @@ dfATC=dfATC.drop(columns=["name"])
 ######################################################
 print(BOLD,YELLOW,"\n\n##########################################################\n################# Création du dataframe final #############\n##########################################################",RESET,'\n\n')
 dfMedication = pd.read_csv("data/CIS_bdpm.txt", sep="\t", header=None, encoding="latin1")
-dfMedication = dfMedication.drop([5,7,9], axis=1)
+dfMedication = dfMedication.drop([4,5,7,9,11], axis=1)
 dfMedication.columns = [
     'CIS', #0
     'Name', #1
     'Shape', #2
     'Administration_way', #3
-    'Authorization',#4
     'Marketed', #6
     'Stock', #8
     'Titulaire', #10
-    'Warning' #11 
 ]
 
 dfInformation = dfInformation[dfInformation['CIS'].isin(dfMedication['CIS'])]
@@ -303,8 +301,8 @@ dfInformation.reset_index(drop=True, inplace=True)
 
 dfMedication = dfMedication.merge(dfATC, on='CIS', how='outer')
 dfMedication = dfMedication.merge(dfGener, on='CIS', how='outer')
-dfMedication = dfMedication.merge(dfPrescription, on='CIS', how='outer')
-dfMedication = dfMedication.merge(dfInformation, on='CIS', how='outer')
+#dfMedication = dfMedication.merge(dfPrescription, on='CIS', how='outer')
+#dfMedication = dfMedication.merge(dfInformation, on='CIS', how='outer')
 dfMedication = dfMedication.merge(dfPresentation, on='CIS', how='outer')
 dfMedication = dfMedication.merge(dfCompo, on='CIS', how='outer')
 dfMedication.dropna(subset=['Name'], inplace=True)
@@ -318,7 +316,7 @@ dfMedication.dropna(subset=['Name'], inplace=True)
 
 print(BOLD,YELLOW,"\n\n##########################################################\n################### Conversion en JSON ###################\n##########################################################",RESET,'\n\n')
 
-jsonMedication = dfMedication.to_json('out/medication.json', orient="records", indent=4)
+dfMedication.to_json('out/medication.json', orient="records", indent=4)
 dfMedication.to_csv('out/medication.csv', index=False)
 
 print(BOLD,GREEN,"\n\n##########################################################\n########################## DONE ##########################\n##########################################################",RESET,'\n\n')

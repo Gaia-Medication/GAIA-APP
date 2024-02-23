@@ -38,7 +38,7 @@ export default function CreateProfile({ navigation }: ICreateProps) {
   // TUTORIEL
   const [firstConnection, setFirstConnection] = useState("");
   const [tutoStep, setTutoStep] = useState(0);
-  const [TutoCreate, setTutoCreate] = useState("0");
+  const [TutoCreate, setTutoCreate] = useState("1");
 
   // VALIDATION DU FORMULAIRE
   const [isValidFirstname, setIsValidFirstname] = useState(true);

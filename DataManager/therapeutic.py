@@ -53,6 +53,7 @@ dfATC = pd.DataFrame(data)
     
 dmTH=DataManager(urlTherapeutic)
 dmATC=DataManager(urlAtc)
+cpt=0
 for row in data:
     if  row.get("ATC") is None:
         print("Null ATC", row["name"], row["CIS"])
@@ -66,6 +67,10 @@ for row in data:
         r=dfATC[dfATC["CIS"]==cis]
         i=r.index[0]
         dfATC.loc[i,"Indications_therapeutiques"]=dmTH.getTherapeutics(row["CIS"])
+        cpt+=1
+    if cpt>10:
+        dfATC.to_json('out/atc.json', orient="records", indent=4)
+        cpt=0
         
 
 dfATC.to_json('out/atc.json', orient="records", indent=4)
