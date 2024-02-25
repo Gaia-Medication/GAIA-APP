@@ -18,6 +18,7 @@ import { styles } from "../../style/style";
 import MapModalComponent from "../component/MapModal";
 import TutorialBubble from "../component/TutorialBubble";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getDoctorbyRegion } from "../../dao/Doctor";
 
 export default function Map({ navigation }) {
   const initialRegion = {
@@ -133,6 +134,7 @@ export default function Map({ navigation }) {
 
   useEffect(() => {
     const newPoints = getPointsbyRegion(region);
+    newPoints&&getDoctorbyRegion(newPoints)
     setPoints(newPoints);
   }, [region]);
 

@@ -10,10 +10,23 @@ export function getAllDoctors(){
     }
 }
 
-export function getDoctorbyPP(PP){   
+export function getDoctorbyPP(IDPP){   
   try {
-    const doctor = doctors.find(doc => doc.PP === PP);
+    const doctor = doctors.find(doc => doc.IDPP === IDPP);
     return doctor || null;
+  } catch (error) {
+    console.error('Error reading JSON file', error);
+  }
+}
+
+export function getDoctorbyRegion(points){   
+  try {
+    var codePostals = new Set()
+    points.forEach(element => {
+      codePostals.add(element.city.split(" ")[0])
+    });
+    const doctorsLoc = doctors.filter(doctor => codePostals.has(doctor.CodePostal));
+    return doctorsLoc
   } catch (error) {
     console.error('Error reading JSON file', error);
   }
