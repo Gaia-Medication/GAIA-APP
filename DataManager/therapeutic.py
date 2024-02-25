@@ -55,16 +55,18 @@ dmTH=DataManager(urlTherapeutic)
 dmATC=DataManager(urlAtc)
 cpt=0
 for row in data:
+    if row.get("CIS") not in dfATC["CIS"].values:
+        dfATC = dfATC.append(row, ignore_index=True)
     if  row.get("ATC") is None:
         print("Null ATC", row["name"], row["CIS"])
-        cis = row.get("CIS")
-        r=dfATC[dfATC["CIS"]==cis]
+        cis_data = row.get("CIS")
+        r=dfATC[dfATC["CIS"]==cis_data]
         i=r.index[0]
         dfATC.loc[i,"ATC"]=dmATC.getATC(row["name"], row["CIS"])
     if row.get("Indications_therapeutiques") is None:
         print("Null therapeutic")
-        cis = row.get("CIS")
-        r=dfATC[dfATC["CIS"]==cis]
+        cis_data = row.get("CIS")
+        r=dfATC[dfATC["CIS"]==cis_data]
         i=r.index[0]
         dfATC.loc[i,"Indications_therapeutiques"]=dmTH.getTherapeutics(row["CIS"])
         cpt+=1
