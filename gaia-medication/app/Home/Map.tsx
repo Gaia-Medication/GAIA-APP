@@ -41,8 +41,10 @@ export default function Map({ navigation }) {
   const [currentLocation, setCurrentLocation] = useState(null);
   const [region, setRegion] = useState(initialRegion);
   const [points, setPoints] = useState(getPointsbyRegion(region));
+  const [medecin, setMedecin] = useState([]);
   const [mapType, setMapType] = useState<MapType>("standard");
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isMedModalVisible, setIsMedModalVisible] = useState(false);
   const [selectedPoint, setSelectedpoint] = useState(null);
 
   const markerIcons = {
@@ -52,6 +54,7 @@ export default function Map({ navigation }) {
     Maison: require("./../../assets/map-icons/maison_de_sante.png"),
     satelite: require("./../../assets/map-icons/satelite.png"),
     map: require("./../../assets/map-icons/map.png"),
+    medical: require("./../../assets/map-icons/medical-team.png"),
   };
   const colorOf = {
     Pharmacie: "25, 170, 147",
@@ -59,9 +62,6 @@ export default function Map({ navigation }) {
     Etablissement: "1, 94, 210",
     Maison: "0, 236, 156",
   };
-  const [satelliteButtonIcon, setSatelliteButtonIcon] = useState(
-    markerIcons.satelite
-  );
 
   const openModal = (point: any) => {
     setIsModalVisible(true);
@@ -69,6 +69,12 @@ export default function Map({ navigation }) {
   };
   const closeModal = () => {
     setIsModalVisible(false);
+  };
+  const openMedModal = () => {
+    setIsMedModalVisible(true);
+  };
+  const closeMedModal = () => {
+    setIsMedModalVisible(false);
   };
   const contact = () => {
     if (selectedPoint.phone) {
@@ -134,7 +140,7 @@ export default function Map({ navigation }) {
 
   useEffect(() => {
     const newPoints = getPointsbyRegion(region);
-    newPoints&&getDoctorbyRegion(newPoints)
+    newPoints && setMedecin(getDoctorbyRegion(newPoints));
     setPoints(newPoints);
   }, [region]);
 
@@ -187,11 +193,17 @@ export default function Map({ navigation }) {
                 tracksViewChanges={false}
                 onPress={() => openModal(point)}
               >
-                <Image source={getIcon} style={{ width: 25, height: 25 }}/>
+                <Image source={getIcon} style={{ width: 25, height: 25 }} />
               </Marker>
             );
           })}
       </MapView>
+      <TouchableOpacity style={{ position: 'absolute', top: 15, left: 15 }}
+                onPress={() => openMedModal()}>
+        <View style={{ backgroundColor: 'white', padding: 8, borderRadius: 5, opacity:0.8 }}>
+          <Image source={markerIcons.medical}  style={{ width: 40, height: 40 }} />
+        </View>
+      </TouchableOpacity>
       <MapModalComponent
         visible={isModalVisible}
         onClose={closeModal}
@@ -199,9 +211,47 @@ export default function Map({ navigation }) {
         icon={markerIcons[selectedPoint?.type.split(" ")[0]]}
         color={colorOf[selectedPoint?.type.split(" ")[0]]}
       />
+      <ModalComponent
+        visible={isMedModalVisible}
+        onClose={closeMedModal}
+        styleAdded={{
+          backgroundColor: "white",
+          borderRadius: 10,
+          paddingHorizontal: 20,
+          width: "80%",
+          maxHeight: "60%",
+        }}
+      >
+        <View className="w-full py-5">
+          <Text>Médecins à proximité</Text>
+          {medecin.map((item, index)=>{
+            return(
+              <View key={index}>
+                <Text>{
+                  item.Prenom
+                    .normalize('NFD').replace(/[\u0300-\u036f]/g, '') 
+                    .toLowerCase() 
+                    .replace(/^\w/, (c) => c.toUpperCase()) 
+                } {
+                  item.Nom
+                    .normalize('NFD').replace(/[\u0300-\u036f]/g, '') 
+                    .toLowerCase() 
+                    .replace(/^\w/, (c) => c.toUpperCase()) 
+                }</Text>
+                <Text className=" text-xs"> {item.CodePostal}</Text>
+                
+              </View>
+            )
+          } )}
+        </View>
+        <TouchableOpacity
+              onPress={() => {
+                closeMedModal();
+              }}
+            >
+              <Text className="text-red-500">Fermer</Text>
+            </TouchableOpacity>
+      </ModalComponent>
     </View>
   );
-}
-function setMapType(arg0: string) {
-  throw new Error("Function not implemented.");
 }

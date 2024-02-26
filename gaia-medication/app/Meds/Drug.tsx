@@ -239,7 +239,7 @@ export default function Drug({ route, navigation }) {
                 <Text className=" font-light">{drug.Administration_way}</Text>
               </Text>
 
-              {drug.ATC && (
+              {drug.ATC && drug.ATC!="inconnue\nCode" &&(
                 <Text>
                   Code ATC: <Text className=" font-light">{drug.ATC}</Text>
                 </Text>
@@ -265,8 +265,11 @@ export default function Drug({ route, navigation }) {
                     ? drug.Indications_therapeutiques.split(
                         drug.ATC
                       )[1].replaceAll("\u0092", "'")
-                    : (drug.Indications_therapeutiques.includes("\t\t\t\t\r\n\t\t\t\t\t\t")?"Vous trouverez les indications thérapeutiques dans la notice en cliquant sur le bouton en haut à droite":
-                    drug.Indications_therapeutiques.replaceAll("\u0092", "'"))}
+                    : drug.Indications_therapeutiques.includes(
+                        "\t\t\t\t\r\n\t\t\t\t\t\t"
+                      )
+                    ? "Vous trouverez les indications thérapeutiques dans la notice en cliquant sur le bouton en haut à droite"
+                    : drug.Indications_therapeutiques.replaceAll("\u0092", "'")}
                 </Text>
               </Text>
             )}
@@ -279,7 +282,10 @@ export default function Drug({ route, navigation }) {
                     null;
 
                   return (
-                    <View
+                    <TouchableOpacity
+                      onPress={() => {
+                        setDrugModalVisible(!drugModalVisible);
+                      }}
                       key={index}
                       className=" -mb-[1px] pb-2 border-t border-b border-gray-300"
                     >
@@ -308,7 +314,7 @@ export default function Drug({ route, navigation }) {
                           )
                         ) : null}
                       </View>
-                    </View>
+                    </TouchableOpacity>
                   );
                 })}
             </View>

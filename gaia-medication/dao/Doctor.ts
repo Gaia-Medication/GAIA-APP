@@ -23,9 +23,11 @@ export function getDoctorbyRegion(points){
   try {
     var codePostals = new Set()
     points.forEach(element => {
-      codePostals.add(element.city.split(" ")[0])
+      if (codePostals.size < 2) {
+        codePostals.add(element.city.split(" ")[0]);
+      }
     });
-    const doctorsLoc = doctors.filter(doctor => codePostals.has(doctor.CodePostal));
+    const doctorsLoc = doctors.filter(doctor => codePostals.has(doctor.CodePostal)).sort((a, b) => a.Nom.localeCompare(b.Nom));
     return doctorsLoc
   } catch (error) {
     console.error('Error reading JSON file', error);
