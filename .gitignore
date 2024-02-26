@@ -2,5 +2,6 @@ DataManager/data/*
 !DataManager/data/interaction.txt
 DataManager/out/*
 !DataManager/out/atc.json
+!DataManager/data/ATC_2023.xls
 .DS_Store
 DataManager/__pycache__/*
