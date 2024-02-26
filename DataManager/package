@@ -5,4 +5,3 @@ pip install bs4
 pip install tqdm
 pip install pyproj
 pip install pymongo
-pip install excel2json-3

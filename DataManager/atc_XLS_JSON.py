@@ -1,5 +1,7 @@
-import excel2json
 import os
+import pandas as pd
 
-excel2json.convert_from_file('data/ATC_2023.xls','out')
-os.rename('out/2022 05 24.json','out/ATC_2023.json')
+
+data=pd.read_excel('data/ATC_2023.xls')
+data=data.drop(columns=["Niveau code","Libellé anglais","Commentaires","Création","Modification","Inactivation"])
+data.to_json('out/ATC_2023.json',orient='records',indent=4)
