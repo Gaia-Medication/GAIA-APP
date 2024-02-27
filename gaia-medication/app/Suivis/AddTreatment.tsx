@@ -1391,12 +1391,14 @@ export default function AddTreatment({route, navigation}) {
   return (
     <SafeAreaView className="flex w-full bg-white flex-1 pt-[2px] pb-2 px-2">
       
-      <GoBackButton navigation={navigation}></GoBackButton>
 
       <AlertNotificationRoot>
-        <Text className=" text-center my-6 text-2xl text-neutral-700 font-bold">
-          Ajouter un Traitement
-        </Text>
+        <View className="flex-row items-center justify-between py-4 px-6">
+          <GoBackButton navigation={navigation}></GoBackButton>
+          <Text className=" text-center text-2xl text-neutral-700 font-bold">
+            Ajouter un Traitement
+          </Text>
+        </View>
 
         <View className=" flex w-full h-[86%] -mt-[5%] -mb-[8%] scale-95">
           <Input

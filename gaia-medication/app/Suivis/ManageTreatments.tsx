@@ -227,12 +227,13 @@ export default function ManageTreatments({ navigation }) {
     <SafeAreaView style={styles.container}>
       {treatments ? (
         <View>
-          <GoBackButton navigation={navigation}></GoBackButton>
-
-          <Text className=" text-center my-6 text-xl text-neutral-700 font-bold mt-[26px]">
-            Gestion des traitements
-          </Text>
-
+          
+          <View className="flex-row items-center justify-between py-4 px-6">
+            <GoBackButton navigation={navigation}></GoBackButton>
+            <Text className=" text-center text-2xl text-neutral-700 font-bold">
+              Gestion des traitements
+            </Text>
+          </View>
           <FlatList
             data={treatments}
             keyExtractor={(item, index) => index.toString()}
