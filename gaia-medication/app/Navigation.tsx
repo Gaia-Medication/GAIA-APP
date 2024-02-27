@@ -19,6 +19,7 @@ import NotificationsSettings from "./Home/Settings/NotificationsSettings";
 import Notifications from "./Home/Notifications";
 import AllergySelector from "./component/AllergySelector";
 import ManageTreatments from "./Suivis/ManageTreatments";
+import { Provider } from "react-native-paper";
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -26,6 +27,7 @@ const TopTab = createMaterialTopTabNavigator();
 
 export default function Navigation() {
   return (
+    <Provider>
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Home">
         <Stack.Screen
@@ -80,6 +82,7 @@ export default function Navigation() {
         />
       </Stack.Navigator>
     </NavigationContainer>
+    </Provider>
   );
 }
 

@@ -5,6 +5,7 @@ import {
   Dimensions,
   FlatList,
   Pressable,
+  ScrollView,
   TextInput,
   TouchableOpacity,
   View
@@ -72,7 +73,7 @@ const Treatment = ({ navigation, onPress, status = "actual" as "actual" | "next"
   }
 
   const takeModalContent = (
-    <View style={{ backgroundColor: "white", width: "80%", display: "flex", justifyContent: "center" }}>
+    <ScrollView className="w-full">
       <View style={{ alignItems: "center" }}>
         <Text style={{ color: "#333333", fontSize: 20 }}>{med}</Text>
       </View>
@@ -149,7 +150,7 @@ const Treatment = ({ navigation, onPress, status = "actual" as "actual" | "next"
       <TouchableOpacity style={{ display: "flex", flexDirection: "row", justifyContent: "flex-start", alignItems: "center", marginTop: 40 }} onPress={() => handleReviewChange()}>
         <Text style={{ fontSize: 17, color: "#9CDE00" }}>Valider</Text>
       </TouchableOpacity>
-    </View>
+    </ScrollView>
   );
 
   useEffect(() => {
@@ -266,11 +267,8 @@ const Treatment = ({ navigation, onPress, status = "actual" as "actual" | "next"
           onClose={() => setTakeDetailsModalVisible(!takeDetailsModalVisible)}
           children={takeModalContent}
           styleAdded={{
-            backgroundColor: "white",
-            borderRadius: 10,
-            padding: 20,
             maxHeight: "80%",
-            width: "80%",
+            marginBottom: "20%"
           }}
         />
       )}

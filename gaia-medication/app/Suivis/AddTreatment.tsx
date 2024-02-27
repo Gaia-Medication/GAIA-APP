@@ -1390,6 +1390,7 @@ export default function AddTreatment({route, navigation}) {
 
   return (
     <SafeAreaView className="flex w-full bg-white flex-1 pt-[2px] pb-2 px-2">
+      
       <GoBackButton navigation={navigation}></GoBackButton>
 
       <AlertNotificationRoot>
@@ -1562,12 +1563,6 @@ export default function AddTreatment({route, navigation}) {
                     onClose={() => {
                       setInstructionsDetailModal(false);
                     }}
-                    styleAdded={{
-                      backgroundColor: "white",
-                      borderRadius: 10,
-                      padding: 20,
-                      maxHeight: "80%",
-                    }}
                     children={modalDescriptionContent}
                   />
                 </View>
@@ -1591,13 +1586,6 @@ export default function AddTreatment({route, navigation}) {
           visible={instructionModalVisible}
           onClose={() => {
             setInstructionModalVisible(false);
-          }}
-          styleAdded={{
-            backgroundColor: "white",
-            borderRadius: 10,
-            padding: 20,
-            //maxWidth: "90%",
-            maxHeight: "80%",
           }}
           children={modalContent}
         />

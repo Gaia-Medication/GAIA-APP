@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Linking,
   Pressable,
+  ScrollView,
 } from "react-native";
 import MapView, { MapType, Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import * as Location from "expo-location";
@@ -214,43 +215,43 @@ export default function Map({ navigation }) {
       <ModalComponent
         visible={isMedModalVisible}
         onClose={closeMedModal}
-        styleAdded={{
-          backgroundColor: "white",
-          borderRadius: 10,
-          paddingHorizontal: 20,
-          width: "80%",
-          maxHeight: "60%",
-        }}
       >
-        <View className="w-full py-5">
+        <View className="w-full pb-2">
           <Text>Médecins à proximité</Text>
-          {medecin.map((item, index)=>{
-            return(
-              <View key={index}>
-                <Text>{
-                  item.Prenom
-                    .normalize('NFD').replace(/[\u0300-\u036f]/g, '') 
-                    .toLowerCase() 
-                    .replace(/^\w/, (c) => c.toUpperCase()) 
-                } {
-                  item.Nom
-                    .normalize('NFD').replace(/[\u0300-\u036f]/g, '') 
-                    .toLowerCase() 
-                    .replace(/^\w/, (c) => c.toUpperCase()) 
-                }</Text>
-                <Text className=" text-xs"> {item.CodePostal}</Text>
-                
-              </View>
-            )
-          } )}
+          
+          <ScrollView 
+          className=" max-h-80"
+          >
+            
+            {medecin.map((item, index)=>{
+              return(
+                <View key={index}>
+                  <Text>{
+                    item.Prenom
+                      .normalize('NFD').replace(/[\u0300-\u036f]/g, '') 
+                      .toLowerCase() 
+                      .replace(/^\w/, (c) => c.toUpperCase()) 
+                  } {
+                    item.Nom
+                      .normalize('NFD').replace(/[\u0300-\u036f]/g, '') 
+                      .toLowerCase() 
+                      .replace(/^\w/, (c) => c.toUpperCase()) 
+                  }</Text>
+                  <Text className=" text-xs"> {item.CodePostal}</Text>
+                  
+                </View>
+              )
+            } )}
+            
+          </ScrollView>
         </View>
         <TouchableOpacity
-              onPress={() => {
-                closeMedModal();
-              }}
-            >
-              <Text className="text-red-500">Fermer</Text>
-            </TouchableOpacity>
+          onPress={() => {
+            closeMedModal();
+          }}
+        >
+          <Text className="text-red-500">Fermer</Text>
+        </TouchableOpacity>
       </ModalComponent>
     </View>
   );

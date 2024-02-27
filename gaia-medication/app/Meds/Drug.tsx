@@ -448,17 +448,10 @@ export default function Drug({ route, navigation }) {
           )}
 
           <ModalComponent
-            styleAdded={{
-              backgroundColor: "white",
-              borderRadius: 10,
-              paddingHorizontal: 20,
-              width: "80%",
-              maxHeight: "60%",
-            }}
             visible={drugModalVisible}
             onClose={() => setDrugModalVisible(!drugModalVisible)}
           >
-            <View className="w-full py-3">
+            <View className="w-full pb-2">
               {drug.Values &&
                 drug.Values.map((item, index) => {
                   const alreadyStocked =
