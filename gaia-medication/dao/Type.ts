@@ -45,6 +45,7 @@ type Take = {
   quantity: number,
   taken: boolean,
   review: string,
+  pain: number ,
 };
 
 type Notif = {

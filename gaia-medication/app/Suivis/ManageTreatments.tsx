@@ -91,11 +91,13 @@ export default function ManageTreatments({navigation}) {
             const date = formaterDate(new Date(take.date));
             const takenStatus = take.taken ? "pris" : "non pris";
             const review = take.review ? take.review : "";
+            const pain = take.pain ? take.pain : "";
             return `
             <p style="font-weight: 500">${user.firstname} ${user.lastname}</p>
             <p>Médicament: ${medic.Name}</p>
             <p>Status: ${takenStatus}</p>
             <p>le ${date}</p>
+            <p>Douleur ressentie : ${pain}</p>
             <p>Commentaire:${review}</p>
             <span style="display: block; height: 1px; width: 70%; background-color: #d6d6d6; margin-bottom: 4rem;"></span>
             `;
