@@ -31,6 +31,7 @@ const Treatment = ({ navigation, onPress, status = "actual" as "actual" | "next"
 
   const init = () => {
     setNewTxt(take.review);
+    setPainValue(take.pain);
     setDate(new Date(take.date));
   };
 
@@ -65,6 +66,7 @@ const Treatment = ({ navigation, onPress, status = "actual" as "actual" | "next"
 
   const handleReviewChange = () => {
     take.review = newTxt;
+    take.pain = painValue;
     validateModalFun(take)
     setTakeDetailsModalVisible(false);
   }
@@ -126,6 +128,7 @@ const Treatment = ({ navigation, onPress, status = "actual" as "actual" | "next"
             style={{
               width: '100%',
               height: 8,
+              marginVertical: 20,
             }}
             minimumValue={0}
             maximumValue={4}

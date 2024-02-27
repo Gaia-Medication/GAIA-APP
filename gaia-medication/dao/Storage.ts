@@ -246,6 +246,7 @@ export const changeTreatments = async (tak: Take) => {
             if (take.date === tak.date) {
               take.taken = tak.taken;
               take.review = tak.review;
+              take.pain = tak.pain;
             }
           });
         }
