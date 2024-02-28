@@ -17,6 +17,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import {
   getATCLabel,
   getAllGenOfCIS,
+  getAllMedsOfLab,
   getAllSameCompOfCIS,
   getComposition,
   getIMfromMed,
@@ -41,6 +42,7 @@ import TutorialBubble from "../component/TutorialBubble";
 export default function Drug({ route, navigation }) {
   const [drugModalVisible, setDrugModalVisible] = useState(false);
   const [atcModalVisible, setAtcModalVisible] = useState(false);
+  const [labModalVisible, setLabModalVisible] = useState(false);
   const isFocused = useIsFocused();
   const [user, setUser] = useState<User | null>(null);
   const [showMore, setShowMore] = useState(5);
@@ -48,6 +50,7 @@ export default function Drug({ route, navigation }) {
   const [allergique, setAllergique] = useState(false);
   const [iM, setIM] = useState([]);
   const [significationATC, setSignificationATC] = useState([]);
+  const [labMeds, setLabMeds] = useState([]);
   const [sameComp, setSameComp] = useState([]);
 
   const { drugCIS, context } = route.params;
@@ -79,7 +82,10 @@ export default function Drug({ route, navigation }) {
   useEffect(() => {
     if (isFocused) {
       console.log("Nav on Drug Page :", drugCIS, "-", drug.Name);
-      drug.ATC&&drug.ATC!="inconnue\nCode" &&setSignificationATC(getATCLabel(drug.ATC))
+      drug.ATC &&
+        drug.ATC != "inconnue\nCode" &&
+        setSignificationATC(getATCLabel(drug.ATC));
+      setLabMeds(getAllMedsOfLab(drug.Titulaire));
       init();
     }
   }, [isFocused && drug]);
@@ -233,19 +239,24 @@ export default function Drug({ route, navigation }) {
               <Text className="text-lg mb-4">
                 {drug.Name.split(" ").slice(1).join(" ")}
               </Text>
-              <Text>
-                Titulaire: <Text className=" font-light">{drug.Titulaire}</Text>
-              </Text>
+
+              <TouchableOpacity onPress={() => setLabModalVisible(true)}>
+                <Text>
+                  Titulaire:{" "}
+                  <Text className="text-[#9CDE00]">{drug.Titulaire}</Text>
+                </Text>
+              </TouchableOpacity>
               <Text>
                 Administration:{" "}
                 <Text className=" font-light">{drug.Administration_way}</Text>
               </Text>
 
-              {drug.ATC && drug.ATC!="inconnue\nCode" &&(
-                <TouchableOpacity  onPress={()=>setAtcModalVisible(true)}>
-                <Text className="">
-                  Code ATC: <Text className="text-[#9CDE00] font-semibold">{drug.ATC}</Text>
-                </Text></TouchableOpacity> 
+              {drug.ATC && drug.ATC != "inconnue\nCode" && (
+                <TouchableOpacity onPress={() => setAtcModalVisible(true)}>
+                  <Text className="">
+                    Code ATC: <Text className="text-[#9CDE00]">{drug.ATC}</Text>
+                  </Text>
+                </TouchableOpacity>
               )}
             </View>
 
@@ -261,9 +272,9 @@ export default function Drug({ route, navigation }) {
               </View>
             )}
             {drug.Indications_therapeutiques && (
-              <Text className="px-6">
-                🔬 Indication thérapeutique:{" "}
-                <Text className=" text-xs">
+              <View className="px-6">
+                <Text className="">🔬 Indication thérapeutique</Text>
+                <Text className="text-xs mt-[-5px]">
                   {drug.Indications_therapeutiques.includes(drug.ATC)
                     ? drug.Indications_therapeutiques.split(
                         drug.ATC
@@ -274,7 +285,7 @@ export default function Drug({ route, navigation }) {
                     ? "Vous trouverez les indications thérapeutiques dans la notice en cliquant sur le bouton en haut à droite"
                     : drug.Indications_therapeutiques.replaceAll("\u0092", "'")}
                 </Text>
-              </Text>
+              </View>
             )}
             <Text className="px-6">🏷 Boite(s) disponible(s)</Text>
             <View className=" px-6">
@@ -449,16 +460,71 @@ export default function Drug({ route, navigation }) {
               </Text>
             </TouchableOpacity>
           )}
-          <ModalComponent visible={atcModalVisible} onClose={() => setAtcModalVisible(!atcModalVisible)}>
+
+          <ModalComponent
+            visible={atcModalVisible}
+            onClose={() => setAtcModalVisible(!atcModalVisible)}
+          >
             <View className="w-full pb-2 px-4">
               <Text className="pb-2">Signification du code ATC</Text>
-              {significationATC.map((item, index) =>
-                <Text className=" text-xs" key={index}>{index+1} - {item}</Text>
-              )}
+              {significationATC.map((item, index) => (
+                <Text className=" text-xs" key={index}>
+                  {index + 1} - {item}
+                </Text>
+              ))}
             </View>
             <TouchableOpacity
               onPress={() => {
                 setAtcModalVisible(!atcModalVisible);
+              }}
+            >
+              <Text className="text-red-500">Fermer</Text>
+            </TouchableOpacity>
+          </ModalComponent>
+
+          <ModalComponent
+            visible={labModalVisible}
+            onClose={() => setLabModalVisible(!labModalVisible)}
+          >
+            <View className="w-full pb-2 ">
+              <Text className="pb-2 px-4">{drug.Titulaire}</Text>
+              <ScrollView className=" max-h-80">
+                {labMeds.map((item, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={styles.listItem}
+                    className="-mb-[1px] flex justify-start align-middle border-t border-gray-300 p-2"
+                    onPress={() => {
+                      setLabModalVisible(false);
+                      navigation.push("Drug", { drugCIS: item.CIS });
+                    }}
+                  >
+                    <MedIconByType type={item.Shape} />
+                    <View className="ml-4 flex-1 flex-row justify-between items-center">
+                      <Text className="flex-1">{item.Name}</Text>
+                      {user.preference
+                        .map((allergie) =>
+                          Array.from(getPAfromMed(item.CIS)).includes(allergie)
+                        )
+                        .some((bool) => bool) && (
+                        <View className=" items-center">
+                          <Image
+                            className={"h-5 w-5 ml-1"}
+                            source={require("../../assets/allergy.png")}
+                          />
+                          <Text className="ml-2 text-red-500 font-bold">
+                            Allergie
+                          </Text>
+                        </View>
+                      )}
+                    </View>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
+            <TouchableOpacity
+              onPress={() => {
+                setLabModalVisible(!labModalVisible);
               }}
             >
               <Text className="text-red-500">Fermer</Text>

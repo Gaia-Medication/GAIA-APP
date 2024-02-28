@@ -370,7 +370,6 @@ export default function Home({ navigation }) {
             showsHorizontalScrollIndicator={false}
           >
             <View className="px-6 flex-row gap-6">
-              
               <TouchableOpacity onPress={()=>navigation.navigate("SuivisHandler",{screen:"Stock"})} 
               className=" rounded-3xl bg-[#9CDE0070] flex-row items-center justify-center p-4 w-32 h-32">
                 <Image className="h-20 w-20" source={require("../../assets/stock.png")} />
@@ -383,7 +382,6 @@ export default function Home({ navigation }) {
               className=" rounded-3xl bg-[#3841ee70] flex-row items-center justify-center p-4 w-32 h-32">
                 <Image className="h-20 w-20" source={require("../../assets/map-icons/medical-team.png")} />
               </TouchableOpacity>
-
             </View>
             
           </ScrollView>

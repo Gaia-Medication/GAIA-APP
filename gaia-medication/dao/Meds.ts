@@ -190,3 +190,11 @@ export function getATCLabel(codeATC){
     console.error('Error reading JSON file', error);
   }
 }
+
+export function getAllMedsOfLab(labo){   
+  try {
+    return medicaments.filter(med => med.Titulaire===labo)
+  } catch (error) {
+    console.error('Error reading JSON file', error);
+  }
+}
