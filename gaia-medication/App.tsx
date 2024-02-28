@@ -54,31 +54,6 @@ Notifications.addNotificationResponseReceivedListener(response => {
   }
 })
 
-Notifications.addNotificationReceivedListener(notification => {
-  const takes =  [];
-  notification.request.content.data.forEach(take => {
-    let tmp = {
-      userId: take.userId,
-      treatmentName: take.treatmentName,    
-      CIS: take.CIS,
-      date: take.date,
-      quantity: take.quantity,
-      taken: take.taken,
-      review: take.review,
-    }
-    takes.push(tmp);
-  });
-  //console.log("Received notification: ", notification);
-  console.log("Data =>", notification.request.content.data);
-  const receivedNotification = {
-    id: notification.request.identifier,
-    title: notification.request.content.title,
-    body: notification.request.content.body,
-    //date: notification.request.trigger.date,
-  };
-  //setNotificationsList(notifsDaily.concat(notifsTakes).concat(notifsLate));
-  //AsyncStorage.setItem("notifications", JSON.stringify(notificationsList));
-});
 
 export default function App() {
   return (

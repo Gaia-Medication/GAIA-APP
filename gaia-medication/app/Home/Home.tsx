@@ -79,20 +79,22 @@ export default function Home({ navigation }) {
     } else {
       setUser(current);
     }
-    const notifsDaily = await initDailyNotifications(current?.firstname, current?.id);
-    const notifsTakes = await initTakeNotifications(current?.firstname, current?.id);
-    const notifsLate = await initLateNotifications(current?.firstname, current?.id);
+    await initNotifications();
+    console.log("Traitements :", await getAllTreatments());
+  };
 
-    //setNotificationsList(notifsDaily);
+  const initNotifications = async () => {
+    const notifsDaily = await initDailyNotifications(user?.firstname, user?.id);
+    const notifsTakes = await initTakeNotifications(user?.firstname, user?.id);
+    const notifsLate = await initLateNotifications(user?.firstname, user?.id);
     console.log("Notifs Daily Totales :", notifsDaily.length);
     console.log("Notifs Take Totales :", notifsTakes.length);
     console.log("Notifs Late Totales :", notifsLate.length);
     console.log("NOTIFS ACTIVES : ", (await Notifications.getAllScheduledNotificationsAsync()).length);
-    //setNotificationsList(notifsDaily.concat(notifsTakes).concat(notifsLate));
-    console.log("NOTIFS ENREGISTREES : ", notificationsList.length);
-    AsyncStorage.setItem("notifications", JSON.stringify(notificationsList));
+    setNotificationsList(notifsDaily.concat(notifsTakes).concat(notifsLate));
+    //AsyncStorage.setItem("notifications", JSON.stringify(notificationsList));
     saveNotifs(notificationsList);
-  };
+  }
 
   const initUserInfo = async () => {
     const takes = await initTreatments();

@@ -233,7 +233,6 @@ export const initDailyNotifications = async (userName, userId) => {
     }
   }
   let all = await Notifications.getAllScheduledNotificationsAsync();
-  console.log(all);
   return arrayOfNotifications;
 }
 
@@ -286,9 +285,11 @@ export const initLateNotifications = async (userName, userId) => {
     for (const take of treatmentsDays[dateKey]) {
 
       try {
+        console.log(take.taken);
         const dateNotification = new Date(take.date);
         dateNotification.setHours(dateNotification.getHours(), dateNotification.getMinutes(), 0, 0);
         if (dateNotification.getTime() >= currentDate.getTime() && take.taken === false) {
+          console.log("LATE");
           const newDate = new Date();
           let minDiff = Math.round((newDate.getTime() - dateNotification.getTime()) / 60000);
           if (dateNotification.getTime() < new Date().getTime() && minDiff > 60) {

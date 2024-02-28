@@ -271,14 +271,13 @@ export const saveNotifs = async (notificationsList) => {
     if (notif.type === "take") {
       console.log("NOTIF TAKE");
       if (!notifsAlreadySaved.find((notifAlreadySaved) => ((notifAlreadySaved.type === "take") && (new Date(notifAlreadySaved.date).getTime() === new Date(notif.date).getTime())))) {
-        console.log("new notif");
-        console.log(notif);
-        console.log(notifsAlreadySaved);
         updatedNotifs.push(notif);
       }
     }
     if (notif.type === "late") {
-      updatedNotifs.push(notif);
+      if (!notifsAlreadySaved.find((notifAlreadySaved) => ((notifAlreadySaved.type === "late") && (new Date(notifAlreadySaved.date).getDate() === new Date(notif.date).getDate())))) {
+        updatedNotifs.push(notif);
+      }
     }
   })
   console.log("Notifs Saved :", updatedNotifs.length);
