@@ -15,6 +15,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
+  getATCLabel,
   getAllGenOfCIS,
   getAllSameCompOfCIS,
   getComposition,
@@ -76,6 +77,7 @@ export default function Drug({ route, navigation }) {
   useEffect(() => {
     if (isFocused) {
       console.log("Nav on Drug Page :", drugCIS, "-", drug.Name);
+      drug.ATC&&drug.ATC!="inconnue\nCode" &&console.log(getATCLabel(drug.ATC))
       init();
     }
   }, [isFocused && drug]);

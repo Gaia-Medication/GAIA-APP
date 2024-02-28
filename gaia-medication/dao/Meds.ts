@@ -1,5 +1,8 @@
 import data from './medication.json';
 import data2 from './interaction.json';
+import data3 from './ATC_Label.json';
+
+const ATC_label=JSON.parse(JSON.stringify(data3))
 
 //Tous les médicamenets
 const medicaments=JSON.parse(JSON.stringify(data))
@@ -167,6 +170,22 @@ export function getComposition(composition){
       }
     });
     return dictionnaireTypes;
+  } catch (error) {
+    console.error('Error reading JSON file', error);
+  }
+}
+
+
+export function getATCLabel(codeATC){   
+  try {
+    var codePere=codeATC
+    const labels=[]
+    while (codePere!="-") {
+      const atc=ATC_label.find(item=>item.ATC_code===codePere)
+      codePere=atc.ATC_codePere
+      labels.push(atc.Label)
+    }
+    return labels.reverse()
   } catch (error) {
     console.error('Error reading JSON file', error);
   }

@@ -37,7 +37,6 @@ export default function Home({ navigation }) {
   const isFocused = useIsFocused();
   const [loading, setLoading] = useState(false);
   const [takes, setTakes] = useState(null);
-  const [stock, setStock] = useState(null);
   const [nextTake, setNextTake] = useState(-1);
   const [user, setUser] = useState<User | null>(null);
   const [users, setUsers] = useState<User[]>([]);
@@ -120,21 +119,6 @@ export default function Home({ navigation }) {
     });
     setNextTake(nextTakeIndex) 
     setTakes(todaysTakes.filter(take=>take.take.userId==user.id));
-    
-    const stockList = await readList("stock");
-    const stockListFilter=stockList.filter((item) => item.idUser == user.id);
-    const stockListFilterGrouped = stockListFilter.reduce((result, current) => {
-      const key = current.CIS;
-      if (!result[key]) {
-        result[key] = { ...current };
-      } else {
-        result[key].qte += current.qte;
-      }
-      return result;
-    }, {});
-    
-    const actualStock = Object.values(stockListFilterGrouped);
-    setStock(actualStock)
   }
 
   const handleAvatarButton = () => {
@@ -209,7 +193,7 @@ export default function Home({ navigation }) {
         source={require("../../assets/logo_title_gaia.png")}
       ></Image>
       <View className=" flex bg-white w-full h-full flex-1" style={{ gap: 20 }}>
-      {user && takes && stock && (
+      {user && takes && (
         <>
           {smallTutoStep === 0 && tutoHome === "0" && (
             <TutorialBubble
@@ -377,14 +361,32 @@ export default function Home({ navigation }) {
               <Image className="w-24 h-24 -mt-4" source={require("../../assets/prescription.png")} />
               <Text className="mt-2 text-base text-[#51a6ec]">Aucune prise à prendre aujoud'hui</Text>
             </TouchableOpacity>
-          )}
-          <View className="flex justify-center items-center mt-2">
-            <TouchableOpacity onPress={()=>navigation.navigate("SuivisHandler",{screen:"Stock"})} 
-            className=" rounded-3xl bg-[#9CDE00] flex-row items-center justify-center p-4 w-68">
-              <Image className="h-5 w-5" source={require("../../assets/stock.png")} />
-              <Text className="ml-2 text-base text-white font-bold">{stock.length} Medicaments en stock</Text>
-            </TouchableOpacity>
+          )} 
+          <View style={styles.traitementContainer}>
+            <Text style={styles.title2} className="text-neutral-700">Autres</Text>
           </View>
+          <ScrollView
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+          >
+            <View className="px-6 flex-row gap-6">
+              
+              <TouchableOpacity onPress={()=>navigation.navigate("SuivisHandler",{screen:"Stock"})} 
+              className=" rounded-3xl bg-[#9CDE0070] flex-row items-center justify-center p-4 w-32 h-32">
+                <Image className="h-20 w-20" source={require("../../assets/stock.png")} />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={()=>navigation.navigate("Map")} 
+              className=" rounded-3xl bg-[#ffdb3c89] flex-row items-center justify-center p-4 w-32 h-32">
+                <Image className="h-20 w-20" source={require("../../assets/map-icons/map.png")} />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={()=>navigation.navigate("SuivisHandler",{screen:"Stock"})} 
+              className=" rounded-3xl bg-[#3841ee70] flex-row items-center justify-center p-4 w-32 h-32">
+                <Image className="h-20 w-20" source={require("../../assets/map-icons/medical-team.png")} />
+              </TouchableOpacity>
+
+            </View>
+            
+          </ScrollView>
         </>
       )}
       </View>
