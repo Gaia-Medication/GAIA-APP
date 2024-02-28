@@ -171,13 +171,15 @@ export default function ModifyProfile({ navigation }: IModifyProps) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <GoBackButton navigation={navigation}></GoBackButton>
 
       {!profileSelected && users && (
         <View className="mt-[16px]" style={styles.container}>
-          <Text className=" text-2xl font-semibold py-2 mx-auto">
-            Modifier un profil
-          </Text>
+          <View className="flex-row items-center justify-start py-4 px-6">
+            <GoBackButton navigation={navigation}></GoBackButton>
+            <Text className=" ml-4 text-center text-2xl text-neutral-700 font-bold">
+              Modifier un profil
+            </Text>
+          </View>
           <FlatList
             data={users}
             className=" p-2"
@@ -207,9 +209,12 @@ export default function ModifyProfile({ navigation }: IModifyProps) {
 
       {profileSelected && (
         <>
-          <Text className=" text-center my-6 text-2xl text-neutral-700 font-bold">
-            Modification de profil
-          </Text>
+          <View className="flex-row items-center justify-start py-4 px-6">
+            <GoBackButton navigation={navigation}></GoBackButton>
+            <Text className=" ml-4 text-center text-2xl text-neutral-700 font-bold">
+              Modification de profil
+            </Text>
+          </View>
           {!validFirstPart && (
             <>
               <Input
