@@ -382,7 +382,7 @@ export default function Home({ navigation }) {
                 <Image className="h-20 w-20" source={require("../../assets/map-icons/map.png")} />
               </TouchableOpacity>
               <TouchableOpacity onPress={()=>setIsMedModalVisible(true)} 
-              className=" rounded-3xl bg-[#3841ee70] flex-row items-center justify-center p-4 w-32 h-32">
+              className=" rounded-3xl bg-[#0070e870] flex-row items-center justify-center p-4 w-32 h-32">
                 <Image className="h-20 w-20" source={require("../../assets/map-icons/medical-team.png")} />
               </TouchableOpacity>
             </View>
@@ -403,15 +403,15 @@ export default function Home({ navigation }) {
                 <View style={{
                   display: "flex",
                   flex: 1,
-                  backgroundColor: "#A0DB3050",
+                  backgroundColor: "#0070e850",
                   borderRadius: 10,
                 }} >
                   <Input
                     style={styles.searchBarInput}
                     className=""
                     placeholder="Recherche de médecins"
-                    placeholderTextColor="#9CDE00"
-                    rightIcon={{ type: "feathers", name: "search", color: "#9CDE00" }}
+                    placeholderTextColor="#0070e8"
+                    rightIcon={{ type: "feathers", name: "search", color: "#0070e8" }}
                     inputContainerStyle={styles.searchBarContainer}
                     onChangeText={(text) => {
                       console.log(text)
