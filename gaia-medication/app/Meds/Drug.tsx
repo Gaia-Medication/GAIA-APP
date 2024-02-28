@@ -40,12 +40,14 @@ import TutorialBubble from "../component/TutorialBubble";
 
 export default function Drug({ route, navigation }) {
   const [drugModalVisible, setDrugModalVisible] = useState(false);
+  const [atcModalVisible, setAtcModalVisible] = useState(false);
   const isFocused = useIsFocused();
   const [user, setUser] = useState<User | null>(null);
   const [showMore, setShowMore] = useState(5);
   const [stock, setStock] = useState(null);
   const [allergique, setAllergique] = useState(false);
   const [iM, setIM] = useState([]);
+  const [significationATC, setSignificationATC] = useState([]);
   const [sameComp, setSameComp] = useState([]);
 
   const { drugCIS, context } = route.params;
@@ -77,7 +79,7 @@ export default function Drug({ route, navigation }) {
   useEffect(() => {
     if (isFocused) {
       console.log("Nav on Drug Page :", drugCIS, "-", drug.Name);
-      drug.ATC&&drug.ATC!="inconnue\nCode" &&console.log(getATCLabel(drug.ATC))
+      drug.ATC&&drug.ATC!="inconnue\nCode" &&setSignificationATC(getATCLabel(drug.ATC))
       init();
     }
   }, [isFocused && drug]);
@@ -97,7 +99,6 @@ export default function Drug({ route, navigation }) {
           console.log(addstock);
 
           await addItemToList("stock", addstock);
-          //setStock([...stock, addstock]);
         }
       } else {
         const addstock: Stock = {
@@ -109,7 +110,6 @@ export default function Drug({ route, navigation }) {
         console.log(addstock);
 
         await addItemToList("stock", addstock);
-        //setStock([...stock, addstock]);
       }
       init();
     } catch (e) {
@@ -242,9 +242,10 @@ export default function Drug({ route, navigation }) {
               </Text>
 
               {drug.ATC && drug.ATC!="inconnue\nCode" &&(
-                <Text>
-                  Code ATC: <Text className=" font-light">{drug.ATC}</Text>
-                </Text>
+                <TouchableOpacity  onPress={()=>setAtcModalVisible(true)}>
+                <Text className="">
+                  Code ATC: <Text className="text-[#9CDE00] font-semibold">{drug.ATC}</Text>
+                </Text></TouchableOpacity> 
               )}
             </View>
 
@@ -448,6 +449,21 @@ export default function Drug({ route, navigation }) {
               </Text>
             </TouchableOpacity>
           )}
+          <ModalComponent visible={atcModalVisible} onClose={() => setAtcModalVisible(!atcModalVisible)}>
+            <View className="w-full pb-2 px-4">
+              <Text className="pb-2">Signification du code ATC</Text>
+              {significationATC.map((item, index) =>
+                <Text className=" text-xs" key={index}>{index+1} - {item}</Text>
+              )}
+            </View>
+            <TouchableOpacity
+              onPress={() => {
+                setAtcModalVisible(!atcModalVisible);
+              }}
+            >
+              <Text className="text-red-500">Fermer</Text>
+            </TouchableOpacity>
+          </ModalComponent>
 
           <ModalComponent
             visible={drugModalVisible}
