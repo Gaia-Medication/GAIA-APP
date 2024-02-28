@@ -11,6 +11,7 @@ type User = {
 type Treatment = {
   name: string,
   description: string,
+  doctor: string,
   userId: number,
   startDate: Date,
   instructions: Instruction[],

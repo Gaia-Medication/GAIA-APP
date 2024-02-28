@@ -73,6 +73,24 @@ export function getAllSameCompOfCIS(CIS){
   }
 }
 
+export function getAllSameCompOfCISWithHimself(CIS){   
+  try {
+    let areSetsEqual = (set1, set2) => set1.size === set2.size && [...set1].every(val => set2.has(val));
+    const medicament = medicaments.find(med => med.CIS === CIS);
+    const composition = medicament.Composition
+    const principesActifsUniques = new Set();
+    composition.forEach((element) => {
+      const principeActif = element["Principe actif"][0];
+      principesActifsUniques.add(principeActif);
+    });
+    const sameComp = medicaments.filter(med => med.Composition && 
+      areSetsEqual(new Set( med.Composition.map(element => element["Principe actif"][0])), principesActifsUniques));
+    return sameComp
+  } catch (error) {
+    console.error('Error reading JSON file', error);
+  }
+}
+
 //Tous les principes actifs
 export function getAllPA(){   
   try {

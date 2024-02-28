@@ -141,7 +141,7 @@ export default function Map({ navigation }) {
   }, [isFocused]);
 
   useEffect(() => {
-    const newPoints = getPointsbyRegion(region);
+    const newPoints = (region.latitudeDelta<0.13&&region.longitudeDelta<0.13) ? getPointsbyRegion(region):[];
     newPoints && setMedecin(getDoctorbyRegion(newPoints));
     setPoints(newPoints);
   }, [region]);
@@ -225,20 +225,28 @@ export default function Map({ navigation }) {
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item }) => {
               return (
-                <View>
-                  <Text>{
-                    item.Prenom
-                      .normalize('NFD').replace(/[\u0300-\u036f]/g, '') 
-                      .toLowerCase() 
-                      .replace(/^\w/, (c) => c.toUpperCase()) 
-                  } {
-                    item.Nom
-                      .normalize('NFD').replace(/[\u0300-\u036f]/g, '') 
-                      .toLowerCase() 
-                      .replace(/^\w/, (c) => c.toUpperCase()) 
-                  }</Text>
-                  <Text className=" text-xs">{item.CodePostal}</Text>
-                  
+                <View className="-mb-[1px] pb-2 pt-1 border-t border-b border-gray-300 flex-row justify-between items-center">
+                  <View>
+                    <Text>{
+                      item.Prenom
+                        .normalize('NFD').replace(/[\u0300-\u036f]/g, '') 
+                        .toLowerCase() 
+                        .replace(/^\w/, (c) => c.toUpperCase()) 
+                    } {
+                      item.Nom
+                        .normalize('NFD').replace(/[\u0300-\u036f]/g, '') 
+                        .toLowerCase() 
+                        .replace(/^\w/, (c) => c.toUpperCase()) 
+                    }</Text>
+                    <Text className=" text-xs">{item.CodePostal}</Text>
+                  </View>
+                  <View>
+                    {item.Telephone != null && (
+                      <TouchableOpacity onPress={()=>Linking.openURL(`tel:${item.Telephone}`)}>
+                        <Text className="">Contacter</Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
                 </View>
               );
             }}

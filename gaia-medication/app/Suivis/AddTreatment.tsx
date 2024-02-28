@@ -15,6 +15,7 @@ import {
   Text,
   TextInput,
   FlatList,
+  Image,
   TouchableOpacity,
   Button,
   Alert,
@@ -23,7 +24,12 @@ import {
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { styles } from "../../style/style";
-import { getAllMed, getMedbyCIS } from "../../dao/Meds";
+import {
+  getAllMed,
+  getAllSameCompOfCISWithHimself,
+  getMedbyCIS,
+  getPAfromMed,
+} from "../../dao/Meds";
 import ModalComponent from "../component/Modal";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { RadioButton, Checkbox } from "react-native-paper";
@@ -42,15 +48,16 @@ import { Input } from "react-native-elements";
 import { ArrowRightCircle } from "react-native-feather";
 import GoBackButton from "../component/GoBackButton";
 
-export default function AddTreatment({route, navigation}) {
+export default function AddTreatment({ route, navigation }) {
   const isFocused = useIsFocused();
 
   const windowWidth = Dimensions.get("window").width;
   const windowHeight = Dimensions.get("window").height;
-  let drugScanned; 
-    if (route.params) {
-        ({ drugScanned } = route.params); 
-    }
+  let drugScanned;
+  var doctor = null;
+  if (route.params) {
+    ({ drugScanned, doctor } = route.params);
+  }
   // INPUTS
   const [treatmentName, setTreatmentName] = useState("");
   const [treatmentDescription, setTreatmentDescription] = useState("");
@@ -113,6 +120,7 @@ export default function AddTreatment({route, navigation}) {
   const [arrayOfDates, setArrayOfDates] = useState([]);
   const [takes, setTakes] = useState<Take[]>([]);
   const [user, setUser] = useState<User | null>(null);
+  const [sameComp, setSameComp] = useState([]);
 
   // DATA ARRAYS
   const options = {
@@ -192,7 +200,7 @@ export default function AddTreatment({route, navigation}) {
 
   // ASSOCIATE UN DIGIT (QUANTITE) A UNE DATE
   const addInstruction = async () => {
-    let updatedTakes=[]
+    let updatedTakes = [];
     if (checkQty === "custom") {
       // Convert checkedDates to a map for quick lookup
       const checkedDatesMap = new Map(
@@ -278,8 +286,10 @@ export default function AddTreatment({route, navigation}) {
       takes: updatedTakes, // TABLEAU DES PRISES
     };
     await addItemToList("instructions", newInstruction);
-    console.log(newInstruction)
+    console.log(newInstruction);
+    const newSameComp = getAllSameCompOfCISWithHimself(newInstruction.CIS);
     setInstructionsList([...instructionsList, newInstruction]);
+    setSameComp(sameComp.concat(newSameComp));
     setInstructionModalVisible(false);
   };
 
@@ -933,7 +943,7 @@ export default function AddTreatment({route, navigation}) {
 
   const handleInputChange = (text) => {
     if (!isNaN(parseFloat(text)) && isFinite(text)) {
-        setQuantity(text)
+      setQuantity(text);
     } else {
       console.log("NOT A NUMBER");
       if (text != "") {
@@ -1067,8 +1077,6 @@ export default function AddTreatment({route, navigation}) {
       </View>
     ) : null;
 
-
-
   const addTreatment = async () => {
     const asyncInstructions = await readList("instructions");
     console.log("ASYNC INSTRUCTIONS => ", asyncInstructions);
@@ -1078,11 +1086,12 @@ export default function AddTreatment({route, navigation}) {
       treatmentName: treatmentName,
       userId: user.id,
       description: treatmentDescription,
+      doctor: doctor?doctor.IDPP:null,
       startDate: startDate,
       instructions: asyncInstructions,
     };
     await addItemToList("treatments", newTreatment);
-    navigation.navigate("SuivisHandler",{screen:"Suivis"})
+    navigation.navigate("SuivisHandler", { screen: "Suivis" });
   };
 
   const handleValidate = () => {
@@ -1195,56 +1204,56 @@ export default function AddTreatment({route, navigation}) {
 
   const modalContent = selectedMed ? (
     <ScrollView>
-    <View className="flex justify-center gap-4 p-2">
-      <Text className="text-center text-xl font-bold text-blue-400">
-        {selectedMedName}
-      </Text>
-      <Text>Selectionner la fréquence</Text>
-      <View style={{ flexDirection: "row", alignItems: "center" }}>
-        <RadioButton
-          value="regular"
-          status={checkFrequency === "regular" ? "checked" : "unchecked"}
-          onPress={() => setCheckFrequency("regular")}
-        />
-        <Text>Régulière</Text>
-      </View>
-      <View style={{ flexDirection: "row", alignItems: "center" }}>
-        <RadioButton
-          value="custom"
-          status={checkFrequency === "custom" ? "checked" : "unchecked"}
-          onPress={() => setCheckFrequency("custom")}
-        />
-        <Text>Personnalisée</Text>
-      </View>
-      {periodicityForm}
-      {customQuantities}
-      <View
-        style={{
-          display: "flex",
-          flexDirection: "row-reverse",
-          justifyContent: "space-around",
-          alignItems: "center",
-          marginVertical: 60,
-        }}
-      >
-        <TouchableOpacity
-          onPress={() => {
-            setIsVisible(false);
-            handleValidate();
-            // Reset the state first
+      <View className="flex justify-center gap-4 p-2">
+        <Text className="text-center text-xl font-bold text-blue-400">
+          {selectedMedName}
+        </Text>
+        <Text>Selectionner la fréquence</Text>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <RadioButton
+            value="regular"
+            status={checkFrequency === "regular" ? "checked" : "unchecked"}
+            onPress={() => setCheckFrequency("regular")}
+          />
+          <Text>Régulière</Text>
+        </View>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <RadioButton
+            value="custom"
+            status={checkFrequency === "custom" ? "checked" : "unchecked"}
+            onPress={() => setCheckFrequency("custom")}
+          />
+          <Text>Personnalisée</Text>
+        </View>
+        {periodicityForm}
+        {customQuantities}
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "row-reverse",
+            justifyContent: "space-around",
+            alignItems: "center",
+            marginVertical: 60,
           }}
-          style={{ backgroundColor: "#9CDE00", padding: 10, borderRadius: 5 }}
         >
-          <Text style={{ color: "white", fontWeight: "bold" }}>VALIDER</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => handleClosePress()}
-          style={{ backgroundColor: "#FF0000", padding: 10, borderRadius: 5 }}
-        >
-          <Text style={{ color: "white", fontWeight: "bold" }}>ANNULER</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              setIsVisible(false);
+              handleValidate();
+              // Reset the state first
+            }}
+            style={{ backgroundColor: "#9CDE00", padding: 10, borderRadius: 5 }}
+          >
+            <Text style={{ color: "white", fontWeight: "bold" }}>VALIDER</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => handleClosePress()}
+            style={{ backgroundColor: "#FF0000", padding: 10, borderRadius: 5 }}
+          >
+            <Text style={{ color: "white", fontWeight: "bold" }}>ANNULER</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
     </ScrollView>
   ) : null;
 
@@ -1323,9 +1332,11 @@ export default function AddTreatment({route, navigation}) {
           {selectedInstruction.endModality === "number" ? (
             <Text>
               Il est à prendre {selectedInstruction.endQuantity} fois, jusqu'au{" "}
-              {selectedInstruction.takes[selectedInstruction.takes.length]&&formatDate(
-                selectedInstruction.takes[selectedInstruction.takes.length].date
-              )}
+              {selectedInstruction.takes[selectedInstruction.takes.length] &&
+                formatDate(
+                  selectedInstruction.takes[selectedInstruction.takes.length]
+                    .date
+                )}
             </Text>
           ) : selectedInstruction.regularFrequencyContinuity === "number" ? (
             <Text>Il est à prendre {selectedInstruction.endQuantity} fois</Text>
@@ -1390,8 +1401,6 @@ export default function AddTreatment({route, navigation}) {
 
   return (
     <SafeAreaView className="flex w-full bg-white flex-1 pt-[2px] pb-2 px-2">
-      
-
       <AlertNotificationRoot>
         <View className="flex-row items-center justify-between py-4 px-6">
           <GoBackButton navigation={navigation}></GoBackButton>
@@ -1473,8 +1482,21 @@ export default function AddTreatment({route, navigation}) {
               placeholder="Choisir vos médicaments..."
               placeholderTextColor={"#dedede"}
             />
-          ):(
-            <Text>Médicaments détectés</Text>
+          ) : (
+            <>
+              <Text>
+                Médecin :{" "}
+                {doctor.Prenom.normalize("NFD")
+                  .replace(/[\u0300-\u036f]/g, "")
+                  .toLowerCase()
+                  .replace(/^\w/, (c) => c.toUpperCase())}{" "}
+                {doctor.Nom.normalize("NFD")
+                  .replace(/[\u0300-\u036f]/g, "")
+                  .toLowerCase()
+                  .replace(/^\w/, (c) => c.toUpperCase())}
+              </Text>
+              <Text>Médicaments détectés</Text>
+            </>
           )}
           {isVisible && (
             <FlatList
@@ -1488,7 +1510,32 @@ export default function AddTreatment({route, navigation}) {
                   onPress={() => handleMedSelect(item.CIS)}
                 >
                   <MedIconByType type={item.type} />
-                  <Text className="ml-4">{item.Name}</Text>
+                  <View className="ml-4 flex-1 flex-row justify-between items-center">
+                    <Text className="flex-1">{item.Name}</Text>
+                    {sameComp.find((med) => med.Name === item.Name) ? (
+                      <View className=" items-center">
+                        <Text className="ml-2 text-orange-500 text-xs font-bold text-center">
+                          Principe actif{"\n"}redondant
+                        </Text>
+                      </View>
+                    ) : (
+                      user.preference
+                        .map((allergie) =>
+                          Array.from(getPAfromMed(item.CIS)).includes(allergie)
+                        )
+                        .some((bool) => bool) && (
+                        <View className=" items-center">
+                          <Image
+                            className={"h-5 w-5 ml-1"}
+                            source={require("../../assets/allergy.png")}
+                          />
+                          <Text className="ml-2 text-red-500 font-bold">
+                            Allergie
+                          </Text>
+                        </View>
+                      )
+                    )}
+                  </View>
                 </TouchableOpacity>
               )}
               style={styles.dropdownList}
@@ -1500,82 +1547,79 @@ export default function AddTreatment({route, navigation}) {
               data={drugScanned}
               keyExtractor={(_item, index) => index.toString()}
               renderItem={({ item }) => {
-                const drug = getMedbyCIS(item.med.CIS)
-                return(
-                    <TouchableOpacity
-                      style={styles.listItem}
-                      className="flex justify-start align-middle"
-                      onPress={() => handleMedSelect(drug.CIS)}
-                    >
-                      <MedIconByType type={drug.Shape} />
-                      <Text className="ml-4">{drug.Name}</Text>
-                    </TouchableOpacity>
-                )
-              }
-              }
+                const drug = getMedbyCIS(item.med.CIS);
+                return (
+                  <TouchableOpacity
+                    style={styles.listItem}
+                    className="flex justify-start align-middle"
+                    onPress={() => handleMedSelect(drug.CIS)}
+                  >
+                    <MedIconByType type={drug.Shape} />
+                    <Text className="ml-4">{drug.Name}</Text>
+                  </TouchableOpacity>
+                );
+              }}
               style={styles.dropdownList}
             />
           )}
 
-          {instructionsList.length > 0
-            && instructionsList.map((instruction, index) => (
-                <View
-                  key={index}
+          {instructionsList.length > 0 &&
+            instructionsList.map((instruction, index) => (
+              <View
+                key={index}
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  marginHorizontal: 30,
+                  marginVertical: 10,
+                }}
+              >
+                <TouchableOpacity
+                  className=" flex items-center justify-center"
+                  onPress={() => {
+                    setSelectedInstruction(instruction);
+                    setInstructionsDetailModal(true);
+                  }}
                   style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    marginHorizontal: 30,
-                    marginVertical: 10,
+                    backgroundColor: "#01A9F580",
+                    padding: 10,
+                    borderRadius: 5,
                   }}
                 >
-                  <TouchableOpacity
-                    className=" flex items-center justify-center"
-                    onPress={() => {
-                      setSelectedInstruction(instruction);
-                      setInstructionsDetailModal(true);
-                    }}
-                    style={{
-                      backgroundColor: "#01A9F580",
-                      padding: 10,
-                      borderRadius: 5,
-                    }}
+                  <Text
+                    className=" text-[#363636] text-lg"
+                    ellipsizeMode="tail"
+                    numberOfLines={1}
                   >
-                    <Text
-                      className=" text-[#363636] text-lg"
-                      ellipsizeMode="tail"
-                      numberOfLines={1}
-                    >
-                      {instruction.name}
-                    </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    className=" flex items-center justify-center"
-                    onPress={() => handleDeleteInstruction(instruction)}
-                    style={{
-                      backgroundColor: "#FF0000",
-                      padding: 10,
-                      borderRadius: 5,
-                    }}
-                  >
-                    <Icon.Trash color={"white"} />
-                  </TouchableOpacity>
-                  <ModalComponent
-                    visible={instructionsDetailModal}
-                    onClose={() => {
-                      setInstructionsDetailModal(false);
-                    }}
-                    children={modalDescriptionContent}
-                  />
-                </View>
-              ))
-            }
+                    {instruction.name}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  className=" flex items-center justify-center"
+                  onPress={() => handleDeleteInstruction(instruction)}
+                  style={{
+                    backgroundColor: "#FF0000",
+                    padding: 10,
+                    borderRadius: 5,
+                  }}
+                >
+                  <Icon.Trash color={"white"} />
+                </TouchableOpacity>
+                <ModalComponent
+                  visible={instructionsDetailModal}
+                  onClose={() => {
+                    setInstructionsDetailModal(false);
+                  }}
+                  children={modalDescriptionContent}
+                />
+              </View>
+            ))}
         </View>
         <View className="absolute w-full" style={{ top: windowHeight * 0.85 }}>
           <TouchableOpacity
             disabled={!(instructionsList.length > 0)}
             className="flex flex-row items-center justify-between bg-lime-400 rounded-2xl p-4 mb-2"
-            
             onPress={() => addTreatment()}
           >
             <Text className="text-white text-lg ml-[10%]">

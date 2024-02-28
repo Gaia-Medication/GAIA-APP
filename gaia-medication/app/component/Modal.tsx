@@ -21,7 +21,7 @@ const ModalComponent = ({ visible, onClose, children, styleAdded = {} }) => {
         ]}
       >
         <View
-          className="my-3"
+          className="my-3 w-full "
           style={{ alignItems: "center", justifyContent: "center" }}
         >
           {children}

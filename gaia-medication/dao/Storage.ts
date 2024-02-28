@@ -137,6 +137,7 @@ export const getAllTreatments = async (): Promise<Treatment[]> => {
         name: treatment.name,
         userId: treatment.userId,
         description: treatment.description,
+        doctor: treatment.doctor,
         startDate: new Date(treatment.startDate),
         instructions: instructionsArray
       }

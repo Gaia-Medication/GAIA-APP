@@ -146,7 +146,7 @@ export default function Home({ navigation }) {
       if (scanMedsFinded.meds.length > 0) {
         setLoading(false);
         if(scanMedsFinded.ordonnanceBool){
-          navigation.navigate("AddTreatment", { drugScanned: scanMedsFinded.meds })
+          navigation.navigate("AddTreatment", { drugScanned: scanMedsFinded.meds, doctor:scanMedsFinded.doctor })
         }else{
           navigation.navigate("Drug", { drugCIS: scanMedsFinded.meds[0].med.CIS })
         }
@@ -392,47 +392,69 @@ export default function Home({ navigation }) {
             visible={isMedModalVisible}
             onClose={() => setIsMedModalVisible(!isMedModalVisible)}
           >
-            <View className="w-full pb-2 ">
-              <Text className="px-6">Médecins</Text>
-              <Input
-                style={styles.searchBarInput}
-                className="px-6"
-                placeholder="Doliprane, Aspirine ..."
-                placeholderTextColor="#9CDE00"
-                rightIcon={{ type: "feathers", name: "search", color: "#9CDE00" }}
-                inputContainerStyle={styles.searchBarContainer}
-                onChangeText={(text) => {
-                  console.log(text)
-                  if(text.length>2){
-                    const newSearch = searchDoctor(text);
-                    if (newSearch.length > 0) {
-                      setDoctorSearch(newSearch);
-                    } 
-                    else setDoctorSearch([])
-                  } 
-                  else setDoctorSearch([])
-                }}
-              />
+            <View className="w-full pb-2 h-[95%]">
+              <View style={{
+                display: "flex",
+                gap: 19,
+                marginHorizontal: 10,
+                flexDirection: "row",
+                height: 50,
+              }} className="px-4 mb-4">
+                <View style={{
+                  display: "flex",
+                  flex: 1,
+                  backgroundColor: "#A0DB3050",
+                  borderRadius: 10,
+                }} >
+                  <Input
+                    style={styles.searchBarInput}
+                    className=""
+                    placeholder="Recherche de médecins"
+                    placeholderTextColor="#9CDE00"
+                    rightIcon={{ type: "feathers", name: "search", color: "#9CDE00" }}
+                    inputContainerStyle={styles.searchBarContainer}
+                    onChangeText={(text) => {
+                      console.log(text)
+                      if(text.length>2){
+                        const newSearch = searchDoctor(text);
+                        if (newSearch.length > 0) {
+                          setDoctorSearch(newSearch);
+                        } 
+                        else setDoctorSearch([])
+                      } 
+                      else setDoctorSearch([])
+                    }}
+                  />
+                </View>
+              </View>
               <FlatList
                 data={doctorSearch}
-                className="px-6 max-h-[60%] mt-[-10%]"
+                className="px-6 max-h-[80%]"
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({ item }) => {
                   return (
-                    <View>
-                      <Text>{
-                        item.Prenom
-                          .normalize('NFD').replace(/[\u0300-\u036f]/g, '') 
-                          .toLowerCase() 
-                          .replace(/^\w/, (c) => c.toUpperCase()) 
-                      } {
-                        item.Nom
-                          .normalize('NFD').replace(/[\u0300-\u036f]/g, '') 
-                          .toLowerCase() 
-                          .replace(/^\w/, (c) => c.toUpperCase()) 
-                      }</Text>
-                      <Text className=" text-xs">{item.CodePostal}</Text>
-                      
+                    <View className="-mb-[1px] pb-2 pt-1 border-t border-b border-gray-300 flex-row justify-between items-center">
+                      <View>
+                        <Text>{
+                          item.Prenom
+                            .normalize('NFD').replace(/[\u0300-\u036f]/g, '') 
+                            .toLowerCase() 
+                            .replace(/^\w/, (c) => c.toUpperCase()) 
+                        } {
+                          item.Nom
+                            .normalize('NFD').replace(/[\u0300-\u036f]/g, '') 
+                            .toLowerCase() 
+                            .replace(/^\w/, (c) => c.toUpperCase()) 
+                        }</Text>
+                        <Text className=" text-xs">{item.CodePostal}</Text>
+                      </View>
+                      <View>
+                        {item.Telephone != null && (
+                          <TouchableOpacity onPress={()=>Linking.openURL(`tel:${item.Telephone}`)}>
+                            <Text className="">Contacter</Text>
+                          </TouchableOpacity>
+                        )}
+                      </View>
                     </View>
                   );
                 }}
