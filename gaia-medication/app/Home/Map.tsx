@@ -141,7 +141,7 @@ export default function Map({ navigation }) {
   }, [isFocused]);
 
   useEffect(() => {
-    const newPoints = (region.latitudeDelta<0.13&&region.longitudeDelta<0.13) ? getPointsbyRegion(region):[];
+    const newPoints = (region.latitudeDelta<0.14&&region.longitudeDelta<0.14) ? getPointsbyRegion(region):[];
     newPoints && setMedecin(getDoctorbyRegion(newPoints));
     setPoints(newPoints);
   }, [region]);
@@ -200,7 +200,12 @@ export default function Map({ navigation }) {
             );
           })}
       </MapView>
-      <TouchableOpacity style={{ position: 'absolute', right: 12,top: '50%',transform: [{ translateY: -24 }]}}
+      {points.length<1&&
+        <View style={{ position: 'absolute',top: '70%'}} className="w-full text-center text-2xl text-zinc-500">
+          <Text className="w-full text-center text-2xl text-zinc-500 font-semibold">Zoomez pour{'\n'}afficher</Text>
+        </View>
+      }
+      <TouchableOpacity style={{ position: 'absolute', right: 12,top: '42%'}}
                 onPress={() => openMedModal()}>
         <View style={{ backgroundColor: 'white', padding: 8, borderRadius: 5, opacity:0.8 }}>
           <Image source={markerIcons.medical}  style={{ width: 40, height: 40 }} />

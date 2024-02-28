@@ -407,7 +407,7 @@ export default function Home({ navigation }) {
                   borderRadius: 10,
                 }} >
                   <Input
-                    style={styles.searchBarInput}
+                    style={[styles.searchBarInput,{color:"#0070e8"}]}
                     className=""
                     placeholder="Recherche de médecins"
                     placeholderTextColor="#0070e8"

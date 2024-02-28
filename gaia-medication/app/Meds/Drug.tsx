@@ -487,7 +487,7 @@ export default function Drug({ route, navigation }) {
             onClose={() => setLabModalVisible(!labModalVisible)}
           >
             <View className="w-full pb-2 ">
-              <Text className="pb-2 px-6">{drug.Titulaire}</Text>
+              <Text className="pb-2 px-6 w-full text-center">{drug.Titulaire}</Text>
                   
               <FlatList
                 data={labMeds}
@@ -505,7 +505,7 @@ export default function Drug({ route, navigation }) {
                       >
                         <MedIconByType type={item.Shape} />
                         <View className="ml-4 flex-1 flex-row justify-between items-center">
-                          <Text className="flex-1">{item.Name}</Text>
+                          <Text className="flex-1 text-xs">{item.Name}</Text>
                           {user.preference
                             .map((allergie) =>
                               Array.from(getPAfromMed(item.CIS)).includes(allergie)
@@ -516,7 +516,7 @@ export default function Drug({ route, navigation }) {
                                 className={"h-5 w-5 ml-1"}
                                 source={require("../../assets/allergy.png")}
                               />
-                              <Text className="ml-2 text-red-500 font-bold">
+                              <Text className="ml-2 text-red-500 font-bold text-xs">
                                 Allergie
                               </Text>
                             </View>
