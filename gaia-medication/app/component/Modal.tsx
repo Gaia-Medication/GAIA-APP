@@ -21,7 +21,7 @@ const ModalComponent = ({ visible, onClose, children, styleAdded = {} }) => {
         ]}
       >
         <View
-          className="my-3 px-2"
+          className="my-3"
           style={{ alignItems: "center", justifyContent: "center" }}
         >
           {children}

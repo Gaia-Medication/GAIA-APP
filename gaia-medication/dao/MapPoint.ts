@@ -25,7 +25,7 @@ export function getPointsbyRegion(region) {
       }
     });
     points.sort((a, b) => a.distance - b.distance);
-    return points.slice(0, 50);
+    return points.slice(0, 120);
   } catch (error) {
     console.error("Error reading CSV file", error);
   }

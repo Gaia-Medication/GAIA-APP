@@ -66,6 +66,7 @@ for _, row in dfPersonel.iterrows():
         listPP=[row]
 dfPersonel = pd.DataFrame(returned_list, columns=datas.columns)
 dfPersonel.columns = ['IDPP', 'Nom', 'Prenom', 'CodePostal', 'Telephone', 'mail']
+dfPersonel = dfPersonel.dropna(subset=['Nom', 'Prenom'])
 
 # dfPersonel.to_json('out/personnel.json', orient="records", indent=4)
 dfPersonel.to_csv('out/personnel.csv', index=False)

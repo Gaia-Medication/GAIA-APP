@@ -266,9 +266,9 @@ dfPresentation.reset_index(drop=True, inplace=True)
 ######################################################
 
 print(BOLD,YELLOW,"\n\n##########################################################\n################# Création des ATC & TH #################\n##########################################################",RESET,'\n\n')
-# filename = 'therapeutic.py'
-# with open(filename, 'r') as file:
-#     exec(file.read())
+filename = 'therapeutic.py'
+with open(filename, 'r') as file:
+    exec(file.read())
     
 with open('out/atc.json', 'r') as file:
     data = json.load(file)
@@ -282,14 +282,13 @@ dfATC=dfATC.drop(columns=["name"])
 ######################################################
 print(BOLD,YELLOW,"\n\n##########################################################\n################# Création du dataframe final #############\n##########################################################",RESET,'\n\n')
 dfMedication = pd.read_csv("data/CIS_bdpm.txt", sep="\t", header=None, encoding="latin1")
-dfMedication = dfMedication.drop([4,5,7,9,11], axis=1)
+dfMedication = dfMedication.drop([4,5,7,8,9,11], axis=1)
 dfMedication.columns = [
     'CIS', #0
     'Name', #1
     'Shape', #2
     'Administration_way', #3
     'Marketed', #6
-    'Stock', #8
     'Titulaire', #10
 ]
 

@@ -465,7 +465,7 @@ export default function Drug({ route, navigation }) {
             visible={atcModalVisible}
             onClose={() => setAtcModalVisible(!atcModalVisible)}
           >
-            <View className="w-full pb-2 px-4">
+            <View className="w-full pb-2 px-6">
               <Text className="pb-2">Signification du code ATC</Text>
               {significationATC.map((item, index) => (
                 <Text className=" text-xs" key={index}>
@@ -487,40 +487,46 @@ export default function Drug({ route, navigation }) {
             onClose={() => setLabModalVisible(!labModalVisible)}
           >
             <View className="w-full pb-2 ">
-              <Text className="pb-2 px-4">{drug.Titulaire}</Text>
-              <ScrollView className=" max-h-80">
-                {labMeds.map((item, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    style={styles.listItem}
-                    className="-mb-[1px] flex justify-start align-middle border-t border-gray-300 p-2"
-                    onPress={() => {
-                      setLabModalVisible(false);
-                      navigation.push("Drug", { drugCIS: item.CIS });
-                    }}
-                  >
-                    <MedIconByType type={item.Shape} />
-                    <View className="ml-4 flex-1 flex-row justify-between items-center">
-                      <Text className="flex-1">{item.Name}</Text>
-                      {user.preference
-                        .map((allergie) =>
-                          Array.from(getPAfromMed(item.CIS)).includes(allergie)
-                        )
-                        .some((bool) => bool) && (
-                        <View className=" items-center">
-                          <Image
-                            className={"h-5 w-5 ml-1"}
-                            source={require("../../assets/allergy.png")}
-                          />
-                          <Text className="ml-2 text-red-500 font-bold">
-                            Allergie
-                          </Text>
+              <Text className="pb-2 px-6">{drug.Titulaire}</Text>
+                  
+              <FlatList
+                data={labMeds}
+                className=" max-h-80"
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({ item }) => {
+                  return (
+                    <TouchableOpacity
+                        style={styles.listItem}
+                        className="-mb-[1px] flex justify-start align-middle border-t border-gray-300 p-2"
+                        onPress={() => {
+                          setLabModalVisible(false);
+                          navigation.push("Drug", { drugCIS: item.CIS });
+                        }}
+                      >
+                        <MedIconByType type={item.Shape} />
+                        <View className="ml-4 flex-1 flex-row justify-between items-center">
+                          <Text className="flex-1">{item.Name}</Text>
+                          {user.preference
+                            .map((allergie) =>
+                              Array.from(getPAfromMed(item.CIS)).includes(allergie)
+                            )
+                            .some((bool) => bool) && (
+                            <View className=" items-center">
+                              <Image
+                                className={"h-5 w-5 ml-1"}
+                                source={require("../../assets/allergy.png")}
+                              />
+                              <Text className="ml-2 text-red-500 font-bold">
+                                Allergie
+                              </Text>
+                            </View>
+                          )}
                         </View>
-                      )}
-                    </View>
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
+                      </TouchableOpacity>
+                  );
+                }}
+              />
+                 
             </View>
             <TouchableOpacity
               onPress={() => {
@@ -535,7 +541,7 @@ export default function Drug({ route, navigation }) {
             visible={drugModalVisible}
             onClose={() => setDrugModalVisible(!drugModalVisible)}
           >
-            <View className="w-full pb-2">
+            <View className="w-full pb-2 px-4">
               {drug.Values &&
                 drug.Values.map((item, index) => {
                   const alreadyStocked =

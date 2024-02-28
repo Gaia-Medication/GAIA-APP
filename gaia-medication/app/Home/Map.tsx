@@ -9,6 +9,7 @@ import {
   Linking,
   Pressable,
   ScrollView,
+  FlatList,
 } from "react-native";
 import MapView, { MapType, Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import * as Location from "expo-location";
@@ -199,7 +200,7 @@ export default function Map({ navigation }) {
             );
           })}
       </MapView>
-      <TouchableOpacity style={{ position: 'absolute', top: 15, left: 15 }}
+      <TouchableOpacity style={{ position: 'absolute', right: 12,top: '50%',transform: [{ translateY: -24 }]}}
                 onPress={() => openMedModal()}>
         <View style={{ backgroundColor: 'white', padding: 8, borderRadius: 5, opacity:0.8 }}>
           <Image source={markerIcons.medical}  style={{ width: 40, height: 40 }} />
@@ -216,16 +217,15 @@ export default function Map({ navigation }) {
         visible={isMedModalVisible}
         onClose={closeMedModal}
       >
-        <View className="w-full pb-2">
-          <Text>Médecins à proximité</Text>
-          
-          <ScrollView 
-          className=" max-h-80"
-          >
-            
-            {medecin.map((item, index)=>{
-              return(
-                <View key={index}>
+        <View className="w-full pb-2 ">
+          <Text className="pb-2 px-6">Médecins à proximité</Text>
+          <FlatList
+            data={medecin}
+            className=" max-h-80 px-6"
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item }) => {
+              return (
+                <View>
                   <Text>{
                     item.Prenom
                       .normalize('NFD').replace(/[\u0300-\u036f]/g, '') 
@@ -237,13 +237,13 @@ export default function Map({ navigation }) {
                       .toLowerCase() 
                       .replace(/^\w/, (c) => c.toUpperCase()) 
                   }</Text>
-                  <Text className=" text-xs"> {item.CodePostal}</Text>
+                  <Text className=" text-xs">{item.CodePostal}</Text>
                   
                 </View>
-              )
-            } )}
+              );
+            }}
+          />
             
-          </ScrollView>
         </View>
         <TouchableOpacity
           onPress={() => {

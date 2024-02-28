@@ -32,16 +32,19 @@ import TutorialBubble from "../component/TutorialBubble";
 import ModalComponent from "../component/Modal";
 import { ALERT_TYPE, Dialog, AlertNotificationRoot } from 'react-native-alert-notification';
 import * as Notifications from 'expo-notifications';
+import { searchDoctor } from "../../dao/Doctor";
 
 export default function Home({ navigation }) {
   const isFocused = useIsFocused();
   const [loading, setLoading] = useState(false);
+  const [isMedModalVisible, setIsMedModalVisible] = useState(false);
   const [takes, setTakes] = useState(null);
   const [nextTake, setNextTake] = useState(-1);
   const [user, setUser] = useState<User | null>(null);
   const [users, setUsers] = useState<User[]>([]);
   const [header, setHeader] = useState(true);
   const [notificationsList, setNotificationsList] = useState<Notif[]>([]);
+  const [doctorSearch, setDoctorSearch] = useState([]);
   
 
   const [smallTutoStep, setSmallTutoStep] = useState(0);
@@ -378,13 +381,71 @@ export default function Home({ navigation }) {
               className=" rounded-3xl bg-[#ffdb3c89] flex-row items-center justify-center p-4 w-32 h-32">
                 <Image className="h-20 w-20" source={require("../../assets/map-icons/map.png")} />
               </TouchableOpacity>
-              <TouchableOpacity onPress={()=>navigation.navigate("SuivisHandler",{screen:"Stock"})} 
+              <TouchableOpacity onPress={()=>setIsMedModalVisible(true)} 
               className=" rounded-3xl bg-[#3841ee70] flex-row items-center justify-center p-4 w-32 h-32">
                 <Image className="h-20 w-20" source={require("../../assets/map-icons/medical-team.png")} />
               </TouchableOpacity>
             </View>
             
           </ScrollView>
+          <ModalComponent
+            visible={isMedModalVisible}
+            onClose={() => setIsMedModalVisible(!isMedModalVisible)}
+          >
+            <View className="w-full pb-2 ">
+              <Text className="px-6">Médecins</Text>
+              <Input
+                style={styles.searchBarInput}
+                className="px-6"
+                placeholder="Doliprane, Aspirine ..."
+                placeholderTextColor="#9CDE00"
+                rightIcon={{ type: "feathers", name: "search", color: "#9CDE00" }}
+                inputContainerStyle={styles.searchBarContainer}
+                onChangeText={(text) => {
+                  console.log(text)
+                  if(text.length>2){
+                    const newSearch = searchDoctor(text);
+                    if (newSearch.length > 0) {
+                      setDoctorSearch(newSearch);
+                    } 
+                    else setDoctorSearch([])
+                  } 
+                  else setDoctorSearch([])
+                }}
+              />
+              <FlatList
+                data={doctorSearch}
+                className="px-6 max-h-[60%] mt-[-10%]"
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({ item }) => {
+                  return (
+                    <View>
+                      <Text>{
+                        item.Prenom
+                          .normalize('NFD').replace(/[\u0300-\u036f]/g, '') 
+                          .toLowerCase() 
+                          .replace(/^\w/, (c) => c.toUpperCase()) 
+                      } {
+                        item.Nom
+                          .normalize('NFD').replace(/[\u0300-\u036f]/g, '') 
+                          .toLowerCase() 
+                          .replace(/^\w/, (c) => c.toUpperCase()) 
+                      }</Text>
+                      <Text className=" text-xs">{item.CodePostal}</Text>
+                      
+                    </View>
+                  );
+                }}
+              />
+            </View>
+            <TouchableOpacity
+              onPress={() => {
+                setIsMedModalVisible(!isMedModalVisible);
+              }}
+            >
+              <Text className="text-red-500">Fermer</Text>
+            </TouchableOpacity>
+          </ModalComponent>
         </>
       )}
       </View>
