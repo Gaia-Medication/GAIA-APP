@@ -4,9 +4,10 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { getDailyNotificationTime } from '../../Handlers/NotificationsHandler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
+import GoBackButton from '../../component/GoBackButton';
 
 
-const NotificationsSettings = () => {
+const NotificationsSettings = ({ navigation }) => {
     const [notificationTime, setNotificationTime] = useState<Date>(new Date());
     const [showTimePicker, setShowTimePicker] = useState(false);
 
@@ -61,8 +62,13 @@ const NotificationsSettings = () => {
 
     return (
         <View style={styles.container}>
-            <Text>Notifications Settings</Text>
-            <TouchableOpacity onPress={() => setShowTimePicker(true)} style={{ display: 'flex', flexDirection: 'row', padding: 10, backgroundColor: "#CCCCCC" }}>
+            <View className="flex-row items-center justify-start py-4 px-6">
+                <GoBackButton navigation={navigation}></GoBackButton>
+                <Text className=" ml-4 text-center text-2xl text-neutral-700 font-bold">
+                    Modification de profil
+                </Text>
+            </View>
+            <TouchableOpacity onPress={() => setShowTimePicker(true)} style={{ display: 'flex', flexDirection: 'row', padding: 10, backgroundColor: "#9CDE00", borderRadius: 5, marginBottom: 5 }}>
                 <Text>Daily Notification Time</Text>
                 {notificationTime ? (
                     <Text>{formatHour(notificationTime)}</Text>
@@ -79,7 +85,7 @@ const NotificationsSettings = () => {
                     onChange={handleNotificationTimeChange}
                 />
             )}
-            <TouchableOpacity onPress={() => requestNotificationPermissions()} style={{ display: 'flex', flexDirection: 'row', padding: 10, backgroundColor: "#CCCCCC" }}>
+            <TouchableOpacity onPress={() => requestNotificationPermissions()} style={{ display: 'flex', flexDirection: 'row', padding: 10, backgroundColor: "#9CDE00" }}>
                 <Text>Autorisation notifications</Text>
             </TouchableOpacity>
         </View>
