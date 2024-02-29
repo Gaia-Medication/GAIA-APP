@@ -1,0 +1,127 @@
+[
+    {
+        "content": {
+            "autoDismiss": true,
+            "badge": null,
+            "body": "💊 EUPHON, sirop à 18h45",
+            "categoryIdentifier": "reminder",
+            "data": {
+                "notifData": {
+                    "medName": "EUPHON, sirop",
+                    "take": {
+                        "CIS": 63283736,
+                        "date": "2024-02-13T17:45:00.000Z",
+                        "medName": "EUPHON, sirop",
+                        "quantity": 0,
+                        "taken": false,
+                        "treatmentName": "TraitementTest1",
+                        "userId": 1
+                    }
+                },
+                "remainigTime": 240,
+                "userName": "Nathan"
+            },
+            "priority": "default",
+            "sound": "custom",
+            "sticky": false,
+            "subtitle": "Nathan",
+            "title": "C'est le moment !"
+        },
+        "identifier": "b4326d34-a92b-4f33-ba33-9bd3ca7f0578",
+        "trigger": {
+            "channelId": null,
+            "repeats": false,
+            "type": "date",
+            "value": 1707846360000
+        }
+    },
+    {
+        "content": {
+            "autoDismiss": true,
+            "badge": null,
+            "body": "💊 EUPHON, sirop",
+            "categoryIdentifier": "alertReminder",
+            "color": "#FFFF0000",
+            "data": [Object
+            ],
+            "priority": "high",
+            "sound": "custom",
+            "sticky": false,
+            "subtitle": "Nathan",
+            "title": "⚠️ N'oubliez pas !"
+        },
+        "identifier": "c3d3ce97-3879-4ae0-ae50-98f4031786b6",
+        "trigger": {
+            "channelId": null,
+            "repeats": false,
+            "type": "date",
+            "value": 1707860700000
+        }
+    },
+    {
+        "content": {
+            "autoDismiss": true,
+            "badge": null,
+            "body": "💊 EUPHON, sirop à 10h30",
+            "categoryIdentifier": "reminder",
+            "data": [Object
+            ],
+            "priority": "default",
+            "sound": "custom",
+            "sticky": false,
+            "subtitle": "Nathan",
+            "title": "C'est le moment !"
+        },
+        "identifier": "6c20d191-3a83-41b0-b812-e205ddcea5d2",
+        "trigger": {
+            "channelId": null,
+            "repeats": false,
+            "type": "date",
+            "value": 1707903060000
+        }
+    },
+    {
+        "content": {
+            "autoDismiss": true,
+            "badge": null,
+            "body": "Aujourd'hui :💊 EUPHON, sirop à 10h30",
+            "data": [Object
+            ],
+            "priority": "default",
+            "sound": "custom",
+            "sticky": false,
+            "subtitle": "Nathan",
+            "title": "Bonjour ! "
+        },
+        "identifier": "622cb999-7ac8-44b3-8969-c55f61d81d3b",
+        "trigger": {
+            "channelId": null,
+            "repeats": false,
+            "type": "date",
+            "value": 1707915600000
+        }
+    },
+    {
+        "content": {
+            "autoDismiss": true,
+            "badge": null,
+            "body": "💊 EUPHON, sirop",
+            "categoryIdentifier": "alertReminder",
+            "color": "#FFFF0000",
+            "data": [Object
+            ],
+            "priority": "high",
+            "sound": "custom",
+            "sticky": false,
+            "subtitle": "Nathan",
+            "title": "⚠️ N'oubliez pas !"
+        },
+        "identifier": "a1397b27-3260-4ef3-a01d-dbbfe03fb77f",
+        "trigger": {
+            "channelId": null,
+            "repeats": false,
+            "type": "date",
+            "value": 1707917400000
+        }
+    }
+]

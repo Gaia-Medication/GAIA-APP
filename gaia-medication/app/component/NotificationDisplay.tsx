@@ -90,7 +90,7 @@ const NotificationDisplay = ({ notif, index, onFun }) => {
             flexDirection: "row",
             justifyContent: "space-between",
             alignItems: "center",
-            backgroundColor: notif.type === "take" ? "blue" : "red",
+            backgroundColor: notif.type === "daily" ? "blue" : notif.type == "take" ? "green": "red",
             padding: 10,
             borderRadius: 10,
             margin: 10,

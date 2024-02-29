@@ -117,11 +117,6 @@ export default function Suivis({ navigation }) {
     setIsLoading(false);
     const currentId = await AsyncStorage.getItem("currentUser");
     const current = await getUserByID(JSON.parse(currentId));
-    const notifsDaily = await initDailyNotifications(current?.firstname, current?.id);
-    const notifsTakes = await initTakeNotifications(current?.firstname, current?.id);
-    const notifsLate = await initLateNotifications(current?.firstname, current?.id);
-    AsyncStorage.setItem("notifications", JSON.stringify(notifsDaily.concat(notifsTakes).concat(notifsLate)));
-    saveNotifs(notifsDaily.concat(notifsTakes).concat(notifsLate));
   }
 
   useEffect(() => {

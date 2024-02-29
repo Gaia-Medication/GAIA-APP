@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Switch, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Switch, StyleSheet, TouchableOpacity, Alert, Linking } from 'react-native';
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { getDailyNotificationTime } from '../../Handlers/NotificationsHandler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Notifications from 'expo-notifications';
 
 
 const NotificationsSettings = () => {
@@ -28,17 +29,35 @@ const NotificationsSettings = () => {
     // Renvoi l'heure au format HH:MM
     const formatHour = (hour) => {
         if (hour instanceof Date) {
-          const hours = hour.getHours();
-          const minutes = hour.getMinutes();
-          const formattedTime = `${hours.toString()}:${minutes.toString().padStart(2, '0')}`;
-          return formattedTime;
+            const hours = hour.getHours();
+            const minutes = hour.getMinutes();
+            const formattedTime = `${hours.toString()}:${minutes.toString().padStart(2, '0')}`;
+            return formattedTime;
         }
         return "";
-      };
+    };
 
+    const requestNotificationPermissions = async () => {
+        await Notifications.requestPermissionsAsync().then((status) => {
+            console.log("STATUS => ", status);
+            if (status.granted) {
+                Alert.alert('Notifications activées', 'Vous pouvez actuellement recevoir des notifications de Gaïa');
+            } else {
+                Alert.alert(
+                    'Permissions de notification requises',
+                    'Pour activer les notifications, accedez aux paramètres de l\'application.',
+                    [
+                        { text: 'Annuler', style: 'cancel' },
+                        { text: 'Paramètres', onPress: () => Linking.openSettings() }
+                    ]
+                );
+            }
+        });
+
+    }
     useEffect(() => {
         init()
-      }, []);
+    }, []);
 
     return (
         <View style={styles.container}>
@@ -60,6 +79,9 @@ const NotificationsSettings = () => {
                     onChange={handleNotificationTimeChange}
                 />
             )}
+            <TouchableOpacity onPress={() => requestNotificationPermissions()} style={{ display: 'flex', flexDirection: 'row', padding: 10, backgroundColor: "#CCCCCC" }}>
+                <Text>Autorisation notifications</Text>
+            </TouchableOpacity>
         </View>
     );
 };

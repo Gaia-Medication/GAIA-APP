@@ -20,6 +20,7 @@ import NotificationDisplay from "../component/NotificationDisplay";
 export default function Notifications({ navigation }) {
     const data = (useRoute().params as { data?: any })?.data;
     const isFocused = useIsFocused();
+    const today = new Date();
     const [newNotifications, setNewNotifications] = useState<Notif[]>([]);
     const [storedNotifications, setStoredNotifications] = useState<Notif[]>([]);
 
@@ -65,9 +66,42 @@ export default function Notifications({ navigation }) {
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView>
-                {storedNotifications ? storedNotifications.map((notif, index) => (
-                    <NotificationDisplay key={index} notif={notif} index={index} onFun={null} />
-                )) : null}
+                <View>
+                    <Text style={styles.title}>Aujourd'hui</Text>
+                    {storedNotifications ? storedNotifications.map((notif, index) => {
+                        const notifDate = new Date(notif.date);
+                        if (notifDate.toDateString() === today.toDateString()) {
+                            return <NotificationDisplay key={index} notif={notif} index={index} onFun={null} />;
+                        }
+                        return null;
+                    }) : null}
+                </View>
+                <View>
+                    <Text style={styles.title}>Cette semaine</Text>
+                    {storedNotifications ? storedNotifications.map((notif, index) => {
+                        const notifDate = new Date(notif.date);
+                        const oneWeekAgo = new Date();
+                        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+                        if (notifDate >= oneWeekAgo && notifDate <= today) {
+                            return <NotificationDisplay key={index} notif={notif} index={index} onFun={null} />;
+                        }
+                        return null;
+                    }) : null}
+                </View>
+                <View>
+                    <Text style={styles.title}>Avant</Text>
+                    {storedNotifications ? storedNotifications.map((notif, index) => {
+                        const notifDate = new Date(notif.date);
+                        const oneWeekAgo = new Date();
+                        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+                        if (notifDate < oneWeekAgo) {
+                            return <NotificationDisplay key={index} notif={notif} index={index} onFun={null} />;
+                        }
+                        return null;
+                    }) : null}
+                </View>
+                {storedNotifications.length === 0 ? <Text>Aucune notification ENREGISTREE</Text> : 
+                <Text>Notifications enregistrées : {storedNotifications.length}</Text>}
             </ScrollView>
         </SafeAreaView>
     );
