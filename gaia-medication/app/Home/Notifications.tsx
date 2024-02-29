@@ -34,9 +34,6 @@ export default function Notifications({ navigation }) {
         })
         setStoredNotifications(asyncNotifs);
         await AsyncStorage.setItem("notifications", JSON.stringify(asyncNotifs));
-        
-        console.log("Stored Notifs :", asyncNotifs.length);
-        console.log(storedNotifications)
     }
 
     useEffect(() => {
@@ -65,7 +62,11 @@ export default function Notifications({ navigation }) {
 
     return (
         <SafeAreaView style={styles.container}>
-            <ScrollView>
+            <ScrollView style={{
+                width: "100%",
+                padding: 10,
+            
+            }}>
                 <View>
                     <Text style={styles.title}>Aujourd'hui</Text>
                     {storedNotifications ? storedNotifications.map((notif, index) => {
@@ -82,7 +83,7 @@ export default function Notifications({ navigation }) {
                         const notifDate = new Date(notif.date);
                         const oneWeekAgo = new Date();
                         oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-                        if (notifDate >= oneWeekAgo && notifDate <= today) {
+                        if (notifDate >= oneWeekAgo && notifDate <= today && notifDate.getDate() != today.getDate()) {
                             return <NotificationDisplay key={index} notif={notif} index={index} onFun={null} />;
                         }
                         return null;
@@ -100,8 +101,6 @@ export default function Notifications({ navigation }) {
                         return null;
                     }) : null}
                 </View>
-                {storedNotifications.length === 0 ? <Text>Aucune notification ENREGISTREE</Text> : 
-                <Text>Notifications enregistrées : {storedNotifications.length}</Text>}
             </ScrollView>
         </SafeAreaView>
     );
