@@ -22,7 +22,7 @@ import { styles } from "../../style/style";
 import Treatment from "../component/Treatment";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import TutorialBubble from "../component/TutorialBubble";
-
+import * as Notifications from "expo-notifications";
 import { ArrowRightCircle, XCircle } from "react-native-feather";
 import { initDailyNotifications, initLateNotifications, initTakeNotifications } from "../Handlers/NotificationsHandler";
 
@@ -106,7 +106,6 @@ export default function Suivis({ navigation }) {
     actualIndex==-1&&(actualIndex = takes.findIndex(
       (take) => compareDates(take.take.date) === "next")
     )
-    console.log(actualIndex)
     setScroll(actualIndex);
   }
 
@@ -117,6 +116,19 @@ export default function Suivis({ navigation }) {
     setIsLoading(false);
     const currentId = await AsyncStorage.getItem("currentUser");
     const current = await getUserByID(JSON.parse(currentId));
+    const notifsDaily = await initDailyNotifications(current?.firstname, current?.id);
+    const notifsTakes = await initTakeNotifications(current?.firstname, current?.id);
+    const notifsLate = await initLateNotifications(current?.firstname, current?.id);
+    console.log("Notifs Daily Totales :", notifsDaily.length);
+    console.log("Notifs Take Totales :", notifsTakes.length);
+    console.log("Notifs Late Totales :", notifsLate.length);
+    console.log(
+      "NOTIFS ACTIVES : ",
+      (await Notifications.getAllScheduledNotificationsAsync()).length
+    );
+    //AsyncStorage.setItem("notifications", JSON.stringify(notificationsList));
+    saveNotifs(notifsDaily.concat(notifsTakes).concat(notifsLate));
+    console.log("Traitements :", await getAllTreatments());
   }
 
   useEffect(() => {
