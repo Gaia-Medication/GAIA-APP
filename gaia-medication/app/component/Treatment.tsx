@@ -73,7 +73,7 @@ const Treatment = ({ navigation, onPress, status = "actual" as "actual" | "next"
   }
 
   const takeModalContent = (
-    <ScrollView className="w-full">
+    <ScrollView className="w-full px-6">
       <View style={{ alignItems: "center" }}>
         <Text style={{ color: "#333333", fontSize: 20 }}>{med}</Text>
       </View>

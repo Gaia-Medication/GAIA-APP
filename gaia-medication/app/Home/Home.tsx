@@ -586,14 +586,30 @@ export default function Home({ navigation }) {
                             </Text>
                             <Text className=" text-xs">{item.CodePostal}</Text>
                           </View>
-                          <View>
+                          <View className="flex-row gap-2">
                             {item.Telephone != null && (
                               <TouchableOpacity
                                 onPress={() =>
                                   Linking.openURL(`tel:${item.Telephone}`)
                                 }
                               >
-                                <Text className="">Contacter</Text>
+                                <Image 
+                                  className=" object-cover h-5 w-5 self-center mt-1"
+                                  source={require("../../assets/telephone.png")}
+                                />
+                              </TouchableOpacity>
+                            )}
+                            
+                            {item.mail != null && (
+                              <TouchableOpacity
+                                onPress={() =>
+                                  Linking.openURL(`mailto:${item.mail}`)
+                                }
+                              >
+                                <Image 
+                                  className=" object-cover h-5 w-5 self-center mt-1"
+                                  source={require("../../assets/email.png")}
+                                />
                               </TouchableOpacity>
                             )}
                           </View>
