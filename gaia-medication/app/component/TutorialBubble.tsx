@@ -23,8 +23,7 @@ const TutorialBubble = ({ styleAdded, text, isClicked }) => {
               left: 0,
               right: 0,
               bottom: 0,
-              backgroundColor: "black", 
-              opacity:0.3,
+              backgroundColor: "#ffffffCC", 
               zIndex: 9, 
             }}
           ></View>
