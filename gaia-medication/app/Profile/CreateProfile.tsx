@@ -38,7 +38,7 @@ export default function CreateProfile({ navigation }: ICreateProps) {
   // TUTORIEL
   const [firstConnection, setFirstConnection] = useState("");
   const [tutoStep, setTutoStep] = useState(0);
-  const [TutoCreate, setTutoCreate] = useState("0");
+  const [TutoCreate, setTutoCreate] = useState("1");
 
   // VALIDATION DU FORMULAIRE
   const [isValidFirstname, setIsValidFirstname] = useState(true);
@@ -180,11 +180,14 @@ export default function CreateProfile({ navigation }: ICreateProps) {
         ></TutorialBubble>
       )}
 
-      <GoBackButton navigation={navigation}></GoBackButton>
+    
+      <View className="flex-row items-center justify-start py-4 px-6">
+        <GoBackButton navigation={navigation}></GoBackButton>
+        <Text className=" ml-4 text-center text-2xl text-neutral-700 font-bold">
+          Création de profil
+        </Text>
+      </View>
 
-      <Text className=" text-center my-6 text-2xl text-neutral-700 font-bold">
-        Création de profil
-      </Text>
       {!validFirstPart && (
         <>
           <Input

@@ -11,6 +11,7 @@ type User = {
 type Treatment = {
   name: string,
   description: string,
+  doctor: string,
   userId: number,
   startDate: Date,
   instructions: Instruction[],
@@ -45,6 +46,7 @@ type Take = {
   quantity: number,
   taken: boolean,
   review: string,
+  pain: number ,
 };
 
 type Notif = {

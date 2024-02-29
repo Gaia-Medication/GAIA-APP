@@ -8,6 +8,8 @@ import {
   TouchableOpacity,
   Linking,
   Pressable,
+  ScrollView,
+  FlatList,
 } from "react-native";
 import MapView, { MapType, Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import * as Location from "expo-location";
@@ -18,6 +20,7 @@ import { styles } from "../../style/style";
 import MapModalComponent from "../component/MapModal";
 import TutorialBubble from "../component/TutorialBubble";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getDoctorbyRegion } from "../../dao/Doctor";
 
 export default function Map({ navigation }) {
   const initialRegion = {
@@ -40,8 +43,10 @@ export default function Map({ navigation }) {
   const [currentLocation, setCurrentLocation] = useState(null);
   const [region, setRegion] = useState(initialRegion);
   const [points, setPoints] = useState(getPointsbyRegion(region));
+  const [medecin, setMedecin] = useState([]);
   const [mapType, setMapType] = useState<MapType>("standard");
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isMedModalVisible, setIsMedModalVisible] = useState(false);
   const [selectedPoint, setSelectedpoint] = useState(null);
 
   const markerIcons = {
@@ -51,6 +56,7 @@ export default function Map({ navigation }) {
     Maison: require("./../../assets/map-icons/maison_de_sante.png"),
     satelite: require("./../../assets/map-icons/satelite.png"),
     map: require("./../../assets/map-icons/map.png"),
+    medical: require("./../../assets/map-icons/medical-team.png"),
   };
   const colorOf = {
     Pharmacie: "25, 170, 147",
@@ -58,9 +64,6 @@ export default function Map({ navigation }) {
     Etablissement: "1, 94, 210",
     Maison: "0, 236, 156",
   };
-  const [satelliteButtonIcon, setSatelliteButtonIcon] = useState(
-    markerIcons.satelite
-  );
 
   const openModal = (point: any) => {
     setIsModalVisible(true);
@@ -68,6 +71,12 @@ export default function Map({ navigation }) {
   };
   const closeModal = () => {
     setIsModalVisible(false);
+  };
+  const openMedModal = () => {
+    setIsMedModalVisible(true);
+  };
+  const closeMedModal = () => {
+    setIsMedModalVisible(false);
   };
   const contact = () => {
     if (selectedPoint.phone) {
@@ -132,7 +141,8 @@ export default function Map({ navigation }) {
   }, [isFocused]);
 
   useEffect(() => {
-    const newPoints = getPointsbyRegion(region);
+    const newPoints = (region.latitudeDelta<0.14&&region.longitudeDelta<0.14) ? getPointsbyRegion(region):[];
+    newPoints && setMedecin(getDoctorbyRegion(newPoints));
     setPoints(newPoints);
   }, [region]);
 
@@ -185,11 +195,22 @@ export default function Map({ navigation }) {
                 tracksViewChanges={false}
                 onPress={() => openModal(point)}
               >
-                <Image source={getIcon} style={{ width: 25, height: 25 }}/>
+                <Image source={getIcon} style={{ width: 25, height: 25 }} />
               </Marker>
             );
           })}
       </MapView>
+      {points.length<1&&
+        <View style={{ position: 'absolute',top: '70%'}} className="w-full text-center text-2xl text-zinc-500">
+          <Text className="w-full text-center text-2xl text-zinc-500 font-semibold">Zoomez pour{'\n'}afficher</Text>
+        </View>
+      }
+      <TouchableOpacity style={{ position: 'absolute', right: 12,top: '42%'}}
+                onPress={() => openMedModal()}>
+        <View style={{ backgroundColor: 'white', padding: 8, borderRadius: 5, opacity:0.8 }}>
+          <Image source={markerIcons.medical}  style={{ width: 40, height: 40 }} />
+        </View>
+      </TouchableOpacity>
       <MapModalComponent
         visible={isModalVisible}
         onClose={closeModal}
@@ -197,9 +218,54 @@ export default function Map({ navigation }) {
         icon={markerIcons[selectedPoint?.type.split(" ")[0]]}
         color={colorOf[selectedPoint?.type.split(" ")[0]]}
       />
+      <ModalComponent
+        visible={isMedModalVisible}
+        onClose={closeMedModal}
+      >
+        <View className="w-full pb-2 ">
+          <Text className="pb-2 px-6">Médecins à proximité</Text>
+          <FlatList
+            data={medecin}
+            className=" max-h-80 px-6"
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item }) => {
+              return (
+                <View className="-mb-[1px] pb-2 pt-1 border-t border-b border-gray-300 flex-row justify-between items-center">
+                  <View>
+                    <Text>{
+                      item.Prenom
+                        .normalize('NFD').replace(/[\u0300-\u036f]/g, '') 
+                        .toLowerCase() 
+                        .replace(/^\w/, (c) => c.toUpperCase()) 
+                    } {
+                      item.Nom
+                        .normalize('NFD').replace(/[\u0300-\u036f]/g, '') 
+                        .toLowerCase() 
+                        .replace(/^\w/, (c) => c.toUpperCase()) 
+                    }</Text>
+                    <Text className=" text-xs">{item.CodePostal}</Text>
+                  </View>
+                  <View>
+                    {item.Telephone != null && (
+                      <TouchableOpacity onPress={()=>Linking.openURL(`tel:${item.Telephone}`)}>
+                        <Text className="">Contacter</Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                </View>
+              );
+            }}
+          />
+            
+        </View>
+        <TouchableOpacity
+          onPress={() => {
+            closeMedModal();
+          }}
+        >
+          <Text className="text-red-500">Fermer</Text>
+        </TouchableOpacity>
+      </ModalComponent>
     </View>
   );
-}
-function setMapType(arg0: string) {
-  throw new Error("Function not implemented.");
 }

@@ -9,8 +9,6 @@ import {
   ActivityIndicator,
   FlatList,
 } from "react-native";
-import * as Icon from "react-native-feather";
-import { getAllMed } from "../../dao/Meds";
 import {
   addItemToList,
   changeTreatments,
@@ -22,12 +20,7 @@ import {
 } from "../../dao/Storage";
 import { styles } from "../../style/style";
 import Treatment from "../component/Treatment";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import ModalComponent from "../component/Modal";
-import { BlurView } from "expo-blur";
-import * as Notifications from "expo-notifications";
 import TutorialBubble from "../component/TutorialBubble";
 
 import { ArrowRightCircle, XCircle } from "react-native-feather";
@@ -136,6 +129,7 @@ export default function Suivis({ navigation }) {
 
   return (
     <View style={styles.container}>
+      
       {tutoStep === 0 && tutoTreatment === "0" && (
         <TutorialBubble
           isClicked={handleTuto}

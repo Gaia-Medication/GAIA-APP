@@ -1,29 +1,33 @@
 import React from "react";
-import { Modal, TouchableOpacity, ScrollView } from "react-native";
+import { TouchableOpacity, ScrollView, View } from "react-native";
+import { Modal, Portal } from "react-native-paper";
 
-const ModalComponent = ({ visible, onClose, children, styleAdded }) => {
+const ModalComponent = ({ visible, onClose, children, styleAdded = {} }) => {
   return (
-    <Modal
-      visible={visible}
-      transparent={true}
-      animationType="fade"
-      onRequestClose={onClose}
-      style={{ width: '100%' }}
-    >
-        <TouchableOpacity
-          style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.3)' }}
-          activeOpacity={1}
-          onPress={null}
+    <Portal>
+      <Modal
+        visible={visible}
+        onDismiss={onClose}
+        contentContainerStyle={[
+          {
+            backgroundColor: "white",
+            borderRadius: 10,
+            width: "80%",
+            maxHeight: "60%",
+            marginBottom: "5%",
+            alignSelf: "center",
+          },
+          styleAdded,
+        ]}
+      >
+        <View
+          className="my-3 w-full "
+          style={{ alignItems: "center", justifyContent: "center" }}
         >
-          <ScrollView style={styleAdded}
-            contentContainerStyle={{ alignItems: 'center', justifyContent: 'center' }}
-          >
-            {children}
-          </ScrollView>
-          
-        </TouchableOpacity>
-      
-    </Modal>
+          {children}
+        </View>
+      </Modal>
+    </Portal>
   );
 };
 

@@ -15,7 +15,7 @@ export default function Search({ route, navigation }) {
   const textInputRef = React.useRef(null);
   const [user, setUser] = useState<User | null>(null);
 
-  const [tutoSearch, setTutoSearch] = useState("0");
+  const [tutoSearch, setTutoSearch] = useState("1");
 
   useEffect(() => {
     if (textInputRef.current) {

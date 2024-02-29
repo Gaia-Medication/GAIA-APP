@@ -15,9 +15,12 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
+  getATCLabel,
   getAllGenOfCIS,
+  getAllMedsOfLab,
   getAllSameCompOfCIS,
   getComposition,
+  getIMfromMed,
   getMedbyCIS,
   getPAfromMed,
 } from "../../dao/Meds";
@@ -38,11 +41,16 @@ import TutorialBubble from "../component/TutorialBubble";
 
 export default function Drug({ route, navigation }) {
   const [drugModalVisible, setDrugModalVisible] = useState(false);
+  const [atcModalVisible, setAtcModalVisible] = useState(false);
+  const [labModalVisible, setLabModalVisible] = useState(false);
   const isFocused = useIsFocused();
   const [user, setUser] = useState<User | null>(null);
   const [showMore, setShowMore] = useState(5);
   const [stock, setStock] = useState(null);
   const [allergique, setAllergique] = useState(false);
+  const [iM, setIM] = useState([]);
+  const [significationATC, setSignificationATC] = useState([]);
+  const [labMeds, setLabMeds] = useState([]);
   const [sameComp, setSameComp] = useState([]);
 
   const { drugCIS, context } = route.params;
@@ -63,6 +71,7 @@ export default function Drug({ route, navigation }) {
         .some((bool) => bool)
     );
     setSameComp(getAllSameCompOfCIS(drugCIS));
+    setIM(getIMfromMed(drugCIS));
     setStock(
       stockList.filter(
         (item) => item.idUser == currentId && item.CIS == drugCIS
@@ -73,7 +82,10 @@ export default function Drug({ route, navigation }) {
   useEffect(() => {
     if (isFocused) {
       console.log("Nav on Drug Page :", drugCIS, "-", drug.Name);
-      getComposition(drug.Composition);
+      drug.ATC &&
+        drug.ATC != "inconnue\nCode" &&
+        setSignificationATC(getATCLabel(drug.ATC));
+      setLabMeds(getAllMedsOfLab(drug.Titulaire));
       init();
     }
   }, [isFocused && drug]);
@@ -93,7 +105,6 @@ export default function Drug({ route, navigation }) {
           console.log(addstock);
 
           await addItemToList("stock", addstock);
-          //setStock([...stock, addstock]);
         }
       } else {
         const addstock: Stock = {
@@ -105,7 +116,6 @@ export default function Drug({ route, navigation }) {
         console.log(addstock);
 
         await addItemToList("stock", addstock);
-        //setStock([...stock, addstock]);
       }
       init();
     } catch (e) {
@@ -226,14 +236,30 @@ export default function Drug({ route, navigation }) {
                 {drug.Name.split(" ")[0].charAt(0).toUpperCase() +
                   drug.Name.split(" ")[0].slice(1).toLowerCase()}
               </Text>
-              <Text className="text-lg">
+              <Text className="text-lg mb-4">
                 {drug.Name.split(" ").slice(1).join(" ")}
               </Text>
+
+              <TouchableOpacity onPress={() => setLabModalVisible(true)}>
+                <Text>
+                  Titulaire:{" "}
+                  <Text className="text-[#9CDE00]">{drug.Titulaire}</Text>
+                </Text>
+              </TouchableOpacity>
               <Text>
                 Administration:{" "}
                 <Text className=" font-light">{drug.Administration_way}</Text>
               </Text>
+
+              {drug.ATC && drug.ATC != "inconnue\nCode" && (
+                <TouchableOpacity onPress={() => setAtcModalVisible(true)}>
+                  <Text className="">
+                    Code ATC: <Text className="text-[#9CDE00]">{drug.ATC}</Text>
+                  </Text>
+                </TouchableOpacity>
+              )}
             </View>
+
             {allergique && (
               <View className=" flex-row px-6">
                 <Image
@@ -245,47 +271,68 @@ export default function Drug({ route, navigation }) {
                 </Text>
               </View>
             )}
-            <Text className=" px-6">Boite(s) disponible(s):</Text>
+            {drug.Indications_therapeutiques && (
+              <View className="px-6">
+                <Text className="">🔬 Indication thérapeutique</Text>
+                <Text className="text-xs mt-[-5px]">
+                  {drug.Indications_therapeutiques.includes(drug.ATC)
+                    ? drug.Indications_therapeutiques.split(
+                        drug.ATC
+                      )[1].replaceAll("\u0092", "'")
+                    : drug.Indications_therapeutiques.includes(
+                        "\t\t\t\t\r\n\t\t\t\t\t\t"
+                      )
+                    ? "Vous trouverez les indications thérapeutiques dans la notice en cliquant sur le bouton en haut à droite"
+                    : drug.Indications_therapeutiques.replaceAll("\u0092", "'")}
+                </Text>
+              </View>
+            )}
+            <Text className="px-6">🏷 Boite(s) disponible(s)</Text>
             <View className=" px-6">
-              {drug.Values.map((item, index) => {
-                const alreadyStocked =
-                  stock.find((stockItem) => stockItem.CIP === item.CIP) != null;
+              {drug.Values &&
+                drug.Values.map((item, index) => {
+                  const alreadyStocked =
+                    stock.find((stockItem) => stockItem.CIP === item.CIP) !=
+                    null;
 
-                return (
-                  <View
-                    key={index}
-                    className=" -mb-[1px] pb-2 border-t border-b border-gray-300"
-                  >
-                    <Text className=" font-light">{item.CIP}</Text>
-                    <Text className=" text-xs">{item.Denomination}</Text>
-                    <View className=" -mt-1">
-                      {drug.Marketed == "Commercialisée" ? (
-                        item.Price_with_taxes ? (
-                          <>
-                            <Text className="font-bold text-right">
-                              {item.Price_with_taxes}€
-                            </Text>
-                            <Text className="text-right text-xs">
-                              (Remboursement: {item.Remboursement})
-                            </Text>
-                          </>
-                        ) : (
-                          <>
-                            <Text className="text-right text-xs font-bold">
-                              Prix libre
-                            </Text>
-                            <Text className="text-right text-xs">
-                              (Non remboursable)
-                            </Text>
-                          </>
-                        )
-                      ) : null}
-                    </View>
-                  </View>
-                );
-              })}
+                  return (
+                    <TouchableOpacity
+                      onPress={() => {
+                        setDrugModalVisible(!drugModalVisible);
+                      }}
+                      key={index}
+                      className=" -mb-[1px] pb-2 border-t border-b border-gray-300"
+                    >
+                      <Text className=" font-light">{item.CIP}</Text>
+                      <Text className=" text-xs">{item.Denomination}</Text>
+                      <View className=" -mt-1">
+                        {drug.Marketed == "Commercialisée" ? (
+                          item.Price_with_taxes ? (
+                            <>
+                              <Text className="font-bold text-right">
+                                {item.Price_with_taxes}€
+                              </Text>
+                              <Text className="text-right text-xs">
+                                (Remboursement: {item.Remboursement})
+                              </Text>
+                            </>
+                          ) : (
+                            <>
+                              <Text className="text-right text-xs font-bold">
+                                Prix libre
+                              </Text>
+                              <Text className="text-right text-xs">
+                                (Non remboursable)
+                              </Text>
+                            </>
+                          )
+                        ) : null}
+                      </View>
+                    </TouchableOpacity>
+                  );
+                })}
             </View>
-            <Text className=" px-6">Composition:</Text>
+            <Text className=" px-6 pt-4">💊 Composition</Text>
             {Object.keys(getComposition(drug.Composition)).map((type) => (
               <View className=" px-6" key={type}>
                 <Text className=" text-xs">
@@ -304,15 +351,31 @@ export default function Drug({ route, navigation }) {
                 )}
               </View>
             ))}
+            {iM.length > 0 && (
+              <View className="px-0">
+                <Text className=" px-6 pt-4 text-orange-400">
+                  🚫 Interactions médicamenteuses
+                </Text>
+                {iM.map((item, index) => (
+                  <View className=" px-6" key={index}>
+                    <Text className=" text-xs">
+                      - {item.interacting_substance}
+                    </Text>
+                    <Text className="px-3 text-xs">{item.association}</Text>
+                    <Text className="px-3 text-xs">{item.details}</Text>
+                  </View>
+                ))}
+              </View>
+            )}
             {sameComp.length > 0 && (
               <View className="px-0">
-                <Text className=" px-6">Meme composition:</Text>
+                <Text className=" px-6 py-4">🧬 Meme composition</Text>
                 <View>
                   {sameComp.slice(0, showMore).map((item, index) => (
                     <TouchableOpacity
                       key={index}
                       style={styles.listItem}
-                      className="flex justify-start align-middle"
+                      className="-mb-[1px] flex justify-start align-middle border-t border-gray-300"
                       onPress={() =>
                         navigation.push("Drug", { drugCIS: item.CIS })
                       }
@@ -399,62 +462,133 @@ export default function Drug({ route, navigation }) {
           )}
 
           <ModalComponent
-            styleAdded={{
-              backgroundColor: "white",
-              borderRadius: 10,
-              paddingHorizontal: 20,
-              width: "80%",
-              maxHeight: "60%",
-            }}
+            visible={atcModalVisible}
+            onClose={() => setAtcModalVisible(!atcModalVisible)}
+          >
+            <View className="w-full pb-2 px-6">
+              <Text className="pb-2">Signification du code ATC</Text>
+              {significationATC.map((item, index) => (
+                <Text className=" text-xs" key={index}>
+                  {index + 1} - {item}
+                </Text>
+              ))}
+            </View>
+            <TouchableOpacity
+              onPress={() => {
+                setAtcModalVisible(!atcModalVisible);
+              }}
+            >
+              <Text className="text-red-500">Fermer</Text>
+            </TouchableOpacity>
+          </ModalComponent>
+
+          <ModalComponent
+            visible={labModalVisible}
+            onClose={() => setLabModalVisible(!labModalVisible)}
+          >
+            <View className="w-full pb-2 ">
+              <Text className="pb-2 px-6 w-full text-center">{drug.Titulaire}</Text>
+                  
+              <FlatList
+                data={labMeds}
+                className=" max-h-80"
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({ item }) => {
+                  return (
+                    <TouchableOpacity
+                        style={styles.listItem}
+                        className="-mb-[1px] flex justify-start align-middle border-t border-gray-300 p-2"
+                        onPress={() => {
+                          setLabModalVisible(false);
+                          navigation.push("Drug", { drugCIS: item.CIS });
+                        }}
+                      >
+                        <MedIconByType type={item.Shape} />
+                        <View className="ml-4 flex-1 flex-row justify-between items-center">
+                          <Text className="flex-1 text-xs">{item.Name}</Text>
+                          {user.preference
+                            .map((allergie) =>
+                              Array.from(getPAfromMed(item.CIS)).includes(allergie)
+                            )
+                            .some((bool) => bool) && (
+                            <View className=" items-center">
+                              <Image
+                                className={"h-5 w-5 ml-1"}
+                                source={require("../../assets/allergy.png")}
+                              />
+                              <Text className="ml-2 text-red-500 font-bold text-xs">
+                                Allergie
+                              </Text>
+                            </View>
+                          )}
+                        </View>
+                      </TouchableOpacity>
+                  );
+                }}
+              />
+                 
+            </View>
+            <TouchableOpacity
+              onPress={() => {
+                setLabModalVisible(!labModalVisible);
+              }}
+            >
+              <Text className="text-red-500">Fermer</Text>
+            </TouchableOpacity>
+          </ModalComponent>
+
+          <ModalComponent
             visible={drugModalVisible}
             onClose={() => setDrugModalVisible(!drugModalVisible)}
           >
-            <View className="w-full py-3">
-              {drug.Values.map((item, index) => {
-                const alreadyStocked =
-                  stock.find((stockItem) => stockItem.CIP === item.CIP) != null;
-                return (
-                  <View
-                    key={index}
-                    className="flex py-2 flex-row items-center justify-between border-b border-gray-200"
-                  >
-                    <View className="flex flex-1">
-                      <Text className=" font-light">{item.CIP}</Text>
-                      <Text className=" text-xs">{item.Denomination}</Text>
-                    </View>
+            <View className="w-full pb-2 px-4">
+              {drug.Values &&
+                drug.Values.map((item, index) => {
+                  const alreadyStocked =
+                    stock.find((stockItem) => stockItem.CIP === item.CIP) !=
+                    null;
+                  return (
+                    <View
+                      key={index}
+                      className="flex py-2 flex-row items-center justify-between border-b border-gray-200"
+                    >
+                      <View className="flex flex-1">
+                        <Text className=" font-light">{item.CIP}</Text>
+                        <Text className=" text-xs">{item.Denomination}</Text>
+                      </View>
 
-                    {alreadyStocked ? (
-                      <>
-                        <TouchableOpacity
-                          className="px-2"
-                          onPress={() => {
-                            updateStock(item.CIS, item.CIP, +1);
-                          }}
-                        >
-                          <Text className="">➕</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                          className="px-2"
-                          onPress={() => updateStock(item.CIS, item.CIP, -1)}
-                        >
-                          <Text className="">❌</Text>
-                        </TouchableOpacity>
-                      </>
-                    ) : (
-                      <>
-                        <TouchableOpacity
-                          className="px-2"
-                          onPress={() => {
-                            updateStock(item.CIS, item.CIP, +1);
-                          }}
-                        >
-                          <Text className="">➕</Text>
-                        </TouchableOpacity>
-                      </>
-                    )}
-                  </View>
-                );
-              })}
+                      {alreadyStocked ? (
+                        <>
+                          <TouchableOpacity
+                            className="px-2"
+                            onPress={() => {
+                              updateStock(item.CIS, item.CIP, +1);
+                            }}
+                          >
+                            <Text className="">➕</Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            className="px-2"
+                            onPress={() => updateStock(item.CIS, item.CIP, -1)}
+                          >
+                            <Text className="">❌</Text>
+                          </TouchableOpacity>
+                        </>
+                      ) : (
+                        <>
+                          <TouchableOpacity
+                            className="px-2"
+                            onPress={() => {
+                              updateStock(item.CIS, item.CIP, +1);
+                            }}
+                          >
+                            <Text className="">➕</Text>
+                          </TouchableOpacity>
+                        </>
+                      )}
+                    </View>
+                  );
+                })}
               <View className="mt-4">
                 {stock.length > 0 && (
                   <Text className=" text-xs">Dans le Stock:</Text>
@@ -474,13 +608,13 @@ export default function Drug({ route, navigation }) {
                 })}
               </View>
             </View>
-              <TouchableOpacity
-                onPress={() => {
-                  setDrugModalVisible(!drugModalVisible);
-                }}
-              >
-                <Text className="text-red-500">Fermer</Text>
-              </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                setDrugModalVisible(!drugModalVisible);
+              }}
+            >
+              <Text className="text-red-500">Fermer</Text>
+            </TouchableOpacity>
           </ModalComponent>
         </>
       )}

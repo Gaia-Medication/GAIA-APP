@@ -2,12 +2,13 @@ import data from "./pharmacies.json";
 
 const points = JSON.parse(JSON.stringify(data));
 
+
 //Renvoie le tableau de toutes les établissements avec coord & informations 
 export function getAllPoints() {
   try {
     return points;
   } catch (error) {
-    console.error("Error reading JSON file", error);
+    console.error("Error reading CSV file", error);
   }
 }
 
@@ -24,8 +25,8 @@ export function getPointsbyRegion(region) {
       }
     });
     points.sort((a, b) => a.distance - b.distance);
-    return points.slice(0, 50);
+    return points.slice(0, 120);
   } catch (error) {
-    console.error("Error reading JSON file", error);
+    console.error("Error reading CSV file", error);
   }
 }

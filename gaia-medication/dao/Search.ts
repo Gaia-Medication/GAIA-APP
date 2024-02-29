@@ -1,3 +1,4 @@
+import { getAllDoctors } from "./Doctor";
 import { getAllMed, getAllPA } from "./Meds";
 
 //Tous les médicaments
@@ -99,10 +100,32 @@ export function trouverNomMedicament(texte: string) {
   Filter=Filter.filter(medicament => medicament.score > 50)
   console.log(ordonnanceBool)
   console.log(Filter)
-  if(ordonnanceBool)return { ordonnanceBool: ordonnanceBool, meds: Filter.slice(0,10)}
+  const doctor = getAllDoctors().find(
+    (doctor) =>
+      texte.toLowerCase().includes(
+        doctor.Prenom.normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .toLowerCase() +
+          " " +
+          doctor.Nom.normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .toLowerCase()
+      ) ||
+      texte.toLowerCase().includes(
+        doctor.Nom.normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .toLowerCase() +
+          " " +
+          doctor.Prenom.normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .toLowerCase()
+      )
+  );
+  console.log(doctor)
+  if(ordonnanceBool)return { ordonnanceBool: ordonnanceBool, meds: Filter.slice(0,10), doctor:doctor}
   const highScoreMeds = Filter.filter(medicament => medicament.score > 99);
-  if (highScoreMeds.length>0)return { ordonnanceBool: ordonnanceBool, meds: highScoreMeds}
-  return { ordonnanceBool: ordonnanceBool, meds: Filter.slice(0,3)}
+  if (highScoreMeds.length>0)return { ordonnanceBool: ordonnanceBool, meds: highScoreMeds, doctor:null}
+  return { ordonnanceBool: ordonnanceBool, meds: Filter.slice(0,3), doctor:null}
 }
 
 //Score de recherche pour le Scan

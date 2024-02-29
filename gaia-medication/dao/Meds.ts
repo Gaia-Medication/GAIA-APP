@@ -1,4 +1,8 @@
 import data from './medication.json';
+import data2 from './interaction.json';
+import data3 from './ATC_Label.json';
+
+const ATC_label=JSON.parse(JSON.stringify(data3))
 
 //Tous les médicamenets
 const medicaments=JSON.parse(JSON.stringify(data))
@@ -9,6 +13,16 @@ export function getAllMed(){
     console.error('Error reading JSON file', error);
   }
 }
+
+const interactions=JSON.parse(JSON.stringify(data2))
+export function getAllInteractions(){   
+  try {
+    return interactions
+  } catch (error) {
+    console.error('Error reading JSON file', error);
+  }
+}
+
 
 //Return le médicament à partir de son CIS
 export function getMedbyCIS(CIS){   
@@ -59,6 +73,24 @@ export function getAllSameCompOfCIS(CIS){
   }
 }
 
+export function getAllSameCompOfCISWithHimself(CIS){   
+  try {
+    let areSetsEqual = (set1, set2) => set1.size === set2.size && [...set1].every(val => set2.has(val));
+    const medicament = medicaments.find(med => med.CIS === CIS);
+    const composition = medicament.Composition
+    const principesActifsUniques = new Set();
+    composition.forEach((element) => {
+      const principeActif = element["Principe actif"][0];
+      principesActifsUniques.add(principeActif);
+    });
+    const sameComp = medicaments.filter(med => med.Composition && 
+      areSetsEqual(new Set( med.Composition.map(element => element["Principe actif"][0])), principesActifsUniques));
+    return sameComp
+  } catch (error) {
+    console.error('Error reading JSON file', error);
+  }
+}
+
 //Tous les principes actifs
 export function getAllPA(){   
   try {
@@ -98,6 +130,34 @@ export function getPAfromMed(CIS){
   }
 }
 
+
+//Return le/les intéractions médicamenteuses d'un medicament à partir de son CIS
+export function getIMfromMed(CIS){   
+  try {
+    const principesActifsUniques=getPAfromMed(CIS)
+    const interactionsMed = []
+    principesActifsUniques.forEach((pa:string) => {
+      if (interactions[`${pa.normalize('NFD').replace(/[\u0300-\u036f]/g, '')}`]) { // Check if there are interactions listed for this active substance
+        interactions[`${pa.normalize('NFD').replace(/[\u0300-\u036f]/g, '')}`].forEach((interaction) => {
+          interactionsMed.push(interaction); // Add each interaction to the IM array
+        });
+      }else{
+        pa.split(/[\s']/).forEach((pa:string) => {
+          if (interactions[`${pa.normalize('NFD').replace(/[\u0300-\u036f]/g, '')}`]) { // Check if there are interactions listed for this active substance
+            interactions[`${pa.normalize('NFD').replace(/[\u0300-\u036f]/g, '')}`].forEach((interaction) => {
+              interactionsMed.push(interaction); // Add each interaction to the IM array
+            });
+          }
+        });
+      }
+    });
+    return interactionsMed; // Return the array of interactions
+  } catch (error) {
+    console.error('Error reading JSON file', error);
+  }
+}
+
+
 //Reformate la composition d'un médicament
 export function getComposition(composition){   
   try {
@@ -128,6 +188,30 @@ export function getComposition(composition){
       }
     });
     return dictionnaireTypes;
+  } catch (error) {
+    console.error('Error reading JSON file', error);
+  }
+}
+
+
+export function getATCLabel(codeATC){   
+  try {
+    var codePere=codeATC
+    const labels=[]
+    while (codePere!="-") {
+      const atc=ATC_label.find(item=>item.ATC_code===codePere)
+      codePere=atc.ATC_codePere
+      labels.push(atc.Label)
+    }
+    return labels.reverse()
+  } catch (error) {
+    console.error('Error reading JSON file', error);
+  }
+}
+
+export function getAllMedsOfLab(labo){   
+  try {
+    return medicaments.filter(med => med.Titulaire===labo)
   } catch (error) {
     console.error('Error reading JSON file', error);
   }

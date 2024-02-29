@@ -137,6 +137,7 @@ export const getAllTreatments = async (): Promise<Treatment[]> => {
         name: treatment.name,
         userId: treatment.userId,
         description: treatment.description,
+        doctor: treatment.doctor,
         startDate: new Date(treatment.startDate),
         instructions: instructionsArray
       }
@@ -246,6 +247,7 @@ export const changeTreatments = async (tak: Take) => {
             if (take.date === tak.date) {
               take.taken = tak.taken;
               take.review = tak.review;
+              take.pain = tak.pain;
             }
           });
         }
