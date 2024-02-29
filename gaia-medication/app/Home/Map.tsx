@@ -10,6 +10,7 @@ import {
   Pressable,
   ScrollView,
   FlatList,
+  StatusBar,
 } from "react-native";
 import MapView, { MapType, Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import * as Location from "expo-location";
@@ -245,10 +246,30 @@ export default function Map({ navigation }) {
                     }</Text>
                     <Text className=" text-xs">{item.CodePostal}</Text>
                   </View>
-                  <View>
+                  <View className="flex-row gap-2">
                     {item.Telephone != null && (
-                      <TouchableOpacity onPress={()=>Linking.openURL(`tel:${item.Telephone}`)}>
-                        <Text className="">Contacter</Text>
+                      <TouchableOpacity
+                        onPress={() =>
+                          Linking.openURL(`tel:${item.Telephone}`)
+                        }
+                      >
+                        <Image 
+                          className=" object-cover h-5 w-5 self-center mt-1"
+                          source={require("../../assets/telephone.png")}
+                        />
+                      </TouchableOpacity>
+                    )}
+                    
+                    {item.mail != null && (
+                      <TouchableOpacity
+                        onPress={() =>
+                          Linking.openURL(`mailto:${item.mail}`)
+                        }
+                      >
+                        <Image 
+                          className=" object-cover h-5 w-5 self-center mt-1"
+                          source={require("../../assets/email.png")}
+                        />
                       </TouchableOpacity>
                     )}
                   </View>

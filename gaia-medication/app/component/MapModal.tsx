@@ -1,19 +1,23 @@
 import React, { useState } from 'react';
-import { Modal, View, TouchableOpacity, Text, Image } from 'react-native';
+import { View, TouchableOpacity, Text, Image } from 'react-native';
+import { Modal } from 'react-native-paper';
 
 const MapModalComponent = ({ visible, onClose, children, icon, color }) => {
   return (
     <Modal
+      theme={{
+        colors: {
+          backdrop: '#ffffffCC',
+        },
+      }}
       visible={visible}
-      transparent={true}
-      animationType="fade"
-      onRequestClose={onClose}
+      onDismiss={onClose}
+      contentContainerStyle={[
+        {
+          justifyContent: 'center', alignItems: 'center', 
+        }
+      ]}
     >
-      <TouchableOpacity
-        style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.3)'}}
-        activeOpacity={1}
-        onPress={onClose}
-      >
         <View className=' rounded-[20px]' style={{backgroundColor: "white", width: "80%"}}>
           <View
             style={{
@@ -37,7 +41,6 @@ const MapModalComponent = ({ visible, onClose, children, icon, color }) => {
           </View>
         </View>
 
-      </TouchableOpacity>
     </Modal>
   );
 };
