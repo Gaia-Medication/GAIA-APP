@@ -17,6 +17,7 @@ const NotificationDisplay = ({ notif, index, onFun }) => {
             setUser(current);
         };
         initUser();
+        console.log("Notif", notif);
     };
 
     function formatTimeDifference(date) {
@@ -27,19 +28,19 @@ const NotificationDisplay = ({ notif, index, onFun }) => {
         const diffInMinutes = Math.floor(diffInSeconds / 60);
         const diffInHours = Math.floor(diffInMinutes / 60);
         const diffInDays = Math.floor(diffInHours / 24);
-      
+
         if (diffInDays >= 2) {
-          return `Il y a ${diffInDays} jours`;
+            return `Il y a ${diffInDays} jours`;
         } else if (diffInDays === 1) {
-          return 'hier';
+            return 'hier';
         } else if (diffInHours >= 1) {
-          return `il y a ${diffInHours}h`;
+            return `il y a ${diffInHours}h`;
         } else if (diffInMinutes >= 1) {
-          return `il y a ${diffInMinutes}min`;
+            return `il y a ${diffInMinutes}min`;
         } else {
-          return "à l'instant";
+            return "à l'instant";
         }
-      }
+    }
 
     const formatHour = (hour) => {
         if (hour instanceof Date) {
@@ -88,40 +89,62 @@ const NotificationDisplay = ({ notif, index, onFun }) => {
     return (
         <View style={{
             flexDirection: "row",
-            justifyContent: "space-between",
+            justifyContent: "flex-start",
             alignItems: "center",
-            backgroundColor: notif.type === "daily" ? "blue" : notif.type == "take" ? "green": "red",
-            padding: 10,
-            borderRadius: 10,
             margin: 10,
-            gap: 20,
         }}>
-            <View>
-                <Text
-                    style={[
-                        styles.AvatarIcon,
-                        notif.datas[0].take.userId
-                            ? { backgroundColor: avatarColors[notif.datas[0].take.userId - 1] }
-                            : { backgroundColor: "#8E8E8E" },
-                    ]}
-                >
-                    {user ? user.firstname.charAt(0) + user.lastname.charAt(0) : "XY"}
-                </Text>
-            </View>
-            <View style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", alignItems: "flex-start", flex: 1 }}>
-                <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", alignSelf: 'stretch' }}>
-                    <Text>{user ? user.firstname + " " + user.lastname : null}</Text>
-                    <Icon.XCircle
-                        color={"#999999"}
-                        onPress={() => {
-                            () => onFun(index);
-                        }}
-                    />
+            <View
+            style={{
+                height: "100%",
+                width: 5,
+                backgroundColor: notif.type === "daily" ? "blue" : notif.type == "take" ? "green" : "red",
+                borderTopLeftRadius: 5,
+                borderBottomLeftRadius: 5,
+                marginLeft: 10,
+            }}
+            />
+            <View
+                style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    
+                    padding: 10,
+                    borderRadius: 10,
+                    margin: 10,
+                    gap: 20,
+                }}
+            >
+                <View>
+                    <Text
+                        style={[
+                            styles.AvatarIcon,
+                            notif.datas[0].take.userId
+                                ? { backgroundColor: avatarColors[notif.datas[0].take.userId - 1] }
+                                : { backgroundColor: "#8E8E8E" },
+                        ]}
+                    >
+                        {user ? user.firstname.charAt(0) + user.lastname.charAt(0) : "XY"}
+                    </Text>
                 </View>
-                <Text>{notif ? notif.userName : null}</Text>
-                <Text>{formatDate(notif.date).day}{formatDate(notif.date).dayOfMonth}{formatDate(notif.date).month}{formatDate(notif.date).year}</Text>
-                <Text>{formatTimeDifference(notif.date)}</Text>
+                <View style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", alignItems: "flex-start", flex: 1 }}>
+                    <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", alignSelf: 'stretch' }}>
+                        {notif.datas.map((data, index) => {
+                            return (
+                                <View key={index} style={{ flexDirection: "row", justifyContent: "flex-start", alignItems: "center", width: "90%" }}>
+                                    <Text numberOfLines={1} ellipsizeMode="tail">{"💊 "+data.take.medName}</Text>
+                                    <Text>{formatHour(data.take.date)}</Text>
+                                </View>
+                            );
+                        }
+                        )}
+
+                    </View>
+                    <Text>{notif ? notif.userName : null}</Text>
+                    <Text>{formatTimeDifference(notif.date)}</Text>
+                </View>
             </View>
+
 
         </View>
 
