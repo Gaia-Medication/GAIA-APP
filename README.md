@@ -1,9 +1,9 @@
-# SAE-5
+# GAIA-APP
 Technologie :   
 https://expo.dev/   
 https://reactnative.dev/
 
-## Dans le dossier du projet /SAE-5
+## Dans le dossier du projet /GAIA-APP
 https://reactnative.dev/docs/environment-setup
 ```
 npm i -g expo-cli
