@@ -20,6 +20,7 @@ import Notifications from "./Home/Notifications";
 import AllergySelector from "./component/AllergySelector";
 import ManageTreatments from "./Suivis/ManageTreatments";
 import { Provider } from "react-native-paper";
+import Welcome from "./Profile/Welcome";
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -38,6 +39,11 @@ export default function Navigation() {
         <Stack.Screen
           name="CreateProfile"
           component={CreateProfile}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Welcome"
+          component={Welcome}
           options={{ headerShown: false }}
         />
         <Stack.Screen

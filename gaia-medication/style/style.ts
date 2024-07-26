@@ -7,8 +7,6 @@ export const styles = StyleSheet.create({
     display: "flex",
     height: "100%",
     width: "100%",
-    backgroundColor: "#fff",
-    flex: 1,
   },
   header: {
     width: "100%",
@@ -65,8 +63,7 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 18,
-    padding: 16,
-    borderWidth: 1,
+    padding: 12,
     width: "80%",
   },
   searchBar: {

@@ -86,7 +86,7 @@ export default function Home({ navigation }) {
       AsyncStorage.setItem("TutoMap", "0");
       AsyncStorage.setItem("TutoTreatment", "0");
       AsyncStorage.setItem("TutoSettings", "0");
-      navigation.navigate("CreateProfile");
+      navigation.navigate("Welcome");
     } else {
       setUser(current);
     }
