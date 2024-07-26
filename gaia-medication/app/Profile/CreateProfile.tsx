@@ -20,6 +20,8 @@ import TutorialBubble from "../component/TutorialBubble";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { ArrowLeft } from "react-native-feather";
 import GoBackButton from "../component/GoBackButton";
+import ButtonB from "../component/ButtonB";
+import ButtonA from "../component/ButtonA";
 
 interface ICreateProps {
   navigation: NavigationProp<ParamListBase>;
@@ -155,37 +157,21 @@ export default function CreateProfile({ navigation }: ICreateProps) {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      {tutoStep === 0 && TutoCreate === "0" && (
-        <TutorialBubble
-          isClicked={handleTuto}
-          styleAdded={{ top: "60%", left: "5%" }}
-          text={
-            "Bienvenue sur Gaïa,\nmais avant tout, permettez-nous\nde créer votre profil. 1/2"
-          }
-        ></TutorialBubble>
-      )}
-      {tutoStep === 1 && TutoCreate === "0" && (
-        <TutorialBubble
-          isClicked={handleTuto}
-          styleAdded={{ top: "60%", left: "5%" }}
-          text={"Veuillez renseigner\nles différents champs. 2/2"}
-        ></TutorialBubble>
-      )}
-      {tutoStep === 2 && TutoCreate === "0" && (
-        <TutorialBubble
-          isClicked={handleTuto}
-          styleAdded={{ top: "60%", left: "3%" }}
-          text={"Veuillez renseigner ces autres champs. 1/1"}
-        ></TutorialBubble>
-      )}
+    <SafeAreaView className="w-full h-full bg-grey-100 justify-between">
 
-    
-      <View className="flex-row items-center justify-start py-4 px-6">
-        <GoBackButton navigation={navigation}></GoBackButton>
-        <Text className=" ml-4 text-center text-2xl text-neutral-700 font-bold">
-          Création de profil
+      <View className="items-center justify-center items-start flex-column py-4 px-6 flex-1">
+        <Text className="text-left text-green-100 text-title text-bold font-bold ">
+          Bonjour ! 👋
         </Text>
+        <Text className="text-left text-green-100 text-subtitle text-bold font-bold mt-20">
+          Avez-vous déjà utilisé Gaïa ?
+        </Text>
+
+      </View>
+
+      <View className="items-center">
+        <ButtonB title="Oui" onPress={() => navigation.navigate("CreateProfile")} />
+        <ButtonA title="Non, montrez moi" onPress={() => navigation.navigate("Welcome")} />
       </View>
 
       {!validFirstPart && (

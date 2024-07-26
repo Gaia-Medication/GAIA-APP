@@ -64,7 +64,7 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
     borderRadius: 18,
     padding: 12,
-    width: "80%",
+    width: "90%",
   },
   searchBar: {
     display: "flex",
