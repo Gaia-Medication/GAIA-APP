@@ -22,6 +22,7 @@ import { ArrowLeft } from "react-native-feather";
 import GoBackButton from "../component/GoBackButton";
 import ButtonB from "../component/ButtonB";
 import ButtonA from "../component/ButtonA";
+import GaiaInput from "../component/GaiaInput";
 
 interface ICreateProps {
   navigation: NavigationProp<ParamListBase>;
@@ -157,26 +158,21 @@ export default function CreateProfile({ navigation }: ICreateProps) {
   };
 
   return (
-    <SafeAreaView className="w-full h-full bg-grey-100 justify-between">
+    <SafeAreaView className="w-full h-full bg-grey-100 flex-column justify-between">
 
-      <View className="items-center justify-center items-start flex-column py-4 px-6 flex-1">
+      <View className="items-center justify-center items-start flex-column py-4 px-6">
         <Text className="text-left text-green-100 text-title text-bold font-bold ">
-          Bonjour ! 👋
+          Alors,
         </Text>
-        <Text className="text-left text-green-100 text-subtitle text-bold font-bold mt-20">
-          Avez-vous déjà utilisé Gaïa ?
+        <Text className="text-left text-green-100 text-subtitle text-bold font-bold mt-10">
+          Parlez nous un peu de vous...
         </Text>
 
-      </View>
-
-      <View className="items-center">
-        <ButtonB title="Oui" onPress={() => navigation.navigate("CreateProfile")} />
-        <ButtonA title="Non, montrez moi" onPress={() => navigation.navigate("Welcome")} />
       </View>
 
       {!validFirstPart && (
         <>
-          <Input
+          {/* <Input
             label="Prénom"
             labelStyle={styles.label}
             placeholder="Entrez votre prénom"
@@ -187,28 +183,33 @@ export default function CreateProfile({ navigation }: ICreateProps) {
             onBlur={validateFirstname}
             value={firstname}
             renderErrorMessage={isValidFirstname}
-          />
-          {!isValidFirstname && (
-            <Text style={stylesProfile.errorText}>
-              Le prénom doit comporter au moins 1 caractères.
-            </Text>
-          )}
-
-          <Input
-            label="Nom"
-            labelStyle={styles.label}
-            placeholder="Entrez votre nom"
-            placeholderTextColor={"#dedede"}
+          /> */}
+          <GaiaInput
+            value={lastname}
             onChangeText={(text) =>
               setLastname(text.charAt(0).toUpperCase() + text.slice(1))
             }
-            onBlur={validateLastname}
-            value={lastname}
-            renderErrorMessage={isValidLastname}
+            placeholder={"Nom"}
+            width={{width: "80%"}}
           />
           {!isValidLastname && (
             <Text style={stylesProfile.errorText}>
               Le nom doit comporter au moins 1 caractères.
+            </Text>
+          )}
+
+
+          <GaiaInput
+            value={firstname}
+            onChangeText={(text) =>
+              setFirstname(text.charAt(0).toUpperCase() + text.slice(1))
+            }
+            placeholder={"Prénom"}
+            width={{width: "80%"}}
+          />
+          {!isValidFirstname && (
+            <Text style={stylesProfile.errorText}>
+              Le prénom doit comporter au moins 1 caractères.
             </Text>
           )}
 
@@ -377,5 +378,5 @@ const stylesProfile = StyleSheet.create({
   errorText: {
     color: "red",
     marginBottom: 10,
-  },
+  }
 });
