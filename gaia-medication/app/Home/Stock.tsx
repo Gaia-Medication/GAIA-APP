@@ -43,7 +43,7 @@ export default function Stock({ navigation }) {
   }, [isFocused]);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView className=" flex bg-white w-full h-full dark:bg-[#131f24]">
       {stock && stock.length !== 0 ? (
         <FlatList
           data={stock}

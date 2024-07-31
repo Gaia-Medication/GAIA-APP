@@ -1,27 +1,20 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useIsFocused } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
-import { Button, FlatList, Text, TouchableOpacity, View } from "react-native";
+import { Button, FlatList, Pressable, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import {
-  requestNotificationPermissions,
-  notificationDaily,
-  notificationNow,
-  notificationForgot,
-} from "./../Handlers/NotificationsHandler";
 import data from "./../Suivis/treatment.json";
-import { getAllTreatments, getUserByID, readList } from "../../dao/Storage";
+import { getAllTreatments } from "../../dao/Storage";
 import * as Icon from "react-native-feather";
 import TutorialBubble from "../component/TutorialBubble";
 
-import * as Print from "expo-print";
-import { shareAsync } from "expo-sharing";
-import { getMedbyCIS } from "../../dao/Meds";
+import { useColorScheme } from "nativewind";
 
 export default function Settings({ navigation }) {
   const [treatments, setTreatments] = useState<Treatment[]>([]);
   const [debug, setDebug] = useState(false);
   const dateNotification = new Date();
+  const { colorScheme, toggleColorScheme } = useColorScheme();
   const settingsData = [
     { id: "ModifyProfile", title: "Paramètres des Profils" },
     { id: "NotificationsSettings", title: "Pramètres des Notifications" },
@@ -102,7 +95,7 @@ export default function Settings({ navigation }) {
   };
 
   return (
-    <SafeAreaView className="h-full w-full bg-white">
+    <SafeAreaView className=" flex bg-white w-full h-full dark:bg-[#131f24]" >
       {tutoSettings === "0" && (
         <TutorialBubble
           isClicked={handleTuto}
@@ -199,6 +192,13 @@ export default function Settings({ navigation }) {
           />
         </View>
       </View>
+      <Pressable
+        className="flex-1 items-center justify-center bg-neutral-100 dark:bg-neutral-900"
+        onPress={toggleColorScheme}>
+        <Text className="text-black dark:text-white">
+          {`Try clicking me! ${colorScheme === "dark" ? "🌙" : "🌞"}`}
+        </Text>
+      </Pressable>
     </SafeAreaView>
   );
 }

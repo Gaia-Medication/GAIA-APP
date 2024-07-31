@@ -140,8 +140,7 @@ export default function Suivis({ navigation }) {
   }, [isFocused]);
 
   return (
-    <View style={styles.container}>
-      
+    <View className=" flex bg-white w-full h-full dark:bg-[#131f24]">
       {tutoStep === 0 && tutoTreatment === "0" && (
         <TutorialBubble
           isClicked={handleTuto}

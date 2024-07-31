@@ -11,8 +11,7 @@ import {
   View,
   FlatList,
 } from "react-native";
-import { Button, Input } from "react-native-elements";
-import { Bell } from "react-native-feather";
+import { Input } from "react-native-elements";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import callGoogleVisionAsync from "../../OCR/helperFunctions";
 import {
@@ -41,9 +40,11 @@ import {
 } from "react-native-alert-notification";
 import * as Notifications from "expo-notifications";
 import { searchDoctor } from "../../dao/Doctor";
+import { useColorScheme } from "nativewind";
 
 export default function Home({ navigation }) {
   const isFocused = useIsFocused();
+  const { colorScheme } = useColorScheme();
   const [loading, setLoading] = useState(false);
   const [isMedModalVisible, setIsMedModalVisible] = useState(false);
   const [takes, setTakes] = useState(null);
@@ -205,16 +206,16 @@ export default function Home({ navigation }) {
   };
 
   return (
-    <View className=" flex bg-white w-full h-full" style={{ gap: 0 }}>
+    <View
+      className=" flex bg-white w-full h-full dark:bg-[#131f24]"
+      style={{ gap: 0 }}
+    >
       <AlertNotificationRoot>
         <Image
           className=" object-cover h-12 w-24 self-center mt-2"
           source={require("../../assets/logo_title_gaia.png")}
         ></Image>
-        <View
-          className=" flex bg-white w-full h-full flex-1"
-          style={{ gap: 20 }}
-        >
+        <View className=" flex w-full h-full flex-1" style={{ gap: 20 }}>
           {user && takes && (
             <>
               {smallTutoStep === 0 && tutoHome === "0" && (
@@ -267,9 +268,11 @@ export default function Home({ navigation }) {
                 {header && (
                   <>
                     <View style={styles.titleContainer}>
-                      <Text style={styles.subtitle}>Welcome back</Text>
-                      <Text style={styles.title} className="text-neutral-800">
-                        {user?.firstname}
+                      <Text
+                        style={styles.title}
+                        className="text-neutral-800 dark:text-slate-50 p-4"
+                      >
+                        👋 {user?.firstname}
                       </Text>
                     </View>
                     <TouchableOpacity
@@ -281,7 +284,7 @@ export default function Home({ navigation }) {
                       }
                     >
                       <Icon.Bell
-                        stroke="#242424"
+                        stroke={colorScheme=="dark"?"#fff":"#000"}
                         width={24}
                         height={24}
                       ></Icon.Bell>
@@ -290,7 +293,10 @@ export default function Home({ navigation }) {
                 )}
               </View>
               <View style={styles.searchContainer}>
-                <Text style={styles.title2} className="text-neutral-700">
+                <Text
+                  style={styles.title2}
+                  className="text-neutral-700 dark:text-slate-100"
+                >
                   Recherche d’un médicament
                 </Text>
                 <View style={styles.searchBarwQR}>
@@ -320,7 +326,10 @@ export default function Home({ navigation }) {
                 </View>
               </View>
               <View style={styles.traitementContainer}>
-                <Text style={styles.title2} className="text-neutral-700">
+                <Text
+                  style={styles.title2}
+                  className="text-neutral-700 dark:text-slate-100"
+                >
                   Suivis d'un traitement
                 </Text>
               </View>
@@ -480,7 +489,10 @@ export default function Home({ navigation }) {
                 </TouchableOpacity>
               )}
               <View style={styles.traitementContainer}>
-                <Text style={styles.title2} className="text-neutral-700">
+                <Text
+                  style={styles.title2}
+                  className="text-neutral-700 dark:text-slate-100"
+                >
                   Autres
                 </Text>
               </View>
@@ -490,28 +502,8 @@ export default function Home({ navigation }) {
               >
                 <View className="px-6 flex-row gap-6">
                   <TouchableOpacity
-                    onPress={() =>
-                      navigation.navigate("SuivisHandler", { screen: "Stock" })
-                    }
-                    className=" rounded-3xl bg-[#9CDE0070] flex-row items-center justify-center p-4 w-32 h-32"
-                  >
-                    <Image
-                      className="h-20 w-20"
-                      source={require("../../assets/stock.png")}
-                    />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => navigation.navigate("Map")}
-                    className=" rounded-3xl bg-[#ffdb3c89] flex-row items-center justify-center p-4 w-32 h-32"
-                  >
-                    <Image
-                      className="h-20 w-20"
-                      source={require("../../assets/map-icons/map.png")}
-                    />
-                  </TouchableOpacity>
-                  <TouchableOpacity
                     onPress={() => setIsMedModalVisible(true)}
-                    className=" rounded-3xl bg-[#0070e870] flex-row items-center justify-center p-4 w-32 h-32"
+                    className=" rounded-3xl bg-[#8FC0F5] flex-row items-center justify-center p-4 w-32 h-32"
                   >
                     <Image
                       className="h-20 w-20"
@@ -593,20 +585,20 @@ export default function Home({ navigation }) {
                                   Linking.openURL(`tel:${item.Telephone}`)
                                 }
                               >
-                                <Image 
+                                <Image
                                   className=" object-cover h-5 w-5 self-center mt-1"
                                   source={require("../../assets/telephone.png")}
                                 />
                               </TouchableOpacity>
                             )}
-                            
+
                             {item.mail != null && (
                               <TouchableOpacity
                                 onPress={() =>
                                   Linking.openURL(`mailto:${item.mail}`)
                                 }
                               >
-                                <Image 
+                                <Image
                                   className=" object-cover h-5 w-5 self-center mt-1"
                                   source={require("../../assets/email.png")}
                                 />

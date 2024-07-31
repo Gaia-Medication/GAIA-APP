@@ -6,7 +6,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/logo_gaia_loading.png",
       "resizeMode": "contain",
@@ -41,7 +41,8 @@
           "icon": "./assets/adaptive-icon.png",
           "color": "#FF0000"
         }
-      ]
+      ],
+      "expo-router"
     ],
     "extra": {
       "eas": {
