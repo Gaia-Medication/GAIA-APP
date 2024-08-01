@@ -12,7 +12,7 @@ const ButtonA = ({ title, onPress }) => {
       ]}
       className="bg-green-100 mb-3"
     >
-      <Text className="text-button font-bold text-black uppercase" >{title}</Text>
+      <Text className="text-button font-bold text-black dark:text-white uppercase" >{title}</Text>
     </TouchableOpacity>
   );
 };
