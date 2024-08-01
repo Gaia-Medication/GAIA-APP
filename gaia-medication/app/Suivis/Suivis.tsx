@@ -110,10 +110,25 @@ export default function Suivis({ navigation }) {
   }
 
   const init = async () => {
-    setTutoTreatment(await AsyncStorage.getItem("TutoTreatment"));
-    await getTreatments();
-    await getTakes();
+    let loadingTimeout;
+
+    const loadingPromise = new Promise(() => {
+      loadingTimeout = setTimeout(() => {
+        setIsLoading(true);
+      }, 500);
+    });
+    const operationsPromise = (async () => {
+      setTutoTreatment(await AsyncStorage.getItem("TutoTreatment"));
+      await getTreatments();
+      await getTakes();
+    })();
+    
+    await Promise.race([loadingPromise, operationsPromise]);
+    await operationsPromise;
+
+    clearTimeout(loadingTimeout);
     setIsLoading(false);
+
     const currentId = await AsyncStorage.getItem("currentUser");
     const current = await getUserByID(JSON.parse(currentId));
     const notifsDaily = await initDailyNotifications(current?.firstname, current?.id);
@@ -133,7 +148,6 @@ export default function Suivis({ navigation }) {
 
   useEffect(() => {
     if (isFocused) {
-      setIsLoading(true);
       console.log("Nav on Suivis Page");
       init();
     }
@@ -176,7 +190,6 @@ export default function Suivis({ navigation }) {
       {isLoading && (
         <View
           style={{
-            backgroundColor: "white",
             position: "absolute",
             display: "flex",
             justifyContent: "center",
@@ -185,7 +198,7 @@ export default function Suivis({ navigation }) {
             flex: 1,
             zIndex: 10,
           }}
-          className="px-0"
+          className="px-0 bg-white dark:bg-[#131f24]"
         >
           <Image
             className=" object-cover h-24 w-48 self-center -mt-[50%]"
@@ -265,22 +278,21 @@ export default function Suivis({ navigation }) {
           />
         </View>
       ) : (
-        <View className="flex flex-col justify-around items-center h-[98%] w-full">
+        <View className="flex flex-col justify-around items-center h-full w-full">
           <Text className="text-2xl font-medium text-center text-neutral-300">
-            Aucun traitement à venir
+            Aucun traitement en cours
           </Text>
           <Image
             className=" h-[150px] w-[150px] -mt-[40%] -mb-[20%]"
-            source={require("../../assets/prescription(1).png")}
+            source={require("../../assets/suivis.png")}
           />
           <TouchableOpacity
-            className="bg-lime-400 rounded-2xl flex flex-row justify-center items-center p-2 px-8 "
+            className="bg-lime-400 rounded-2xl flex flex-row justify-center items-center p-2 px-8"
             onPress={() => navigation.navigate("AddTreatment")}
           >
-            <Text className="text-center text-white font-semibold text-lg p-2">
+            <Text className="text-center text-white font-semibold text-lg p-2 pb-3">
               Ajouter un traitement
             </Text>
-            <ArrowRightCircle color="white" height={30} width={30} />
           </TouchableOpacity>
         </View>
       )}

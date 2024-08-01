@@ -57,7 +57,7 @@ Notifications.addNotificationResponseReceivedListener(response => {
 
 export default function App() {
   return (
-    <View style={styles.container} >
+    <View style={styles.container} className='bg-white dark:bg-[#131f24]'>
       <StatusBar barStyle={"light-content"} backgroundColor="#1F1F1F" />
       <Navigation />
     </View>

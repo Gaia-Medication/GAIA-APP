@@ -53,14 +53,14 @@ export default function Stock({ navigation }) {
             return (
               <TouchableOpacity
                 style={styles.listItem}
-                className="flex justify-start align-middle"
+                className="flex justify-start align-middle border-b-[#e5e5e5] dark:border-b-[#37464f]"
                 onPress={() =>
                   navigation.navigate("Drug", { drugCIS: drug.CIS })
                 }
               >
                 <MedIconByType type={drug.Shape}/>
                 <View className="ml-4 flex-1 flex-row justify-between items-center">
-                  <Text className="flex-1">{drug.Name}</Text>
+                  <Text className="flex-1 dark:text-slate-50">{drug.Name}</Text>
                   {user.preference
                       .map((allergie) =>
                         Array.from(getPAfromMed(item.CIS)).includes(allergie)
@@ -77,13 +77,13 @@ export default function Stock({ navigation }) {
           }}
         />
       ): (
-        <View className="flex flex-col justify-around items-center h-[98%] w-full">
+        <View className="flex flex-col justify-around items-center h-full w-full mt-[33%]">
           <Text className="text-2xl font-medium text-center text-neutral-300">
             Aucun médicament
           </Text>
           <Image
             className=" h-[150px] w-[150px] -mt-[40%] -mb-[20%]"
-            source={require("../../assets/stock.png")}
+            source={require("../../assets/pharmacy.png")}
           />
           <View className=" h-12"/>
         </View>

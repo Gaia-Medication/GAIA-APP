@@ -210,7 +210,23 @@ export default function Home({ navigation }) {
       className=" flex bg-white w-full h-full dark:bg-[#131f24]"
       style={{ gap: 0 }}
     >
-      <AlertNotificationRoot>
+      <AlertNotificationRoot theme={colorScheme=="dark"?"dark":"light"} colors={[{
+        label: "#000",
+        card: "#fff",
+        overlay: "#fff",
+        success: "",
+        danger: "",
+        warning: "#FD9601",
+        info: ""
+      },{
+        label: "#fff",
+        card: "#131f24",
+        overlay: "#131f24",
+        success: "",
+        danger: "",
+        warning: "#FD9601",
+        info: ""
+      }]}>
         <Image
           className=" object-cover h-12 w-24 self-center mt-2"
           source={require("../../assets/logo_title_gaia.png")}
@@ -284,7 +300,7 @@ export default function Home({ navigation }) {
                       }
                     >
                       <Icon.Bell
-                        stroke={colorScheme=="dark"?"#fff":"#000"}
+                        stroke={colorScheme=="dark"?"#fff":"#363636"}
                         width={24}
                         height={24}
                       ></Icon.Bell>

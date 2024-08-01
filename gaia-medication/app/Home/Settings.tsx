@@ -1,7 +1,14 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useIsFocused } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
-import { Button, FlatList, Pressable, Text, TouchableOpacity, View } from "react-native";
+import {
+  Button,
+  FlatList,
+  Pressable,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import data from "./../Suivis/treatment.json";
 import { getAllTreatments } from "../../dao/Storage";
@@ -95,7 +102,7 @@ export default function Settings({ navigation }) {
   };
 
   return (
-    <SafeAreaView className=" flex bg-white w-full h-full dark:bg-[#131f24]" >
+    <SafeAreaView className=" flex bg-white w-full h-full dark:bg-[#131f24]">
       {tutoSettings === "0" && (
         <TutorialBubble
           isClicked={handleTuto}
@@ -108,27 +115,43 @@ export default function Settings({ navigation }) {
       {debug && (
         <>
           <Button
+            color={"#9CDE00"}
             title="CLEAR USERS DATA"
             onPress={() => (
               AsyncStorage.removeItem("users"), AsyncStorage.removeItem("stock")
             )}
           />
           <Button
+            color={"#9CDE00"}
             title="CLEAR STOCK DATA"
             onPress={() => AsyncStorage.removeItem("stock")}
           />
           <Button
+            color={"#9CDE00"}
             title="ADD PROFILE"
             onPress={() => navigation.navigate("CreateProfile")}
           ></Button>
           <Button
+            color={"#9CDE00"}
             title="MODIFY PROFILE"
             onPress={() => navigation.navigate("ModifyProfile")}
           ></Button>
-          <Button onPress={showTreatments} title="Liste des traitements" />
-          <Button onPress={deleteTreatments} title="Supprimer traitements" />
-          <Button onPress={createTreatmentTest1} title="TraitementTest 1" />
-          <Button onPress={reset} title="reset" />
+          <Button
+            color={"#9CDE00"}
+            onPress={showTreatments}
+            title="Liste des traitements"
+          />
+          <Button
+            color={"#9CDE00"}
+            onPress={deleteTreatments}
+            title="Supprimer traitements"
+          />
+          <Button
+            color={"#9CDE00"}
+            onPress={createTreatmentTest1}
+            title="TraitementTest 1"
+          />
+          <Button color={"#9CDE00"} onPress={reset} title="reset" />
           {treatments &&
             treatments.map((treatment) => {
               return (
@@ -194,7 +217,11 @@ export default function Settings({ navigation }) {
       </View>
       <Pressable
         className="flex-1 items-center justify-center bg-neutral-100 dark:bg-neutral-900"
-        onPress={toggleColorScheme}>
+        onPress={() => {
+          toggleColorScheme();
+          AsyncStorage.setItem("darkmode", colorScheme);
+        }}
+      >
         <Text className="text-black dark:text-white">
           {`Try clicking me! ${colorScheme === "dark" ? "🌙" : "🌞"}`}
         </Text>

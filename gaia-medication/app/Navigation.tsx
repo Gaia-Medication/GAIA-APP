@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -24,68 +24,82 @@ import { Provider } from "react-native-paper";
 import Welcome from "./Profile/Welcome";
 import { Image, View } from "react-native";
 import { useColorScheme } from "nativewind";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
 const TopTab = createMaterialTopTabNavigator();
 
 export default function Navigation() {
+  const { setColorScheme } = useColorScheme();
+  const [themeSet, setThemeSet] = useState(false);
+  const initTheme = async () => {
+    const theme = await AsyncStorage.getItem("darkmode");
+    setColorScheme(theme == "dark" ? "light" : "dark");
+    setThemeSet(true)
+    console.log("Init Theme : "+theme == "dark" ? "light" : "dark");
+  };
+  useEffect(() => {
+    !themeSet&&initTheme();
+  }, []);
   return (
     <Provider>
-      <NavigationContainer>
-        <Stack.Navigator initialRouteName="Home">
-          <Stack.Screen
-            name="HomeHandler"
-            component={HomeHandler}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="CreateProfile"
-            component={CreateProfile}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Welcome"
-            component={Welcome}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="ModifyProfile"
-            component={ModifyProfile}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="ManageTreatments"
-            component={ManageTreatments}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="AddTreatment"
-            component={AddTreatment}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Notifications"
-            component={Notifications}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="NotificationsSettings"
-            component={NotificationsSettings}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Drug"
-            component={Drug}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Search"
-            component={Search}
-            options={{ headerShown: false }}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
+      {themeSet && (
+        <NavigationContainer>
+          <Stack.Navigator initialRouteName="Home">
+            <Stack.Screen
+              name="HomeHandler"
+              component={HomeHandler}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="CreateProfile"
+              component={CreateProfile}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Welcome"
+              component={Welcome}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="ModifyProfile"
+              component={ModifyProfile}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="ManageTreatments"
+              component={ManageTreatments}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="AddTreatment"
+              component={AddTreatment}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Notifications"
+              component={Notifications}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="NotificationsSettings"
+              component={NotificationsSettings}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Drug"
+              component={Drug}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Search"
+              component={Search}
+              options={{ headerShown: false }}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
+      )}
     </Provider>
   );
 }
@@ -102,8 +116,8 @@ function HomeHandler() {
         tabBarStyle: {
           height: 90,
           borderTopWidth: 2,
-          borderTopColor:colorScheme==="dark"?"#37464f":"#e5e5e5",
-          backgroundColor: colorScheme==="dark"?"#131f24":"#FFFFFFAA",
+          borderTopColor: colorScheme === "dark" ? "#37464f" : "#e5e5e5",
+          backgroundColor: colorScheme === "dark" ? "#131f24" : "#FFFFFFAA",
           justifyContent: "space-around",
           width: "100%",
           shadowColor: "#fff",
@@ -243,18 +257,20 @@ function HomeHandler() {
 function SuivisHandler() {
   const { colorScheme } = useColorScheme();
   return (
-    <TopTab.Navigator screenOptions={{
-      tabBarLabelStyle:{
-        color: colorScheme==="dark"?"#fff":"#000",
-      },
-      tabBarIndicatorStyle:{
-        backgroundColor:"#A0DB30"
-      },
-      tabBarStyle: {
-        borderTopColor:colorScheme==="dark"?"#37464f":"#e5e5e5",
-        backgroundColor: colorScheme==="dark"?"#131f24":"#FFFFFFAA",
-      }
-    }}>
+    <TopTab.Navigator
+      screenOptions={{
+        tabBarLabelStyle: {
+          color: colorScheme === "dark" ? "#fff" : "#000",
+        },
+        tabBarIndicatorStyle: {
+          backgroundColor: "#9CDE00",
+        },
+        tabBarStyle: {
+          borderTopColor: colorScheme === "dark" ? "#37464f" : "#e5e5e5",
+          backgroundColor: colorScheme === "dark" ? "#131f24" : "#FFFFFFAA",
+        },
+      }}
+    >
       <TopTab.Screen name="Suivis" component={Suivis} />
       <TopTab.Screen name="Journal" component={Journal} />
     </TopTab.Navigator>

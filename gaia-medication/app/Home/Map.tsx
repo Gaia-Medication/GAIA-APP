@@ -1,27 +1,23 @@
 import { useIsFocused } from "@react-navigation/native";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
-  Button,
   Image,
   TouchableOpacity,
   Linking,
-  Pressable,
-  ScrollView,
   FlatList,
-  StatusBar,
 } from "react-native";
-import MapView, { MapType, Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import MapView, { LocalTile, MapType, Marker, PROVIDER_GOOGLE, UrlTile } from "react-native-maps";
 import * as Location from "expo-location";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { getAllPoints, getPointsbyRegion } from "../../dao/MapPoint";
+import { getPointsbyRegion } from "../../dao/MapPoint";
 import ModalComponent from "../component/Modal";
 import { styles } from "../../style/style";
 import MapModalComponent from "../component/MapModal";
 import TutorialBubble from "../component/TutorialBubble";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getDoctorbyRegion } from "../../dao/Doctor";
+import { useColorScheme } from "nativewind";
 
 export default function Map({ navigation }) {
   const initialRegion = {
@@ -30,17 +26,8 @@ export default function Map({ navigation }) {
     longitude: -1.5608386136591434,
     longitudeDelta: 0.05,
   };
-  const standardMapType = [
-    {
-      featureType: "poi",
-      stylers: [
-        {
-          visibility: "off",
-        },
-      ],
-    },
-  ];
   const isFocused = useIsFocused();
+  const {colorScheme} = useColorScheme()
   const [currentLocation, setCurrentLocation] = useState(null);
   const [region, setRegion] = useState(initialRegion);
   const [points, setPoints] = useState(getPointsbyRegion(region));
@@ -163,7 +150,7 @@ export default function Map({ navigation }) {
   };
 
   return (
-    <View>
+    <View className=" flex bg-white w-full h-full dark:bg-[#131f24]">
       {tutoMap === "0" && (
         <TutorialBubble
           isClicked={handleTuto}
@@ -178,7 +165,7 @@ export default function Map({ navigation }) {
         style={{ width: "100%", height: "100%" }}
         initialRegion={initialRegion}
         onRegionChangeComplete={(region, gesture) => setRegion(region)}
-        customMapStyle={standardMapType}
+        customMapStyle={colorScheme=="dark"?darkMapType:standardMapType}
         toolbarEnabled={false}
         showsUserLocation={currentLocation != null}
         provider={PROVIDER_GOOGLE}
@@ -290,3 +277,176 @@ export default function Map({ navigation }) {
     </View>
   );
 }
+
+
+const standardMapType = [
+  {
+    featureType: "poi",
+    stylers: [
+      {
+        visibility: "off",
+      },
+    ],
+  },
+];
+const darkMapType=[
+  {
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#242f3e"
+      }
+    ]
+  },
+  {
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#746855"
+      }
+    ]
+  },
+  {
+    "elementType": "labels.text.stroke",
+    "stylers": [
+      {
+        "color": "#242f3e"
+      }
+    ]
+  },
+  {
+    "featureType": "administrative.locality",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#d59563"
+      }
+    ]
+  },
+  {
+    "featureType": "poi",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#d59563"
+      }
+    ]
+  },
+  {
+    "featureType": "poi.park",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#263c3f"
+      }
+    ]
+  },
+  {
+    "featureType": "poi.park",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#6b9a76"
+      }
+    ]
+  },
+  {
+    "featureType": "road",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#38414e"
+      }
+    ]
+  },
+  {
+    "featureType": "road",
+    "elementType": "geometry.stroke",
+    "stylers": [
+      {
+        "color": "#212a37"
+      }
+    ]
+  },
+  {
+    "featureType": "road",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#9ca5b3"
+      }
+    ]
+  },
+  {
+    "featureType": "road.highway",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#746855"
+      }
+    ]
+  },
+  {
+    "featureType": "road.highway",
+    "elementType": "geometry.stroke",
+    "stylers": [
+      {
+        "color": "#1f2835"
+      }
+    ]
+  },
+  {
+    "featureType": "road.highway",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#f3d19c"
+      }
+    ]
+  },
+  {
+    "featureType": "transit",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#2f3948"
+      }
+    ]
+  },
+  {
+    "featureType": "transit.station",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#d59563"
+      }
+    ]
+  },
+  {
+    "featureType": "water",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#17263c"
+      }
+    ]
+  },
+  {
+    "featureType": "water",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#515c6d"
+      }
+    ]
+  },
+  {
+    "featureType": "water",
+    "elementType": "labels.text.stroke",
+    "stylers": [
+      {
+        "color": "#17263c"
+      }
+    ]
+  }
+]

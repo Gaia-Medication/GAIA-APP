@@ -46,7 +46,7 @@ export default function Search({ route, navigation }) {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView className=" flex bg-white w-full h-full dark:bg-[#131f24]">
       {tutoSearch === "0" && (
         <TutorialBubble
           isClicked={handleTuto}
@@ -94,12 +94,12 @@ export default function Search({ route, navigation }) {
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.listItem}
-            className="flex justify-start align-middle"
+            className="bg-white border-b-[#e5e5e5] flex justify-start align-middle dark:bg-[#131f24] dark:border-b-[#37464f]"
             onPress={() => navigation.navigate("Drug", { drugCIS: item.CIS })}
           >
             <MedIconByType type={item.type} />
             <View className="ml-4 flex-1 flex-row justify-between items-center">
-              <Text className="flex-1">{item.Name}</Text>
+              <Text className="flex-1 dark:text-slate-50">{item.Name}</Text>
               {user.preference
                 .map((allergie) =>
                   Array.from(getPAfromMed(item.CIS)).includes(allergie)

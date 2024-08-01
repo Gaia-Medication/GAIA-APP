@@ -100,7 +100,7 @@ export function trouverNomMedicament(texte: string) {
   Filter=Filter.filter(medicament => medicament.score > 50)
   console.log(ordonnanceBool)
   console.log(Filter)
-  const doctor = getAllDoctors().find(
+  const doctor = ordonnanceBool&&Filter.length>0?getAllDoctors().find(
     (doctor) =>
       texte.toLowerCase().includes(
         doctor.Prenom.normalize("NFD")
@@ -120,7 +120,7 @@ export function trouverNomMedicament(texte: string) {
             .replace(/[\u0300-\u036f]/g, "")
             .toLowerCase()
       )
-  );
+  ):null;
   console.log(doctor)
   if(ordonnanceBool)return { ordonnanceBool: ordonnanceBool, meds: Filter.slice(0,10), doctor:doctor}
   const highScoreMeds = Filter.filter(medicament => medicament.score > 99);

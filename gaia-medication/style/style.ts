@@ -130,10 +130,8 @@ export const styles = StyleSheet.create({
     paddingRight: 6,
   },
   listItem: {
-    backgroundColor: '#ffffff',
     padding: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#dddddd',
+    borderBottomWidth: 2,
     display: "flex",
     flexDirection: "row",
     alignItems: "center"
