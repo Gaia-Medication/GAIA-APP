@@ -67,7 +67,7 @@ export default function Welcome({ navigation }: ICreateProps) {
         <>
           <View className="items-center justify-center items-start flex-column py-4 px-6 flex-1">
             <Text className="text-left text-green-100 text-title text-bold font-bold ">
-              Super,
+              Super !
             </Text>
             <Text className="text-left text-green-100 text-subtitle text-bold font-bold mt-10">
               Commençons par les présentations...

@@ -23,6 +23,7 @@ import GoBackButton from "../component/GoBackButton";
 import ButtonB from "../component/ButtonB";
 import ButtonA from "../component/ButtonA";
 import GaiaInput from "../component/GaiaInput";
+import GaiaPicker from "../component/GaiaPicker";
 
 interface ICreateProps {
   navigation: NavigationProp<ParamListBase>;
@@ -161,9 +162,6 @@ export default function CreateProfile({ navigation }: ICreateProps) {
     <SafeAreaView className="w-full h-full bg-grey-100 flex-column justify-between">
 
       <View className="items-center justify-center items-start flex-column py-4 px-6">
-        <Text className="text-left text-green-100 text-title text-bold font-bold ">
-          Alors,
-        </Text>
         <Text className="text-left text-green-100 text-subtitle text-bold font-bold mt-10">
           Parlez nous un peu de vous...
         </Text>
@@ -190,7 +188,7 @@ export default function CreateProfile({ navigation }: ICreateProps) {
               setLastname(text.charAt(0).toUpperCase() + text.slice(1))
             }
             placeholder={"Nom"}
-            width={{width: "80%"}}
+            width={{ width: "80%" }}
           />
           {!isValidLastname && (
             <Text style={stylesProfile.errorText}>
@@ -205,25 +203,14 @@ export default function CreateProfile({ navigation }: ICreateProps) {
               setFirstname(text.charAt(0).toUpperCase() + text.slice(1))
             }
             placeholder={"Prénom"}
-            width={{width: "80%"}}
+            width={{ width: "80%" }}
           />
           {!isValidFirstname && (
             <Text style={stylesProfile.errorText}>
               Le prénom doit comporter au moins 1 caractères.
             </Text>
           )}
-
-          <Text
-            style={{
-              color: "#888888",
-              fontWeight: "400",
-              paddingLeft: 10,
-              fontSize: 16,
-            }}
-          >
-            Genre
-          </Text>
-          <RNPickerSelect
+          {/* <RNPickerSelect
             placeholder={{ label: "Sélectionner le genre", value: "" }}
             onValueChange={(value) => setGender(value)}
             value={gender}
@@ -232,6 +219,17 @@ export default function CreateProfile({ navigation }: ICreateProps) {
               { label: "Feminin", value: "female" },
               { label: "Autre", value: "other" },
             ]}
+          /> */}
+          <GaiaPicker
+            placeholder={"genre"}
+            selectedValue={gender}
+            onValueChange={(itemValue) => setGender(itemValue)}
+            items={[
+              { label: "Masculin", value: "male" },
+              { label: "Feminin", value: "female" },
+              { label: "Autre", value: "other" },
+            ]}
+            width={null}
           />
 
           <View className=" flex items-center justify-center mt-auto mb-2">
@@ -378,5 +376,18 @@ const stylesProfile = StyleSheet.create({
   errorText: {
     color: "red",
     marginBottom: 10,
+  },
+  label: {
+    fontSize: 18,
+    marginBottom: 10,
+  },
+  pickerContainer: {
+    width: '100%',
+  },
+  picker: {
+    width: '100%',
+  },
+  placeholder: {
+    color: '#888',
   }
 });

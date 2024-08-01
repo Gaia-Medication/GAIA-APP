@@ -53,10 +53,12 @@ const styles = StyleSheet.create({
   },
   input: {
     padding: 6,
-    fontSize: 16,
+    fontSize: 20,
     height: 40,
     marginLeft: 10,
     zIndex: 1,
+    color: '#5E5E5E',
+    fontWeight: "600",
   },
   placeholder: {
     position: 'absolute',
