@@ -4,20 +4,14 @@ import React, { useCallback, useEffect, useState } from "react";
 import {
   View,
   Text,
-  FlatList,
   Image,
   TouchableOpacity,
-  Modal,
-  Pressable,
-  StyleSheet,
   Linking,
   ScrollView,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
   getATCLabel,
-  getAllGenOfCIS,
-  getAllMedsOfLab,
   getAllSameCompOfCIS,
   getComposition,
   getIMfromMed,
@@ -32,9 +26,7 @@ import {
 } from "../../dao/Storage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Loading from "../component/Loading";
-import { Button, Input } from "react-native-elements";
 import { styles } from "../../style/style";
-import DrugModal from "../component/Modal";
 import ModalComponent from "../component/Modal";
 import MedIconByType from "../component/MedIconByType";
 import TutorialBubble from "../component/TutorialBubble";
@@ -42,8 +34,6 @@ import { useColorScheme } from "nativewind";
 
 export default function Drug({ route, navigation }) {
   const [drugModalVisible, setDrugModalVisible] = useState(false);
-  const [atcModalVisible, setAtcModalVisible] = useState(false);
-  const [labModalVisible, setLabModalVisible] = useState(false);
   const isFocused = useIsFocused();
   const { colorScheme } = useColorScheme();
   const [user, setUser] = useState<User | null>(null);
@@ -52,10 +42,9 @@ export default function Drug({ route, navigation }) {
   const [allergique, setAllergique] = useState(false);
   const [iM, setIM] = useState([]);
   const [significationATC, setSignificationATC] = useState([]);
-  const [labMeds, setLabMeds] = useState([]);
   const [sameComp, setSameComp] = useState([]);
 
-  const { drugCIS, context } = route.params;
+  const { drugCIS } = route.params;
   const drug = getMedbyCIS(drugCIS);
 
   const [tutoMedic, setTutoMedic] = useState(null);
@@ -87,7 +76,6 @@ export default function Drug({ route, navigation }) {
       drug.ATC &&
         drug.ATC != "inconnue\nCode" &&
         setSignificationATC(getATCLabel(drug.ATC));
-      setLabMeds(getAllMedsOfLab(drug.Titulaire));
       init();
     }
   }, [isFocused && drug]);
@@ -244,7 +232,7 @@ export default function Drug({ route, navigation }) {
                 {drug.Name.split(" ").slice(1).join(" ")}
               </Text>
 
-              <TouchableOpacity onPress={() => setLabModalVisible(true)}>
+              <TouchableOpacity onPress={() => navigation.navigate("LaboratoirePage",{labo:drug.Titulaire, user:user})}>
                 <Text className="dark:text-slate-50">
                   Titulaire:{" "}
                   <Text className=" dark:text-slate-50 text-[#9CDE00]">
@@ -260,7 +248,7 @@ export default function Drug({ route, navigation }) {
               </Text>
 
               {drug.ATC && drug.ATC != "inconnue\nCode" && (
-                <TouchableOpacity onPress={() => setAtcModalVisible(true)}>
+                <TouchableOpacity onPress={() => navigation.navigate("AtcPage",{significationATC:significationATC})}>
                   <Text className=" dark:text-slate-50 ">
                     Code ATC:{" "}
                     <Text className=" dark:text-slate-50 text-[#9CDE00]">
@@ -402,7 +390,7 @@ export default function Drug({ route, navigation }) {
                     <TouchableOpacity
                       key={index}
                       style={styles.listItem}
-                      className="-mb-[1px] flex justify-start align-middle border-t border-gray-300"
+                      className="-mb-[1px] flex justify-start align-middle border-b-[#e5e5e5] dark:border-b-[#37464f]"
                       onPress={() =>
                         navigation.push("Drug", { drugCIS: item.CIS })
                       }
@@ -474,89 +462,6 @@ export default function Drug({ route, navigation }) {
               </Text>
             </TouchableOpacity>
           )}
-
-          <ModalComponent
-            visible={atcModalVisible}
-            onClose={() => setAtcModalVisible(!atcModalVisible)}
-          >
-            <View className="w-full pb-2 px-6">
-              <Text className=" dark:text-slate-50 pb-2">
-                Signification du code ATC
-              </Text>
-              {significationATC.map((item, index) => (
-                <Text className=" dark:text-slate-50  text-xs" key={index}>
-                  {index + 1} - {item}
-                </Text>
-              ))}
-            </View>
-            <TouchableOpacity
-              onPress={() => {
-                setAtcModalVisible(!atcModalVisible);
-              }}
-            >
-              <Text className=" dark:text-slate-50 text-red-500">Fermer</Text>
-            </TouchableOpacity>
-          </ModalComponent>
-
-          <ModalComponent
-            visible={labModalVisible}
-            onClose={() => setLabModalVisible(!labModalVisible)}
-          >
-            <View className="w-full pb-2 ">
-              <Text className=" dark:text-slate-50 pb-2 px-6 w-full text-center">
-                {drug.Titulaire}
-              </Text>
-
-              <FlatList
-                data={labMeds}
-                className=" max-h-80"
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={({ item }) => {
-                  return (
-                    <TouchableOpacity
-                      style={styles.listItem}
-                      className="-mb-[1px] flex justify-start align-middle border-t border-gray-300 p-2"
-                      onPress={() => {
-                        setLabModalVisible(false);
-                        navigation.push("Drug", { drugCIS: item.CIS });
-                      }}
-                    >
-                      <MedIconByType type={item.Shape} />
-                      <View className="ml-4 flex-1 flex-row justify-between items-center">
-                        <Text className=" dark:text-slate-50 flex-1 text-xs">
-                          {item.Name}
-                        </Text>
-                        {user.preference
-                          .map((allergie) =>
-                            Array.from(getPAfromMed(item.CIS)).includes(
-                              allergie
-                            )
-                          )
-                          .some((bool) => bool) && (
-                          <View className=" items-center">
-                            <Image
-                              className={"h-5 w-5 ml-1"}
-                              source={require("../../assets/allergy.png")}
-                            />
-                            <Text className=" dark:text-slate-50 ml-2 text-red-500 font-bold text-xs">
-                              Allergie
-                            </Text>
-                          </View>
-                        )}
-                      </View>
-                    </TouchableOpacity>
-                  );
-                }}
-              />
-            </View>
-            <TouchableOpacity
-              onPress={() => {
-                setLabModalVisible(!labModalVisible);
-              }}
-            >
-              <Text className=" dark:text-slate-50 text-red-500">Fermer</Text>
-            </TouchableOpacity>
-          </ModalComponent>
 
           <ModalComponent
             visible={drugModalVisible}
