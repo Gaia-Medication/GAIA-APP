@@ -89,10 +89,7 @@ export default function Map({ navigation }) {
   }, [isFocused]);
 
   useEffect(() => {
-    const newPoints =
-      region.latitudeDelta < 0.14 && region.longitudeDelta < 0.14
-        ? getPointsbyRegion(region)
-        : [];
+    const newPoints = getPointsbyRegion(region)
     newPoints && setMedecin(getDoctorbyRegion(newPoints));
     setPoints(newPoints);
   }, [region]);
@@ -148,7 +145,7 @@ export default function Map({ navigation }) {
                   navigation.navigate("MapPointPage", { selectedPoint: point })
                 }
               >
-                <Image source={getIcon} style={{ width: 25, height: 25 }} />
+                <Image source={getIcon} style={{ width: 20, height: 20 }} />
               </Marker>
             );
           })}

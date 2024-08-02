@@ -9,7 +9,7 @@ url = 'https://www.data.gouv.fr/fr/datasets/r/98f3161f-79ff-4f16-8f6a-6d571a80fe
 # INITIALISATION
 dataManager = DataManager(url)
 files = dataManager.getPharmacyFile()
-df = pd.read_csv('data/pharmacies.csv', sep=';', encoding='latin-1', header=None, skiprows=1, low_memory=False) 
+df = pd.read_csv('data/pharmacies.csv', sep=';', encoding='utf-8', header=None, skiprows=1, low_memory=False)
 print("COLONNES => ", df.columns, "\n")
 
 # --------  DATAFRAME  ----------#
@@ -93,6 +93,7 @@ df = df.astype(data_types)
 
 # --------  MERGE  ----------#
 df = df.merge(dfLoc, on='id', how='inner')
+print(df['type'].unique())
 
 # --------  FILTER TYPE  ----------#
 specific_values = [
