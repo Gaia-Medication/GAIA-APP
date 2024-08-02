@@ -57,9 +57,10 @@ Notifications.addNotificationResponseReceivedListener(response => {
 
 
 export default function App() {
+  const {colorScheme} = useColorScheme()
   return (
     <View style={styles.container} className='bg-white dark:bg-[#131f24]'>
-      <StatusBar barStyle={"light-content"} backgroundColor="#1F1F1F" />
+      <StatusBar barStyle={colorScheme=="dark"?"light-content":"dark-content"} backgroundColor={colorScheme=="dark"?"#131f24":"#fff"} />
       <Navigation />
     </View>
   );
