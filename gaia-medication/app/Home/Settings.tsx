@@ -5,8 +5,10 @@ import {
   Button,
   FlatList,
   Pressable,
+  StatusBar,
   Text,
   TouchableOpacity,
+  Image,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -14,10 +16,9 @@ import data from "./../Suivis/treatment.json";
 import { getAllTreatments } from "../../dao/Storage";
 import * as Icon from "react-native-feather";
 import TutorialBubble from "../component/TutorialBubble";
-
 import { useColorScheme } from "nativewind";
 
-export default function Settings({ navigation }) {
+export default function Settings({ navigation, route }) {
   const [treatments, setTreatments] = useState<Treatment[]>([]);
   const [debug, setDebug] = useState(false);
   const dateNotification = new Date();
@@ -36,16 +37,6 @@ export default function Settings({ navigation }) {
   const tuto = async () => {
     setTutoSettings(await AsyncStorage.getItem("TutoSettings"));
   };
-
-  function formaterDate(date) {
-    const heures = date.getHours().toString().padStart(2, "0");
-    const minutes = date.getMinutes().toString().padStart(2, "0");
-    const jour = date.getDate().toString().padStart(2, "0");
-    const mois = (date.getMonth() + 1).toString().padStart(2, "0");
-    const annee = date.getFullYear();
-
-    return `${heures}:${minutes} ${jour}/${mois}/${annee}`;
-  }
 
   const handleTuto = (isClicked) => {
     AsyncStorage.setItem("TutoSettings", "1");
@@ -102,7 +93,10 @@ export default function Settings({ navigation }) {
   };
 
   return (
-    <SafeAreaView className=" flex bg-white w-full h-full dark:bg-[#131f24]">
+    <View className=" flex bg-white w-full h-full dark:bg-[#131f24]">
+      {isFocused && (
+        <StatusBar barStyle="dark-content" backgroundColor="#ffeea1" />
+      )}
       {tutoSettings === "0" && (
         <TutorialBubble
           isClicked={handleTuto}
@@ -112,6 +106,24 @@ export default function Settings({ navigation }) {
           }
         ></TutorialBubble>
       )}
+      <View className="w-full h-52 bg-[#ffeea1] overflow-hidden">
+        <View className="absolute -bottom-1 left-1/2 -translate-x-24">
+          <Image
+            className="w-48 h-48"
+            source={require("./../../assets/profile-icon/man.png")}
+          />
+        </View>
+      </View>
+      <TouchableOpacity
+        className="mb-4"
+        onPress={() => {
+          setDebug(!debug);
+        }}
+      >
+        <Text className="text-center text-[#9CDE00] mt-3 font-bold">
+          TOGGLE DEBUG
+        </Text>
+      </TouchableOpacity>
       {debug && (
         <>
           <Button
@@ -169,15 +181,6 @@ export default function Settings({ navigation }) {
         </>
       )}
 
-      <TouchableOpacity
-        onPress={() => {
-          setDebug(!debug);
-        }}
-      >
-        <Text className="text-center text-[#9CDE00] mt-3 font-bold">
-          TOGGLE DEBUG
-        </Text>
-      </TouchableOpacity>
       <View>
         <FlatList
           data={settingsData}
@@ -226,6 +229,6 @@ export default function Settings({ navigation }) {
           {`Try clicking me! ${colorScheme === "dark" ? "🌙" : "🌞"}`}
         </Text>
       </Pressable>
-    </SafeAreaView>
+    </View>
   );
 }
