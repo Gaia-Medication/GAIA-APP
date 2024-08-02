@@ -182,12 +182,12 @@ export default function Drug({ route, navigation }) {
           <ScrollView className="gap-2" showsVerticalScrollIndicator={false}>
             <View className="flex-row justify-between pt-4 px-6">
               <Icon.ArrowLeft
-                color={colorScheme=="dark"?"#fff":"#363636"}
+                color={colorScheme == "dark" ? "#fff" : "#363636"}
                 onPress={() => navigation.goBack()}
               />
               <Icon.AlertCircle
                 className=" z-10"
-                color={colorScheme=="dark"?"#fff":"#363636"}
+                color={colorScheme == "dark" ? "#fff" : "#363636"}
                 onPress={handlePress}
               />
             </View>
@@ -446,24 +446,18 @@ export default function Drug({ route, navigation }) {
                 )}
               </View>
             )}
-            <View
-              className={
-                stock.find((stockItem) => stockItem.CIS === drugCIS) != null
-                  ? " mb-40"
-                  : "mb-24"
-              }
-            />
+            <View className={"mb-24"} />
           </ScrollView>
 
           {stock.find((stockItem) => stockItem.CIS === drugCIS) != null ? (
             <>
               <TouchableOpacity
-                className=" bg-[#D5F48A] rounded-[19px] absolute bottom-8 left-6 right-6"
+                className=" bg-[#688f4b] rounded-[19px] absolute bottom-8 left-6 right-6"
                 onPress={() => {
                   setDrugModalVisible(true);
                 }}
               >
-                <Text className=" dark:text-slate-50 text-center text-[#9CDE00] text-lg py-3 pt-2">
+                <Text className="text-center text-[#9CDE00] text-lg py-3 pt-2">
                   Modifier
                 </Text>
               </TouchableOpacity>
@@ -475,7 +469,7 @@ export default function Drug({ route, navigation }) {
                 setDrugModalVisible(true);
               }}
             >
-              <Text className=" dark:text-slate-50 text-center text-white text-2xl font-bold py-3 pt-2">
+              <Text className="text-center text-white text-2xl font-bold py-3 pt-2">
                 Ajouter
               </Text>
             </TouchableOpacity>

@@ -8,6 +8,7 @@ import {
   Image,
   ActivityIndicator,
   FlatList,
+  SafeAreaView,
 } from "react-native";
 import {
   addItemToList,
@@ -154,7 +155,7 @@ export default function Suivis({ navigation }) {
   }, [isFocused]);
 
   return (
-    <View className=" flex bg-white w-full h-full dark:bg-[#131f24]">
+    <SafeAreaView className=" flex bg-white w-full h-full dark:bg-[#131f24]">
       {tutoStep === 0 && tutoTreatment === "0" && (
         <TutorialBubble
           isClicked={handleTuto}
@@ -296,6 +297,6 @@ export default function Suivis({ navigation }) {
           </TouchableOpacity>
         </View>
       )}
-    </View>
+    </SafeAreaView>
   );
 }

@@ -23,7 +23,7 @@ export default function Journal({ navigation }) {
   }, [isFocused]);
 
   return (
-    <View className=" flex bg-white w-full h-full dark:bg-[#131f24]">
-    </View>
+    <SafeAreaView className=" flex bg-white w-full h-full dark:bg-[#131f24]">
+    </SafeAreaView>
   );
 }

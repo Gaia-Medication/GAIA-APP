@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   View,
   FlatList,
+  StatusBar,
 } from "react-native";
 import { Input } from "react-native-elements";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
@@ -41,6 +42,7 @@ import {
 import * as Notifications from "expo-notifications";
 import { searchDoctor } from "../../dao/Doctor";
 import { useColorScheme } from "nativewind";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Home({ navigation }) {
   const isFocused = useIsFocused();
@@ -206,27 +208,33 @@ export default function Home({ navigation }) {
   };
 
   return (
-    <View
+    <SafeAreaView
       className=" flex bg-white w-full h-full dark:bg-[#131f24]"
       style={{ gap: 0 }}
     >
-      <AlertNotificationRoot theme={colorScheme=="dark"?"dark":"light"} colors={[{
-        label: "#000",
-        card: "#fff",
-        overlay: "#fff",
-        success: "",
-        danger: "",
-        warning: "#FD9601",
-        info: ""
-      },{
-        label: "#fff",
-        card: "#131f24",
-        overlay: "#131f24",
-        success: "",
-        danger: "",
-        warning: "#FD9601",
-        info: ""
-      }]}>
+      <AlertNotificationRoot
+        theme={colorScheme == "dark" ? "dark" : "light"}
+        colors={[
+          {
+            label: "#000",
+            card: "#fff",
+            overlay: "#fff",
+            success: "",
+            danger: "",
+            warning: "#FD9601",
+            info: "",
+          },
+          {
+            label: "#fff",
+            card: "#131f24",
+            overlay: "#131f24",
+            success: "",
+            danger: "",
+            warning: "#FD9601",
+            info: "",
+          },
+        ]}
+      >
         <Image
           className=" object-cover h-12 w-24 self-center mt-2"
           source={require("../../assets/logo_title_gaia.png")}
@@ -273,39 +281,21 @@ export default function Home({ navigation }) {
               )}
 
               <View style={styles.header}>
-                <AvatarButton
+                {/* <AvatarButton
                   onPress={handleAvatarButton}
                   users={users}
                   current={user}
                   setUser={setUser}
                   navigation={navigation}
                   tuto={smallTutoStep === 1}
-                ></AvatarButton>
+                ></AvatarButton> */}
                 {header && (
-                  <>
-                    <View style={styles.titleContainer}>
-                      <Text
-                        style={styles.title}
-                        className="text-neutral-800 dark:text-slate-50 p-4"
-                      >
-                        👋 {user?.firstname}
-                      </Text>
-                    </View>
-                    <TouchableOpacity
-                      style={{ marginHorizontal: 13 }}
-                      onPress={() =>
-                        navigation.navigate("Notifications", {
-                          data: JSON.stringify(notificationsList),
-                        })
-                      }
-                    >
-                      <Icon.Bell
-                        stroke={colorScheme=="dark"?"#fff":"#363636"}
-                        width={24}
-                        height={24}
-                      ></Icon.Bell>
-                    </TouchableOpacity>
-                  </>
+                  <Text
+                    style={styles.title}
+                    className="text-neutral-800 dark:text-slate-50 p-4 text-center w-full"
+                  >
+                    👋 {user?.firstname} 👋
+                  </Text>
                 )}
               </View>
               <View style={styles.searchContainer}>
@@ -512,22 +502,31 @@ export default function Home({ navigation }) {
                   Autres
                 </Text>
               </View>
-              <ScrollView
-                horizontal={true}
-                showsHorizontalScrollIndicator={false}
-              >
-                <View className="px-6 flex-row gap-6">
-                  <TouchableOpacity
-                    onPress={() => setIsMedModalVisible(true)}
-                    className=" rounded-3xl bg-[#8FC0F5] flex-row items-center justify-center p-4 w-32 h-32"
-                  >
-                    <Image
-                      className="h-20 w-20"
-                      source={require("../../assets/map-icons/medical-team.png")}
-                    />
-                  </TouchableOpacity>
-                </View>
-              </ScrollView>
+              <View className="px-6 flex-row justify-around">
+                <TouchableOpacity
+                  onPress={() => setIsMedModalVisible(true)}
+                  className=" rounded-3xl bg-[#8FC0F5] flex-row items-center justify-center p-4 w-32 h-32"
+                >
+                  <Image
+                    className="h-20 w-20"
+                    source={require("../../assets/medical-team.png")}
+                  />
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={() =>
+                    navigation.navigate("Notifications", {
+                      data: JSON.stringify(notificationsList),
+                    })
+                  }
+                  className=" rounded-3xl bg-[#ff8400] flex-row items-center justify-center p-4 w-32 h-32"
+                >
+                  <Image
+                    className="h-20 w-20"
+                    source={require("../../assets/bell.png")}
+                  />
+                </TouchableOpacity>
+              </View>
               <ModalComponent
                 visible={isMedModalVisible}
                 onClose={() => setIsMedModalVisible(!isMedModalVisible)}
@@ -639,6 +638,6 @@ export default function Home({ navigation }) {
         </View>
         {loading && <Loading />}
       </AlertNotificationRoot>
-    </View>
+    </SafeAreaView>
   );
 }
