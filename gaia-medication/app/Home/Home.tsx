@@ -290,11 +290,8 @@ export default function Home({ navigation }) {
                   tuto={smallTutoStep === 1}
                 ></AvatarButton> */}
                 {header && (
-                  <Text
-                    style={styles.title}
-                    className="text-neutral-800 dark:text-slate-50 p-4 text-center w-full"
-                  >
-                    👋 {user?.firstname} 👋
+                  <Text className="text-neutral-800 text-3xl  dark:text-slate-50 p-4 text-center w-full">
+                    Bonjour {user?.firstname}
                   </Text>
                 )}
               </View>

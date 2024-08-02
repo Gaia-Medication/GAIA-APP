@@ -42,7 +42,8 @@
           "color": "#FF0000"
         }
       ],
-      "expo-router"
+      "expo-router",
+      "expo-font"
     ],
     "extra": {
       "eas": {

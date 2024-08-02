@@ -34,7 +34,7 @@ const ModalComponent = ({ visible, onClose, children, styleAdded = {} }) => {
         ]}
       >
         <View
-          className="my-3 w-full "
+          className="my-3 w-full dark:bg-[#131f24]"
           style={{ alignItems: "center", justifyContent: "center" }}
         >
           {children}

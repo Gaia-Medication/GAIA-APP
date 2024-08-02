@@ -18,6 +18,9 @@ module.exports = {
           100: "#9CDE00"
         }
       },
+      fontFamily: {
+        example: ["Varela"],
+      },
       fontSize: {
         title: "36px",
         subtitle: "24px",
