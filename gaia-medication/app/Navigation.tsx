@@ -119,7 +119,7 @@ function HomeHandler() {
         headerShown: false,
         tabBarShowLabel: false,
         tabBarStyle: {
-          height: 90,
+          height: 85,
           borderTopWidth: 2,
           borderTopColor: colorScheme === "dark" ? "#37464f" : "#e5e5e5",
           backgroundColor: colorScheme === "dark" ? "#131f24" : "#FFFFFFAA",
@@ -142,12 +142,12 @@ function HomeHandler() {
                 borderWidth: 1,
                 marginBottom: 10,
                 borderColor: focused ? "#A0DB30" : "#A0DB3000",
-                borderRadius: 15,
+                borderRadius: 12,
                 backgroundColor: focused ? "#A0DB3050" : "#A0DB3000",
               }}
             >
               <Image
-                className="w-9 h-9"
+                className="w-8 h-8"
                 source={require("../assets/home.png")}
               />
             </View>
@@ -167,12 +167,12 @@ function HomeHandler() {
                 borderWidth: 1,
                 marginBottom: 10,
                 borderColor: focused ? "#A0DB30" : "#A0DB3000",
-                borderRadius: 15,
+                borderRadius: 12,
                 backgroundColor: focused ? "#A0DB3050" : "#A0DB3000",
               }}
             >
               <Image
-                className="w-9 h-9"
+                className="w-8 h-8"
                 source={require("../assets/suivis.png")}
               />
             </View>
@@ -193,12 +193,12 @@ function HomeHandler() {
                 borderWidth: 1,
                 marginBottom: 10,
                 borderColor: focused ? "#A0DB30" : "#A0DB3000",
-                borderRadius: 15,
+                borderRadius: 12,
                 backgroundColor: focused ? "#A0DB3050" : "#A0DB3000",
               }}
             >
               <Image
-                className="w-9 h-9"
+                className="w-8 h-8"
                 source={require("../assets/pharmacy.png")}
               />
             </View>
@@ -218,12 +218,12 @@ function HomeHandler() {
                 borderWidth: 1,
                 marginBottom: 10,
                 borderColor: focused ? "#A0DB30" : "#A0DB3000",
-                borderRadius: 15,
+                borderRadius: 12,
                 backgroundColor: focused ? "#A0DB3050" : "#A0DB3000",
               }}
             >
               <Image
-                className="w-9 h-9"
+                className="w-8 h-8"
                 source={require("../assets/map-icons/map.png")}
               />
             </View>
@@ -243,12 +243,12 @@ function HomeHandler() {
                 borderWidth: 1,
                 marginBottom: 10,
                 borderColor: focused ? "#A0DB30" : "#A0DB3000",
-                borderRadius: 15,
+                borderRadius: 12,
                 backgroundColor: focused ? "#A0DB3050" : "#A0DB3000",
               }}
             >
               <Image
-                className="w-9 h-9"
+                className="w-8 h-8"
                 source={require("../assets/profile-icon/man.png")}
               />
             </View>
