@@ -6,6 +6,8 @@ type User = {
   weight: number;
   gender: string;
   preference: string[];
+  avatar:string
+  bgcolor:string
 };
 
 type Treatment = {

@@ -147,6 +147,8 @@ export default function CreateProfile({ navigation }: ICreateProps) {
           weight,
           gender,
           preference,
+          avatar:"man",
+          bgcolor:"#ffeea1"
         };
 
         await addItemToList("users", user);

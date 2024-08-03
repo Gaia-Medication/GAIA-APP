@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { NavigationContainer, useRoute } from "@react-navigation/native";
+import {
+  NavigationContainer,
+  useIsFocused,
+  useRoute,
+} from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import Home from "./Home/Home";
@@ -14,7 +18,10 @@ import Search from "./Meds/Search";
 import Drug from "./Meds/Drug";
 import Map from "./Home/Map";
 import AddTreatment from "./Suivis/AddTreatment";
-import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import ModifyProfile from "./Profile/ModifyProfile";
 import NotificationsSettings from "./Home/Settings/NotificationsSettings";
 import Notifications from "./Home/Notifications";
@@ -28,6 +35,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Atc from "./Meds/AtcPage";
 import Laboratoire from "./Meds/LaboratoirePage";
 import MapPoint from "./Home/MapPages/MapPointPage";
+import AvatarChange, { avatars } from "./Home/Settings/AvatarChange";
+import { getUserByID } from "../dao/Storage";
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -39,68 +48,45 @@ export default function Navigation() {
   const initTheme = async () => {
     const theme = await AsyncStorage.getItem("darkmode");
     setColorScheme(theme == "dark" ? "light" : "dark");
-    setThemeSet(true)
-    console.log("Init Theme : "+theme == "dark" ? "light" : "dark");
+    setThemeSet(true);
+    console.log("Init Theme : " + theme == "dark" ? "light" : "dark");
   };
   useEffect(() => {
-    !themeSet&&initTheme();
+    !themeSet && initTheme();
   }, []);
   return (
     <Provider>
       {themeSet && (
         <NavigationContainer>
-          <Stack.Navigator initialRouteName="Home" screenOptions={{headerShown:false}}>
-            <Stack.Screen
-              name="HomeHandler"
-              component={HomeHandler}
-            />
-            <Stack.Screen
-              name="CreateProfile"
-              component={CreateProfile}
-            />
-            <Stack.Screen
-              name="Welcome"
-              component={Welcome}
-            />
-            <Stack.Screen
-              name="ModifyProfile"
-              component={ModifyProfile}
-            />
+          <Stack.Navigator
+            initialRouteName="Home"
+            screenOptions={{ headerShown: false }}
+          >
+            <Stack.Screen name="HomeHandler" component={HomeHandler} />
+            <Stack.Screen name="CreateProfile" component={CreateProfile} />
+            <Stack.Screen name="Welcome" component={Welcome} />
+            <Stack.Screen name="ModifyProfile" component={ModifyProfile} />
             <Stack.Screen
               name="ManageTreatments"
               component={ManageTreatments}
             />
-            <Stack.Screen
-              name="AddTreatment"
-              component={AddTreatment}
-            />
-            <Stack.Screen
-              name="Notifications"
-              component={Notifications}
-            />
+            <Stack.Screen name="AddTreatment" component={AddTreatment} />
+            <Stack.Screen name="Notifications" component={Notifications} />
             <Stack.Screen
               name="NotificationsSettings"
               component={NotificationsSettings}
             />
+            <Stack.Screen name="Drug" component={Drug} />
+            <Stack.Screen name="Search" component={Search} />
+            <Stack.Screen name="AtcPage" component={Atc} />
+            <Stack.Screen name="LaboratoirePage" component={Laboratoire} />
+            <Stack.Screen name="MapPointPage" component={MapPoint} />
             <Stack.Screen
-              name="Drug"
-              component={Drug}
-            />
-            <Stack.Screen
-              name="Search"
-              component={Search}
-            />
-            <Stack.Screen
-              name="AtcPage"
-              component={Atc}
-            />
-            <Stack.Screen
-              name="LaboratoirePage"
-              component={Laboratoire}
-            />
-            <Stack.Screen
-              name="MapPointPage"
-              component={MapPoint}
+              name="AvatarChange"
+              component={AvatarChange}
+              options={{
+                animation: "fade",
+              }}
             />
           </Stack.Navigator>
         </NavigationContainer>
@@ -111,6 +97,20 @@ export default function Navigation() {
 
 function HomeHandler() {
   const { colorScheme } = useColorScheme();
+  const [user, setUser] = useState<User | null>(null);
+  const isFocused = useIsFocused();
+  useEffect(() => {
+    if (isFocused) {
+      init();
+    }
+  }, [isFocused]);
+
+  const init = async () => {
+    const currentId = await AsyncStorage.getItem("currentUser");
+    const current = await getUserByID(JSON.parse(currentId));
+    setUser(current);
+  };
+
   return (
     <BottomTab.Navigator
       screenOptions={{
@@ -247,10 +247,12 @@ function HomeHandler() {
                 backgroundColor: focused ? "#A0DB3050" : "#A0DB3000",
               }}
             >
-              <Image
-                className="w-8 h-8"
-                source={require("../assets/profile-icon/man.png")}
-              />
+              {user && (
+                <Image
+                  className="w-8 h-8"
+                  source={user.avatar ? avatars[user.avatar] : avatars["man"]}
+                />
+              )}
             </View>
           ),
         }}
@@ -279,7 +281,5 @@ function SuivisHandler() {
       <TopTab.Screen name="Suivis" component={Suivis} />
       <TopTab.Screen name="Journal" component={Journal} />
     </TopTab.Navigator>
-
   );
 }
-
