@@ -58,7 +58,7 @@ export default function ManageTreatments({ navigation }) {
   };
 
   const modalModif = selectedTreatment ? (
-    <View
+    <SafeAreaView
       style={{
         gap: 30,
         paddingBottom: 100,
@@ -85,7 +85,7 @@ export default function ManageTreatments({ navigation }) {
         disabled={false}
         onPress={() => setModifModalVisible(false)}
       ></CustomButton>
-    </View>
+    </SafeAreaView>
   ) : null;
 
   const handleModalActivation = (visible, treatment) => {

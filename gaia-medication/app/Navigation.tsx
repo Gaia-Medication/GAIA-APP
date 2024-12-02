@@ -106,25 +106,24 @@ function HomeHandler() {
         tabBarShowLabel: false,
         tabBarStyle: {
           position: "absolute",
-          bottom: 20,
-          left: 20,
-          right: 20,
-          height: 80,
+          height: 90,
           borderTopWidth: 0,
-          backgroundColor: "#FFFFFFAA",
-          justifyContent: "space-between",
-          width: "90%",
+          backgroundColor: "#111111AA",
+          justifyContent: "center",
+          width: "100%",
           borderRadius: 30,
-          shadowColor: "#fff",
+          shadowColor: "#fff"
         },
         tabBarIconStyle: {
           color: "#fff",
+
         },
         tabBarItemStyle: {
           top: 15,
           bottom: 15,
-          height: "61%",
-          borderRadius: 50,
+          height: "100%",
+          borderRadius: 25,
+          marginHorizontal: 10
         },
       }}
     >
@@ -132,7 +131,8 @@ function HomeHandler() {
         name="Home"
         component={Home}
         options={{
-          tabBarIcon: ({ color }) => <Icon.Home color={color} />,
+          tabBarIcon: ({ color }) => <Icon.Home color={color} 
+          />,
         }}
       />
       <BottomTab.Screen
