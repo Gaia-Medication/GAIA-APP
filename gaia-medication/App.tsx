@@ -5,6 +5,9 @@ import * as Notifications from 'expo-notifications';
 import { PLAYSOUND, SETBADGE, SHOWALERT } from './app/utils/constants';
 import { changeTreatments } from './dao/Storage';
 import { notificationForgot } from './app/Handlers/NotificationsHandler';
+import { useColorScheme } from "nativewind";
+import { useFonts } from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -56,9 +59,13 @@ Notifications.addNotificationResponseReceivedListener(response => {
 
 
 export default function App() {
+  const {colorScheme} = useColorScheme()
+  const [loaded, error] = useFonts({
+    'Varela': require('./assets/fonts/VarelaRoundRegular.ttf'),
+  });
   return (
-    <View style={styles.container} >
-      <StatusBar barStyle={"dark-content"} backgroundColor="transparent" />
+    <View style={styles.container}  className='bg-white dark:bg-[#131f24]'>
+      <StatusBar barStyle={colorScheme=="dark"?"light-content":"dark-content"} backgroundColor={colorScheme=="dark"?"#131f24":"#fff"} />
       <Navigation />
     </View>
   );

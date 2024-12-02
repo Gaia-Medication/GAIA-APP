@@ -1,27 +1,29 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useIsFocused } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
-import { Button, FlatList, Text, TouchableOpacity, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import {
-  requestNotificationPermissions,
-  notificationDaily,
-  notificationNow,
-  notificationForgot,
-} from "./../Handlers/NotificationsHandler";
+  Button,
+  FlatList,
+  Pressable,
+  StatusBar,
+  Text,
+  TouchableOpacity,
+  Image,
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import data from "./../Suivis/treatment.json";
-import { getAllTreatments, getUserByID, readList } from "../../dao/Storage";
+import { getAllTreatments, getUserByID } from "../../dao/Storage";
 import * as Icon from "react-native-feather";
 import TutorialBubble from "../component/TutorialBubble";
+import { useColorScheme } from "nativewind";
+import { avatars } from "./Settings/AvatarChange";
 
-import * as Print from "expo-print";
-import { shareAsync } from "expo-sharing";
-import { getMedbyCIS } from "../../dao/Meds";
-
-export default function Settings({ navigation }) {
+export default function Settings({ navigation, route }) {
   const [treatments, setTreatments] = useState<Treatment[]>([]);
   const [debug, setDebug] = useState(false);
-  const dateNotification = new Date();
+  const [user, setUser] = useState<User | null>(null);
+  const { colorScheme, toggleColorScheme } = useColorScheme();
   const settingsData = [
     { id: "ModifyProfile", title: "Paramètres des Profils" },
     { id: "NotificationsSettings", title: "Pramètres des Notifications" },
@@ -33,28 +35,21 @@ export default function Settings({ navigation }) {
 
   const [tutoSettings, setTutoSettings] = useState(null);
 
-  const tuto = async () => {
-    setTutoSettings(await AsyncStorage.getItem("TutoSettings"));
-  };
-
-  function formaterDate(date) {
-    const heures = date.getHours().toString().padStart(2, "0");
-    const minutes = date.getMinutes().toString().padStart(2, "0");
-    const jour = date.getDate().toString().padStart(2, "0");
-    const mois = (date.getMonth() + 1).toString().padStart(2, "0");
-    const annee = date.getFullYear();
-
-    return `${heures}:${minutes} ${jour}/${mois}/${annee}`;
-  }
-
   const handleTuto = (isClicked) => {
     AsyncStorage.setItem("TutoSettings", "1");
     navigation.navigate("Home");
   };
 
+  const init = async () => {
+    setTutoSettings(await AsyncStorage.getItem("TutoSettings"));
+    const currentId = await AsyncStorage.getItem("currentUser");
+    const current = await getUserByID(JSON.parse(currentId));
+    setUser(current);
+  };
+
   const isFocused = useIsFocused();
   useEffect(() => {
-    tuto();
+    init();
     if (isFocused) {
       console.log("Nav on Settings Page");
     }
@@ -89,7 +84,8 @@ export default function Settings({ navigation }) {
   };
 
   const reset = () => {
-    AsyncStorage.removeItem("users"), AsyncStorage.removeItem("stock");
+    AsyncStorage.removeItem("users");
+    AsyncStorage.removeItem("stock");
     AsyncStorage.removeItem("treatments");
     AsyncStorage.setItem("isFirstConnection", "true");
     AsyncStorage.setItem("TutoHome", "0");
@@ -102,103 +98,159 @@ export default function Settings({ navigation }) {
   };
 
   return (
-    <SafeAreaView className="h-full w-full bg-white">
-      {tutoSettings === "0" && (
-        <TutorialBubble
-          isClicked={handleTuto}
-          styleAdded={{ top: "70%", left: "1%" }}
-          text={
-            "Nous arrivons déjà à la fin, avec la page des réglages, maintenant vous pouvez profiter et découvrir de tout ce que Gaïa à vous offrir!"
-          }
-        ></TutorialBubble>
-      )}
-      {debug && (
+    <SafeAreaView className=" flex bg-white w-full h-full dark:bg-[#131f24]">
+      {user && (
         <>
-          <Button
-            title="CLEAR USERS DATA"
-            onPress={() => (
-              AsyncStorage.removeItem("users"), AsyncStorage.removeItem("stock")
-            )}
-          />
-          <Button
-            title="CLEAR STOCK DATA"
-            onPress={() => AsyncStorage.removeItem("stock")}
-          />
-          <Button
-            title="ADD PROFILE"
-            onPress={() => navigation.navigate("CreateProfile")}
-          ></Button>
-          <Button
-            title="MODIFY PROFILE"
-            onPress={() => navigation.navigate("ModifyProfile")}
-          ></Button>
-          <Button onPress={showTreatments} title="Liste des traitements" />
-          <Button onPress={deleteTreatments} title="Supprimer traitements" />
-          <Button onPress={createTreatmentTest1} title="TraitementTest 1" />
-          <Button onPress={reset} title="reset" />
-          {treatments &&
-            treatments.map((treatment) => {
-              return (
-                <View key={treatment.name}>
-                  <Text>{treatment.name}</Text>
-                  <Text>{treatment.instructions.length}</Text>
-                </View>
-              );
-            })}
-          {!treatments ? (
-            <Text>PAS DE VARIABLE ASYNC TREATMENT</Text>
-          ) : treatments.length == 0 ? (
-            <Text>TREATMENTS VIDE</Text>
-          ) : null}
-        </>
-      )}
+          {isFocused && (
+            <StatusBar barStyle="dark-content" backgroundColor={user.bgcolor ? user.bgcolor : "#ffeea1"} />
+          )}
+          {tutoSettings === "0" && (
+            <TutorialBubble
+              isClicked={handleTuto}
+              styleAdded={{ top: "70%", left: "1%" }}
+              text={
+                "Nous arrivons déjà à la fin, avec la page des réglages, maintenant vous pouvez profiter et découvrir de tout ce que Gaïa à vous offrir!"
+              }
+            ></TutorialBubble>
+          )}
+          <View className="w-full h-52 overflow-hidden" style={{backgroundColor:user.bgcolor ? user.bgcolor : "#ffeea1"}}>
+            <Pressable
+              className="absolute -bottom-1 left-1/2 -translate-x-24"
+              onPress={() =>
+                navigation.navigate("AvatarChange", { user: user })
+              }
+            >
+              <Image
+                className="w-48 h-48"
+                source={user.avatar ? avatars[user.avatar] : avatars["man"]}
+              />
+            </Pressable>
+          </View>
+          <Text className=" dark:text-slate-50 pb-2 px-6 w-full text-center">
+            {user.firstname} {user.lastname}
+          </Text>
+          <TouchableOpacity
+            className="mb-4"
+            onPress={() => {
+              setDebug(!debug);
+            }}
+          >
+            <Text className="text-center text-[#9CDE00] mt-3 font-bold">
+              TOGGLE DEBUG
+            </Text>
+          </TouchableOpacity>
+          {debug && (
+            <>
+              <Button
+                color={"#9CDE00"}
+                title="CLEAR USERS DATA"
+                onPress={() => (
+                  AsyncStorage.removeItem("users"),
+                  AsyncStorage.removeItem("stock")
+                )}
+              />
+              <Button
+                color={"#9CDE00"}
+                title="CLEAR STOCK DATA"
+                onPress={() => AsyncStorage.removeItem("stock")}
+              />
+              <Button
+                color={"#9CDE00"}
+                title="ADD PROFILE"
+                onPress={() => navigation.navigate("CreateProfile")}
+              ></Button>
+              <Button
+                color={"#9CDE00"}
+                title="MODIFY PROFILE"
+                onPress={() => navigation.navigate("ModifyProfile")}
+              ></Button>
+              <Button
+                color={"#9CDE00"}
+                onPress={showTreatments}
+                title="Liste des traitements"
+              />
+              <Button
+                color={"#9CDE00"}
+                onPress={deleteTreatments}
+                title="Supprimer traitements"
+              />
+              <Button
+                color={"#9CDE00"}
+                onPress={createTreatmentTest1}
+                title="TraitementTest 1"
+              />
+              <Button color={"#9CDE00"} onPress={reset} title="reset" />
+              {treatments &&
+                treatments.map((treatment) => {
+                  return (
+                    <View key={treatment.name}>
+                      <Text>{treatment.name}</Text>
+                      <Text>{treatment.instructions.length}</Text>
+                    </View>
+                  );
+                })}
+              {!treatments ? (
+                <Text>PAS DE VARIABLE ASYNC TREATMENT</Text>
+              ) : treatments.length == 0 ? (
+                <Text>TREATMENTS VIDE</Text>
+              ) : null}
+            </>
+          )}
 
-      <TouchableOpacity
-        onPress={() => {
-          setDebug(!debug);
-        }}
-      >
-        <Text className="text-center text-[#9CDE00] mt-3 font-bold">
-          TOGGLE DEBUG
-        </Text>
-      </TouchableOpacity>
-      <View>
-        <FlatList
-          data={settingsData}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              onPress={() => handleItemClick(item.id)}
+          <View>
+            <FlatList
+              data={settingsData}
+              keyExtractor={(item) => item.id}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  onPress={() => handleItemClick(item.id)}
+                  style={{
+                    padding: 18,
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: "#404040",
+                      fontWeight: "400",
+                      fontSize: 16,
+                    }}
+                  >
+                    {item.title}
+                  </Text>
+                  <Icon.ChevronRight color="#404040" width={23} height={23} />
+                </TouchableOpacity>
+              )}
+            />
+            <View
               style={{
-                padding: 18,
                 display: "flex",
                 flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
+                justifyContent: "center",
+                marginVertical: 15,
               }}
             >
-              <Text
-                style={{ color: "#404040", fontWeight: "400", fontSize: 16 }}
-              >
-                {item.title}
-              </Text>
-              <Icon.ChevronRight color="#404040" width={23} height={23} />
-            </TouchableOpacity>
-          )}
-        />
-        <View
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "center",
-            marginVertical: 15,
-          }}
-        >
-          <View
-            style={{ width: "80%", height: 1, backgroundColor: "#dbdbdb" }}
-          />
-        </View>
-      </View>
+              <View
+                style={{ width: "80%", height: 1, backgroundColor: "#dbdbdb" }}
+              />
+            </View>
+          </View>
+          <Pressable
+            className="flex-1 items-center justify-center bg-neutral-100 dark:bg-neutral-900"
+            onPress={() => {
+              toggleColorScheme();
+              AsyncStorage.setItem("darkmode", colorScheme);
+            }}
+          >
+            <Text className="text-black dark:text-white">
+              {`Try clicking me! ${colorScheme === "dark" ? "🌙" : "🌞"}`}
+            </Text>
+          </Pressable>
+        </>
+      )}
     </SafeAreaView>
   );
 }

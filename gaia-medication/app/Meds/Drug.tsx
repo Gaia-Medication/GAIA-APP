@@ -4,20 +4,14 @@ import React, { useCallback, useEffect, useState } from "react";
 import {
   View,
   Text,
-  FlatList,
   Image,
   TouchableOpacity,
-  Modal,
-  Pressable,
-  StyleSheet,
   Linking,
   ScrollView,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
   getATCLabel,
-  getAllGenOfCIS,
-  getAllMedsOfLab,
   getAllSameCompOfCIS,
   getComposition,
   getIMfromMed,
@@ -32,28 +26,25 @@ import {
 } from "../../dao/Storage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Loading from "../component/Loading";
-import { Button, Input } from "react-native-elements";
 import { styles } from "../../style/style";
-import DrugModal from "../component/Modal";
 import ModalComponent from "../component/Modal";
 import MedIconByType from "../component/MedIconByType";
 import TutorialBubble from "../component/TutorialBubble";
+import { useColorScheme } from "nativewind";
 
 export default function Drug({ route, navigation }) {
   const [drugModalVisible, setDrugModalVisible] = useState(false);
-  const [atcModalVisible, setAtcModalVisible] = useState(false);
-  const [labModalVisible, setLabModalVisible] = useState(false);
   const isFocused = useIsFocused();
+  const { colorScheme } = useColorScheme();
   const [user, setUser] = useState<User | null>(null);
   const [showMore, setShowMore] = useState(5);
   const [stock, setStock] = useState(null);
   const [allergique, setAllergique] = useState(false);
   const [iM, setIM] = useState([]);
   const [significationATC, setSignificationATC] = useState([]);
-  const [labMeds, setLabMeds] = useState([]);
   const [sameComp, setSameComp] = useState([]);
 
-  const { drugCIS, context } = route.params;
+  const { drugCIS } = route.params;
   const drug = getMedbyCIS(drugCIS);
 
   const [tutoMedic, setTutoMedic] = useState(null);
@@ -85,7 +76,6 @@ export default function Drug({ route, navigation }) {
       drug.ATC &&
         drug.ATC != "inconnue\nCode" &&
         setSignificationATC(getATCLabel(drug.ATC));
-      setLabMeds(getAllMedsOfLab(drug.Titulaire));
       init();
     }
   }, [isFocused && drug]);
@@ -142,7 +132,7 @@ export default function Drug({ route, navigation }) {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView className=" flex bg-white w-full h-full dark:bg-[#131f24]">
       {tutoStep === 0 && tutoMedic === "0" && (
         <TutorialBubble
           isClicked={handleTuto}
@@ -180,12 +170,12 @@ export default function Drug({ route, navigation }) {
           <ScrollView className="gap-2" showsVerticalScrollIndicator={false}>
             <View className="flex-row justify-between pt-4 px-6">
               <Icon.ArrowLeft
-                color={"#363636"}
+                color={colorScheme == "dark" ? "#fff" : "#363636"}
                 onPress={() => navigation.goBack()}
               />
               <Icon.AlertCircle
                 className=" z-10"
-                color={"#363636"}
+                color={colorScheme == "dark" ? "#fff" : "#363636"}
                 onPress={handlePress}
               />
             </View>
@@ -194,7 +184,9 @@ export default function Drug({ route, navigation }) {
             </View>
             <View className="pt-10 flex px-6">
               <View className="flex-row justify-between items-center">
-                <Text className="text-base font-light">{drug.CIS}</Text>
+                <Text className=" dark:text-slate-50 text-base font-light">
+                  {drug.CIS}
+                </Text>
                 {drug.Marketed == "Commercialisée" ? (
                   <View className="flex-row items-center">
                     <View
@@ -202,13 +194,13 @@ export default function Drug({ route, navigation }) {
                         width: 17,
                         height: 17,
                         borderRadius: 10,
-                        borderColor: "#9BEA8E",
+                        borderColor: "#4efc34",
                         marginTop: 2,
                         borderWidth: 3,
                         marginRight: 6,
                       }}
                     ></View>
-                    <Text className="text-base font-bold text-[#9BEA8E]">
+                    <Text className=" dark:text-slate-50 text-base font-bold text-[#4efc34]">
                       Disponible
                     </Text>
                   </View>
@@ -225,36 +217,43 @@ export default function Drug({ route, navigation }) {
                         marginRight: 6,
                       }}
                     ></View>
-                    <Text className="text-base font-bold text-[#EE5E5E]">
+                    <Text className=" dark:text-slate-50 text-base font-bold text-[#EE5E5E]">
                       Indisponible
                     </Text>
                   </View>
                 )}
               </View>
 
-              <Text className="text-5xl font-bold">
+              <Text className=" dark:text-slate-50 text-5xl font-bold">
                 {drug.Name.split(" ")[0].charAt(0).toUpperCase() +
                   drug.Name.split(" ")[0].slice(1).toLowerCase()}
               </Text>
-              <Text className="text-lg mb-4">
+              <Text className=" dark:text-slate-50 text-lg mb-4">
                 {drug.Name.split(" ").slice(1).join(" ")}
               </Text>
 
-              <TouchableOpacity onPress={() => setLabModalVisible(true)}>
-                <Text>
+              <TouchableOpacity onPress={() => navigation.navigate("LaboratoirePage",{labo:drug.Titulaire, user:user})}>
+                <Text className="dark:text-slate-50">
                   Titulaire:{" "}
-                  <Text className="text-[#9CDE00]">{drug.Titulaire}</Text>
+                  <Text className=" dark:text-slate-50 text-[#9CDE00]">
+                    {drug.Titulaire}
+                  </Text>
                 </Text>
               </TouchableOpacity>
-              <Text>
+              <Text className="dark:text-slate-50">
                 Administration:{" "}
-                <Text className=" font-light">{drug.Administration_way}</Text>
+                <Text className=" dark:text-slate-50  font-light">
+                  {drug.Administration_way}
+                </Text>
               </Text>
 
               {drug.ATC && drug.ATC != "inconnue\nCode" && (
-                <TouchableOpacity onPress={() => setAtcModalVisible(true)}>
-                  <Text className="">
-                    Code ATC: <Text className="text-[#9CDE00]">{drug.ATC}</Text>
+                <TouchableOpacity onPress={() => navigation.navigate("AtcPage",{significationATC:significationATC})}>
+                  <Text className=" dark:text-slate-50 ">
+                    Code ATC:{" "}
+                    <Text className=" dark:text-slate-50 text-[#9CDE00]">
+                      {drug.ATC}
+                    </Text>
                   </Text>
                 </TouchableOpacity>
               )}
@@ -266,15 +265,17 @@ export default function Drug({ route, navigation }) {
                   className={"h-5 w-5"}
                   source={require("../../assets/allergy.png")}
                 />
-                <Text className="ml-2 text-red-500 font-bold">
+                <Text className=" dark:text-slate-50 ml-2 text-red-500 font-bold">
                   Vous êtes allergique à ce produit
                 </Text>
               </View>
             )}
             {drug.Indications_therapeutiques && (
               <View className="px-6">
-                <Text className="">🔬 Indication thérapeutique</Text>
-                <Text className="text-xs mt-[-5px]">
+                <Text className=" dark:text-slate-50 ">
+                  🔬 Indication thérapeutique
+                </Text>
+                <Text className=" dark:text-slate-50 text-xs mt-[-5px]">
                   {drug.Indications_therapeutiques.includes(drug.ATC)
                     ? drug.Indications_therapeutiques.split(
                         drug.ATC
@@ -287,7 +288,9 @@ export default function Drug({ route, navigation }) {
                 </Text>
               </View>
             )}
-            <Text className="px-6">🏷 Boite(s) disponible(s)</Text>
+            <Text className=" dark:text-slate-50 px-6">
+              🏷 Boite(s) disponible(s)
+            </Text>
             <View className=" px-6">
               {drug.Values &&
                 drug.Values.map((item, index) => {
@@ -303,25 +306,29 @@ export default function Drug({ route, navigation }) {
                       key={index}
                       className=" -mb-[1px] pb-2 border-t border-b border-gray-300"
                     >
-                      <Text className=" font-light">{item.CIP}</Text>
-                      <Text className=" text-xs">{item.Denomination}</Text>
+                      <Text className=" dark:text-slate-50  font-light">
+                        {item.CIP}
+                      </Text>
+                      <Text className=" dark:text-slate-50  text-xs">
+                        {item.Denomination}
+                      </Text>
                       <View className=" -mt-1">
                         {drug.Marketed == "Commercialisée" ? (
                           item.Price_with_taxes ? (
                             <>
-                              <Text className="font-bold text-right">
+                              <Text className=" dark:text-slate-50 font-bold text-right">
                                 {item.Price_with_taxes}€
                               </Text>
-                              <Text className="text-right text-xs">
+                              <Text className=" dark:text-slate-50 text-right text-xs">
                                 (Remboursement: {item.Remboursement})
                               </Text>
                             </>
                           ) : (
                             <>
-                              <Text className="text-right text-xs font-bold">
+                              <Text className=" dark:text-slate-50 text-right text-xs font-bold">
                                 Prix libre
                               </Text>
-                              <Text className="text-right text-xs">
+                              <Text className=" dark:text-slate-50 text-right text-xs">
                                 (Non remboursable)
                               </Text>
                             </>
@@ -332,17 +339,19 @@ export default function Drug({ route, navigation }) {
                   );
                 })}
             </View>
-            <Text className=" px-6 pt-4">💊 Composition</Text>
+            <Text className=" dark:text-slate-50  px-6 pt-4">
+              💊 Composition
+            </Text>
             {Object.keys(getComposition(drug.Composition)).map((type) => (
               <View className=" px-6" key={type}>
-                <Text className=" text-xs">
+                <Text className=" dark:text-slate-50  text-xs">
                   Type: {type} (Composition pour{" "}
                   {getComposition(drug.Composition)[type][0]["Quantite"]})
                 </Text>
                 {getComposition(drug.Composition)[type].map(
                   (comprime, index) => (
                     <View key={index}>
-                      <Text className=" text-xs">
+                      <Text className=" dark:text-slate-50  text-xs">
                         {"> "}
                         {comprime.Dosage} {"-"} {comprime.PrincipeActif}
                       </Text>
@@ -353,36 +362,44 @@ export default function Drug({ route, navigation }) {
             ))}
             {iM.length > 0 && (
               <View className="px-0">
-                <Text className=" px-6 pt-4 text-orange-400">
+                <Text className=" dark:text-slate-50  px-6 pt-4 text-orange-400">
                   🚫 Interactions médicamenteuses
                 </Text>
                 {iM.map((item, index) => (
                   <View className=" px-6" key={index}>
-                    <Text className=" text-xs">
+                    <Text className=" dark:text-slate-50  text-xs">
                       - {item.interacting_substance}
                     </Text>
-                    <Text className="px-3 text-xs">{item.association}</Text>
-                    <Text className="px-3 text-xs">{item.details}</Text>
+                    <Text className=" dark:text-slate-50 px-3 text-xs">
+                      {item.association}
+                    </Text>
+                    <Text className=" dark:text-slate-50 px-3 text-xs">
+                      {item.details}
+                    </Text>
                   </View>
                 ))}
               </View>
             )}
             {sameComp.length > 0 && (
               <View className="px-0">
-                <Text className=" px-6 py-4">🧬 Meme composition</Text>
+                <Text className=" dark:text-slate-50  px-6 py-4">
+                  🧬 Meme composition
+                </Text>
                 <View>
                   {sameComp.slice(0, showMore).map((item, index) => (
                     <TouchableOpacity
                       key={index}
                       style={styles.listItem}
-                      className="-mb-[1px] flex justify-start align-middle border-t border-gray-300"
+                      className="-mb-[1px] flex justify-start align-middle border-b-[#e5e5e5] dark:border-b-[#37464f]"
                       onPress={() =>
                         navigation.push("Drug", { drugCIS: item.CIS })
                       }
                     >
                       <MedIconByType type={item.Shape} />
                       <View className="ml-4 flex-1 flex-row justify-between items-center">
-                        <Text className="flex-1">{item.Name}</Text>
+                        <Text className=" dark:text-slate-50 flex-1">
+                          {item.Name}
+                        </Text>
                         {user.preference
                           .map((allergie) =>
                             Array.from(getPAfromMed(item.CIS)).includes(
@@ -395,7 +412,7 @@ export default function Drug({ route, navigation }) {
                               className={"h-5 w-5 ml-1"}
                               source={require("../../assets/allergy.png")}
                             />
-                            <Text className="ml-2 text-red-500 font-bold">
+                            <Text className=" dark:text-slate-50 ml-2 text-red-500 font-bold">
                               Allergie
                             </Text>
                           </View>
@@ -410,35 +427,20 @@ export default function Drug({ route, navigation }) {
                       setShowMore(showMore + 5);
                     }}
                   >
-                    <Text className="text-center text-[#9CDE00] mt-3 font-bold">
+                    <Text className=" dark:text-slate-50 text-center text-[#9CDE00] mt-3 font-bold">
                       Afficher plus
                     </Text>
                   </TouchableOpacity>
                 )}
               </View>
             )}
-            <View
-              className={
-                stock.find((stockItem) => stockItem.CIS === drugCIS) != null
-                  ? " mb-40"
-                  : "mb-24"
-              }
-            />
+            <View className={"mb-24"} />
           </ScrollView>
 
           {stock.find((stockItem) => stockItem.CIS === drugCIS) != null ? (
             <>
               <TouchableOpacity
-                disabled={true}
-                className=" bg-white rounded-[19px] absolute bottom-24 left-6 right-6 border border-[#9CDE00]"
-                onPress={() => {}}
-              >
-                <Text className="text-center text-[#9CDE00] text-lg py-3 pt-2">
-                  Déjà dans le stock
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                className=" bg-[#D5F48A] rounded-[19px] absolute bottom-8 left-6 right-6"
+                className=" bg-[#688f4b] rounded-[19px] absolute bottom-8 left-6 right-6"
                 onPress={() => {
                   setDrugModalVisible(true);
                 }}
@@ -462,82 +464,6 @@ export default function Drug({ route, navigation }) {
           )}
 
           <ModalComponent
-            visible={atcModalVisible}
-            onClose={() => setAtcModalVisible(!atcModalVisible)}
-          >
-            <View className="w-full pb-2 px-6">
-              <Text className="pb-2">Signification du code ATC</Text>
-              {significationATC.map((item, index) => (
-                <Text className=" text-xs" key={index}>
-                  {index + 1} - {item}
-                </Text>
-              ))}
-            </View>
-            <TouchableOpacity
-              onPress={() => {
-                setAtcModalVisible(!atcModalVisible);
-              }}
-            >
-              <Text className="text-red-500">Fermer</Text>
-            </TouchableOpacity>
-          </ModalComponent>
-
-          <ModalComponent
-            visible={labModalVisible}
-            onClose={() => setLabModalVisible(!labModalVisible)}
-          >
-            <View className="w-full pb-2 ">
-              <Text className="pb-2 px-6 w-full text-center">{drug.Titulaire}</Text>
-                  
-              <FlatList
-                data={labMeds}
-                className=" max-h-80"
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={({ item }) => {
-                  return (
-                    <TouchableOpacity
-                        style={styles.listItem}
-                        className="-mb-[1px] flex justify-start align-middle border-t border-gray-300 p-2"
-                        onPress={() => {
-                          setLabModalVisible(false);
-                          navigation.push("Drug", { drugCIS: item.CIS });
-                        }}
-                      >
-                        <MedIconByType type={item.Shape} />
-                        <View className="ml-4 flex-1 flex-row justify-between items-center">
-                          <Text className="flex-1 text-xs">{item.Name}</Text>
-                          {user.preference
-                            .map((allergie) =>
-                              Array.from(getPAfromMed(item.CIS)).includes(allergie)
-                            )
-                            .some((bool) => bool) && (
-                            <View className=" items-center">
-                              <Image
-                                className={"h-5 w-5 ml-1"}
-                                source={require("../../assets/allergy.png")}
-                              />
-                              <Text className="ml-2 text-red-500 font-bold text-xs">
-                                Allergie
-                              </Text>
-                            </View>
-                          )}
-                        </View>
-                      </TouchableOpacity>
-                  );
-                }}
-              />
-                 
-            </View>
-            <TouchableOpacity
-              onPress={() => {
-                setLabModalVisible(!labModalVisible);
-              }}
-            >
-              <Text className="text-red-500">Fermer</Text>
-            </TouchableOpacity>
-          </ModalComponent>
-
-          <ModalComponent
             visible={drugModalVisible}
             onClose={() => setDrugModalVisible(!drugModalVisible)}
           >
@@ -553,8 +479,12 @@ export default function Drug({ route, navigation }) {
                       className="flex py-2 flex-row items-center justify-between border-b border-gray-200"
                     >
                       <View className="flex flex-1">
-                        <Text className=" font-light">{item.CIP}</Text>
-                        <Text className=" text-xs">{item.Denomination}</Text>
+                        <Text className=" dark:text-slate-50  font-light">
+                          {item.CIP}
+                        </Text>
+                        <Text className=" dark:text-slate-50  text-xs">
+                          {item.Denomination}
+                        </Text>
                       </View>
 
                       {alreadyStocked ? (
@@ -565,13 +495,13 @@ export default function Drug({ route, navigation }) {
                               updateStock(item.CIS, item.CIP, +1);
                             }}
                           >
-                            <Text className="">➕</Text>
+                            <Text className=" dark:text-slate-50 ">➕</Text>
                           </TouchableOpacity>
                           <TouchableOpacity
                             className="px-2"
                             onPress={() => updateStock(item.CIS, item.CIP, -1)}
                           >
-                            <Text className="">❌</Text>
+                            <Text className=" dark:text-slate-50 ">❌</Text>
                           </TouchableOpacity>
                         </>
                       ) : (
@@ -582,7 +512,7 @@ export default function Drug({ route, navigation }) {
                               updateStock(item.CIS, item.CIP, +1);
                             }}
                           >
-                            <Text className="">➕</Text>
+                            <Text className=" dark:text-slate-50 ">➕</Text>
                           </TouchableOpacity>
                         </>
                       )}
@@ -591,12 +521,14 @@ export default function Drug({ route, navigation }) {
                 })}
               <View className="mt-4">
                 {stock.length > 0 && (
-                  <Text className=" text-xs">Dans le Stock:</Text>
+                  <Text className=" dark:text-slate-50  text-xs">
+                    Dans le Stock:
+                  </Text>
                 )}
                 {stock.map((item, index) => {
                   return (
                     <View key={index} className="flex-row">
-                      <Text className=" text-xs">
+                      <Text className=" dark:text-slate-50  text-xs">
                         x{item.qte} -{" "}
                         {
                           drug.Values.find((prod) => prod.CIP == item.CIP)
@@ -613,7 +545,7 @@ export default function Drug({ route, navigation }) {
                 setDrugModalVisible(!drugModalVisible);
               }}
             >
-              <Text className="text-red-500">Fermer</Text>
+              <Text className=" dark:text-slate-50 text-red-500">Fermer</Text>
             </TouchableOpacity>
           </ModalComponent>
         </>

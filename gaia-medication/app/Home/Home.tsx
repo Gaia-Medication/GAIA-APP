@@ -10,9 +10,9 @@ import {
   TouchableOpacity,
   View,
   FlatList,
+  StatusBar,
 } from "react-native";
-import { Button, Input } from "react-native-elements";
-import { Bell } from "react-native-feather";
+import { Input } from "react-native-elements";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import callGoogleVisionAsync from "../../OCR/helperFunctions";
 import {
@@ -41,9 +41,13 @@ import {
 } from "react-native-alert-notification";
 import * as Notifications from "expo-notifications";
 import { searchDoctor } from "../../dao/Doctor";
+import { useColorScheme } from "nativewind";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { formatHour } from "../utils/functions";
 
 export default function Home({ navigation }) {
   const isFocused = useIsFocused();
+  const { colorScheme } = useColorScheme();
   const [loading, setLoading] = useState(false);
   const [isMedModalVisible, setIsMedModalVisible] = useState(false);
   const [takes, setTakes] = useState(null);
@@ -56,39 +60,54 @@ export default function Home({ navigation }) {
 
   const [smallTutoStep, setSmallTutoStep] = useState(0);
   const [tutoHome, setTutoHome] = useState(null);
-  const formatHour = (hour) => {
-    if (hour instanceof Date) {
-      const hours = hour.getHours();
-      const minutes = hour.getMinutes();
-      const formattedTime = `${hours.toString()}:${minutes
-        .toString()
-        .padStart(2, "0")}`;
-      return formattedTime;
-    }
-    return "";
-  };
 
   const init = async () => {
-    const userList = await readList("users");
-    setUsers(userList);
+    let isFirstConnection: boolean = JSON.parse(await AsyncStorage.getItem("isFirstConnection"));
+    if (isFirstConnection === null) {
+      AsyncStorage.setItem("isFirstConnection", "true")
+      isFirstConnection = true
+    }
+    const currentId: string = await AsyncStorage.getItem("currentUser");
+    const usersList: string[] = await AsyncStorage.getItem("users")
 
-    const currentId = await AsyncStorage.getItem("currentUser");
-    const isFirstConnection = await AsyncStorage.getItem("isFirstConnection");
+    // TEST DATA
+    let date = new Date()
+    let newUser = {
+      id: 1,
+      firstname: "Nathan",
+      lastname: "MARIE",
+      dateOfBirth: date,
+      weight: 80,
+      gender: "male",
+      preference: [""]
+    }
+
+    setUsers([newUser]); // SHould be usersList
+
     setTutoHome(await AsyncStorage.getItem("TutoHome"));
-    const current = await getUserByID(JSON.parse(currentId));
-    if (userList.length < 1 || isFirstConnection === "true") {
+    //const current = await getUserByID(JSON.parse(currentId));
+    AsyncStorage.setItem("TutoHome", "")
+    AsyncStorage.setItem("TutoCreate", "")
+    AsyncStorage.setItem("TutoSearch", "")
+    AsyncStorage.setItem("TutoMedic", "")
+    AsyncStorage.setItem("TutoMap", "")
+    AsyncStorage.setItem("TutoTreatment", "");
+    AsyncStorage.setItem("TutoSettings", "");
+    if (users.length < 1 || isFirstConnection) {
+      setUser(newUser)
       // L'utilisateur se connecte pour la première fois
       // Reinitialisation du tutoriel
-      AsyncStorage.setItem("TutoHome", "0");
-      AsyncStorage.setItem("TutoCreate", "0");
-      AsyncStorage.setItem("TutoSearch", "0");
-      AsyncStorage.setItem("TutoMedic", "0");
-      AsyncStorage.setItem("TutoMap", "0");
-      AsyncStorage.setItem("TutoTreatment", "0");
-      AsyncStorage.setItem("TutoSettings", "0");
-      navigation.navigate("CreateProfile");
+      // AsyncStorage.setItem("TutoHome", "0");
+      // AsyncStorage.setItem("TutoCreate", "0");
+      // AsyncStorage.setItem("TutoSearch", "0");
+      // AsyncStorage.setItem("TutoMedic", "0");
+      // AsyncStorage.setItem("TutoMap", "0");
+      // AsyncStorage.setItem("TutoTreatment", "0");
+      // AsyncStorage.setItem("TutoSettings", "0");
+      //navigation.navigate("Welcome");
+
     } else {
-      setUser(current);
+      setUser(newUser);
     }
     await initNotifications();
     console.log("Traitements :", await getAllTreatments());
@@ -188,6 +207,10 @@ export default function Home({ navigation }) {
 
   useEffect(() => {
     if (user) initUserInfo();
+    console.log("USER => ", user)
+    console.log("TAKES => ", takes)
+    console.log("SMALL TUTO STEP => ", smallTutoStep)
+    console.log("TUTO HOME => ", tutoHome)
   }, [user]);
 
   const handleTuto = (isClicked: boolean) => {
@@ -205,16 +228,38 @@ export default function Home({ navigation }) {
   };
 
   return (
-    <View className=" flex bg-white w-full h-full" style={{ gap: 0 }}>
-      <AlertNotificationRoot>
+    <SafeAreaView
+      className=" flex bg-white w-full h-full dark:bg-grey-100"
+      style={{ gap: 0 }}
+    >
+      <AlertNotificationRoot
+        theme={colorScheme == "dark" ? "dark" : "light"}
+        colors={[
+          {
+            label: "#000",
+            card: "#fff",
+            overlay: "#fff",
+            success: "",
+            danger: "",
+            warning: "#FD9601",
+            info: "",
+          },
+          {
+            label: "#fff",
+            card: "#131f24",
+            overlay: "#131f24",
+            success: "",
+            danger: "",
+            warning: "#FD9601",
+            info: "",
+          },
+        ]}
+      >
         <Image
           className=" object-cover h-12 w-24 self-center mt-2"
           source={require("../../assets/logo_title_gaia.png")}
         ></Image>
-        <View
-          className=" flex bg-white w-full h-full flex-1"
-          style={{ gap: 20 }}
-        >
+        <View className=" flex w-full h-full flex-1" style={{ gap: 20 }}>
           {user && takes && (
             <>
               {smallTutoStep === 0 && tutoHome === "0" && (
@@ -256,41 +301,25 @@ export default function Home({ navigation }) {
               )}
 
               <View style={styles.header}>
-                <AvatarButton
+                {/* <AvatarButton
                   onPress={handleAvatarButton}
                   users={users}
                   current={user}
                   setUser={setUser}
                   navigation={navigation}
                   tuto={smallTutoStep === 1}
-                ></AvatarButton>
+                ></AvatarButton> */}
                 {header && (
-                  <>
-                    <View style={styles.titleContainer}>
-                      <Text style={styles.subtitle}>Welcome back</Text>
-                      <Text style={styles.title} className="text-neutral-800">
-                        {user?.firstname}
-                      </Text>
-                    </View>
-                    <TouchableOpacity
-                      style={{ marginHorizontal: 13 }}
-                      onPress={() =>
-                        navigation.navigate("Notifications", {
-                          data: JSON.stringify(notificationsList),
-                        })
-                      }
-                    >
-                      <Icon.Bell
-                        stroke="#242424"
-                        width={24}
-                        height={24}
-                      ></Icon.Bell>
-                    </TouchableOpacity>
-                  </>
+                  <Text className="text-neutral-800 text-3xl  dark:text-slate-50 p-4 text-center w-full">
+                    Bonjour {user?.firstname}
+                  </Text>
                 )}
               </View>
               <View style={styles.searchContainer}>
-                <Text style={styles.title2} className="text-neutral-700">
+                <Text
+                  style={styles.title2}
+                  className="text-neutral-700 dark:text-slate-100"
+                >
                   Recherche d’un médicament
                 </Text>
                 <View style={styles.searchBarwQR}>
@@ -320,7 +349,10 @@ export default function Home({ navigation }) {
                 </View>
               </View>
               <View style={styles.traitementContainer}>
-                <Text style={styles.title2} className="text-neutral-700">
+                <Text
+                  style={styles.title2}
+                  className="text-neutral-700 dark:text-slate-100"
+                >
                   Suivis d'un traitement
                 </Text>
               </View>
@@ -340,7 +372,7 @@ export default function Home({ navigation }) {
                         index: nextTake < 0 ? takes.length - 1 : nextTake,
                       });
                     }
-                  } catch {}
+                  } catch { }
                 }}
                 data={takes}
                 horizontal={true}
@@ -480,46 +512,38 @@ export default function Home({ navigation }) {
                 </TouchableOpacity>
               )}
               <View style={styles.traitementContainer}>
-                <Text style={styles.title2} className="text-neutral-700">
+                <Text
+                  style={styles.title2}
+                  className="text-neutral-700 dark:text-slate-100"
+                >
                   Autres
                 </Text>
               </View>
-              <ScrollView
-                horizontal={true}
-                showsHorizontalScrollIndicator={false}
-              >
-                <View className="px-6 flex-row gap-6">
-                  <TouchableOpacity
-                    onPress={() =>
-                      navigation.navigate("SuivisHandler", { screen: "Stock" })
-                    }
-                    className=" rounded-3xl bg-[#9CDE0070] flex-row items-center justify-center p-4 w-32 h-32"
-                  >
-                    <Image
-                      className="h-20 w-20"
-                      source={require("../../assets/stock.png")}
-                    />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => navigation.navigate("Map")}
-                    className=" rounded-3xl bg-[#ffdb3c89] flex-row items-center justify-center p-4 w-32 h-32"
-                  >
-                    <Image
-                      className="h-20 w-20"
-                      source={require("../../assets/map-icons/map.png")}
-                    />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => setIsMedModalVisible(true)}
-                    className=" rounded-3xl bg-[#0070e870] flex-row items-center justify-center p-4 w-32 h-32"
-                  >
-                    <Image
-                      className="h-20 w-20"
-                      source={require("../../assets/map-icons/medical-team.png")}
-                    />
-                  </TouchableOpacity>
-                </View>
-              </ScrollView>
+              <View className="px-6 flex-row justify-around">
+                <TouchableOpacity
+                  onPress={() => setIsMedModalVisible(true)}
+                  className=" rounded-3xl bg-[#8FC0F5] flex-row items-center justify-center p-4 w-32 h-32"
+                >
+                  <Image
+                    className="h-20 w-20"
+                    source={require("../../assets/medical-team.png")}
+                  />
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={() =>
+                    navigation.navigate("Notifications", {
+                      data: JSON.stringify(notificationsList),
+                    })
+                  }
+                  className=" rounded-3xl bg-[#ff8400] flex-row items-center justify-center p-4 w-32 h-32"
+                >
+                  <Image
+                    className="h-20 w-20"
+                    source={require("../../assets/bell.png")}
+                  />
+                </TouchableOpacity>
+              </View>
               <ModalComponent
                 visible={isMedModalVisible}
                 onClose={() => setIsMedModalVisible(!isMedModalVisible)}
@@ -593,20 +617,20 @@ export default function Home({ navigation }) {
                                   Linking.openURL(`tel:${item.Telephone}`)
                                 }
                               >
-                                <Image 
+                                <Image
                                   className=" object-cover h-5 w-5 self-center mt-1"
                                   source={require("../../assets/telephone.png")}
                                 />
                               </TouchableOpacity>
                             )}
-                            
+
                             {item.mail != null && (
                               <TouchableOpacity
                                 onPress={() =>
                                   Linking.openURL(`mailto:${item.mail}`)
                                 }
                               >
-                                <Image 
+                                <Image
                                   className=" object-cover h-5 w-5 self-center mt-1"
                                   source={require("../../assets/email.png")}
                                 />
@@ -631,6 +655,6 @@ export default function Home({ navigation }) {
         </View>
         {loading && <Loading />}
       </AlertNotificationRoot>
-    </View>
+    </SafeAreaView>
   );
 }

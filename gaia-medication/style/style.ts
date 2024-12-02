@@ -7,8 +7,6 @@ export const styles = StyleSheet.create({
     display: "flex",
     height: "100%",
     width: "100%",
-    backgroundColor: "#fff",
-    flex: 1,
   },
   header: {
     width: "100%",
@@ -65,9 +63,8 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 18,
-    padding: 16,
-    borderWidth: 1,
-    width: "80%",
+    padding: 12,
+    width: "90%",
   },
   searchBar: {
     display: "flex",
@@ -133,10 +130,8 @@ export const styles = StyleSheet.create({
     paddingRight: 6,
   },
   listItem: {
-    backgroundColor: '#ffffff',
     padding: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#dddddd',
+    borderBottomWidth: 2,
     display: "flex",
     flexDirection: "row",
     alignItems: "center"

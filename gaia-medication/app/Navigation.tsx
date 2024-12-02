@@ -1,87 +1,96 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { NavigationContainer } from "@react-navigation/native";
+import {
+  NavigationContainer,
+  useIsFocused,
+  useRoute,
+} from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import Home from "./Home/Home";
 import Settings from "./Home/Settings";
 import Suivis from "./Suivis/Suivis";
+import Journal from "./Suivis/Journal";
 import CreateProfile from "./Profile/CreateProfile";
-import Stock from "./Suivis/Stock";
+import Stock from "./Home/Stock";
 import * as Icon from "react-native-feather";
 import Search from "./Meds/Search";
 import Drug from "./Meds/Drug";
 import Map from "./Home/Map";
 import AddTreatment from "./Suivis/AddTreatment";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import ModifyProfile from "./Profile/ModifyProfile";
 import NotificationsSettings from "./Home/Settings/NotificationsSettings";
 import Notifications from "./Home/Notifications";
 import AllergySelector from "./component/AllergySelector";
 import ManageTreatments from "./Suivis/ManageTreatments";
 import { Provider } from "react-native-paper";
+import Welcome from "./Profile/Welcome";
+import { Image, StatusBar, View } from "react-native";
+import { useColorScheme } from "nativewind";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Atc from "./Meds/AtcPage";
+import Laboratoire from "./Meds/LaboratoirePage";
+import MapPoint from "./Home/MapPages/MapPointPage";
+import AvatarChange, { avatars } from "./Home/Settings/AvatarChange";
+import { getUserByID } from "../dao/Storage";
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
 const TopTab = createMaterialTopTabNavigator();
 
 export default function Navigation() {
+  const { setColorScheme } = useColorScheme();
+  const [themeSet, setThemeSet] = useState(false);
+  const initTheme = async () => {
+    const theme = await AsyncStorage.getItem("darkmode");
+    setColorScheme(theme == "dark" ? "light" : "dark");
+    setThemeSet(true);
+    console.log("Init Theme : " + theme == "dark" ? "light" : "dark");
+  };
+  useEffect(() => {
+    !themeSet && initTheme();
+  }, []);
   return (
     <Provider>
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen
-          name="HomeHandler"
-          component={HomeHandler}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="CreateProfile"
-          component={CreateProfile}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="ModifyProfile"
-          component={ModifyProfile}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="ManageTreatments"
-          component={ManageTreatments}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="AddTreatment"
-          component={AddTreatment}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Settings"
-          component={Settings}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Notifications"
-          component={Notifications}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="NotificationsSettings"
-          component={NotificationsSettings}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Drug"
-          component={Drug}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Search"
-          component={Search}
-          options={{ headerShown: false }}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+      {themeSet && (
+        <NavigationContainer>
+          <Stack.Navigator
+            initialRouteName="Home"
+            screenOptions={{ headerShown: false }}
+          >
+            <Stack.Screen name="HomeHandler" component={HomeHandler} />
+            <Stack.Screen name="CreateProfile" component={CreateProfile} />
+            <Stack.Screen name="Welcome" component={Welcome} />
+            <Stack.Screen name="ModifyProfile" component={ModifyProfile} />
+            <Stack.Screen
+              name="ManageTreatments"
+              component={ManageTreatments}
+            />
+            <Stack.Screen name="AddTreatment" component={AddTreatment} />
+            <Stack.Screen name="Notifications" component={Notifications} />
+            <Stack.Screen
+              name="NotificationsSettings"
+              component={NotificationsSettings}
+            />
+            <Stack.Screen name="Drug" component={Drug} />
+            <Stack.Screen name="Search" component={Search} />
+            <Stack.Screen name="AtcPage" component={Atc} />
+            <Stack.Screen name="LaboratoirePage" component={Laboratoire} />
+            <Stack.Screen name="MapPointPage" component={MapPoint} />
+            <Stack.Screen
+              name="AvatarChange"
+              component={AvatarChange}
+              options={{
+                animation: "fade",
+              }}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
+      )}
     </Provider>
   );
 }
@@ -97,25 +106,24 @@ function HomeHandler() {
         tabBarShowLabel: false,
         tabBarStyle: {
           position: "absolute",
-          bottom: 20,
-          left: 20,
-          right: 20,
-          height: 80,
+          height: 90,
           borderTopWidth: 0,
-          backgroundColor: "#FFFFFFAA",
-          justifyContent: "space-between",
-          width: "90%",
+          backgroundColor: "#111111AA",
+          justifyContent: "center",
+          width: "100%",
           borderRadius: 30,
-          shadowColor: "#fff",
+          shadowColor: "#fff"
         },
         tabBarIconStyle: {
           color: "#fff",
+
         },
         tabBarItemStyle: {
           top: 15,
           bottom: 15,
-          height: "61%",
-          borderRadius: 50,
+          height: "100%",
+          borderRadius: 25,
+          marginHorizontal: 10
         },
       }}
     >
@@ -123,7 +131,8 @@ function HomeHandler() {
         name="Home"
         component={Home}
         options={{
-          tabBarIcon: ({ color }) => <Icon.Home color={color} />,
+          tabBarIcon: ({ color }) => <Icon.Home color={color} 
+          />,
         }}
       />
       <BottomTab.Screen
@@ -152,10 +161,24 @@ function HomeHandler() {
 }
 
 function SuivisHandler() {
+  const { colorScheme } = useColorScheme();
   return (
-    <TopTab.Navigator>
+    <TopTab.Navigator
+      screenOptions={{
+        tabBarLabelStyle: {
+          color: colorScheme === "dark" ? "#fff" : "#000",
+        },
+        tabBarIndicatorStyle: {
+          backgroundColor: "#9CDE00",
+        },
+        tabBarStyle: {
+          borderTopColor: colorScheme === "dark" ? "#37464f" : "#e5e5e5",
+          backgroundColor: colorScheme === "dark" ? "#131f24" : "#FFFFFF",
+        },
+      }}
+    >
       <TopTab.Screen name="Suivis" component={Suivis} />
-      <TopTab.Screen name="Stock" component={Stock} />
+      <TopTab.Screen name="Journal" component={Journal} />
     </TopTab.Navigator>
   );
 }

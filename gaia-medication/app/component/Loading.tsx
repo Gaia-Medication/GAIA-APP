@@ -6,16 +6,13 @@ const Loading = () => {
   return (
     <View
       style={{
-        backgroundColor: "white",
         position: "absolute",
         display: "flex",
         justifyContent: "center",
-        height: "100%",
-        width: "100%",
         flex: 1,
         zIndex: 10,
       }}
-      className="px-0"
+      className="px-0 bg-white w-full h-full dark:bg-[#131f24]"
     >
         <Image
           className=" object-cover h-24 w-48 self-center -mt-[50%]"
