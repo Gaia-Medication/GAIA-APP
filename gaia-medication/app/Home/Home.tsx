@@ -43,6 +43,7 @@ import * as Notifications from "expo-notifications";
 import { searchDoctor } from "../../dao/Doctor";
 import { useColorScheme } from "nativewind";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { formatHour } from "../utils/functions";
 
 export default function Home({ navigation }) {
   const isFocused = useIsFocused();
@@ -59,39 +60,54 @@ export default function Home({ navigation }) {
 
   const [smallTutoStep, setSmallTutoStep] = useState(0);
   const [tutoHome, setTutoHome] = useState(null);
-  const formatHour = (hour) => {
-    if (hour instanceof Date) {
-      const hours = hour.getHours();
-      const minutes = hour.getMinutes();
-      const formattedTime = `${hours.toString()}:${minutes
-        .toString()
-        .padStart(2, "0")}`;
-      return formattedTime;
-    }
-    return "";
-  };
 
   const init = async () => {
-    const userList = await readList("users");
-    setUsers(userList);
+    let isFirstConnection: boolean = JSON.parse(await AsyncStorage.getItem("isFirstConnection"));
+    if (isFirstConnection === null) {
+      AsyncStorage.setItem("isFirstConnection", "true")
+      isFirstConnection = true
+    }
+    const currentId: string = await AsyncStorage.getItem("currentUser");
+    const usersList: string[] = await AsyncStorage.getItem("users")
 
-    const currentId = await AsyncStorage.getItem("currentUser");
-    const isFirstConnection = await AsyncStorage.getItem("isFirstConnection");
+    // TEST DATA
+    let date = new Date()
+    let newUser = {
+      id: 1,
+      firstname: "Nathan",
+      lastname: "MARIE",
+      dateOfBirth: date,
+      weight: 80,
+      gender: "male",
+      preference: [""]
+    }
+
+    setUsers([newUser]); // SHould be usersList
+
     setTutoHome(await AsyncStorage.getItem("TutoHome"));
-    const current = await getUserByID(JSON.parse(currentId));
-    if (userList.length < 1 || isFirstConnection === "true") {
+    //const current = await getUserByID(JSON.parse(currentId));
+    AsyncStorage.setItem("TutoHome", "")
+    AsyncStorage.setItem("TutoCreate", "")
+    AsyncStorage.setItem("TutoSearch", "")
+    AsyncStorage.setItem("TutoMedic", "")
+    AsyncStorage.setItem("TutoMap", "")
+    AsyncStorage.setItem("TutoTreatment", "");
+    AsyncStorage.setItem("TutoSettings", "");
+    if (users.length < 1 || isFirstConnection) {
+      setUser(newUser)
       // L'utilisateur se connecte pour la première fois
       // Reinitialisation du tutoriel
-      AsyncStorage.setItem("TutoHome", "0");
-      AsyncStorage.setItem("TutoCreate", "0");
-      AsyncStorage.setItem("TutoSearch", "0");
-      AsyncStorage.setItem("TutoMedic", "0");
-      AsyncStorage.setItem("TutoMap", "0");
-      AsyncStorage.setItem("TutoTreatment", "0");
-      AsyncStorage.setItem("TutoSettings", "0");
-      navigation.navigate("Welcome");
+      // AsyncStorage.setItem("TutoHome", "0");
+      // AsyncStorage.setItem("TutoCreate", "0");
+      // AsyncStorage.setItem("TutoSearch", "0");
+      // AsyncStorage.setItem("TutoMedic", "0");
+      // AsyncStorage.setItem("TutoMap", "0");
+      // AsyncStorage.setItem("TutoTreatment", "0");
+      // AsyncStorage.setItem("TutoSettings", "0");
+      //navigation.navigate("Welcome");
+
     } else {
-      setUser(current);
+      setUser(newUser);
     }
     await initNotifications();
     console.log("Traitements :", await getAllTreatments());
@@ -191,6 +207,10 @@ export default function Home({ navigation }) {
 
   useEffect(() => {
     if (user) initUserInfo();
+    console.log("USER => ", user)
+    console.log("TAKES => ", takes)
+    console.log("SMALL TUTO STEP => ", smallTutoStep)
+    console.log("TUTO HOME => ", tutoHome)
   }, [user]);
 
   const handleTuto = (isClicked: boolean) => {
@@ -352,7 +372,7 @@ export default function Home({ navigation }) {
                         index: nextTake < 0 ? takes.length - 1 : nextTake,
                       });
                     }
-                  } catch {}
+                  } catch { }
                 }}
                 data={takes}
                 horizontal={true}

@@ -339,7 +339,7 @@ export default function CreateProfile({ navigation }: ICreateProps) {
                 <CustomButton
                   title="Enregistrer le profil"
                   onPress={handleSumbit}
-                  disabled={isFormEmpty}
+                  disabled={false}
                   color={"#9CDE00"}
                 />
               </View>

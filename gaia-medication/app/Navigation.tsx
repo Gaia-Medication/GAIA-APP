@@ -96,36 +96,35 @@ export default function Navigation() {
 }
 
 function HomeHandler() {
-  const { colorScheme } = useColorScheme();
-  const [user, setUser] = useState<User | null>(null);
-  const isFocused = useIsFocused();
-  useEffect(() => {
-    if (isFocused) {
-      init();
-    }
-  }, [isFocused]);
-
-  const init = async () => {
-    const currentId = await AsyncStorage.getItem("currentUser");
-    const current = await getUserByID(JSON.parse(currentId));
-    setUser(current);
-  };
-
   return (
     <BottomTab.Navigator
       screenOptions={{
         tabBarActiveTintColor: "#fff",
         tabBarInactiveTintColor: "#363636",
+        tabBarActiveBackgroundColor: "#363636",
         headerShown: false,
         tabBarShowLabel: false,
         tabBarStyle: {
-          height: 85,
-          borderTopWidth: 2,
-          borderTopColor: colorScheme === "dark" ? "#37464f" : "#e5e5e5",
-          backgroundColor: colorScheme === "dark" ? "#131f24" : "#FFFFFFAA",
-          justifyContent: "space-around",
-          width: "100%",
+          position: "absolute",
+          bottom: 20,
+          left: 20,
+          right: 20,
+          height: 80,
+          borderTopWidth: 0,
+          backgroundColor: "#FFFFFFAA",
+          justifyContent: "space-between",
+          width: "90%",
+          borderRadius: 30,
           shadowColor: "#fff",
+        },
+        tabBarIconStyle: {
+          color: "#fff",
+        },
+        tabBarItemStyle: {
+          top: 15,
+          bottom: 15,
+          height: "61%",
+          borderRadius: 50,
         },
       }}
     >
@@ -133,128 +132,28 @@ function HomeHandler() {
         name="Home"
         component={Home}
         options={{
-          tabBarIcon: ({ focused }) => (
-            <View
-              style={{
-                top: 5,
-                bottom: 5,
-                padding: 8,
-                borderWidth: 1,
-                marginBottom: 10,
-                borderColor: focused ? "#A0DB30" : "#A0DB3000",
-                borderRadius: 12,
-                backgroundColor: focused ? "#A0DB3050" : "#A0DB3000",
-              }}
-            >
-              <Image
-                className="w-8 h-8"
-                source={require("../assets/home.png")}
-              />
-            </View>
-          ),
+          tabBarIcon: ({ color }) => <Icon.Home color={color} />,
         }}
       />
       <BottomTab.Screen
         name="SuivisHandler"
         component={SuivisHandler}
         options={{
-          tabBarIcon: ({ focused }) => (
-            <View
-              style={{
-                top: 5,
-                bottom: 5,
-                padding: 8,
-                borderWidth: 1,
-                marginBottom: 10,
-                borderColor: focused ? "#A0DB30" : "#A0DB3000",
-                borderRadius: 12,
-                backgroundColor: focused ? "#A0DB3050" : "#A0DB3000",
-              }}
-            >
-              <Image
-                className="w-8 h-8"
-                source={require("../assets/suivis.png")}
-              />
-            </View>
-          ),
-        }}
-      />
-
-      <BottomTab.Screen
-        name="Stock"
-        component={Stock}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <View
-              style={{
-                top: 5,
-                bottom: 5,
-                padding: 8,
-                borderWidth: 1,
-                marginBottom: 10,
-                borderColor: focused ? "#A0DB30" : "#A0DB3000",
-                borderRadius: 12,
-                backgroundColor: focused ? "#A0DB3050" : "#A0DB3000",
-              }}
-            >
-              <Image
-                className="w-8 h-8"
-                source={require("../assets/pharmacy.png")}
-              />
-            </View>
-          ),
+          tabBarIcon: ({ color }) => <Icon.Package color={color} />,
         }}
       />
       <BottomTab.Screen
         name="Map"
         component={Map}
         options={{
-          tabBarIcon: ({ focused }) => (
-            <View
-              style={{
-                top: 5,
-                bottom: 5,
-                padding: 8,
-                borderWidth: 1,
-                marginBottom: 10,
-                borderColor: focused ? "#A0DB30" : "#A0DB3000",
-                borderRadius: 12,
-                backgroundColor: focused ? "#A0DB3050" : "#A0DB3000",
-              }}
-            >
-              <Image
-                className="w-8 h-8"
-                source={require("../assets/map-icons/map.png")}
-              />
-            </View>
-          ),
+          tabBarIcon: ({ color }) => <Icon.Map color={color} />,
         }}
       />
       <BottomTab.Screen
         name="Settings"
         component={Settings}
         options={{
-          tabBarIcon: ({ focused }) => (
-            <View
-              style={{
-                top: 5,
-                bottom: 5,
-                padding: 8,
-                borderWidth: 1,
-                marginBottom: 10,
-                borderColor: focused ? "#A0DB30" : "#A0DB3000",
-                borderRadius: 12,
-                backgroundColor: focused ? "#A0DB3050" : "#A0DB3000",
-              }}
-            >
-              {user && (
-                <Image
-                  className="w-8 h-8"
-                  source={user.avatar ? avatars[user.avatar] : avatars["man"]}
-                />
-              )}
-            </View>
-          ),
+          tabBarIcon: ({ color }) => <Icon.Settings color={color} />,
         }}
       />
     </BottomTab.Navigator>
