@@ -21,7 +21,7 @@ const GaiaInput = ({
       <TouchableWithoutFeedback onPress={handleFocus}>
         <View style={[styles.inputContainer, width]} className="bg-grey-300">
           {!value && (
-            <Text style={[styles.placeholder]} className='uppercase text-grey-200'>
+            <Text style={[styles.placeholder]} className='uppercase text-grey-200 font-light'>
               {placeholder}
             </Text>
           )}
@@ -62,10 +62,9 @@ const styles = StyleSheet.create({
   },
   placeholder: {
     position: 'absolute',
-    left: 20,
+    left: 18,
     fontSize: 20,
     zIndex: 2,
-    fontWeight: "600",
     color: '#888',
   },
   error: {

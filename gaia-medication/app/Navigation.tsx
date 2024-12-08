@@ -17,7 +17,7 @@ import * as Icon from "react-native-feather";
 import Search from "./Meds/Search";
 import Drug from "./Meds/Drug";
 import Map from "./Home/Map";
-import AddTreatment from "./Suivis/AddTreatment";
+import AddTreatment from "./Suivis/addTreatment/AddTreatment";
 import {
   SafeAreaView,
   useSafeAreaInsets,
@@ -163,22 +163,24 @@ function HomeHandler() {
 function SuivisHandler() {
   const { colorScheme } = useColorScheme();
   return (
-    <TopTab.Navigator
-      screenOptions={{
-        tabBarLabelStyle: {
-          color: colorScheme === "dark" ? "#fff" : "#000",
-        },
-        tabBarIndicatorStyle: {
-          backgroundColor: "#9CDE00",
-        },
-        tabBarStyle: {
-          borderTopColor: colorScheme === "dark" ? "#37464f" : "#e5e5e5",
-          backgroundColor: colorScheme === "dark" ? "#131f24" : "#FFFFFF",
-        },
-      }}
-    >
-      <TopTab.Screen name="Suivis" component={Suivis} />
-      <TopTab.Screen name="Journal" component={Journal} />
-    </TopTab.Navigator>
+    <SafeAreaView className="flex bg-white w-full h-full dark:bg-grey-100">
+      <TopTab.Navigator
+        screenOptions={{
+          tabBarLabelStyle: {
+            color: colorScheme === "dark" ? "#fff" : "#000",
+          },
+          tabBarIndicatorStyle: {
+            backgroundColor: "#9CDE00",
+          },
+          tabBarStyle: {
+            borderTopColor: colorScheme === "dark" ? "#37464f" : "#e5e5e5",
+            backgroundColor: colorScheme === "dark" ? "#131f24" : "#FFFFFF",
+          },
+        }}
+      >
+        <TopTab.Screen name="Suivis" component={Suivis} />
+        <TopTab.Screen name="Journal" component={Journal} />
+      </TopTab.Navigator>
+    </SafeAreaView>
   );
 }
