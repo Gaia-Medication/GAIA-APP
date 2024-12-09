@@ -4,7 +4,6 @@ import { View, TextInput, Text, StyleSheet, TouchableWithoutFeedback } from 'rea
 const GaiaInput = ({
   className=null,
   editable=true,
-
   value,
   onChangeText,
   placeholder,

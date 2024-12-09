@@ -1437,7 +1437,6 @@ export default function AddTreatment({ route, navigation }) {
             buttonDisabled={instructionsList.length > 0}
             onDateChange={(date: Date) => setStartDate(date)} 
           />
-          
           {!drugScanned && allergies ? (
             <GaiaSearchList
               allergies={allergies}

@@ -15,7 +15,6 @@ import GaiaSearchResults from './GaiaSearchResults';
 const GaiaSearchList = ({ inputPlaceholder, onItemPressed, onItemMaintained, searchFunction, editable=true, allergies }) => {
   const [searchText, setSearchText] = useState('');
   const [data, setData] = useState([]);
-
   const handleSearch = (text) => {
     setSearchText(text);
     if (text.length > 2) {
