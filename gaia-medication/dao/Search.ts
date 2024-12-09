@@ -5,7 +5,14 @@ import { getAllMed, getAllPA } from "./Meds";
 const medicaments = getAllMed();
 
 //Tri les medicaments avec un score selon la recherche
-function findMostAccurateMed(meds: any[], search: string) {
+export type SearchDrug = {
+  Name: string;
+  CIS: string;
+  type: string;
+  score: number;
+}
+
+function findMostAccurateMed(meds: any[], search: string): SearchDrug[] {
   const scores = meds.map((med) => {
     const name = med.Name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
     const s = search.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -76,56 +83,56 @@ export function SearchAllergy(inputText: string, maxResults = 50) {
 export function trouverNomMedicament(texte: string) {
   console.log(texte)
   var Filter = [];
-  var ordonnanceBool=false
-  if (texte.toLowerCase().includes("ordo")||texte.toLowerCase().includes("doct")||texte.toLowerCase().includes("presc")||texte.toLowerCase().includes("medec"))ordonnanceBool=true
+  var ordonnanceBool = false
+  if (texte.toLowerCase().includes("ordo") || texte.toLowerCase().includes("doct") || texte.toLowerCase().includes("presc") || texte.toLowerCase().includes("medec")) ordonnanceBool = true
   for (const medicament of medicaments) {
-    if(medicament.Name.split(" ")[0].length<4){
-      if (texte.toLowerCase().includes(medicament.Name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(',', '').split(" ")[0].toLowerCase()+" "+medicament.Name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(',', '').split(" ")[1].toLowerCase())) {
-        Filter.push({Name:medicament.Name.normalize('NFD').replace(/[\u0300-\u036f]/g, ''),CIS:medicament.CIS});
+    if (medicament.Name.split(" ")[0].length < 4) {
+      if (texte.toLowerCase().includes(medicament.Name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(',', '').split(" ")[0].toLowerCase() + " " + medicament.Name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(',', '').split(" ")[1].toLowerCase())) {
+        Filter.push({ Name: medicament.Name.normalize('NFD').replace(/[\u0300-\u036f]/g, ''), CIS: medicament.CIS });
       }
     }
-    else if (texte.toLowerCase().includes(medicament.Name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(',', '').split(" ")[0].toLowerCase())&&texte.toLowerCase().includes(medicament.Name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(',', '').split(" ")[1].toLowerCase())) {
-      Filter.push({Name:medicament.Name.normalize('NFD').replace(/[\u0300-\u036f]/g, ''),CIS:medicament.CIS});
+    else if (texte.toLowerCase().includes(medicament.Name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(',', '').split(" ")[0].toLowerCase()) && texte.toLowerCase().includes(medicament.Name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(',', '').split(" ")[1].toLowerCase())) {
+      Filter.push({ Name: medicament.Name.normalize('NFD').replace(/[\u0300-\u036f]/g, ''), CIS: medicament.CIS });
     }
   }
-  Filter=Filter.map((medicament)=>{
+  Filter = Filter.map((medicament) => {
     return {
-      med:medicament,
-      score:calculateScore(texte, medicament.Name).toFixed(2)
+      med: medicament,
+      score: calculateScore(texte, medicament.Name).toFixed(2)
     }
   })
-  Filter=Filter.sort(
+  Filter = Filter.sort(
     (a: { score: number }, b: { score: number }) => b.score - a.score
   );
-  Filter=Filter.filter(medicament => medicament.score > 50)
+  Filter = Filter.filter(medicament => medicament.score > 50)
   console.log(ordonnanceBool)
   console.log(Filter)
-  const doctor = ordonnanceBool&&Filter.length>0?getAllDoctors().find(
+  const doctor = ordonnanceBool && Filter.length > 0 ? getAllDoctors().find(
     (doctor) =>
       texte.toLowerCase().includes(
         doctor.Prenom.normalize("NFD")
           .replace(/[\u0300-\u036f]/g, "")
           .toLowerCase() +
-          " " +
-          doctor.Nom.normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "")
-            .toLowerCase()
+        " " +
+        doctor.Nom.normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .toLowerCase()
       ) ||
       texte.toLowerCase().includes(
         doctor.Nom.normalize("NFD")
           .replace(/[\u0300-\u036f]/g, "")
           .toLowerCase() +
-          " " +
-          doctor.Prenom.normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "")
-            .toLowerCase()
+        " " +
+        doctor.Prenom.normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .toLowerCase()
       )
-  ):null;
+  ) : null;
   console.log(doctor)
-  if(ordonnanceBool)return { ordonnanceBool: ordonnanceBool, meds: Filter.slice(0,10), doctor:doctor}
+  if (ordonnanceBool) return { ordonnanceBool: ordonnanceBool, meds: Filter.slice(0, 10), doctor: doctor }
   const highScoreMeds = Filter.filter(medicament => medicament.score > 99);
-  if (highScoreMeds.length>0)return { ordonnanceBool: ordonnanceBool, meds: highScoreMeds, doctor:null}
-  return { ordonnanceBool: ordonnanceBool, meds: Filter.slice(0,3), doctor:null}
+  if (highScoreMeds.length > 0) return { ordonnanceBool: ordonnanceBool, meds: highScoreMeds, doctor: null }
+  return { ordonnanceBool: ordonnanceBool, meds: Filter.slice(0, 3), doctor: null }
 }
 
 //Score de recherche pour le Scan
@@ -134,7 +141,7 @@ function calculateScore(text: string, searchText: string): number {
   const searchTextLowerCase = searchText.toLowerCase();
 
   // Split the text into words
-  const words = searchTextLowerCase.replace(',', '').replace('-','').split(" ");
+  const words = searchTextLowerCase.replace(',', '').replace('-', '').split(" ");
 
   // Initialize a score
   let score = 0;
@@ -147,6 +154,6 @@ function calculateScore(text: string, searchText: string): number {
     }
   });
 
-  return (score/words.length*100);
+  return (score / words.length * 100);
 }
 

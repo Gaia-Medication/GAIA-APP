@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { View, TextInput, Text, StyleSheet, TouchableWithoutFeedback } from 'react-native';
 
 const GaiaInput = ({
+  className=null,
   value,
   onChangeText,
   placeholder,
@@ -49,7 +50,7 @@ const styles = StyleSheet.create({
     position: 'relative',
     justifyContent: 'center',
     height: 40,
-    borderRadius: 20,
+    borderRadius: 6,
   },
   input: {
     padding: 6,

@@ -54,6 +54,7 @@ import PageTitle from "../../component/PageTitle";
 import GaiaInput from "../../component/GaiaInput";
 import { formatDate } from "../../utils/functions";
 import GaiaDateTimePicker from "../../component/GaiaDateTimePicker";
+import GaiaSearchList from "../../component/GaiaSearchList";
 
 export default function AddTreatment({ route, navigation }) {
   const isFocused = useIsFocused();
@@ -1404,10 +1405,9 @@ export default function AddTreatment({ route, navigation }) {
   return (
     <SafeAreaView className="flex bg-white w-full h-full dark:bg-grey-100 p-4">
       <AlertNotificationRoot>
-
         <PageTitle title={"Nouveau traitement"} />
-
         <View className="flex w-full">
+
           <GaiaInput
             value={treatmentName}
             onChangeText={(text: string) => {
@@ -1427,7 +1427,7 @@ export default function AddTreatment({ route, navigation }) {
             placeholder={"Description du traitement"}
             width={undefined}
           />
-
+          
           <Text style={styles.label} className="mx-3">
             Date de début
           </Text>
@@ -1438,6 +1438,12 @@ export default function AddTreatment({ route, navigation }) {
           />
           
           {!drugScanned ? (
+            <>
+            <GaiaSearchList
+              inputPlaceholder="Rechercher un médicament"
+              onItemSelected={undefined}
+              searchFunction={searchMed}
+            />
             <Input
               className=" text-[#363636] text-lg"
               label="Médicaments"
@@ -1455,6 +1461,8 @@ export default function AddTreatment({ route, navigation }) {
               placeholder="Choisir vos médicaments..."
               placeholderTextColor={"#dedede"}
             />
+            </>
+            
           ) : (
             <>
               <Text>
