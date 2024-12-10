@@ -12,11 +12,10 @@ import GaiaInput from './GaiaInput';
 import GaiaSearchItemsSelected from './GaiaSearchItemsSelected';
 import GaiaSearchResults from './GaiaSearchResults';
 
-const GaiaSearchList = ({ inputPlaceholder, onItemSelected, searchFunction }) => {
-  const [modalVisible, setModalVisible] = useState(false);
+const GaiaSearchList = ({ inputPlaceholder, onItemPressed, onItemMaintained, searchFunction, editable=true, allergies }) => {
   const [searchText, setSearchText] = useState('');
   const [data, setData] = useState([]);
-  
+
   const handleSearch = (text) => {
     setSearchText(text);
     if (text.length > 2) {
@@ -27,19 +26,27 @@ const GaiaSearchList = ({ inputPlaceholder, onItemSelected, searchFunction }) =>
   return (
     <View>
       <GaiaInput
+        editable={editable}
         placeholder={inputPlaceholder}
         value={searchText}
         onChangeText={handleSearch}
         width={undefined}
       />
-      <GaiaSearchResults
-        dataFound={data}
-        nbOfResults={10}
-      />
-      <GaiaSearchItemsSelected
-      
-        items={[]}
-        />
+
+      {editable && (
+        <>
+          <GaiaSearchResults
+            allergies={allergies}
+            dataFound={data}
+            nbOfResults={10}
+            onItemPressed={onItemPressed}
+            onItemMaintained={onItemMaintained}
+          />
+          <GaiaSearchItemsSelected
+            items={[]}
+          />
+        </>
+      )}
     </View>
   );
 };

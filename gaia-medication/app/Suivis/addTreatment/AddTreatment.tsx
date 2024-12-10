@@ -38,7 +38,7 @@ import { RadioButton, Checkbox } from "react-native-paper";
 import { Picker } from "@react-native-picker/picker";
 import * as Icon from "react-native-feather";
 import MedIconByType from "../../component/MedIconByType";
-import { searchMed } from "../../../dao/Search";
+import { SearchDrug, searchMed } from "../../../dao/Search";
 import { SafeAreaView } from "react-native-safe-area-context";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import {
@@ -67,6 +67,7 @@ export default function AddTreatment({ route, navigation }) {
     ({ drugScanned, doctor } = route.params);
   }
   // INPUTS
+  const [allergies, setAllergies] = useState([]);
   const [treatmentName, setTreatmentName] = useState("");
   const [treatmentDescription, setTreatmentDescription] = useState("");
   const [startDate, setStartDate] = useState(new Date());
@@ -302,7 +303,9 @@ export default function AddTreatment({ route, navigation }) {
   };
 
   // SETUP UN MEDICAMENT
-  const handleMedSelect = async (CIS) => {
+  const handleDrugSelection = async (CIS: string) => {
+    console.log("HANDLE DRUG SELECTION");
+    console.log(CIS);
     if (treatmentName === "") {
       Dialog.show({
         type: ALERT_TYPE.WARNING,
@@ -1386,6 +1389,8 @@ export default function AddTreatment({ route, navigation }) {
     const currentId = await AsyncStorage.getItem("currentUser");
     const current = await getUserByID(JSON.parse(currentId));
     setUser(current);
+    setAllergies(current.allergies);
+    console.log("CURRENT USER => ", current);
     const medsWithKey = allMeds.map((med) => ({
       id: med.CIS,
       label: med.Name,
@@ -1395,11 +1400,7 @@ export default function AddTreatment({ route, navigation }) {
 
   useEffect(() => {
     console.log("Nav on AddTreatment Page");
-    try {
-      init();
-    } catch (e) {
-      console.log(e);
-    }
+    init();
   }, []);
 
   return (
@@ -1437,48 +1438,22 @@ export default function AddTreatment({ route, navigation }) {
             onDateChange={(date: Date) => setStartDate(date)} 
           />
           
-          {!drugScanned ? (
-            <>
+          {!drugScanned && allergies ? (
             <GaiaSearchList
+              allergies={allergies}
               inputPlaceholder="Rechercher un médicament"
-              onItemSelected={undefined}
+              onItemPressed={(item: SearchDrug) => {
+                console.log("Item Pressed");
+                handleDrugSelection(item.CIS); 
+              }}
+              onItemMaintained={() => {
+                // [TODO] Ouvrir la modal de détail RAPIDE du médicament
+                console.log("Item Maintained");
+              }}
               searchFunction={searchMed}
-            />
-            <Input
-              className=" text-[#363636] text-lg"
-              label="Médicaments"
-              labelStyle={styles.label}
-              onFocus={() => {
-                setIsVisible(true);
-                console.log("Focus");
-              }}
-              onChangeText={(text) => {
-                setSearchText(text);
-                setSearch(searchMed(text));
-                setIsVisible(true);
-              }}
-              value={searchText}
-              placeholder="Choisir vos médicaments..."
-              placeholderTextColor={"#dedede"}
-            />
-            </>
-            
-          ) : (
-            <>
-              <Text>
-                Médecin :{" "}
-                {doctor.Prenom.normalize("NFD")
-                  .replace(/[\u0300-\u036f]/g, "")
-                  .toLowerCase()
-                  .replace(/^\w/, (c) => c.toUpperCase())}{" "}
-                {doctor.Nom.normalize("NFD")
-                  .replace(/[\u0300-\u036f]/g, "")
-                  .toLowerCase()
-                  .replace(/^\w/, (c) => c.toUpperCase())}
-              </Text>
-              <Text>Médicaments détectés</Text>
-            </>
-          )}
+            /> 
+          ) : null}  
+          
           {isVisible && (
             <FlatList
               className="border-0"
@@ -1500,7 +1475,7 @@ export default function AddTreatment({ route, navigation }) {
                         </Text>
                       </View>
                     ) : (
-                      user.preference
+                      user.allergies
                         .map((allergie) =>
                           Array.from(getPAfromMed(item.CIS)).includes(allergie)
                         )

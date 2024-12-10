@@ -5,7 +5,7 @@ type User = {
   dateOfBirth: Date;
   weight: number;
   gender: string;
-  preference: string[];
+  allergies: string[];
   avatar:string
   bgcolor:string
 };

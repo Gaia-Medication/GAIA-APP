@@ -3,6 +3,8 @@ import { View, TextInput, Text, StyleSheet, TouchableWithoutFeedback } from 'rea
 
 const GaiaInput = ({
   className=null,
+  editable=true,
+
   value,
   onChangeText,
   placeholder,
@@ -20,13 +22,14 @@ const GaiaInput = ({
   return (
     <View style={styles.container}>
       <TouchableWithoutFeedback onPress={handleFocus}>
-        <View style={[styles.inputContainer, width]} className="bg-grey-300">
+        <View style={[styles.inputContainer, width]} className={`${editable? 'bg-grey-300' : 'bg-grey-100' }`}>
           {!value && (
             <Text style={[styles.placeholder]} className='uppercase text-grey-200 font-light'>
               {placeholder}
             </Text>
           )}
           <TextInput
+            editable={editable}
             ref={textInputRef}
             style={styles.input}
             value={value}

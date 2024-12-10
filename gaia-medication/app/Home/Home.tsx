@@ -79,7 +79,7 @@ export default function Home({ navigation }) {
       dateOfBirth: date,
       weight: 80,
       gender: "male",
-      preference: [""]
+      allergies: ["62826517"]
     }
 
     setUsers([newUser]); // SHould be usersList
