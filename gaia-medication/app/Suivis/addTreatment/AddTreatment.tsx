@@ -3,13 +3,15 @@ import {
   ParamListBase,
   useIsFocused,
 } from "@react-navigation/native";
+import { Platform, StyleSheet } from 'react-native';
+import img from '../../../assets/images';
 import React, { useEffect, useState } from "react";
 import {
   addItemToList,
   getAllTreatments,
   getUserByID,
   readList,
-} from "../../dao/Storage";
+} from "../../../dao/Storage";
 import {
   View,
   Text,
@@ -23,21 +25,22 @@ import {
   ScrollView,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { styles } from "../../style/style";
+import { styles } from "../../../style/style";
 import {
   getAllMed,
   getAllSameCompOfCISWithHimself,
   getMedbyCIS,
   getPAfromMed,
-} from "../../dao/Meds";
-import ModalComponent from "../component/Modal";
+} from "../../../dao/Meds";
+import ModalComponent from "../../component/Modal";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { RadioButton, Checkbox } from "react-native-paper";
 import { Picker } from "@react-native-picker/picker";
 import * as Icon from "react-native-feather";
-import MedIconByType from "../component/MedIconByType";
-import { searchMed } from "../../dao/Search";
+import MedIconByType from "../../component/MedIconByType";
+import { SearchDrug, searchMed } from "../../../dao/Search";
 import { SafeAreaView } from "react-native-safe-area-context";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 import {
   ALERT_TYPE,
   Dialog,
@@ -46,7 +49,12 @@ import {
 } from "react-native-alert-notification";
 import { Input } from "react-native-elements";
 import { ArrowRightCircle } from "react-native-feather";
-import GoBackButton from "../component/GoBackButton";
+import GoBackButton from "../../component/GoBackButton";
+import PageTitle from "../../component/PageTitle";
+import GaiaInput from "../../component/GaiaInput";
+import { formatDate } from "../../utils/functions";
+import GaiaDateTimePicker from "../../component/GaiaDateTimePicker";
+import GaiaSearchList from "../../component/GaiaSearchList";
 
 export default function AddTreatment({ route, navigation }) {
   const isFocused = useIsFocused();
@@ -59,6 +67,7 @@ export default function AddTreatment({ route, navigation }) {
     ({ drugScanned, doctor } = route.params);
   }
   // INPUTS
+  const [allergies, setAllergies] = useState([]);
   const [treatmentName, setTreatmentName] = useState("");
   const [treatmentDescription, setTreatmentDescription] = useState("");
   const [startDate, setStartDate] = useState(new Date());
@@ -294,7 +303,9 @@ export default function AddTreatment({ route, navigation }) {
   };
 
   // SETUP UN MEDICAMENT
-  const handleMedSelect = async (CIS) => {
+  const handleDrugSelection = async (CIS: string) => {
+    console.log("HANDLE DRUG SELECTION");
+    console.log(CIS);
     if (treatmentName === "") {
       Dialog.show({
         type: ALERT_TYPE.WARNING,
@@ -320,11 +331,6 @@ export default function AddTreatment({ route, navigation }) {
     setSelectedMedCIS(CIS);
     setSelectedMedName(med.Name);
     setInstructionModalVisible(true);
-  };
-
-  // FORMATTE LA DATE
-  const formatDate = (date) => {
-    return date.toLocaleDateString();
   };
 
   // FORMATTE L'HEURE
@@ -436,15 +442,15 @@ export default function AddTreatment({ route, navigation }) {
     const daysDifference =
       checkLast === "last"
         ? Math.floor(
-            (Number(endDate) - Number(startDateObj)) / (24 * 60 * 60 * 1000)
-          )
+          (Number(endDate) - Number(startDateObj)) / (24 * 60 * 60 * 1000)
+        )
         : null;
     const numberOfTimes =
       checkLast === "last"
         ? frequencyMode === "regular"
           ? customPeriodicity === "day"
             ? parseInt(customPeriodicityNumber) * daysDifference +
-              parseInt(customPeriodicityNumber)
+            parseInt(customPeriodicityNumber)
             : calculateTotalTakes()
           : calculateTakesEveryXDays()
         : Number(endNumber);
@@ -1009,18 +1015,18 @@ export default function AddTreatment({ route, navigation }) {
               placeholder={
                 takes.find((take) => take.date === date.toISOString())
                   ? takes
-                      .find((take) => take.date === date.toISOString())
-                      .quantity.toString()
+                    .find((take) => take.date === date.toISOString())
+                    .quantity.toString()
                   : "0"
               }
               value={
                 takes.find((take) => take.date === date.toISOString())
                   ? takes
-                      .find((take) => take.date === date.toISOString())
-                      .quantity.toString()
+                    .find((take) => take.date === date.toISOString())
+                    .quantity.toString()
                   : "1"
               }
-              onChangeText={(text) => {}}
+              onChangeText={(text) => { }}
               keyboardType="numeric"
             />
           </View>
@@ -1086,7 +1092,7 @@ export default function AddTreatment({ route, navigation }) {
       treatmentName: treatmentName,
       userId: user.id,
       description: treatmentDescription,
-      doctor: doctor?doctor.IDPP:null,
+      doctor: doctor ? doctor.IDPP : null,
       startDate: startDate,
       instructions: asyncInstructions,
     };
@@ -1129,7 +1135,7 @@ export default function AddTreatment({ route, navigation }) {
           if (
             weekDays.filter((day) => day.checked).length === 0 ||
             weekDays.filter((day) => day.checked).length <
-              parseInt(customPeriodicityNumber)
+            parseInt(customPeriodicityNumber)
           ) {
             missingFields += "Les jours de prise \n\n";
             canValidate = false;
@@ -1311,14 +1317,14 @@ export default function AddTreatment({ route, navigation }) {
             Il est à prendre{" "}
             {selectedInstruction.regularFrequencyMode === "regular"
               ? selectedInstruction.regularFrequencyNumber +
-                " fois par " +
-                trad[selectedInstruction.regularFrequencyPeriods]
+              " fois par " +
+              trad[selectedInstruction.regularFrequencyPeriods]
               : "tous les " +
-                selectedInstruction.regularFrequencyNumber +
-                " jours"}
+              selectedInstruction.regularFrequencyNumber +
+              " jours"}
           </Text>
           {selectedInstruction.regularFrequencyMode === "regular" &&
-          selectedInstruction.regularFrequencyPeriods === "week" ? (
+            selectedInstruction.regularFrequencyPeriods === "week" ? (
             <Text>
               Il est à prendre les{" "}
               {selectedInstruction.regularFrequencyDays.join(", ")}
@@ -1383,6 +1389,8 @@ export default function AddTreatment({ route, navigation }) {
     const currentId = await AsyncStorage.getItem("currentUser");
     const current = await getUserByID(JSON.parse(currentId));
     setUser(current);
+    setAllergies(current.allergies);
+    console.log("CURRENT USER => ", current);
     const medsWithKey = allMeds.map((med) => ({
       id: med.CIS,
       label: med.Name,
@@ -1392,112 +1400,60 @@ export default function AddTreatment({ route, navigation }) {
 
   useEffect(() => {
     console.log("Nav on AddTreatment Page");
-    try {
-      init();
-    } catch (e) {
-      console.log(e);
-    }
+    init();
   }, []);
 
   return (
-    <SafeAreaView className="flex w-full bg-white flex-1 pt-[2px] pb-2 px-2">
+    <SafeAreaView className="flex bg-white w-full h-full dark:bg-grey-100 p-4">
       <AlertNotificationRoot>
-        <View className="flex-row items-center justify-between py-4 px-6">
-          <GoBackButton navigation={navigation}></GoBackButton>
-          <Text className=" text-center text-2xl text-neutral-700 font-bold">
-            Ajouter un Traitement
-          </Text>
-        </View>
+        <PageTitle title={"Nouveau traitement"} />
+        <View className="flex w-full">
 
-        <View className=" flex w-full h-[86%] -mt-[5%] -mb-[8%] scale-95">
-          <Input
-            label="Nom du traitement*"
-            labelStyle={styles.label}
-            editable={instructionsList.length === 0}
-            placeholder="Entrez le nom du traitement"
-            placeholderTextColor={"#dedede"}
-            onChangeText={(text) =>
-              setTreatmentName(text.charAt(0).toUpperCase() + text.slice(1))
-            }
+          <GaiaInput
             value={treatmentName}
+            onChangeText={(text: string) => {
+              setTreatmentName(text.charAt(0).toUpperCase() + text.slice(1))
+            }}
+            placeholder={"Nom du traitement"}
+            width={undefined}
           />
 
-          <Input
-            label="Description du traitement"
-            labelStyle={styles.label}
-            editable={instructionsList.length === 0}
-            placeholder="Entrez la description du traitement"
-            placeholderTextColor={"#dedede"}
-            onChangeText={(text) =>
+          <GaiaInput
+            value={treatmentDescription}
+            onChangeText={(text: string) => {
               setTreatmentDescription(
                 text.charAt(0).toUpperCase() + text.slice(1)
-              )
-            }
-            value={treatmentDescription}
+              );
+            }}
+            placeholder={"Description du traitement"}
+            width={undefined}
           />
-
+          
           <Text style={styles.label} className="mx-3">
             Date de début
           </Text>
-          <TouchableOpacity
-            disabled={instructionsList.length > 0}
-            onPress={() => setShowStartPicker(true)}
-            className="flex items-center"
-          >
-            <TextInput
-              className="text-white text-center font-semibold bg-blue-400 rounded-lg w-[80%] m-4 p-2 "
-              editable={false}
-              value={formatDate(startDate)}
-              placeholder="Selectionner une date"
-            />
-          </TouchableOpacity>
-          {showStartPicker && (
-            <DateTimePicker
-              testID="dateTimePicker"
-              value={startDate}
-              mode="date"
-              display="calendar"
-              onChange={(event, selectedDate) => {
-                console.log(selectedDate);
-                setShowStartPicker(false);
-                setStartDate(selectedDate);
+          <GaiaDateTimePicker
+            buttonPlaceholder="Sélectionner une date"
+            buttonDisabled={instructionsList.length > 0}
+            onDateChange={(date: Date) => setStartDate(date)} 
+          />
+          
+          {!drugScanned && allergies ? (
+            <GaiaSearchList
+              allergies={allergies}
+              inputPlaceholder="Rechercher un médicament"
+              onItemPressed={(item: SearchDrug) => {
+                console.log("Item Pressed");
+                handleDrugSelection(item.CIS); 
               }}
-            />
-          )}
-          {!drugScanned ? (
-            <Input
-              className=" text-[#363636] text-lg"
-              label="Médicaments"
-              labelStyle={styles.label}
-              onFocus={() => {
-                setIsVisible(true);
-                console.log("Focus");
+              onItemMaintained={() => {
+                // [TODO] Ouvrir la modal de détail RAPIDE du médicament
+                console.log("Item Maintained");
               }}
-              onChangeText={(text) => {
-                setSearchText(text);
-                setSearch(searchMed(text));
-                setIsVisible(true);
-              }}
-              value={searchText}
-              placeholder="Choisir vos médicaments..."
-              placeholderTextColor={"#dedede"}
-            />
-          ) : (
-            <>
-              <Text>
-                Médecin :{" "}
-                {doctor.Prenom.normalize("NFD")
-                  .replace(/[\u0300-\u036f]/g, "")
-                  .toLowerCase()
-                  .replace(/^\w/, (c) => c.toUpperCase())}{" "}
-                {doctor.Nom.normalize("NFD")
-                  .replace(/[\u0300-\u036f]/g, "")
-                  .toLowerCase()
-                  .replace(/^\w/, (c) => c.toUpperCase())}
-              </Text>
-              <Text>Médicaments détectés</Text>
-            </>
-          )}
+              searchFunction={searchMed}
+            /> 
+          ) : null}  
+          
           {isVisible && (
             <FlatList
               className="border-0"
@@ -1519,7 +1475,7 @@ export default function AddTreatment({ route, navigation }) {
                         </Text>
                       </View>
                     ) : (
-                      user.preference
+                      user.allergies
                         .map((allergie) =>
                           Array.from(getPAfromMed(item.CIS)).includes(allergie)
                         )
@@ -1527,7 +1483,7 @@ export default function AddTreatment({ route, navigation }) {
                         <View className=" items-center">
                           <Image
                             className={"h-5 w-5 ml-1"}
-                            source={require("../../assets/allergy.png")}
+                            source={img.allergyIcon}
                           />
                           <Text className="ml-2 text-red-500 font-bold">
                             Allergie

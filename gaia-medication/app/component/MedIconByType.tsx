@@ -1,8 +1,8 @@
 import React from "react";
 import { View, Image } from "react-native";
 
-const MedIconByType = ({ type,size="h-5 w-5" }) => {
-  //console.log(type)
+const MedIconByType = ({ type="", size="h-5 w-5" }) => {
+   console.log(type)
   const typeToImage = {
     gélule: require("../../assets/drug-icon/gélule.png"),
     comprimé: require("../../assets/drug-icon/comprimé.png"),

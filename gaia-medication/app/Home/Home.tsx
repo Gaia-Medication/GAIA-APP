@@ -79,7 +79,7 @@ export default function Home({ navigation }) {
       dateOfBirth: date,
       weight: 80,
       gender: "male",
-      preference: [""]
+      allergies: ["62826517"]
     }
 
     setUsers([newUser]); // SHould be usersList
@@ -229,7 +229,7 @@ export default function Home({ navigation }) {
 
   return (
     <SafeAreaView
-      className=" flex bg-white w-full h-full dark:bg-grey-100"
+      className="flex bg-white w-full h-full dark:bg-grey-100"
       style={{ gap: 0 }}
     >
       <AlertNotificationRoot

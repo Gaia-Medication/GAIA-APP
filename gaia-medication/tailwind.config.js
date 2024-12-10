@@ -22,7 +22,7 @@ module.exports = {
         example: ["Varela"],
       },
       fontSize: {
-        title: "36px",
+        title: "32px",
         subtitle: "24px",
         button: "20px"
       },

@@ -2,7 +2,12 @@
   "compilerOptions": {
     "jsx": "react",
     "resolveJsonModule": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+
+    "baseUrl": "./",
+    "paths": {
+      "types/*": ["./types/*"],
+    }
   },
   "extends": "expo/tsconfig.base"
 }

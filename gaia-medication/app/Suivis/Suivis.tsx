@@ -155,7 +155,7 @@ export default function Suivis({ navigation }) {
   }, [isFocused]);
 
   return (
-    <SafeAreaView className=" flex bg-white w-full h-full dark:bg-[#131f24]">
+    <SafeAreaView className=" flex bg-white w-full h-full dark:bg-grey-100">
       {tutoStep === 0 && tutoTreatment === "0" && (
         <TutorialBubble
           isClicked={handleTuto}
