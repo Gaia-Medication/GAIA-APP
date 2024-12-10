@@ -61,11 +61,12 @@ export default function AddTreatment({ route, navigation }) {
 
   const windowWidth = Dimensions.get("window").width;
   const windowHeight = Dimensions.get("window").height;
-  let drugScanned;
-  var doctor = null;
-  if (route.params) {
-    ({ drugScanned, doctor } = route.params);
-  }
+  const { user, drugScanned, doctor } = route.params as {
+    user: User;
+    drugScanned: SearchDrug;
+    doctor: User;
+  };
+
   // INPUTS
   const [allergies, setAllergies] = useState([]);
   const [treatmentName, setTreatmentName] = useState("");
@@ -128,7 +129,6 @@ export default function AddTreatment({ route, navigation }) {
     useState<Instruction>(null);
   const [arrayOfDates, setArrayOfDates] = useState([]);
   const [takes, setTakes] = useState<Take[]>([]);
-  const [user, setUser] = useState<User | null>(null);
   const [sameComp, setSameComp] = useState([]);
 
   // DATA ARRAYS
@@ -1386,11 +1386,8 @@ export default function AddTreatment({ route, navigation }) {
 
   const init = async () => {
     const allMeds = getAllMed();
-    const currentId = await AsyncStorage.getItem("currentUser");
-    const current = await getUserByID(JSON.parse(currentId));
-    setUser(current);
-    setAllergies(current.allergies);
-    console.log("CURRENT USER => ", current);
+    setAllergies(user.allergies);
+    console.log("CURRENT USER => ", user);
     const medsWithKey = allMeds.map((med) => ({
       id: med.CIS,
       label: med.Name,

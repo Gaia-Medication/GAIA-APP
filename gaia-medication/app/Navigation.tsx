@@ -59,7 +59,7 @@ export default function Navigation() {
       {themeSet && (
         <NavigationContainer>
           <Stack.Navigator
-            initialRouteName="Home"
+            initialRouteName="HomeHandler"
             screenOptions={{ headerShown: false }}
           >
             <Stack.Screen name="HomeHandler" component={HomeHandler} />

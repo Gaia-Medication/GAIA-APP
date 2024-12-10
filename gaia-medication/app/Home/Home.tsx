@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useIsFocused } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Image,
   Linking,
@@ -44,15 +44,21 @@ import { searchDoctor } from "../../dao/Doctor";
 import { useColorScheme } from "nativewind";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { formatHour } from "../utils/functions";
+import { UserContext } from "app/contexts/UserContext";
 
 export default function Home({ navigation }) {
+  const userContext = useContext(UserContext);
+  if (!userContext) {
+    throw new Error("Profile must be used within a UserProvider");
+  }
+  const { user, setUser } = userContext;
+  
   const isFocused = useIsFocused();
   const { colorScheme } = useColorScheme();
   const [loading, setLoading] = useState(false);
   const [isMedModalVisible, setIsMedModalVisible] = useState(false);
   const [takes, setTakes] = useState(null);
   const [nextTake, setNextTake] = useState(-1);
-  const [user, setUser] = useState<User | null>(null);
   const [users, setUsers] = useState<User[]>([]);
   const [header, setHeader] = useState(true);
   const [notificationsList, setNotificationsList] = useState<Notif[]>([]);
@@ -79,10 +85,13 @@ export default function Home({ navigation }) {
       dateOfBirth: date,
       weight: 80,
       gender: "male",
-      allergies: ["62826517"]
+      allergies: ["62826517"],
+      avatar: "avatar1",
+      bgcolor: "#9CDE00",
     }
 
     setUsers([newUser]); // SHould be usersList
+    setUser(newUser);
 
     setTutoHome(await AsyncStorage.getItem("TutoHome"));
     //const current = await getUserByID(JSON.parse(currentId));
