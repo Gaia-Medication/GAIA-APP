@@ -1,6 +1,7 @@
 {
   "displayName": "Gaïa",
   "expo": {
+    "sdkVersion": "52.0.0",
     "name": "Gaïa",
     "slug": "gaia-medication",
     "version": "1.0.0",
