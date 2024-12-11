@@ -1,6 +1,6 @@
 import { useIsFocused } from "@react-navigation/native";
 import * as Icon from "react-native-feather";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -31,54 +31,64 @@ import ModalComponent from "../component/Modal";
 import MedIconByType from "../component/MedIconByType";
 import TutorialBubble from "../component/TutorialBubble";
 import { useColorScheme } from "nativewind";
+import { UserContext } from "app/contexts/UserContext";
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 export default function Drug({ route, navigation }) {
+  const { user, drugCIS } = route.params as {
+    user: User;
+    drugCIS: number;
+  };
+
   const [drugModalVisible, setDrugModalVisible] = useState(false);
   const isFocused = useIsFocused();
   const { colorScheme } = useColorScheme();
-  const [user, setUser] = useState<User | null>(null);
   const [showMore, setShowMore] = useState(5);
   const [stock, setStock] = useState(null);
   const [allergique, setAllergique] = useState(false);
   const [iM, setIM] = useState([]);
   const [significationATC, setSignificationATC] = useState([]);
   const [sameComp, setSameComp] = useState([]);
-
-  const { drugCIS } = route.params;
-  const drug = getMedbyCIS(drugCIS);
+  const [drug, setDrug] = useState(null);
 
   const [tutoMedic, setTutoMedic] = useState(null);
   const [tutoStep, setTutoStep] = useState(0);
 
-  const init = async () => {
-    setTutoMedic(await AsyncStorage.getItem("TutoMedic"));
-    const currentId = await AsyncStorage.getItem("currentUser");
-    const current = await getUserByID(JSON.parse(currentId));
-    setUser(current);
-    const stockList = await readList("stock");
-    setAllergique(
-      current.preference
-        .map((allergie) => Array.from(getPAfromMed(drugCIS)).includes(allergie))
-        .some((bool) => bool)
-    );
-    setSameComp(getAllSameCompOfCIS(drugCIS));
-    setIM(getIMfromMed(drugCIS));
-    setStock(
-      stockList.filter(
-        (item) => item.idUser == currentId && item.CIS == drugCIS
-      )
-    );
-  };
+  useEffect(() => {
+    const init = async () => {
+      const data = getMedbyCIS(drugCIS);
+      setDrug(data);
+      setTutoMedic(await AsyncStorage.getItem("TutoMedic"));
+      const stockList = await readList("stock");
+      setSameComp(getAllSameCompOfCIS(drugCIS));
+      setIM(getIMfromMed(drugCIS));
+      setStock(
+        stockList.filter(
+          (item) => item.idUser == user.id && item.CIS == drugCIS
+        )
+      );
+    }
+    init();
+
+  }, [drugCIS, user]);
 
   useEffect(() => {
-    if (isFocused) {
-      console.log("Nav on Drug Page :", drugCIS, "-", drug.Name);
-      drug.ATC &&
-        drug.ATC != "inconnue\nCode" &&
-        setSignificationATC(getATCLabel(drug.ATC));
-      init();
+    if (user?.allergies?.length && drugCIS) {
+      const activeIngredients = Array.from(getPAfromMed(drugCIS) || []);
+      const isAllergic = user.allergies.some((allergie) =>
+        activeIngredients.includes(allergie)
+      );
+      setAllergique(isAllergic);
+    } else {
+      setAllergique(false);
     }
-  }, [isFocused && drug]);
+  }, [user, drugCIS]);
+
+  useEffect(() => {
+    if (drug && drug.ATC && drug.ATC !== "inconnue\nCode") {
+      setSignificationATC(getATCLabel(drug.ATC));
+    }
+  }, [drug]);
 
   const updateStock = async (cis, cip, addQte) => {
     try {
@@ -116,8 +126,8 @@ export default function Drug({ route, navigation }) {
   const handlePress = useCallback(async () => {
     await Linking.openURL(
       "https://base-donnees-publique.medicaments.gouv.fr/affichageDoc.php?specid=" +
-        drugCIS +
-        "&typedoc=N"
+      drugCIS +
+      "&typedoc=N"
     );
   }, []);
 
@@ -232,7 +242,7 @@ export default function Drug({ route, navigation }) {
                 {drug.Name.split(" ").slice(1).join(" ")}
               </Text>
 
-              <TouchableOpacity onPress={() => navigation.navigate("LaboratoirePage",{labo:drug.Titulaire, user:user})}>
+              <TouchableOpacity onPress={() => navigation.navigate("LaboratoirePage", { labo: drug.Titulaire, user: user })}>
                 <Text className="dark:text-slate-50">
                   Titulaire:{" "}
                   <Text className=" dark:text-slate-50 text-[#9CDE00]">
@@ -248,7 +258,7 @@ export default function Drug({ route, navigation }) {
               </Text>
 
               {drug.ATC && drug.ATC != "inconnue\nCode" && (
-                <TouchableOpacity onPress={() => navigation.navigate("AtcPage",{significationATC:significationATC})}>
+                <TouchableOpacity onPress={() => navigation.navigate("AtcPage", { significationATC: significationATC })}>
                   <Text className=" dark:text-slate-50 ">
                     Code ATC:{" "}
                     <Text className=" dark:text-slate-50 text-[#9CDE00]">
@@ -278,13 +288,13 @@ export default function Drug({ route, navigation }) {
                 <Text className=" dark:text-slate-50 text-xs mt-[-5px]">
                   {drug.Indications_therapeutiques.includes(drug.ATC)
                     ? drug.Indications_therapeutiques.split(
-                        drug.ATC
-                      )[1].replaceAll("\u0092", "'")
+                      drug.ATC
+                    )[1].replaceAll("\u0092", "'")
                     : drug.Indications_therapeutiques.includes(
-                        "\t\t\t\t\r\n\t\t\t\t\t\t"
-                      )
-                    ? "Vous trouverez les indications thérapeutiques dans la notice en cliquant sur le bouton en haut à droite"
-                    : drug.Indications_therapeutiques.replaceAll("\u0092", "'")}
+                      "\t\t\t\t\r\n\t\t\t\t\t\t"
+                    )
+                      ? "Vous trouverez les indications thérapeutiques dans la notice en cliquant sur le bouton en haut à droite"
+                      : drug.Indications_therapeutiques.replaceAll("\u0092", "'")}
                 </Text>
               </View>
             )}
@@ -407,16 +417,16 @@ export default function Drug({ route, navigation }) {
                             )
                           )
                           .some((bool) => bool) && (
-                          <View className=" items-center">
-                            <Image
-                              className={"h-5 w-5 ml-1"}
-                              source={require("../../assets/allergy.png")}
-                            />
-                            <Text className=" dark:text-slate-50 ml-2 text-red-500 font-bold">
-                              Allergie
-                            </Text>
-                          </View>
-                        )}
+                            <View className=" items-center">
+                              <Image
+                                className={"h-5 w-5 ml-1"}
+                                source={require("../../assets/allergy.png")}
+                              />
+                              <Text className=" dark:text-slate-50 ml-2 text-red-500 font-bold">
+                                Allergie
+                              </Text>
+                            </View>
+                          )}
                       </View>
                     </TouchableOpacity>
                   ))}

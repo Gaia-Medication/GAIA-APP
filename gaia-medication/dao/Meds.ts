@@ -114,7 +114,7 @@ export function getAllPA(){
 }
 
 //Return le/les principe(s) actif(s) d'un medicament à partir de son CIS
-export function getPAfromMed(CIS){   
+export function getPAfromMed(CIS: number){   
   try {
     const medicament = medicaments.find(med => med.CIS === CIS);
     const composition = medicament.Composition
@@ -131,8 +131,8 @@ export function getPAfromMed(CIS){
 }
 
 
-//Return le/les intéractions médicamenteuses d'un medicament à partir de son CIS
-export function getIMfromMed(CIS){   
+//Return le/les intéractions médicamenteuses d'un médicament à partir de son CIS
+export function getIMfromMed(CIS: number){   
   try {
     const principesActifsUniques=getPAfromMed(CIS)
     const interactionsMed = []

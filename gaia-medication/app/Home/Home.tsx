@@ -82,7 +82,7 @@ export default function Home({ navigation }) {
       id: 1,
       firstname: "Nathan",
       lastname: "MARIE",
-      dateOfBirth: date,
+      dateOfBirth: date.toISOString(),
       weight: 80,
       gender: "male",
       allergies: ["62826517"],
@@ -345,7 +345,7 @@ export default function Home({ navigation }) {
                       value={""}
                       inputContainerStyle={styles.searchBarContainer}
                       //editable={false}
-                      onPressIn={() => navigation.navigate("Search")}
+                      onPressIn={() => navigation.navigate("Search", { user: user })}
                     />
                   </View>
                   <TouchableOpacity onPress={pickImage} style={styles.searchQR}>

@@ -2,7 +2,7 @@ type User = {
   id: number,
   firstname: string;
   lastname: string;
-  dateOfBirth: Date;
+  dateOfBirth: string;
   weight: number;
   gender: string;
   allergies: string[];
