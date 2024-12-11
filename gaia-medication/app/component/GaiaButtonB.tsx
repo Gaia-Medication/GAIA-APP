@@ -3,7 +3,7 @@ import { TouchableOpacity, Text, StyleSheet } from "react-native";
 import { styles } from "../../style/style";
 
 // COMPOSANT BOUTTON PERSONNALISER
-const ButtonB = ({ title, onPress }) => {
+const GaiaButtonB = ({ title, onPress }) => {
   return (
     <TouchableOpacity
       onPress={onPress}
@@ -17,4 +17,4 @@ const ButtonB = ({ title, onPress }) => {
   );
 };
 
-export default ButtonB;
+export default GaiaButtonB;

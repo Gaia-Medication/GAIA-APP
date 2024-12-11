@@ -20,8 +20,8 @@ import TutorialBubble from "../component/TutorialBubble";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { ArrowLeft } from "react-native-feather";
 import GoBackButton from "../component/GoBackButton";
-import ButtonB from "../component/ButtonB";
-import ButtonA from "../component/ButtonA";
+import ButtonB from "../component/GaiaButtonB";
+import ButtonA from "../component/GaiaButtonA";
 import GaiaInput from "../component/GaiaInput";
 import GaiaPicker from "../component/GaiaPicker";
 

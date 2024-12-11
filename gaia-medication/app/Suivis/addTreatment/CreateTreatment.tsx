@@ -1,16 +1,11 @@
+import ButtonA from "app/component/GaiaButtonA";
 import GaiaDateTimePicker from "app/component/GaiaDateTimePicker";
 import GaiaInput from "app/component/GaiaInput";
-import GaiaItemsSelected from "app/component/GaiaItemsSelected";
-import GaiaSearchList from "app/component/GaiaSearchList";
 import { GaiaTitleInput } from "app/component/GaiaTitleInput";
-import MedIconByType from "app/component/MedIconByType";
-import ModalComponent from "app/component/Modal";
 import PageTitle from "app/component/PageTitle";
 import React from "react";
-import { View, Text, FlatList, TouchableOpacity, Image } from "react-native";
+import { View } from "react-native";
 import { AlertNotificationRoot } from "react-native-alert-notification";
-import { Icon } from "react-native-elements";
-import { ArrowRightCircle } from "react-native-feather";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 
@@ -19,87 +14,32 @@ export default function CreateTreatment({ route, navigation }) {
     const [treatmentDescription, setTreatmentDescription] = React.useState("");
     const [treatmentStartDate, setTreatmentStartDate] = React.useState(new Date());
 
-    const TESTinstructions: Instruction[] = [
-        {
-            CIS: 67119691,
-            name: "Doliprane",
-            regularFrequency: true,
-            regularFrequencyMode: "Daily",
-            regularFrequencyNumber: 2,
-            regularFrequencyPeriods: "Day",
-            regularFrequencyContinuity: "Daily",
-            regularFrequencyDays: [],
-            endModality: "EndDate",
-            endDate: new Date("2024-12-31"),
-            endQuantity: undefined,
-            quantity: 1,
-            takes: [
-                {
-                    userId: 101,
-                    treatmentName: "Medication A",
-                    CIS: 67119691,
-                    date: new Date("2024-12-10T08:00:00"),
-                    quantity: 1,
-                    taken: false,
-                    review: "No issues",
-                    pain: 0
-                },
-                {
-                    userId: 101,
-                    treatmentName: "Medication A",
-                    CIS: 67119691,
-                    date: new Date("2024-12-10T20:00:00"),
-                    quantity: 1,
-                    taken: true,
-                    review: "Slight nausea",
-                    pain: 2
-                }
-            ]
-        },
-        {
-            CIS: 62826517,
-            name: "Reparil",
-            regularFrequency: true,
-            regularFrequencyMode: "Weekly",
-            regularFrequencyNumber: 3,
-            regularFrequencyPeriods: "Week",
-            regularFrequencyContinuity: "Custom",
-            regularFrequencyDays: ["Monday", "Wednesday", "Friday"],
-            endModality: "Quantity",
-            endDate: undefined,
-            endQuantity: 15,
-            quantity: 2,
-            takes: [
-                {
-                    userId: 102,
-                    treatmentName: "Reparil",
-                    CIS: 62826517,
-                    date: new Date("2024-12-11T09:00:00"),
-                    quantity: 2,
-                    taken: true,
-                    review: "Effective",
-                    pain: 0
-                },
-                {
-                    userId: 102,
-                    treatmentName: "Reparil",
-                    CIS: 62826517,
-                    date: new Date("2024-12-13T09:00:00"),
-                    quantity: 2,
-                    taken: false,
-                    review: "Missed dose",
-                    pain: 1
-                }
-            ]
+    const isDateCorrect = (date: Date): boolean => {
+        if (!(date instanceof Date) || isNaN(date.getTime())) {
+            return false;
         }
-    ];
 
+        const today = new Date();
+        if (date < today) {
+            return false;
+        }
+    
+        return true;
+    };
+
+    const canContinue = (): boolean => {
+        // TODO Check if TreatmentName is available
+        
+        if ((treatmentName === "") || (!isDateCorrect(treatmentStartDate))) return false;
+        
+        return true;
+    }
 
     return (
-        <SafeAreaView className="flex bg-white w-full h-full dark:bg-grey-100 p-4">
+        <SafeAreaView className="bg-white w-full h-full dark:bg-grey-100 px-4">
             <AlertNotificationRoot>
                 <PageTitle title={"Nouveau traitement"} />
-                <View className="flex w-full">
+                <View className="flex-1">
 
                     <GaiaInput
                         value={treatmentName}
@@ -118,6 +58,12 @@ export default function CreateTreatment({ route, navigation }) {
                         width={undefined}
                     />
 
+                    <GaiaDateTimePicker
+                        buttonPlaceholder="Début"
+                        buttonDisabled={false}
+                        onDateChange={(date: Date) => setTreatmentStartDate(date)}
+                    />
+
                     <GaiaInput
                         value={treatmentDescription}
                         onChangeText={(text: string) => {
@@ -130,15 +76,17 @@ export default function CreateTreatment({ route, navigation }) {
                         numberOfLines={5}
                     />
 
-                    <Text className="mx-3">
-                        Date de début
-                    </Text>
-                    <GaiaDateTimePicker
-                        buttonPlaceholder="Sélectionner une date"
-                        buttonDisabled={false}
-                        onDateChange={(date: Date) => setTreatmentStartDate(date)}
+                </View>
+
+
+                <View className="w-full flex-row justify-center bg-red-30">
+                    <ButtonA
+                        disabled={!canContinue()}
+                        title="Suivant"
+                        onPress={() => navigation.navigate("SearchMedication")}
                     />
                 </View>
+
             </AlertNotificationRoot>
         </SafeAreaView>
     );

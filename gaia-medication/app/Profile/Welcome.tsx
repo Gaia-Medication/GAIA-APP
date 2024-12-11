@@ -20,8 +20,8 @@ import TutorialBubble from "../component/TutorialBubble";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { ArrowLeft } from "react-native-feather";
 import GoBackButton from "../component/GoBackButton";
-import ButtonA from "../component/ButtonA";
-import ButtonB from "../component/ButtonB";
+import ButtonA from "../component/GaiaButtonA";
+import ButtonB from "../component/GaiaButtonB";
 import { useColorScheme } from "nativewind";
 
 interface ICreateProps {
