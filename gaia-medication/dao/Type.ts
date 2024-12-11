@@ -20,7 +20,7 @@ type Treatment = {
 };
 
 type Instruction = {
-  CIS: string,
+  CIS: number,
   name: string,
   regularFrequency: boolean, // CE MÉDICAMENT EST-IL À PRENDRE RÉGULIÈREMENT ?
 

@@ -295,7 +295,7 @@ export default function Suivis({ navigation }) {
             source={require("../../assets/suivis.png")}
           />
           <ButtonA
-            onPress={() => navigation.navigate("AddTreatment", { user: user })}
+            onPress={() => navigation.navigate("CreateTreatment", { user: user })}
             title="Ajouter un traitement"
           />
         </View>

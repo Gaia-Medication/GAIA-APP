@@ -1387,8 +1387,8 @@ export default function AddTreatment({ route, navigation }) {
 
   const TESTinstructions: Instruction[] = [
     {
-      CIS: "001",
-      name: "Medication A",
+      CIS: 67119691,
+      name: "Doliprane",
       regularFrequency: true,
       regularFrequencyMode: "Daily",
       regularFrequencyNumber: 2,
@@ -1403,7 +1403,7 @@ export default function AddTreatment({ route, navigation }) {
         {
           userId: 101,
           treatmentName: "Medication A",
-          CIS: 1,
+          CIS: 67119691,
           date: new Date("2024-12-10T08:00:00"),
           quantity: 1,
           taken: false,
@@ -1413,7 +1413,7 @@ export default function AddTreatment({ route, navigation }) {
         {
           userId: 101,
           treatmentName: "Medication A",
-          CIS: 1,
+          CIS: 67119691,
           date: new Date("2024-12-10T20:00:00"),
           quantity: 1,
           taken: true,
@@ -1423,8 +1423,8 @@ export default function AddTreatment({ route, navigation }) {
       ]
     },
     {
-      CIS: "002",
-      name: "Medication B",
+      CIS: 62826517,
+      name: "Reparil",
       regularFrequency: true,
       regularFrequencyMode: "Weekly",
       regularFrequencyNumber: 3,
@@ -1438,8 +1438,8 @@ export default function AddTreatment({ route, navigation }) {
       takes: [
         {
           userId: 102,
-          treatmentName: "Medication B",
-          CIS: 2,
+          treatmentName: "Reparil",
+          CIS: 62826517,
           date: new Date("2024-12-11T09:00:00"),
           quantity: 2,
           taken: true,
@@ -1448,8 +1448,8 @@ export default function AddTreatment({ route, navigation }) {
         },
         {
           userId: 102,
-          treatmentName: "Medication B",
-          CIS: 2,
+          treatmentName: "Reparil",
+          CIS: 62826517,
           date: new Date("2024-12-13T09:00:00"),
           quantity: 2,
           taken: false,

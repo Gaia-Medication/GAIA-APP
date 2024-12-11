@@ -17,7 +17,7 @@ import * as Icon from "react-native-feather";
 import Search from "./Meds/Search";
 import Drug from "./Meds/Drug";
 import Map from "./Home/Map";
-import AddTreatment from "./Suivis/addTreatment/AddTreatment";
+import AddTreatment from "./Suivis/AddTreatment/AddTreatment";
 import {
   SafeAreaView,
   useSafeAreaInsets,
@@ -37,6 +37,7 @@ import Laboratoire from "./Meds/LaboratoirePage";
 import MapPoint from "./Home/MapPages/MapPointPage";
 import AvatarChange, { avatars } from "./Home/Settings/AvatarChange";
 import { getUserByID } from "../dao/Storage";
+import CreateTreatment from "./Suivis/AddTreatment/CreateTreatment";
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -70,7 +71,7 @@ export default function Navigation() {
               name="ManageTreatments"
               component={ManageTreatments}
             />
-            <Stack.Screen name="AddTreatment" component={AddTreatment} />
+            <Stack.Screen name="CreateTreatment" component={CreateTreatment} />
             <Stack.Screen name="Notifications" component={Notifications} />
             <Stack.Screen
               name="NotificationsSettings"
