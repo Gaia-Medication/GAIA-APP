@@ -2,6 +2,7 @@ import GaiaDateTimePicker from "app/component/GaiaDateTimePicker";
 import GaiaInput from "app/component/GaiaInput";
 import GaiaItemsSelected from "app/component/GaiaItemsSelected";
 import GaiaSearchList from "app/component/GaiaSearchList";
+import { GaiaTitleInput } from "app/component/GaiaTitleInput";
 import MedIconByType from "app/component/MedIconByType";
 import ModalComponent from "app/component/Modal";
 import PageTitle from "app/component/PageTitle";
@@ -14,7 +15,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 
 export default function CreateTreatment({ route, navigation }) {
-    const [treatmentName, setTreatmentName] = React.useState("");
+    const [treatmentName, setTreatmentName] = React.useState("My Treatment");
     const [treatmentDescription, setTreatmentDescription] = React.useState("");
     const [treatmentStartDate, setTreatmentStartDate] = React.useState(new Date());
 
@@ -101,6 +102,14 @@ export default function CreateTreatment({ route, navigation }) {
                 <View className="flex w-full">
 
                     <GaiaInput
+                        value={treatmentName}
+                        onChangeText={(text: string) => {
+                            setTreatmentName(text.charAt(0).toUpperCase() + text.slice(1))
+                        }}
+                        placeholder={"Nom du traitement"}
+                        width={undefined}
+                    />
+                    <GaiaTitleInput
                         value={treatmentName}
                         onChangeText={(text: string) => {
                             setTreatmentName(text.charAt(0).toUpperCase() + text.slice(1))

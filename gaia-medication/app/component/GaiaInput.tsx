@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
   },
   placeholder: {
     position: 'absolute',
-    left: 16,
+    left: 18,
     fontSize: 16,
     zIndex: 2,
     color: '#888',
