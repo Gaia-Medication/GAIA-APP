@@ -410,7 +410,7 @@ export default function Drug({ route, navigation }) {
                         <Text className=" dark:text-slate-50 flex-1">
                           {item.Name}
                         </Text>
-                        {user.preference
+                        {user.allergies
                           .map((allergie) =>
                             Array.from(getPAfromMed(item.CIS)).includes(
                               allergie
