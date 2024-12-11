@@ -1,3 +1,4 @@
+import GaiaButtonA from "app/component/GaiaButtonA";
 import ButtonA from "app/component/GaiaButtonA";
 import GaiaDateTimePicker from "app/component/GaiaDateTimePicker";
 import GaiaInput from "app/component/GaiaInput";
@@ -10,6 +11,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 
 export default function CreateTreatment({ route, navigation }) {
+    const { user } = route.params as {
+        user: User;
+      };
     const [treatmentName, setTreatmentName] = React.useState("My Treatment");
     const [treatmentDescription, setTreatmentDescription] = React.useState("");
     const [treatmentStartDate, setTreatmentStartDate] = React.useState(new Date());
@@ -29,7 +33,7 @@ export default function CreateTreatment({ route, navigation }) {
 
     const canContinue = (): boolean => {
         // TODO Check if TreatmentName is available
-        
+
         if ((treatmentName === "") || (!isDateCorrect(treatmentStartDate))) return false;
         
         return true;
@@ -80,10 +84,10 @@ export default function CreateTreatment({ route, navigation }) {
 
 
                 <View className="w-full flex-row justify-center bg-red-30">
-                    <ButtonA
+                    <GaiaButtonA
                         disabled={!canContinue()}
                         title="Suivant"
-                        onPress={() => navigation.navigate("SearchMedication")}
+                        onPress={() => navigation.navigate("DrugsTreatment", { user: user })}
                     />
                 </View>
 

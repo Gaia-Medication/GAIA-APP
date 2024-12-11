@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@expo/webpack-config": "^19.0.0",
+    "@gorhom/bottom-sheet": "^5.0.6",
     "@react-native-async-storage/async-storage": "1.23.1",
     "@react-native-community/datetimepicker": "^8.2.0",
     "@react-native-community/slider": "4.5.2",
@@ -51,6 +52,7 @@
     "react-native-elements": "^3.4.3",
     "react-native-feather": "^1.1.2",
     "react-native-fs": "^2.20.0",
+    "react-native-gesture-handler": "^2.21.2",
     "react-native-linear-gradient": "^2.8.3",
     "react-native-maps": "1.14.0",
     "react-native-modal-datetime-picker": "^18.0.0",

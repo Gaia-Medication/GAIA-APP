@@ -38,6 +38,7 @@ import MapPoint from "./Home/MapPages/MapPointPage";
 import AvatarChange, { avatars } from "./Home/Settings/AvatarChange";
 import { getUserByID } from "../dao/Storage";
 import CreateTreatment from "./Suivis/AddTreatment/CreateTreatment";
+import DrugsTreatment from "./Suivis/AddTreatment/DrugsTreatment";
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -72,6 +73,7 @@ export default function Navigation() {
               component={ManageTreatments}
             />
             <Stack.Screen name="CreateTreatment" component={CreateTreatment} />
+            <Stack.Screen name="DrugsTreatment" component={DrugsTreatment} />
             <Stack.Screen name="Notifications" component={Notifications} />
             <Stack.Screen
               name="NotificationsSettings"

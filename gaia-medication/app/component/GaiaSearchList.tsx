@@ -7,7 +7,7 @@ const GaiaSearchList = ({ inputPlaceholder, onItemPressed, onItemMaintained, sea
   const [searchText, setSearchText] = useState('');
   const [data, setData] = useState([]);
   
-  const handleSearch = (text) => {
+  const handleSearch = (text: string) => {
     setSearchText(text);
     if (text.length > 2) {
       setData(searchFunction(text));
@@ -26,7 +26,7 @@ const GaiaSearchList = ({ inputPlaceholder, onItemPressed, onItemMaintained, sea
       {editable && searchText.length >= 3 ? (
         <GaiaSearchResults
           allergies={allergies}
-          dataFound={data}
+          dataFound={data.length > 0 ? data : []}
           nbOfResults={10}
           onItemPressed={onItemPressed}
           onItemMaintained={onItemMaintained}
