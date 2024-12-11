@@ -20,7 +20,7 @@ const GaiaSearchResults = ({ dataFound, nbOfResults, onItemPressed, onItemMainta
         <View className='w-full max-h-60 bg-grey-300 flex-col justify-start align start overflow-hidden h-auto rounded-xl'>
             <ScrollView>
                 {dataFound.map((item: SearchDrug) => (
-                    <SearchListItem key={item.CIS} item={item} type={"SearchDrug"} onPress={onItemPressed} onMaintain={onItemMaintained} isAllergy={allergies.includes(item.CIS)}/>
+                    <SearchListItem key={item.CIS} item={item} type={"SearchDrug"} onPress={onItemPressed} onMaintain={onItemMaintained} isAllergy={Array.from(allergies).includes(String(item.CIS))}/>
                 ))}
                 <Text className='text-center text-grey-200 font-semibold mb-3 mt-3'>Aucun autre résultat</Text>
             </ScrollView>

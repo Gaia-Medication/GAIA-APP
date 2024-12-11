@@ -20,7 +20,7 @@ const GaiaDateTimePicker = ({ buttonPlaceholder, buttonDisabled, onDateChange })
         <TouchableOpacity
             disabled={buttonDisabled}
             onPress={() => setPickerVisible(true)}
-            className="flex flex-row justify-center items-center bg-blue-400 rounded-lg w-[100%] py-2 my-2"
+            className="flex flex-row justify-center items-center bg-green-100 rounded-lg w-[100%] py-2 my-2 h-fit-content"
         >
             <TextInput
                 className="text-white text-center font-semibold"

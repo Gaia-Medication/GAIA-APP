@@ -55,6 +55,7 @@ import GaiaInput from "../../component/GaiaInput";
 import { formatDate } from "../../utils/functions";
 import GaiaDateTimePicker from "../../component/GaiaDateTimePicker";
 import GaiaSearchList from "../../component/GaiaSearchList";
+import GaiaItemsSelected from "app/component/GaiaItemsSelected";
 
 export default function AddTreatment({ route, navigation }) {
   const isFocused = useIsFocused();
@@ -1384,6 +1385,81 @@ export default function AddTreatment({ route, navigation }) {
     );
   };
 
+  const TESTinstructions: Instruction[] = [
+    {
+      CIS: "001",
+      name: "Medication A",
+      regularFrequency: true,
+      regularFrequencyMode: "Daily",
+      regularFrequencyNumber: 2,
+      regularFrequencyPeriods: "Day",
+      regularFrequencyContinuity: "Daily",
+      regularFrequencyDays: [],
+      endModality: "EndDate",
+      endDate: new Date("2024-12-31"),
+      endQuantity: undefined,
+      quantity: 1,
+      takes: [
+        {
+          userId: 101,
+          treatmentName: "Medication A",
+          CIS: 1,
+          date: new Date("2024-12-10T08:00:00"),
+          quantity: 1,
+          taken: false,
+          review: "No issues",
+          pain: 0
+        },
+        {
+          userId: 101,
+          treatmentName: "Medication A",
+          CIS: 1,
+          date: new Date("2024-12-10T20:00:00"),
+          quantity: 1,
+          taken: true,
+          review: "Slight nausea",
+          pain: 2
+        }
+      ]
+    },
+    {
+      CIS: "002",
+      name: "Medication B",
+      regularFrequency: true,
+      regularFrequencyMode: "Weekly",
+      regularFrequencyNumber: 3,
+      regularFrequencyPeriods: "Week",
+      regularFrequencyContinuity: "Custom",
+      regularFrequencyDays: ["Monday", "Wednesday", "Friday"],
+      endModality: "Quantity",
+      endDate: undefined,
+      endQuantity: 15,
+      quantity: 2,
+      takes: [
+        {
+          userId: 102,
+          treatmentName: "Medication B",
+          CIS: 2,
+          date: new Date("2024-12-11T09:00:00"),
+          quantity: 2,
+          taken: true,
+          review: "Effective",
+          pain: 0
+        },
+        {
+          userId: 102,
+          treatmentName: "Medication B",
+          CIS: 2,
+          date: new Date("2024-12-13T09:00:00"),
+          quantity: 2,
+          taken: false,
+          review: "Missed dose",
+          pain: 1
+        }
+      ]
+    }
+  ];
+
   const init = async () => {
     const allMeds = getAllMed();
     setAllergies(user.allergies);
@@ -1425,31 +1501,39 @@ export default function AddTreatment({ route, navigation }) {
             placeholder={"Description du traitement"}
             width={undefined}
           />
-          
+
           <Text style={styles.label} className="mx-3">
             Date de début
           </Text>
           <GaiaDateTimePicker
             buttonPlaceholder="Sélectionner une date"
             buttonDisabled={instructionsList.length > 0}
-            onDateChange={(date: Date) => setStartDate(date)} 
+            onDateChange={(date: Date) => setStartDate(date)}
           />
           {!drugScanned && allergies ? (
-            <GaiaSearchList
-              allergies={allergies}
-              inputPlaceholder="Rechercher un médicament"
-              onItemPressed={(item: SearchDrug) => {
-                console.log("Item Pressed");
-                handleDrugSelection(item.CIS); 
-              }}
-              onItemMaintained={() => {
-                // [TODO] Ouvrir la modal de détail RAPIDE du médicament
-                console.log("Item Maintained");
-              }}
-              searchFunction={searchMed}
-            /> 
-          ) : null}  
-          
+            <>
+              <Text style={styles.label} className="mx-3">
+                Ajouter un médicament
+              </Text>
+              <GaiaItemsSelected
+                items={[]}
+              />
+              <GaiaSearchList
+                allergies={allergies}
+                inputPlaceholder="Rechercher un médicament"
+                onItemPressed={(item: SearchDrug) => {
+                  console.log("Item Pressed");
+                  handleDrugSelection(item.CIS);
+                }}
+                onItemMaintained={() => {
+                  // [TODO] Ouvrir la modal de détail RAPIDE du médicament
+                  console.log("Item Maintained");
+                }}
+                searchFunction={searchMed}
+              />
+            </>
+          ) : null}
+
           {isVisible && (
             <FlatList
               className="border-0"
@@ -1494,29 +1578,17 @@ export default function AddTreatment({ route, navigation }) {
             />
           )}
           {drugScanned && (
-            <FlatList
-              className="border-0"
-              data={drugScanned}
-              keyExtractor={(_item, index) => index.toString()}
-              renderItem={({ item }) => {
-                const drug = getMedbyCIS(item.med.CIS);
-                return (
-                  <TouchableOpacity
-                    style={styles.listItem}
-                    className="flex justify-start align-middle"
-                    onPress={() => handleMedSelect(drug.CIS)}
-                  >
-                    <MedIconByType type={drug.Shape} />
-                    <Text className="ml-4">{drug.Name}</Text>
-                  </TouchableOpacity>
-                );
-              }}
-              style={styles.dropdownList}
+            // [WARNING] Temporary. drugScanned should be a list of drugs 
+            // (not a single drug or a string) scanned by the user, giving 
+            // the possibility to add multiple drugs
+            <GaiaItemsSelected
+              items={[drugScanned]}
             />
           )}
 
-          {instructionsList.length > 0 &&
-            instructionsList.map((instruction, index) => (
+          
+          {TESTinstructions.length > 0 && // WARNING: Temporary. Replace TESTinstructions by instructionsList
+            TESTinstructions.map((instruction, index) => (
               <View
                 key={index}
                 style={{

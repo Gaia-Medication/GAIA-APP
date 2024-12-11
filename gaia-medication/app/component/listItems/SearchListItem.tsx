@@ -21,9 +21,9 @@ const SearchListItem = ({ item, type, onPress, onMaintain, isAllergy=false }) =>
           </Text>
         </View>
 
-        <TouchableOpacity className='bg-green-100 h-full w-[25%] flex items-center justify-center rounded-r-xl ml-5' onPress={() => onPress(item)}>
+        <TouchableOpacity className={`${isAllergy ? 'bg-orange-500' : 'bg-green-100'} h-full w-[25%] flex items-center justify-center rounded-r-xl ml-5`} onPress={() => onPress(item)}>
           <Text className='text-white font-semibold text-center' numberOfLines={1} ellipsizeMode='tail'>
-            Ajouter {isAllergy ? "A" : "B"}
+            Ajouter
           </Text>
         </TouchableOpacity>
       </TouchableOpacity>
