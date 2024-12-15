@@ -85,7 +85,7 @@ export default function CreateTreatment({ route, navigation }) {
 
                 <View className="w-full flex-row justify-center bg-red-30">
                     <GaiaButtonA
-                        disabled={!canContinue()}
+                        disabled={false} // ! Change to !canContinue()
                         title="Suivant"
                         onPress={() => navigation.navigate("DrugsTreatment", { user: user })}
                         width={"100%"}

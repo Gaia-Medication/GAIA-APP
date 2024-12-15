@@ -5,38 +5,41 @@ import GaiaSearchList from "app/component/GaiaSearchList";
 import PageTitle from "app/component/PageTitle";
 import { searchMed } from "dao/Search";
 import React, { useCallback, useRef } from "react";
-import { View, Text } from "react-native";
+import { View, Text, Modal } from "react-native";
 import { AlertNotificationRoot } from "react-native-alert-notification";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { GestureHandlerRootView, ScrollView } from "react-native-gesture-handler";
-import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import { SearchDrug } from "types/Search";
 import { NewInstructionFactory } from "types/Factories";
 import { Instruction, NewInstruction } from "types/Medical";
+import ModalInstructionDetails from "app/component/ModalInstructionDetail";
 
 
 export default function DrugsTreatment({ route, navigation }) {
     const { user } = route.params as {
         user: User;
     };
-    const bottomSheetRef = useRef<BottomSheet>(null);
 
-    const [selectedDrug, setSelectedDrug] = React.useState(undefined);
-    const [instructionsModalVisible, setInstructionsModalVisible] = React.useState(false);
+    const [selectedDrug, setSelectedDrug] = React.useState(undefined); // * Used to be passed to the CreateInstruction screen
+    const [selectedInstruction, setSelectedInstruction] = React.useState(undefined); // * Used to display information about a selected instruction in the modal
+    const [instructionModalVisible, setInstructionModalVisible] = React.useState(false); // * Used to display information about a created instruction
 
     const handleSheetChanges = useCallback((index) => {
         if (index === -1) {
-            setInstructionsModalVisible(false);
+            setInstructionModalVisible(false);
         }
     }, []);
-
-    // Snap points for the Bottom Sheet
-    const snapPoints = ['25%', '90%'];
 
     const handleDrugSelection = async (drug: SearchDrug) => {
         const newInstruction = NewInstructionFactory(drug);
         console.log(newInstruction);
         navigation.navigate("CreateInstruction", { newInstruction: newInstruction, user: user });
+    };
+
+    const handleInstructionClick = (instruction: NewInstruction) => {
+        console.log(instruction);
+        setSelectedInstruction(instruction);
+        setInstructionModalVisible(true);
     };
 
     const canContinue = (): boolean => {
@@ -148,7 +151,26 @@ export default function DrugsTreatment({ route, navigation }) {
                         />
                         <GaiaItemsSelected
                             items={TESTinstructions}
+                            onItemPressed={(item: NewInstruction) => {
+                                handleInstructionClick(item);
+                            }}
                         />
+
+                        <Modal
+                            animationType="slide"
+                            presentationStyle="pageSheet"
+                            visible={instructionModalVisible}
+                            onRequestClose={() => {
+                                setInstructionModalVisible(false);
+                            }}
+                        >
+                            <ModalInstructionDetails
+                                instruction={selectedInstruction}
+                                onClickClose={() => setInstructionModalVisible(false)}
+                                onClickValidate={() => setInstructionModalVisible(false)}
+                                canValidate={false}
+                            />
+                        </Modal>
 
                     </View>
                     <View className="w-[100%] flex-row justify-around bg-red-30">
@@ -167,32 +189,6 @@ export default function DrugsTreatment({ route, navigation }) {
 
                 </AlertNotificationRoot>
             </SafeAreaView>
-            <BottomSheet
-                ref={bottomSheetRef}
-                index={1}
-                snapPoints={snapPoints}
-                enableDynamicSizing={true}
-                onChange={handleSheetChanges}
-                maxDynamicContentSize={130}
-                handleStyle={{
-                    backgroundColor: '#090909',
-                    borderTopLeftRadius: 10,
-                    borderTopRightRadius: 10,
-                }}
-                handleIndicatorStyle={{
-                    backgroundColor: 'white',
-                }}
-            >
-                <BottomSheetScrollView
-                    style={{
-                        backgroundColor: '#090909'
-                    }}
-                >
-                    <ScrollView>
-                        
-                    </ScrollView>
-                </BottomSheetScrollView>
-            </BottomSheet>
         </GestureHandlerRootView>
     );
 

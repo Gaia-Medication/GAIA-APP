@@ -14,7 +14,7 @@ import { SearchDrug } from '../../dao/Search';
 import MedIconByType from './MedIconByType';
 import { NewInstruction } from 'types/Medical';
 
-const GaiaItemSelected = ({ item, complete }) => {
+const GaiaItemSelected = ({ item, complete, onPress }) => {
   complete = complete as boolean;
 
   return (
@@ -23,6 +23,7 @@ const GaiaItemSelected = ({ item, complete }) => {
       onLongPress={() => {
         console.log('Long Press');
       }}
+      onPress={() => onPress(item)}
     >
       <MedIconByType type={item.type} />
       <Text className='text-white text-base font-semibold ml-4'>{item.name}</Text>
@@ -30,12 +31,12 @@ const GaiaItemSelected = ({ item, complete }) => {
   );
 };
 
-const GaiaItemsSelected = ({ items }) => {
+const GaiaItemsSelected = ({ items, onItemPressed }) => {
   return (
     <View className='w-full flex-row justify-start align start flex-wrap h-full'>
       <ScrollView className='h-full'>
         {items.map((item: NewInstruction) => (
-          <GaiaItemSelected key={item.CIS} item={item} complete={item.completed} />
+          <GaiaItemSelected key={item.CIS} item={item} complete={item.completed} onPress={onItemPressed}/>
 
         ))}
       </ScrollView>
