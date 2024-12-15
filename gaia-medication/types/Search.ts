@@ -1,6 +1,6 @@
 export type SearchDrug = {
     Name: string;
-    CIS: string;
+    CIS: number;
     type: string;
     score: number;
 };

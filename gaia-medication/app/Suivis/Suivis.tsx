@@ -27,7 +27,7 @@ import * as Notifications from "expo-notifications";
 import { ArrowRightCircle, XCircle } from "react-native-feather";
 import { initDailyNotifications, initLateNotifications, initTakeNotifications } from "../Handlers/NotificationsHandler";
 import { UserContext } from "app/contexts/UserContext";
-import ButtonA from "app/component/GaiaButtonA";
+import ButtonA from "app/component/Buttons/GaiaButtonA";
 
 export default function Suivis({ navigation }) {
   const userContext = useContext(UserContext);

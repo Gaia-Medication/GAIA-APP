@@ -14,8 +14,8 @@ import { getAllTreatments, readList } from "../../dao/Storage";
 import { styles } from "../../style/style";
 import ModalComponent from "../component/Modal";
 import TakeItem from "../component/TakeItem";
-import CustomButton from "../component/CustomButton";
-import GoBackButton from "../component/GoBackButton";
+import CustomButton from "../component/Buttons/CustomButton";
+import GoBackButton from "../component/Buttons/GoBackButton";
 import { Image } from "react-native-elements";
 
 import * as Print from "expo-print";

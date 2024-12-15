@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
-import GaiaInput from './GaiaInput';
+import GaiaInput from './Inputs/GaiaInput';
 import GaiaSearchResults from './GaiaSearchResults';
 
 const GaiaSearchList = ({ inputPlaceholder, onItemPressed, onItemMaintained, searchFunction, editable = true, allergies }) => {

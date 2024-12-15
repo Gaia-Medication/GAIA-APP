@@ -14,14 +14,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { UserIdAutoIncrement, addItemToList } from "../../dao/Storage";
 import { SearchAllergy } from "../../dao/Search";
 import { styles } from "../../style/style";
-import CustomButton from "../component/CustomButton";
-import AllergySelector from "../component/AllergySelector";
+import CustomButton from "../component/Buttons/CustomButton";
+import AllergySelector from "../component/Pickers/AllergySelector";
 import TutorialBubble from "../component/TutorialBubble";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { ArrowLeft } from "react-native-feather";
-import GoBackButton from "../component/GoBackButton";
-import ButtonA from "../component/GaiaButtonA";
-import ButtonB from "../component/GaiaButtonB";
+import GoBackButton from "../component/Buttons/GoBackButton";
+import ButtonA from "../component/Buttons/GaiaButtonA";
+import ButtonB from "../component/Buttons/GaiaButtonB";
 import { useColorScheme } from "nativewind";
 
 interface ICreateProps {

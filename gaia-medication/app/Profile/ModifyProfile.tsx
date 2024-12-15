@@ -13,10 +13,10 @@ import { NavigationProp, ParamListBase } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { readList } from "../../dao/Storage";
 import { styles } from "../../style/style";
-import AllergySelector from "../component/AllergySelector";
-import CustomButton from "../component/CustomButton";
+import AllergySelector from "../component/Pickers/AllergySelector";
+import CustomButton from "../component/Buttons/CustomButton";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import GoBackButton from "../component/GoBackButton";
+import GoBackButton from "../component/Buttons/GoBackButton";
 import { Trash } from "react-native-feather";
 
 interface IModifyProps {

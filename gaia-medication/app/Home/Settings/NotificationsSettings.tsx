@@ -4,7 +4,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { getDailyNotificationTime } from '../../Handlers/NotificationsHandler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
-import GoBackButton from '../../component/GoBackButton';
+import GoBackButton from '../../component/Buttons/GoBackButton';
 
 
 const NotificationsSettings = ({ navigation }) => {

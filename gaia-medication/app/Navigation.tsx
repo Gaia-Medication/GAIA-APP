@@ -25,7 +25,7 @@ import {
 import ModifyProfile from "./Profile/ModifyProfile";
 import NotificationsSettings from "./Home/Settings/NotificationsSettings";
 import Notifications from "./Home/Notifications";
-import AllergySelector from "./component/AllergySelector";
+import AllergySelector from "./component/Pickers/AllergySelector";
 import ManageTreatments from "./Suivis/ManageTreatments";
 import { Provider } from "react-native-paper";
 import Welcome from "./Profile/Welcome";
@@ -39,6 +39,7 @@ import AvatarChange, { avatars } from "./Home/Settings/AvatarChange";
 import { getUserByID } from "../dao/Storage";
 import CreateTreatment from "./Suivis/AddTreatment/CreateTreatment";
 import DrugsTreatment from "./Suivis/AddTreatment/DrugsTreatment";
+import CreateInstruction from "./Suivis/AddTreatment/CreateInstruction";
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -74,6 +75,7 @@ export default function Navigation() {
             />
             <Stack.Screen name="CreateTreatment" component={CreateTreatment} />
             <Stack.Screen name="DrugsTreatment" component={DrugsTreatment} />
+            <Stack.Screen name="CreateInstruction" component={CreateInstruction} />
             <Stack.Screen name="Notifications" component={Notifications} />
             <Stack.Screen
               name="NotificationsSettings"
@@ -109,22 +111,22 @@ function HomeHandler() {
         tabBarShowLabel: false,
         tabBarStyle: {
           position: "absolute",
-          height: 90,
+          height: "12%",
           borderTopWidth: 0,
-          backgroundColor: "#111111AA",
-          justifyContent: "center",
+          backgroundColor: "#111111FF",
           width: "100%",
           borderRadius: 30,
-          shadowColor: "#fff"
+          shadowColor: "#fff",
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "center",
         },
         tabBarIconStyle: {
           color: "#fff",
-
         },
         tabBarItemStyle: {
-          top: 15,
-          bottom: 15,
-          height: "100%",
+          height: "80%",
           borderRadius: 25,
           marginHorizontal: 10
         },
