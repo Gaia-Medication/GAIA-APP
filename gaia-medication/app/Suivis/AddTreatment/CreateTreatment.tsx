@@ -83,7 +83,7 @@ export default function CreateTreatment({ route, navigation }) {
                 </View>
 
 
-                <View className="w-full flex-row justify-center bg-red-30">
+                <View className="w-full flex-row justify-center bg-red-30 mb-4">
                     <GaiaButtonA
                         disabled={false} // ! Change to !canContinue()
                         title="Suivant"

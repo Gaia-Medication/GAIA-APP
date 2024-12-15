@@ -25,7 +25,7 @@ export function getAllInteractions(){
 
 
 //Return le médicament à partir de son CIS
-export function getMedbyCIS(CIS){   
+export function getMedbyCIS(CIS: number){   
   try {
     const medicament = medicaments.find(med => med.CIS === CIS);
     return medicament || null;

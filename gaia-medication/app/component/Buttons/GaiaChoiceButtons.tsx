@@ -39,6 +39,9 @@ const GaiaChoiceButtons: React.FC<GaiaChoiceButtonsProps> = ({
                 return button;
             })
         );
+        console.log(buttons);
+        const noButtonSelected = buttons.every((button) => !button.selected);
+        console.log(noButtonSelected);
         onSelectionChange(placeholder);
     };
 

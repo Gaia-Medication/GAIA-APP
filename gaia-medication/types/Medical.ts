@@ -41,3 +41,18 @@ export interface Take {
 export interface NewInstruction extends Instruction {
     completed: boolean;
 }
+
+export interface IDrug { // TODO: CREATE A GOOD INTERFACE
+    CIS: number;
+    name: string;
+    shape: string;
+    administration_way: string;
+    marketed: string;
+    titulaire: string;
+    ATC: string;
+    indications_therapeutiques: string;
+    generique: string;
+    endDate: Date;
+    quantity: number;
+    takes: Take[];
+}

@@ -13,6 +13,7 @@ import { SearchDrug } from "types/Search";
 import { NewInstructionFactory } from "types/Factories";
 import { Instruction, NewInstruction } from "types/Medical";
 import ModalInstructionDetails from "app/component/ModalInstructionDetail";
+import { getMedbyCIS } from "dao/Meds";
 
 
 export default function DrugsTreatment({ route, navigation }) {
@@ -39,6 +40,8 @@ export default function DrugsTreatment({ route, navigation }) {
     const handleInstructionClick = (instruction: NewInstruction) => {
         console.log(instruction);
         setSelectedInstruction(instruction);
+        let drugRelated = getMedbyCIS(instruction.CIS);
+        setSelectedDrug(drugRelated);
         setInstructionModalVisible(true);
     };
 
@@ -144,7 +147,6 @@ export default function DrugsTreatment({ route, navigation }) {
                             editable={true}
                             onItemPressed={(item: SearchDrug) => {
                                 handleDrugSelection(item);
-                                //bottomSheetRef.current?.snapTo(1);
                             }}
                             onItemMaintained={undefined}
                             allergies={user.allergies}
@@ -166,6 +168,7 @@ export default function DrugsTreatment({ route, navigation }) {
                         >
                             <ModalInstructionDetails
                                 instruction={selectedInstruction}
+                                drugRelated={selectedDrug}
                                 onClickClose={() => setInstructionModalVisible(false)}
                                 onClickValidate={() => setInstructionModalVisible(false)}
                                 canValidate={false}
@@ -173,7 +176,7 @@ export default function DrugsTreatment({ route, navigation }) {
                         </Modal>
 
                     </View>
-                    <View className="w-[100%] flex-row justify-around bg-red-30">
+                    <View className="w-[100%] flex-row justify-around bg-red-30 mb-4">
                         <GaiaButtonB
                             width="45%"
                             title="Précédent"
