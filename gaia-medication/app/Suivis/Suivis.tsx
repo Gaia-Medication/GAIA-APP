@@ -1,5 +1,5 @@
 import { useIsFocused } from "@react-navigation/native";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useContext } from "react";
 import {
   Text,
   TouchableOpacity,
@@ -26,8 +26,16 @@ import TutorialBubble from "../component/TutorialBubble";
 import * as Notifications from "expo-notifications";
 import { ArrowRightCircle, XCircle } from "react-native-feather";
 import { initDailyNotifications, initLateNotifications, initTakeNotifications } from "../Handlers/NotificationsHandler";
+import { UserContext } from "app/contexts/UserContext";
+import ButtonA from "app/component/Buttons/GaiaButtonA";
 
 export default function Suivis({ navigation }) {
+  const userContext = useContext(UserContext);
+  if (!userContext) {
+    throw new Error("Profile must be used within a UserProvider");
+  }
+  const { user, setUser } = userContext;
+
   const isFocused = useIsFocused();
   const [treatments, setTreatments] = useState<Treatment[]>([]);
   const [takes, setTakes] = useState([]);
@@ -101,10 +109,10 @@ export default function Suivis({ navigation }) {
     setTakes(takes.filter((take) => take.take.userId == currentId));
 
     let actualIndex = null;
-    takes.length !== 0&&(actualIndex = takes.findIndex(
+    takes.length !== 0 && (actualIndex = takes.findIndex(
       (take) => compareDates(take.take.date) === "actual"
     ))
-    actualIndex==-1&&(actualIndex = takes.findIndex(
+    actualIndex == -1 && (actualIndex = takes.findIndex(
       (take) => compareDates(take.take.date) === "next")
     )
     setScroll(actualIndex);
@@ -123,18 +131,17 @@ export default function Suivis({ navigation }) {
       await getTreatments();
       await getTakes();
     })();
-    
+
     await Promise.race([loadingPromise, operationsPromise]);
     await operationsPromise;
 
     clearTimeout(loadingTimeout);
     setIsLoading(false);
 
-    const currentId = await AsyncStorage.getItem("currentUser");
-    const current = await getUserByID(JSON.parse(currentId));
-    const notifsDaily = await initDailyNotifications(current?.firstname, current?.id);
-    const notifsTakes = await initTakeNotifications(current?.firstname, current?.id);
-    const notifsLate = await initLateNotifications(current?.firstname, current?.id);
+    console.log("Current User : ", user);
+    const notifsDaily = await initDailyNotifications(user?.firstname, user?.id);
+    const notifsTakes = await initTakeNotifications(user?.firstname, user?.id);
+    const notifsLate = await initLateNotifications(user?.firstname, user?.id);
     console.log("Notifs Daily Totales :", notifsDaily.length);
     console.log("Notifs Take Totales :", notifsTakes.length);
     console.log("Notifs Late Totales :", notifsLate.length);
@@ -248,7 +255,7 @@ export default function Suivis({ navigation }) {
             data={takes}
             keyExtractor={(take, index) => index.toString()}
             onContentSizeChange={() => {
-              try{
+              try {
                 if (
                   this.flatList &&
                   this.flatList.scrollToIndex &&
@@ -258,7 +265,7 @@ export default function Suivis({ navigation }) {
                   this.flatList.scrollToIndex({ index: scroll });
                 }
               }
-              catch{}
+              catch { }
             }}
             onScrollToIndexFailed={() => { }}
             renderItem={({ item }) => {
@@ -287,14 +294,10 @@ export default function Suivis({ navigation }) {
             className=" h-[150px] w-[150px] -mt-[40%] -mb-[20%]"
             source={require("../../assets/suivis.png")}
           />
-          <TouchableOpacity
-            className="bg-lime-400 rounded-2xl flex flex-row justify-center items-center p-2 px-8"
-            onPress={() => navigation.navigate("AddTreatment")}
-          >
-            <Text className="text-center text-white font-semibold text-lg p-2 pb-3">
-              Ajouter un traitement
-            </Text>
-          </TouchableOpacity>
+          <ButtonA
+            onPress={() => navigation.navigate("CreateTreatment", { user: user })}
+            title="Ajouter un traitement"
+          />
         </View>
       )}
     </SafeAreaView>

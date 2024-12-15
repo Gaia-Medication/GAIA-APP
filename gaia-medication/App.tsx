@@ -8,6 +8,8 @@ import { notificationForgot } from './app/Handlers/NotificationsHandler';
 import { useColorScheme } from "nativewind";
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
+import { User } from 'react-native-feather';
+import { UserProvider } from 'app/contexts/UserContext';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -64,10 +66,12 @@ export default function App() {
     'Varela': require('./assets/fonts/VarelaRoundRegular.ttf'),
   });
   return (
-    <View style={styles.container}  className='bg-white dark:bg-[#131f24]'>
-      <StatusBar barStyle={colorScheme=="dark"?"light-content":"dark-content"} backgroundColor={colorScheme=="dark"?"#131f24":"#fff"} />
-      <Navigation />
-    </View>
+    <UserProvider>
+      <View style={styles.container} className='bg-white dark:bg-[#131f24]'>
+        <StatusBar barStyle={colorScheme=="dark"?"light-content":"dark-content"} backgroundColor={colorScheme=="dark"?"#131f24":"#fff"} />
+        <Navigation />
+      </View>
+    </UserProvider>
   );
 }
 

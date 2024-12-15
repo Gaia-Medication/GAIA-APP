@@ -1,5 +1,5 @@
 import { useIsFocused } from "@react-navigation/native";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { View, Text, FlatList, TouchableOpacity, Image } from "react-native";
 import { searchMed } from "../../dao/Search";
 import { styles } from "../../style/style";
@@ -10,14 +10,21 @@ import { getUserByID } from "../../dao/Storage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getPAfromMed } from "../../dao/Meds";
 import TutorialBubble from "../component/TutorialBubble";
+import { UserContext } from "app/contexts/UserContext";
 
 export default function Search({ route, navigation }) {
+  const { user } = route.params as {
+    user: User;
+  };
+
   const textInputRef = React.useRef(null);
-  const [user, setUser] = useState<User | null>(null);
 
   const [tutoSearch, setTutoSearch] = useState("1");
 
   useEffect(() => {
+    console.log("Search Page");
+    console.log("USER", user);
+
     if (textInputRef.current) {
       setTimeout(() => textInputRef.current.focus(), 200);
     }
@@ -27,9 +34,6 @@ export default function Search({ route, navigation }) {
 
   const init = async () => {
     setTutoSearch(await AsyncStorage.getItem("TutoSearch"));
-    const currentId = await AsyncStorage.getItem("currentUser");
-    const current = await getUserByID(JSON.parse(currentId));
-    setUser(current);
   };
   useEffect(() => {
     if (isFocused) {
@@ -95,13 +99,12 @@ export default function Search({ route, navigation }) {
           <TouchableOpacity
             style={styles.listItem}
             className="bg-white border-b-[#e5e5e5] flex justify-start align-middle dark:bg-[#131f24] dark:border-b-[#37464f]"
-            onPress={() => navigation.navigate("Drug", { drugCIS: item.CIS })}
+            onPress={() => navigation.navigate("Drug", { user: user, drugCIS: item.CIS })}
           >
             <MedIconByType type={item.type} />
             <View className="ml-4 flex-1 flex-row justify-between items-center">
               <Text className="flex-1 dark:text-slate-50">{item.Name}</Text>
-              {user.preference
-                .map((allergie) =>
+              {/* {user.allergies.map((allergie) =>
                   Array.from(getPAfromMed(item.CIS)).includes(allergie)
                 )
                 .some((bool) => bool) && (
@@ -112,7 +115,7 @@ export default function Search({ route, navigation }) {
                   />
                   <Text className="ml-2 text-red-500 font-bold">Allergie</Text>
                 </View>
-              )}
+              )} */}
             </View>
           </TouchableOpacity>
         )}
