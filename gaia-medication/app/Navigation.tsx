@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import {
-  NavigationContainer,
-  useIsFocused,
-  useRoute,
+  NavigationContainer
 } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
@@ -12,20 +10,16 @@ import Settings from "./Home/Settings";
 import Suivis from "./Suivis/Suivis";
 import Journal from "./Suivis/Journal";
 import CreateProfile from "./Profile/CreateProfile";
-import Stock from "./Home/Stock";
 import * as Icon from "react-native-feather";
 import Search from "./Meds/Search";
 import Drug from "./Meds/Drug";
 import Map from "./Home/Map";
-import AddTreatment from "./Suivis/AddTreatment/AddTreatment";
 import {
   SafeAreaView,
-  useSafeAreaInsets,
 } from "react-native-safe-area-context";
 import ModifyProfile from "./Profile/ModifyProfile";
 import NotificationsSettings from "./Home/Settings/NotificationsSettings";
 import Notifications from "./Home/Notifications";
-import AllergySelector from "./component/Pickers/AllergySelector";
 import ManageTreatments from "./Suivis/ManageTreatments";
 import { Provider } from "react-native-paper";
 import Welcome from "./Profile/Welcome";
@@ -103,15 +97,47 @@ export default function Navigation() {
 function HomeHandler() {
   return (
     <BottomTab.Navigator
+      // screenOptions={{
+      //   tabBarActiveTintColor: "#fff",
+      //   tabBarInactiveTintColor: "#363636",
+      //   tabBarActiveBackgroundColor: "#363636",
+      //   headerShown: false,
+      //   tabBarShowLabel: false,
+      //   tabBarItemStyle: {
+      //     height: "80%",
+      //     margin: 10,
+      //     borderRadius: 20,
+      //   },
+      //   tabBarItemSelectedStyle: {
+      //     borderRadius: 20,
+      //   },
+      //   tabBarStyle: {
+      //     position: "absolute",
+      //     height: "12%",
+      //     borderTopWidth: 0,
+      //     backgroundColor: "#111111FF",
+      //     width: "100%",
+      //     borderRadius: 30,
+      //     shadowColor: "#fff",
+      //     display: "flex",
+      //     flexDirection: "row",
+      //     alignItems: "center",
+      //     justifyContent: "center",
+      //   },
+      //   tabBarIconStyle: {
+      //     color: "#fff",
+      //   },
+      // }}
       screenOptions={{
-        tabBarActiveTintColor: "#fff",
         tabBarInactiveTintColor: "#363636",
-        tabBarActiveBackgroundColor: "#363636",
+        tabBarInactiveBackgroundColor: "#111111FF",
+        tabBarActiveTintColor: "#fff",
+        tabBarActiveBackgroundColor: "#111111FF",
         headerShown: false,
         tabBarShowLabel: false,
         tabBarStyle: {
           position: "absolute",
-          height: "12%",
+          height: 120,
           borderTopWidth: 0,
           backgroundColor: "#111111FF",
           width: "100%",
@@ -122,13 +148,20 @@ function HomeHandler() {
           alignItems: "center",
           justifyContent: "center",
         },
-        tabBarIconStyle: {
-          color: "#fff",
-        },
         tabBarItemStyle: {
-          height: "80%",
-          borderRadius: 25,
-          marginHorizontal: 10
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100%",
+          margin: 10,
+          backgroundColor: "#fff",
+          borderRadius: 20,
+        },
+        tabBarItemSelectedStyle: {
+          height: "100%",
+          backgroundColor: "#363636",
+          borderRadius: 10,
         },
       }}
     >
@@ -136,8 +169,7 @@ function HomeHandler() {
         name="Home"
         component={Home}
         options={{
-          tabBarIcon: ({ color }) => <Icon.Home color={color} 
-          />,
+          tabBarIcon: ({ color }) => <Icon.Home color={color} />,
         }}
       />
       <BottomTab.Screen
