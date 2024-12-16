@@ -52,7 +52,7 @@ export default function Navigation() {
     const theme = await AsyncStorage.getItem("darkmode");
     setColorScheme(theme == "dark" ? "light" : "dark");
     setThemeSet(true);
-    console.log("Init Theme : " + theme == "dark" ? "light" : "dark");
+    //console.log("Init Theme : " + theme == "dark" ? "light" : "dark");
   };
   useEffect(() => {
     !themeSet && initTheme();
