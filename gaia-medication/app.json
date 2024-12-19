@@ -23,10 +23,6 @@
       "runtimeVersion": "1.0.0"
     },
     "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      },
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyCuOkYs2gzYGZVjDB6Uv_OH_YZspOx2rwk"

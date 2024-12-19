@@ -26,24 +26,27 @@ const GaiaChoiceButtons: React.FC<GaiaChoiceButtonsProps> = ({
     const [buttons, setButtons] = useState<GaiaButton[]>(initialButtons);
 
     const handlePressed = (placeholder: string) => {
-        setButtons((prevButtons) =>
-            prevButtons.map((button) => {
-                if (button.placeholder === placeholder) {
-                    // Toggle the clicked button's selected state
-                    return { ...button, selected: !button.selected };
-                } else if (!canBeMultiple) {
-                    // Deselect other buttons if multiple selection is not allowed
-                    return { ...button, selected: false };
-                }
-                // Leave other buttons unchanged
-                return button;
-            })
-        );
-        console.log(buttons);
-        const noButtonSelected = buttons.every((button) => !button.selected);
-        console.log(noButtonSelected);
-        onSelectionChange(placeholder);
-    };
+        setButtons((prevButtons) => {
+          const newButtons = prevButtons.map((button) => {
+            if (button.placeholder === placeholder) {
+              return { ...button, selected: !button.selected };
+            } else if (!canBeMultiple) {
+              return { ...button, selected: false };
+            }
+            return button;
+          });
+      
+          const noButtonSelected = newButtons.every((button) => !button.selected);
+          console.log(newButtons);
+          console.log(noButtonSelected);
+          
+          // You can also call onSelectionChange here if needed
+          noButtonSelected ? onSelectionChange?.(undefined) : onSelectionChange?.(placeholder);
+          
+          return newButtons;
+        });
+      };
+      
 
     return (
         <View
@@ -57,11 +60,11 @@ const GaiaChoiceButtons: React.FC<GaiaChoiceButtonsProps> = ({
             {buttons.map((button) => (
                 <TouchableOpacity
                     key={button.placeholder}
-                    className={`${button.selected ? "bg-green-100" : "bg-grey-300"} w-[45%]`}
+                    className={`${button.selected ? "bg-green-200" : "bg-grey-300"} w-[45%] flex justify-center items-center`}
                     onPress={() => handlePressed(button.placeholder)}
                     style={[styles.button]}
                 >
-                    <Text className={`text-button font-bold ${!button.selected ? "text-grey-200" : "text-black"} ${!button.selected ? "dark:text-grey-200" : "dark:text-white"} uppercase`} >{button.placeholder}</Text>
+                    <Text className={`text-button font-bold ${!button.selected ? "text-grey-200" : "text-black"} ${!button.selected ? "dark:text-grey-200" : "dark:text-green-100"}`} >{button.placeholder}</Text>
                 </TouchableOpacity>
             )
             )}

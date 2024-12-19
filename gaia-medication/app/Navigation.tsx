@@ -34,6 +34,7 @@ import { getUserByID } from "../dao/Storage";
 import CreateTreatment from "./Suivis/AddTreatment/CreateTreatment";
 import DrugsTreatment from "./Suivis/AddTreatment/DrugsTreatment";
 import CreateInstruction from "./Suivis/AddTreatment/CreateInstruction";
+import QuantitiesInstruction from "./Suivis/AddTreatment/QuantitiesInstruction";
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -70,6 +71,7 @@ export default function Navigation() {
             <Stack.Screen name="CreateTreatment" component={CreateTreatment} />
             <Stack.Screen name="DrugsTreatment" component={DrugsTreatment} />
             <Stack.Screen name="CreateInstruction" component={CreateInstruction} />
+            <Stack.Screen name="QuantitiesInstruction" component={QuantitiesInstruction} />
             <Stack.Screen name="Notifications" component={Notifications} />
             <Stack.Screen
               name="NotificationsSettings"
