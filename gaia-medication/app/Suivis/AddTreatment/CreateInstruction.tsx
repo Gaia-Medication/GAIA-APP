@@ -1,109 +1,41 @@
-import GaiaButtonA from "app/component/Buttons/GaiaButtonA";
-import GaiaDateTimePicker from "app/component/Pickers/GaiaDateTimePicker";
-import PageTitle from "app/component/PageTitle";
-import React, { useEffect, useRef, useState } from "react";
-import { View, Text, Alert, ScrollView, Animated, Dimensions } from "react-native";
+import React, { useState, useRef, useEffect } from "react";
+import { View, Text, Alert, ScrollView, Animated } from "react-native";
 import { AlertNotificationRoot } from "react-native-alert-notification";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { NewInstruction, Take } from "types/Medical";
+import { SafeAreaView } from "react-native-safe-area-context";
 import GaiaChoiceButtons from "app/component/Buttons/GaiaChoiceButtons";
 import GaiaButtonB from "app/component/Buttons/GaiaButtonB";
+import GaiaButtonA from "app/component/Buttons/GaiaButtonA";
+import GaiaDateTimePicker from "app/component/Pickers/GaiaDateTimePicker";
 import { LinearGradient } from "expo-linear-gradient";
-import { BlurView } from '@react-native-community/blur';
-
-const PageHeader = ({ scrollY }) => {
-    const screenWidth = Dimensions.get('window').width;
-    const [titleWidth, setTitleWidth] = useState(0); // To store title width
-    const titleRef = useRef(null);
-  
-    // Header height transition (fixed height in this case)
-    const headerHeight = scrollY.interpolate({
-        inputRange: [0, 150],
-        outputRange: [50, 50], // Fixed header height (50px)
-        extrapolate: 'clamp',
-    });
-
-    // Title scale (shrinks as you scroll)
-    const titleScale = scrollY.interpolate({
-        inputRange: [0, 150],
-        outputRange: [1, 0.5], // Title shrinks as you scroll
-        extrapolate: 'clamp',
-    });
-
-    // Title opacity (fades out as you scroll)
-    const titleOpacity = scrollY.interpolate({
-        inputRange: [0, 150],
-        outputRange: [1, 0.8], // Title fades as you scroll
-        extrapolate: 'clamp',
-    });
-
-    // Title vertical movement (moves down as you scroll)
-    const titleTranslateX = scrollY.interpolate({
-        inputRange: [0, 150],
-        outputRange: [0, screenWidth], // Dynamically center based on title width
-        extrapolate: 'clamp',
-      });
-
-    return (
-        <Animated.View
-            style={{ height: headerHeight, opacity: titleOpacity }}
-            className="flex-row justify-start items-center dark:bg-grey-800 w-screen position-fixed z-10"
-        >
-            {/* Title text */}
-            <Animated.Text
-                ref={titleRef}
-                onLayout={(event) => {
-                  const { width } = event.nativeEvent.layout; 
-                  setTitleWidth(width); // Set the title width dynamically
-                }}
-                style={[
-                    {
-                        transform: [{ scale: titleScale }, { translateX: titleTranslateX }],
-                        opacity: titleOpacity,
-                    },
-                ]}
-                className="text-4xl font-bold text-black dark:text-white text-center"
-            >
-                {"HOLA"}
-            </Animated.Text>
-        </Animated.View>
-    );
-
-};
+import PageTitle from "app/component/PageTitle";
+import { FlatList } from "react-native";
 
 export default function CreateInstruction({ route, navigation }) {
-    const { newInstruction, user } = route.params as {
-        newInstruction: NewInstruction;
-        user: User;
-    };
-    const scrollY = new Animated.Value(0);
+    const { newInstruction, user } = route.params;
     const [regularity, setRegularity] = useState("");
-    const [customTakes, setCustomTakes] = useState<Take[]>([]);
+    const [customTakes, setCustomTakes] = useState([]);
 
-    const handleSelectionChange = (selectedRegularity: string) => {
+    const animations = useRef([]); // Store animations in useRef so they persist through re-renders
+
+    const handleSelectionChange = (selectedRegularity) => {
         setRegularity(selectedRegularity);
     };
 
     const handleAddTakeCustom = () => {
-        setCustomTakes([...customTakes, {
-            userId: user.id,
-            treatmentName: newInstruction.name,
-            CIS: newInstruction.CIS,
-            date: new Date().toString(),
-            quantity: 1,
-            taken: false,
-            review: "",
-            pain: 0
-        }]);
-    }
+        let newDate = customTakes.length > 0 ? new Date(customTakes[customTakes.length - 1].date) : new Date();
+        newDate.setHours(newDate.getHours() + 1);
+        const newTake = {
+            id: customTakes.length,
+            date: newDate.toString(),
+            animation: new Animated.Value(1),
+            translateY: new Animated.Value(0),
+        };
+        animations.current.push(newTake); // Store the new animation in the ref
+        setCustomTakes([...customTakes, newTake]);
+    };
 
     const handleButtonNext = () => {
-
-        navigation.navigate("QuantitiesInstruction", {
-            newInstruction,
-            user,
-            takes: customTakes
-        });
+        navigation.navigate("QuantitiesInstruction", { newInstruction, user, takes: customTakes });
     };
 
     const ShowAlertDelete = (index: number) => {
@@ -113,43 +45,77 @@ export default function CreateInstruction({ route, navigation }) {
             [
                 {
                     text: "Annuler",
-                    onPress: () => console.log("Cancel Pressed"),
                     style: "cancel"
                 },
-                { text: "Supprimer", onPress: () => setCustomTakes(customTakes.filter((_, i) => i !== index)), style: "destructive" }
+                {
+                    text: "Supprimer",
+                    onPress: () => handleDeleteItem(index),
+                    style: "destructive"
+                }
             ]
         );
-    }
+    };
 
-    const canContinue = (): boolean => {
-        return true;
-    }
+    const handleDateChange = (take) => (date) => {
+        const updatedTakes = customTakes.map((item) => {
+            if (item.id === take.id) {
+                return {
+                    ...item,
+                    date: date.toString(),
+                };
+            }
+            return item;
+        });
+
+        setCustomTakes(updatedTakes);
+    };
+
+    const animateOtherItems = (index: number) => { // TODO: Try to make it work to add an animation to the other items
+        customTakes.forEach((item, i) => {
+            console.log("i", i);
+            if (i !== index && i > index) {
+                console.log("*i", i);
+                Animated.timing(item.translateY, {
+                    toValue: -55,
+                    duration: 200,
+                    useNativeDriver: true,
+                }).start();
+            }
+        });
+    };
+
+    const handleDeleteItem = (index) => {
+        const item = customTakes[index];
+        Animated.timing(item.animation, {
+            toValue: 0,
+            duration: 300,
+            useNativeDriver: true,
+        }).start(() => {
+            const updatedTakes = customTakes.filter((item, i) => i !== index);
+            setCustomTakes(updatedTakes);
+            //animateOtherItems(index);
+        });
+
+    };
 
     return (
         <SafeAreaView className="bg-white w-full h-full dark:bg-grey-100">
             <AlertNotificationRoot>
                 <View className="flex-1">
-                    <PageHeader scrollY={scrollY} />
-                    <ScrollView
-                        className="flex-1"
-                        onScroll={Animated.event(
-                            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-                            { useNativeDriver: false }
-                        )}
-                        scrollEventThrottle={16}
-                    >
-                        <View className="px-4">
-                            <View className="mb-10 ">
+                    <PageTitle title={newInstruction.name} />
+                    <ScrollView className="flex-1">
+                        <View className="px-4 pb-10">
+                            <View className="mb-10">
                                 <Text className="color-grey-200 text-2xl font-medium mb-2">{"Fréquence"}</Text>
                                 <GaiaChoiceButtons
                                     buttons={[
                                         { placeholder: "Régulier", selected: true },
-                                        { placeholder: "Flexible", selected: false }
+                                        { placeholder: "Flexible", selected: false },
                                     ]}
-                                    canBeMultiple={undefined}
-                                    orientation={"horizontal"}
-                                    gap={"30px"}
                                     onSelectionChange={handleSelectionChange}
+                                    canBeMultiple={false}
+                                    orientation={"horizontal"}
+                                    gap={""}
                                 />
                             </View>
                             {regularity === "Régulier" ? (
@@ -159,33 +125,36 @@ export default function CreateInstruction({ route, navigation }) {
                             ) : (
                                 <View>
                                     <Text className="color-grey-200 text-2xl font-medium mb-2">{"Prises"}</Text>
-                                    {customTakes.map((take, index) => (
-                                        <View key={index} className="flex-row">
-                                            <GaiaDateTimePicker
-                                                mode={"datetime"}
-                                                buttonDisabled={false}
-                                                buttonPlaceholder={"Date et heure"}
-                                                onDateChange={(date) => {
-                                                    customTakes[index].date = date.toString();
+                                    {customTakes.length > 0 && (
+                                        <FlatList
+                                            data={customTakes}
+                                            keyExtractor={(item) => item.id.toString()}
+                                            renderItem={({ item, index }) => (
+                                                <Animated.View
+                                                style={{
+                                                    opacity: item.animation, // Bind the opacity to the animation value
+                                                    transform: [{ translateY: item.translateY }] // Add vertical movement
                                                 }}
-                                                onLongPress={() => {
-                                                    ShowAlertDelete(index);
-                                                }}
-                                            />
-                                        </View>
-                                    ))}
-
-                                    <GaiaButtonB
-                                        margin={"mt-4"}
-                                        title={"Ajouter une prise"}
-                                        onPress={() => handleAddTakeCustom()}
-                                    />
+                                                className="flex-row"
+                                            >
+                                                <GaiaDateTimePicker
+                                                    date={new Date(item.date)}
+                                                    mode={"datetime"}
+                                                    buttonPlaceholder={"Date et heure"}
+                                                    onLongPress={() => ShowAlertDelete(index)}
+                                                    buttonDisabled={undefined}
+                                                    onDateChange={handleDateChange(item)}
+                                                />
+                                            </Animated.View>
+                                            )}
+                                        />
+                                    )}
+                                    
                                 </View>
                             )}
+
+                            <GaiaButtonB margin={"mt-4"} title={"Ajouter une prise"} onPress={handleAddTakeCustom} />
                         </View>
-
-
-
                     </ScrollView>
 
                     <LinearGradient
@@ -200,25 +169,17 @@ export default function CreateInstruction({ route, navigation }) {
                     />
                 </View>
 
-
                 {/* Bottom buttons */}
                 <View className="w-[100%] flex-row justify-around py-8 bg-grey-100">
-                    <GaiaButtonB
-                        width="45%"
-                        title="Précédent"
-                        onPress={() => navigation.goBack()}
-                    />
+                    <GaiaButtonB width="45%" title="Précédent" onPress={() => navigation.goBack()} />
                     <GaiaButtonA
                         width="45%"
-                        disabled={!canContinue()}
+                        disabled={false} // Replace with your validation logic
                         title="Suivant"
-                        onPress={() => handleButtonNext()}
+                        onPress={handleButtonNext}
                     />
                 </View>
-
             </AlertNotificationRoot>
         </SafeAreaView>
     );
-
-
 }

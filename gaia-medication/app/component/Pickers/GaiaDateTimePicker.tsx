@@ -4,6 +4,7 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { formatDate } from '../../utils/functions';
 
 interface GaiaDateTimePickerProps {
+    date: Date;
     buttonPlaceholder: string;
     buttonDisabled: boolean;
     onDateChange: (date: Date) => void;
@@ -11,9 +12,9 @@ interface GaiaDateTimePickerProps {
     mode: "date" | "time" | "datetime";
 }
 
-const GaiaDateTimePicker = ({ buttonPlaceholder, buttonDisabled, onDateChange, onLongPress, mode }) => {
+const GaiaDateTimePicker = ({ date, buttonPlaceholder, buttonDisabled, onDateChange, onLongPress, mode }) => {
 
-    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [selectedDate, setSelectedDate] = useState(date);
     const [pickerVisible, setPickerVisible] = useState(false);
     const [buttonText, setButtonText] = useState(buttonPlaceholder);
 
@@ -39,6 +40,7 @@ const GaiaDateTimePicker = ({ buttonPlaceholder, buttonDisabled, onDateChange, o
                 <View className="flex flex-row justify-center items-center bg-grey-200 rounded-md p-2">
                     <Text className={`text-white text-center font-medium ${pickerVisible ? "text-green-100" : "text-white"}`}>
                         {formatDate("dd mon yyyy", selectedDate)}
+                        
                     </Text>
                 </View>
 

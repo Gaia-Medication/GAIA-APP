@@ -1476,190 +1476,190 @@ export default function AddTreatment({ route, navigation }) {
     init();
   }, []);
 
-  return (
-    <SafeAreaView className="flex bg-white w-full h-full dark:bg-grey-100 p-4">
-      <AlertNotificationRoot>
-        <PageTitle title={"Nouveau traitement"} />
-        <View className="flex w-full">
+  // return (
+  //   <SafeAreaView className="flex bg-white w-full h-full dark:bg-grey-100 p-4">
+  //     <AlertNotificationRoot>
+  //       <PageTitle title={"Nouveau traitement"} />
+  //       <View className="flex w-full">
 
-          <GaiaInput
-            value={treatmentName}
-            onChangeText={(text: string) => {
-              setTreatmentName(text.charAt(0).toUpperCase() + text.slice(1))
-            }}
-            placeholder={"Nom du traitement"}
-            width={undefined}
-          />
+  //         <GaiaInput
+  //           value={treatmentName}
+  //           onChangeText={(text: string) => {
+  //             setTreatmentName(text.charAt(0).toUpperCase() + text.slice(1))
+  //           }}
+  //           placeholder={"Nom du traitement"}
+  //           width={undefined}
+  //         />
 
-          <GaiaInput
-            value={treatmentDescription}
-            onChangeText={(text: string) => {
-              setTreatmentDescription(
-                text.charAt(0).toUpperCase() + text.slice(1)
-              );
-            }}
-            placeholder={"Description du traitement"}
-            width={undefined}
-          />
+  //         <GaiaInput
+  //           value={treatmentDescription}
+  //           onChangeText={(text: string) => {
+  //             setTreatmentDescription(
+  //               text.charAt(0).toUpperCase() + text.slice(1)
+  //             );
+  //           }}
+  //           placeholder={"Description du traitement"}
+  //           width={undefined}
+  //         />
 
-          <Text style={styles.label} className="mx-3">
-            Date de début
-          </Text>
-          <GaiaDateTimePicker
-            buttonPlaceholder="Sélectionner une date"
-            buttonDisabled={instructionsList.length > 0}
-            onDateChange={(date: Date) => setStartDate(date)}
-          />
-          {!drugScanned && allergies ? (
-            <>
-              <Text style={styles.label} className="mx-3">
-                Ajouter un médicament
-              </Text>
-              <GaiaItemsSelected
-                items={[]}
-              />
-              <GaiaSearchList
-                allergies={allergies}
-                inputPlaceholder="Rechercher un médicament"
-                onItemPressed={(item: SearchDrug) => {
-                  console.log("Item Pressed");
-                  handleDrugSelection(item.CIS);
-                }}
-                onItemMaintained={() => {
-                  // [TODO] Ouvrir la modal de détail RAPIDE du médicament
-                  console.log("Item Maintained");
-                }}
-                searchFunction={searchMed}
-              />
-            </>
-          ) : null}
+  //         <Text style={styles.label} className="mx-3">
+  //           Date de début
+  //         </Text>
+  //         <GaiaDateTimePicker
+  //           buttonPlaceholder="Sélectionner une date"
+  //           buttonDisabled={instructionsList.length > 0}
+  //           onDateChange={(date: Date) => setStartDate(date)}
+  //         />
+  //         {!drugScanned && allergies ? (
+  //           <>
+  //             <Text style={styles.label} className="mx-3">
+  //               Ajouter un médicament
+  //             </Text>
+  //             <GaiaItemsSelected
+  //               items={[]}
+  //             />
+  //             <GaiaSearchList
+  //               allergies={allergies}
+  //               inputPlaceholder="Rechercher un médicament"
+  //               onItemPressed={(item: SearchDrug) => {
+  //                 console.log("Item Pressed");
+  //                 handleDrugSelection(item.CIS);
+  //               }}
+  //               onItemMaintained={() => {
+  //                 // [TODO] Ouvrir la modal de détail RAPIDE du médicament
+  //                 console.log("Item Maintained");
+  //               }}
+  //               searchFunction={searchMed}
+  //             />
+  //           </>
+  //         ) : null}
 
-          {isVisible && (
-            <FlatList
-              className="border-0"
-              data={search}
-              keyExtractor={(_item, index) => index.toString()}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={styles.listItem}
-                  className="flex justify-start align-middle"
-                  onPress={() => handleMedSelect(item.CIS)}
-                >
-                  <MedIconByType type={item.type} />
-                  <View className="ml-4 flex-1 flex-row justify-between items-center">
-                    <Text className="flex-1">{item.Name}</Text>
-                    {sameComp.find((med) => med.Name === item.Name) ? (
-                      <View className=" items-center">
-                        <Text className="ml-2 text-orange-500 text-xs font-bold text-center">
-                          Principe actif{"\n"}redondant
-                        </Text>
-                      </View>
-                    ) : (
-                      user.allergies
-                        .map((allergie) =>
-                          Array.from(getPAfromMed(item.CIS)).includes(allergie)
-                        )
-                        .some((bool) => bool) && (
-                        <View className=" items-center">
-                          <Image
-                            className={"h-5 w-5 ml-1"}
-                            source={img.allergyIcon}
-                          />
-                          <Text className="ml-2 text-red-500 font-bold">
-                            Allergie
-                          </Text>
-                        </View>
-                      )
-                    )}
-                  </View>
-                </TouchableOpacity>
-              )}
-              style={styles.dropdownList}
-            />
-          )}
-          {drugScanned && (
-            // [WARNING] Temporary. drugScanned should be a list of drugs 
-            // (not a single drug or a string) scanned by the user, giving 
-            // the possibility to add multiple drugs
-            <GaiaItemsSelected
-              items={[drugScanned]}
-            />
-          )}
+  //         {isVisible && (
+  //           <FlatList
+  //             className="border-0"
+  //             data={search}
+  //             keyExtractor={(_item, index) => index.toString()}
+  //             renderItem={({ item }) => (
+  //               <TouchableOpacity
+  //                 style={styles.listItem}
+  //                 className="flex justify-start align-middle"
+  //                 onPress={() => handleMedSelect(item.CIS)}
+  //               >
+  //                 <MedIconByType type={item.type} />
+  //                 <View className="ml-4 flex-1 flex-row justify-between items-center">
+  //                   <Text className="flex-1">{item.Name}</Text>
+  //                   {sameComp.find((med) => med.Name === item.Name) ? (
+  //                     <View className=" items-center">
+  //                       <Text className="ml-2 text-orange-500 text-xs font-bold text-center">
+  //                         Principe actif{"\n"}redondant
+  //                       </Text>
+  //                     </View>
+  //                   ) : (
+  //                     user.allergies
+  //                       .map((allergie) =>
+  //                         Array.from(getPAfromMed(item.CIS)).includes(allergie)
+  //                       )
+  //                       .some((bool) => bool) && (
+  //                       <View className=" items-center">
+  //                         <Image
+  //                           className={"h-5 w-5 ml-1"}
+  //                           source={img.allergyIcon}
+  //                         />
+  //                         <Text className="ml-2 text-red-500 font-bold">
+  //                           Allergie
+  //                         </Text>
+  //                       </View>
+  //                     )
+  //                   )}
+  //                 </View>
+  //               </TouchableOpacity>
+  //             )}
+  //             style={styles.dropdownList}
+  //           />
+  //         )}
+  //         {drugScanned && (
+  //           // [WARNING] Temporary. drugScanned should be a list of drugs 
+  //           // (not a single drug or a string) scanned by the user, giving 
+  //           // the possibility to add multiple drugs
+  //           <GaiaItemsSelected
+  //             items={[drugScanned]}
+  //           />
+  //         )}
 
           
-          {TESTinstructions.length > 0 && // WARNING: Temporary. Replace TESTinstructions by instructionsList
-            TESTinstructions.map((instruction, index) => (
-              <View
-                key={index}
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  marginHorizontal: 30,
-                  marginVertical: 10,
-                }}
-              >
-                <TouchableOpacity
-                  className=" flex items-center justify-center"
-                  onPress={() => {
-                    setSelectedInstruction(instruction);
-                    setInstructionsDetailModal(true);
-                  }}
-                  style={{
-                    backgroundColor: "#01A9F580",
-                    padding: 10,
-                    borderRadius: 5,
-                  }}
-                >
-                  <Text
-                    className=" text-[#363636] text-lg"
-                    ellipsizeMode="tail"
-                    numberOfLines={1}
-                  >
-                    {instruction.name}
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  className=" flex items-center justify-center"
-                  onPress={() => handleDeleteInstruction(instruction)}
-                  style={{
-                    backgroundColor: "#FF0000",
-                    padding: 10,
-                    borderRadius: 5,
-                  }}
-                >
-                  <Icon.Trash color={"white"} />
-                </TouchableOpacity>
-                <ModalComponent
-                  visible={instructionsDetailModal}
-                  onClose={() => {
-                    setInstructionsDetailModal(false);
-                  }}
-                  children={modalDescriptionContent}
-                />
-              </View>
-            ))}
-        </View>
-        <View className="absolute w-full" style={{ top: windowHeight * 0.85 }}>
-          <TouchableOpacity
-            disabled={!(instructionsList.length > 0)}
-            className="flex flex-row items-center justify-between bg-lime-400 rounded-2xl p-4 mb-2"
-            onPress={() => addTreatment()}
-          >
-            <Text className="text-white text-lg ml-[10%]">
-              Ajouter le traitement
-            </Text>
-            <ArrowRightCircle height={30} width={30} color={"#fff"} />
-          </TouchableOpacity>
-        </View>
-        <ModalComponent
-          visible={instructionModalVisible}
-          onClose={() => {
-            setInstructionModalVisible(false);
-          }}
-          children={modalContent}
-        />
-      </AlertNotificationRoot>
-    </SafeAreaView>
-  );
+  //         {TESTinstructions.length > 0 && // WARNING: Temporary. Replace TESTinstructions by instructionsList
+  //           TESTinstructions.map((instruction, index) => (
+  //             <View
+  //               key={index}
+  //               style={{
+  //                 display: "flex",
+  //                 flexDirection: "row",
+  //                 justifyContent: "space-between",
+  //                 marginHorizontal: 30,
+  //                 marginVertical: 10,
+  //               }}
+  //             >
+  //               <TouchableOpacity
+  //                 className=" flex items-center justify-center"
+  //                 onPress={() => {
+  //                   setSelectedInstruction(instruction);
+  //                   setInstructionsDetailModal(true);
+  //                 }}
+  //                 style={{
+  //                   backgroundColor: "#01A9F580",
+  //                   padding: 10,
+  //                   borderRadius: 5,
+  //                 }}
+  //               >
+  //                 <Text
+  //                   className=" text-[#363636] text-lg"
+  //                   ellipsizeMode="tail"
+  //                   numberOfLines={1}
+  //                 >
+  //                   {instruction.name}
+  //                 </Text>
+  //               </TouchableOpacity>
+  //               <TouchableOpacity
+  //                 className=" flex items-center justify-center"
+  //                 onPress={() => handleDeleteInstruction(instruction)}
+  //                 style={{
+  //                   backgroundColor: "#FF0000",
+  //                   padding: 10,
+  //                   borderRadius: 5,
+  //                 }}
+  //               >
+  //                 <Icon.Trash color={"white"} />
+  //               </TouchableOpacity>
+  //               <ModalComponent
+  //                 visible={instructionsDetailModal}
+  //                 onClose={() => {
+  //                   setInstructionsDetailModal(false);
+  //                 }}
+  //                 children={modalDescriptionContent}
+  //               />
+  //             </View>
+  //           ))}
+  //       </View>
+  //       <View className="absolute w-full" style={{ top: windowHeight * 0.85 }}>
+  //         <TouchableOpacity
+  //           disabled={!(instructionsList.length > 0)}
+  //           className="flex flex-row items-center justify-between bg-lime-400 rounded-2xl p-4 mb-2"
+  //           onPress={() => addTreatment()}
+  //         >
+  //           <Text className="text-white text-lg ml-[10%]">
+  //             Ajouter le traitement
+  //           </Text>
+  //           <ArrowRightCircle height={30} width={30} color={"#fff"} />
+  //         </TouchableOpacity>
+  //       </View>
+  //       <ModalComponent
+  //         visible={instructionModalVisible}
+  //         onClose={() => {
+  //           setInstructionModalVisible(false);
+  //         }}
+  //         children={modalContent}
+  //       />
+  //     </AlertNotificationRoot>
+  //   </SafeAreaView>
+  // );
 }

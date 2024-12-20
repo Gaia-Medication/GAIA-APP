@@ -63,6 +63,8 @@ export default function CreateTreatment({ route, navigation }) {
                     /> */}
 
                     <GaiaDateTimePicker
+                        date={treatmentStartDate}
+                        onLongPress={() => {}}
                         buttonPlaceholder="Début"
                         buttonDisabled={false}
                         onDateChange={(date: Date) => setTreatmentStartDate(date)}
