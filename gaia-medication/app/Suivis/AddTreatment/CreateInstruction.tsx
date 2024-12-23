@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { View, Text, Alert, ScrollView, Animated } from "react-native";
+import { View, Text, Alert, ScrollView, Animated, Platform } from "react-native";
 import { AlertNotificationRoot } from "react-native-alert-notification";
 import { SafeAreaView } from "react-native-safe-area-context";
 import GaiaChoiceButtons from "app/component/Buttons/GaiaChoiceButtons";
@@ -9,10 +9,11 @@ import GaiaDateTimePicker from "app/component/Pickers/GaiaDateTimePicker";
 import { LinearGradient } from "expo-linear-gradient";
 import PageTitle from "app/component/PageTitle";
 import { FlatList } from "react-native";
+import FrequencySelector from "app/component/FrequencySelector";
 
 export default function CreateInstruction({ route, navigation }) {
     const { newInstruction, user } = route.params;
-    const [regularity, setRegularity] = useState("");
+    const [regularity, setRegularity] = useState("Régulier");
     const [customTakes, setCustomTakes] = useState([]);
 
     const animations = useRef([]); // Store animations in useRef so they persist through re-renders
@@ -95,7 +96,26 @@ export default function CreateInstruction({ route, navigation }) {
             setCustomTakes(updatedTakes);
             //animateOtherItems(index);
         });
+    };
 
+    const canContinue = () => {
+
+        if (regularity === "Régulier") {
+            return true;
+        } else {
+            const minDelay = 1000 * 60 * 60; // 1 hour
+            if (customTakes.length == 0) {
+                return false;
+            }
+            for (let i = 0; i < customTakes.length; i++) {
+                if (new Date(customTakes[i].date) < new Date()) {
+                    return false;
+                }
+                // TODO: Check if the next take is at least 1 hour after the previous one
+            }
+            return true;
+
+        }
     };
 
     return (
@@ -120,7 +140,25 @@ export default function CreateInstruction({ route, navigation }) {
                             </View>
                             {regularity === "Régulier" ? (
                                 <View>
-                                    <Text className="color-grey-200 text-2xl font-medium mb-2">{"Heure de prise"}</Text>
+                                    <Text className="color-grey-200 text-2xl font-medium mb-2">{"Sélectionner la fréquence"}</Text>
+                                    <FrequencySelector
+                                        menuItems={
+                                            [
+                                                {
+                                                    actionKey: 'key-01',
+                                                    actionTitle: 'Action #1',
+                                                },
+                                                {
+                                                    actionKey: 'key-02',
+                                                    actionTitle: 'Action #2',
+                                                },
+                                                {
+                                                    actionKey: 'key-03',
+                                                    actionTitle: 'Action #3',
+                                                }
+                                            ]
+                                        }
+                                    />
                                 </View>
                             ) : (
                                 <View>
@@ -131,29 +169,30 @@ export default function CreateInstruction({ route, navigation }) {
                                             keyExtractor={(item) => item.id.toString()}
                                             renderItem={({ item, index }) => (
                                                 <Animated.View
-                                                style={{
-                                                    opacity: item.animation, // Bind the opacity to the animation value
-                                                    transform: [{ translateY: item.translateY }] // Add vertical movement
-                                                }}
-                                                className="flex-row"
-                                            >
-                                                <GaiaDateTimePicker
-                                                    date={new Date(item.date)}
-                                                    mode={"datetime"}
-                                                    buttonPlaceholder={"Date et heure"}
-                                                    onLongPress={() => ShowAlertDelete(index)}
-                                                    buttonDisabled={undefined}
-                                                    onDateChange={handleDateChange(item)}
-                                                />
-                                            </Animated.View>
+                                                    style={{
+                                                        opacity: item.animation, // Bind the opacity to the animation value
+                                                        transform: [{ translateY: item.translateY }] // Add vertical movement
+                                                    }}
+                                                    className="flex-row"
+                                                >
+                                                    <GaiaDateTimePicker
+                                                        date={new Date(item.date)}
+                                                        mode={"datetime"}
+                                                        buttonPlaceholder={"Date et heure"}
+                                                        onLongPress={() => ShowAlertDelete(index)}
+                                                        buttonDisabled={undefined}
+                                                        onDateChange={handleDateChange(item)}
+                                                    />
+                                                </Animated.View>
                                             )}
                                         />
                                     )}
-                                    
+                                    <GaiaButtonB margin={"mt-4"} title={"Ajouter une prise"} onPress={handleAddTakeCustom} />
+
                                 </View>
                             )}
 
-                            <GaiaButtonB margin={"mt-4"} title={"Ajouter une prise"} onPress={handleAddTakeCustom} />
+
                         </View>
                     </ScrollView>
 
@@ -174,7 +213,7 @@ export default function CreateInstruction({ route, navigation }) {
                     <GaiaButtonB width="45%" title="Précédent" onPress={() => navigation.goBack()} />
                     <GaiaButtonA
                         width="45%"
-                        disabled={false} // Replace with your validation logic
+                        disabled={!canContinue()} // Replace with your validation logic
                         title="Suivant"
                         onPress={handleButtonNext}
                     />
