@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { TouchableOpacity, View, Text } from "react-native";
-import { styles } from "style/style";
+import { styles } from "../../../style/style";
 
 interface GaiaButton {
     placeholder: string;

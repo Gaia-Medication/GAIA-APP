@@ -3,11 +3,9 @@ import { useIsFocused } from '@react-navigation/native';
 import React, { useContext, useEffect, useState } from "react";
 import {
   Image,
-  Linking,
   Text,
   TouchableOpacity,
   View,
-  FlatList,
   TextInput,
   useColorScheme,
 } from 'react-native';

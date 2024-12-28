@@ -1,14 +1,12 @@
-import GaiaButtonA from "app/component/Buttons/GaiaButtonA";
-import GaiaDateTimePicker from "app/component/Pickers/GaiaDateTimePicker";
-import PageTitle from "app/component/PageTitle";
+import GaiaButtonA from "../../../components/Buttons/GaiaButtonA";
+import PageTitle from "../../../components/PageTitle";
 import React, { useState } from "react";
-import { View, Text, Alert } from "react-native";
+import { View, Text } from "react-native";
 import { AlertNotificationRoot } from "react-native-alert-notification";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { NewInstruction, Take } from "types/Medical";
-import GaiaChoiceButtons from "app/component/Buttons/GaiaChoiceButtons";
-import GaiaButtonB from "app/component/Buttons/GaiaButtonB";
-import { formatDate } from "app/utils/functions";
+import GaiaButtonB from "../../../components/Buttons/GaiaButtonB";
+import { formatDate } from "../../../utils/functions";
 import { ScrollView } from "react-native-gesture-handler";
 
 export default function QuantitiesInstruction({ route, navigation }) {

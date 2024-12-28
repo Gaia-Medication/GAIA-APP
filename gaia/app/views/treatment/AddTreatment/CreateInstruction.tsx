@@ -2,15 +2,13 @@ import React, { useState, useRef, useEffect } from "react";
 import { View, Text, Alert, ScrollView, Animated, Platform } from "react-native";
 import { AlertNotificationRoot } from "react-native-alert-notification";
 import { SafeAreaView } from "react-native-safe-area-context";
-import GaiaChoiceButtons from "app/component/Buttons/GaiaChoiceButtons";
-import GaiaButtonB from "app/component/Buttons/GaiaButtonB";
-import GaiaButtonA from "app/component/Buttons/GaiaButtonA";
-import GaiaDateTimePicker from "app/component/Pickers/GaiaDateTimePicker";
-import { LinearGradient } from "expo-linear-gradient";
-import PageTitle from "app/component/PageTitle";
+import GaiaChoiceButtons from "../../../components/Buttons/GaiaChoiceButtons";
+import GaiaButtonB from "../../../components/Buttons/GaiaButtonB";
+import GaiaButtonA from "../../../components/Buttons/GaiaButtonA";
+import GaiaDateTimePicker from "../../../components/Pickers/GaiaDateTimePicker";
+import PageTitle from "../../../components/PageTitle";
 import { FlatList } from "react-native";
-import FrequencySelector from "app/component/FrequencySelector";
-import { HoldMenuProvider } from 'react-native-hold-menu';
+import FrequencySelector from "../../../components/FrequencySelector";
 
 export default function CreateInstruction({ route, navigation }) {
     const { newInstruction, user } = route.params;
@@ -197,7 +195,8 @@ export default function CreateInstruction({ route, navigation }) {
                             </View>
                         </ScrollView>
 
-                        <LinearGradient
+                        { // TODO: Add a gradient to the bottom of the screen (no more expo grandiant, find RN gradient)
+                        /* <LinearGradient
                             colors={['#1F1F1F00', '#1F1F1FFF']}
                             style={{
                                 position: 'absolute',
@@ -206,7 +205,8 @@ export default function CreateInstruction({ route, navigation }) {
                                 bottom: 0,
                                 height: 30,
                             }}
-                        />
+                        /> */}
+                        
                     </View>
 
                     {/* Bottom buttons */}

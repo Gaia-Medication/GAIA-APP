@@ -3,24 +3,20 @@ import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
-  Button,
+  Image,
   FlatList,
-  ImageBackground,
-  ScrollView,
   TouchableOpacity,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { getAllTreatments, readList } from "../../dao/Storage";
-import { styles } from "../../style/style";
-import ModalComponent from "../component/Modal";
-import TakeItem from "../component/TakeItem";
-import CustomButton from "../component/Buttons/CustomButton";
-import GoBackButton from "../component/Buttons/GoBackButton";
-import { Image } from "react-native-elements";
+import { getAllTreatments, readList } from "../../../data/Storage";
+import { styles } from "../../../style/style";
+import ModalComponent from "../../components/Modal";
+import TakeItem from "../../components/TakeItem";
+import CustomButton from "../../components/Buttons/CustomButton";
+import GoBackButton from "../../components/Buttons/GoBackButton";
 
-import * as Print from "expo-print";
-import { shareAsync } from "expo-sharing";
-import { getMedbyCIS } from "../../dao/Meds";
+import { getMedbyCIS } from "../../../data/Meds";
+import { Take, Treatment } from "types/Medical";
 
 export default function ManageTreatments({ navigation }) {
   const isFocused = useIsFocused();
@@ -133,95 +129,95 @@ export default function ManageTreatments({ navigation }) {
     return htmlParts.flat().join("");
   };
 
-  const pdf = async (treatment) => {
-    const users = await readList("users");
-    const instructionsHtml = await genererInstructionsHtml(
-      treatment.instructions,
-      users
-    );
+  // const pdf = async (treatment) => {
+  //   const users = await readList("users");
+  //   const instructionsHtml = await genererInstructionsHtml(
+  //     treatment.instructions,
+  //     users
+  //   );
 
-    const html = `
-    <html>
-        <head>
-            <meta charset="UTF-8">
-            <title>Traitement ${treatment.name}</title>
-            <style>
-              body {
-                  text-align: center;
-                  font-family: Arial, sans-serif;
-                  margin: 0;
-                  padding: 0;
-              }
+  //   const html = `
+  //   <html>
+  //       <head>
+  //           <meta charset="UTF-8">
+  //           <title>Traitement ${treatment.name}</title>
+  //           <style>
+  //             body {
+  //                 text-align: center;
+  //                 font-family: Arial, sans-serif;
+  //                 margin: 0;
+  //                 padding: 0;
+  //             }
       
-              .header {
-                  background-color: #9CDE00;
-                  color: #fff;
-                  padding: 20px;
-              }
+  //             .header {
+  //                 background-color: #9CDE00;
+  //                 color: #fff;
+  //                 padding: 20px;
+  //             }
       
-              .header h1 {
-                  font-size: 30px;
-                  font-weight: normal;
-                  margin: 0;
-              }
+  //             .header h1 {
+  //                 font-size: 30px;
+  //                 font-weight: normal;
+  //                 margin: 0;
+  //             }
       
-              .description {
-                  margin: 20px;
-                  text-align: left;
-              }
+  //             .description {
+  //                 margin: 20px;
+  //                 text-align: left;
+  //             }
       
-              .description h2 {
-                  font-size: 24px;
-                  font-weight: normal;
-              }
+  //             .description h2 {
+  //                 font-size: 24px;
+  //                 font-weight: normal;
+  //             }
       
-              .ressenti {
-                  margin: 20px;
-                  text-align: left;
-              }
+  //             .ressenti {
+  //                 margin: 20px;
+  //                 text-align: left;
+  //             }
       
-              .ressenti h2 {
-                  font-size: 24px;
-                  font-weight: normal;
-              }
+  //             .ressenti h2 {
+  //                 font-size: 24px;
+  //                 font-weight: normal;
+  //             }
       
-              .instructions {
-                  font-size: 16px;
-                  border-left: black 1px solid;
-                  padding-left: 2rem;
-              }
+  //             .instructions {
+  //                 font-size: 16px;
+  //                 border-left: black 1px solid;
+  //                 padding-left: 2rem;
+  //             }
       
-              .logo {
-                  display: block;
-                  margin: 20px auto;
-                  width: 100px;
-                  filter: brightness(0) invert(1);
-              }
-          </style>
-      </head>
-      <body>
-          <div class="header">
-              <h1>Traitement ${treatment.name}</h1>
-          </div>
+  //             .logo {
+  //                 display: block;
+  //                 margin: 20px auto;
+  //                 width: 100px;
+  //                 filter: brightness(0) invert(1);
+  //             }
+  //         </style>
+  //     </head>
+  //     <body>
+  //         <div class="header">
+  //             <h1>Traitement ${treatment.name}</h1>
+  //         </div>
           
-          <div class="description">
-              <h2>Description</h2>
-              <p>${treatment.description}</p>
-          </div>
+  //         <div class="description">
+  //             <h2>Description</h2>
+  //             <p>${treatment.description}</p>
+  //         </div>
       
-          <div class="ressenti">
-              <h2>Suivis du traitement :</h2>
-              <div class="instructions">
-                  ${instructionsHtml}
-              </div>
-          </div>
-      </body>
-      </html>
-    `;
-    const { uri } = await Print.printToFileAsync({ html });
-    console.log("File has been saved to:", uri);
-    await shareAsync(uri, { UTI: ".pdf", mimeType: "application/pdf" });
-  };
+  //         <div class="ressenti">
+  //             <h2>Suivis du traitement :</h2>
+  //             <div class="instructions">
+  //                 ${instructionsHtml}
+  //             </div>
+  //         </div>
+  //     </body>
+  //     </html>
+  //   `;
+  //   const { uri } = await Print.printToFileAsync({ html });
+  //   console.log("File has been saved to:", uri);
+  //   await shareAsync(uri, { UTI: ".pdf", mimeType: "application/pdf" });
+  // };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -248,11 +244,11 @@ export default function ManageTreatments({ navigation }) {
                     <Text className="flex-1">{item.name}</Text>
                     <TouchableOpacity
                       onPress={() => {
-                        pdf(item);
+                        // TODO: add pdf(item);
                       }}
                     >
                       <Image
-                        source={require("../../assets/pdf.png")}
+                        source={require("../../../assets/pdf.png")}
                         className="w-8 h-8"
                       />
                     </TouchableOpacity>

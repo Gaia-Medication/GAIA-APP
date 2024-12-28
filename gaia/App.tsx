@@ -1,5 +1,4 @@
 import React, { StrictMode, useEffect } from 'react';
-import { StatusBar, Text, useColorScheme, View } from 'react-native';
 import { UserProvider } from './app/contexts/UserContext';
 import Navigation from './app/Navigation';
 import { useNavigation } from '@react-navigation/native';

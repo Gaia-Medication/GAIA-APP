@@ -1,9 +1,7 @@
-import GaiaButtonA from "app/component/Buttons/GaiaButtonA";
-import ButtonA from "app/component/Buttons/GaiaButtonA";
-import GaiaDateTimePicker from "app/component/Pickers/GaiaDateTimePicker";
-import GaiaInput from "app/component/Inputs/GaiaInput";
-import { GaiaTitleInput } from "app/component/Inputs/GaiaTitleInput";
-import PageTitle from "app/component/PageTitle";
+import GaiaButtonA from "../../../components/Buttons/GaiaButtonA";
+import GaiaDateTimePicker from "../../../components/Pickers/GaiaDateTimePicker";
+import GaiaInput from "../../../components/Inputs/GaiaInput";
+import PageTitle from "../../../components/PageTitle";
 import React from "react";
 import { View } from "react-native";
 import { AlertNotificationRoot } from "react-native-alert-notification";

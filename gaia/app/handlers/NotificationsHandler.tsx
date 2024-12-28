@@ -1,6 +1,5 @@
-import * as Notifications from 'expo-notifications';
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getDaysTakes } from '../../dao/Storage';
+import { getDaysTakes } from '../../data/Storage';
 
 // Renvoi la date au format { day: dayOfWeek, dayOfMonth: dayOfMonth, month: month, year: year, hours: hours, minutes: minutes }
 const formatDate = (date) => {
@@ -32,15 +31,15 @@ export const getDailyNotificationTime = async () => {
 
 // Demande les permissions pour les notifications
 export const requestNotificationPermissions = async () => {
-  const { status } = await Notifications.getPermissionsAsync();
-  if (status !== 'granted') {
-    const { status: newStatus } = await Notifications.requestPermissionsAsync();
-    if (newStatus !== 'granted') {
-      console.log('Notification permissions not granted');
-      return false;
-    }
-  }
-  return true;
+  // const { status } = await Notifications.getPermissionsAsync();
+  // if (status !== 'granted') {
+  //   const { status: newStatus } = await Notifications.requestPermissionsAsync();
+  //   if (newStatus !== 'granted') {
+  //     console.log('Notification permissions not granted');
+  //     return false;
+  //   }
+  // }
+  // return true;
 };
 
 // Créer une notification locale
@@ -51,28 +50,29 @@ export const scheduleLocalNotification = async (
   data = {},
   sound: string,
   color: string,
-  priority: Notifications.AndroidNotificationPriority,
+  priority: null, // TODO: Notifications.AndroidNotificationPriority,
   categoryIdentifier: string,
   sticky: boolean,
   date: Date // Add a new parameter for the notification date
 ) => {
-  const notificationId = await Notifications.scheduleNotificationAsync({
-    content: {
-      title,
-      subtitle,
-      body,
-      data,
-      sound,
-      color,
-      priority,
-      categoryIdentifier,
-      sticky,
-    },
-    trigger: {
-      date, // Set the trigger date
-    },
-  });
-  return notificationId;
+  // TODO: Fix the following code
+  // const notificationId = await Notifications.scheduleNotificationAsync({
+  //   content: {
+  //     title,
+  //     subtitle,
+  //     body,
+  //     data,
+  //     sound,
+  //     color,
+  //     priority,
+  //     categoryIdentifier,
+  //     sticky,
+  //   },
+  //   trigger: {
+  //     date, // Set the trigger date
+  //   },
+  // });
+  // return notificationId;
 };
 
 //--------------------//
@@ -94,7 +94,7 @@ export const notificationDaily = async (userName, data: NotifData[], date) => {
       { data: null },
       "default",
       "default",
-      Notifications.AndroidNotificationPriority.HIGH,
+      null, // TODO: Notifications.AndroidNotificationPriority.HIGH,
       null,
       false,
       notificationTime,
@@ -118,7 +118,7 @@ export const notificationNow = async (userName, data: NotifData, remainigTime) =
       { notifData: data, userName: userName },
       "default",
       "default",
-      Notifications.AndroidNotificationPriority.HIGH,
+      null, // TODO: Notifications.AndroidNotificationPriority.HIGH,
       "reminder",
       false,
       notificationTime
@@ -142,7 +142,7 @@ export const notificationForgot = async (userName, data: NotifData, delayTime) =
     { notifData: data, userName: userName, remainigTime: delayTime },
     "default",
     "red",
-    Notifications.AndroidNotificationPriority.MAX,
+    null, // TODO: Notifications.AndroidNotificationPriority.MAX,
     "alertReminder",
     false, // SET TRUE FOR PRODUCTION
     notificationTime
@@ -152,35 +152,36 @@ export const notificationForgot = async (userName, data: NotifData, delayTime) =
 //--------------------//
 // Création des catégories de notifications
 
-Notifications.setNotificationCategoryAsync('reminder', [
-  {
-    identifier: 'take',
-    buttonTitle: "Pris !",
-    options: {
-      isDestructive: false,
-      isAuthenticationRequired: false,
-    },
-  },
-  {
-    identifier: 'snooze',
-    buttonTitle: 'Rappeler dans 1 minutes', // REMETTRE A 10 MINUTES EN PRODUCTION
-    options: {
-      isDestructive: false,
-      isAuthenticationRequired: false,
-    },
-  },
-]);
+// TODO: Fix the following code
+// Notifications.setNotificationCategoryAsync('reminder', [
+//   {
+//     identifier: 'take',
+//     buttonTitle: "Pris !",
+//     options: {
+//       isDestructive: false,
+//       isAuthenticationRequired: false,
+//     },
+//   },
+//   {
+//     identifier: 'snooze',
+//     buttonTitle: 'Rappeler dans 1 minutes', // REMETTRE A 10 MINUTES EN PRODUCTION
+//     options: {
+//       isDestructive: false,
+//       isAuthenticationRequired: false,
+//     },
+//   },
+// ]);
 
-Notifications.setNotificationCategoryAsync('alertReminder', [
-  {
-    identifier: 'lateTake',
-    buttonTitle: 'Pris !',
-    options: {
-      isDestructive: false,
-      isAuthenticationRequired: false,
-    },
-  }
-]);
+// Notifications.setNotificationCategoryAsync('alertReminder', [
+//   {
+//     identifier: 'lateTake',
+//     buttonTitle: 'Pris !',
+//     options: {
+//       isDestructive: false,
+//       isAuthenticationRequired: false,
+//     },
+//   }
+// ]);
 
 //--------------------//
 
@@ -190,7 +191,7 @@ export const initDailyNotifications = async (userName, userId) => {
   const notificationTime = await getDailyNotificationTime(); // HEURE DE NOTIFICATION QUOTIDIENNE
   const treatmentsDays = await getDaysTakes(); // PRISES À VENIR
   const arrayOfNotifications: Notif[] = []; // TABLEAU RETOUR
-  Notifications.cancelAllScheduledNotificationsAsync(); // ANNULER TOUTES LES NOTIFICATIONS
+  // TODO: Notifications.cancelAllScheduledNotificationsAsync(); // ANNULER TOUTES LES NOTIFICATIONS
 
   if (notificationTime) {
     for (const dateKey in treatmentsDays) {
@@ -232,7 +233,7 @@ export const initDailyNotifications = async (userName, userId) => {
       }
     }
   }
-  let all = await Notifications.getAllScheduledNotificationsAsync();
+  // TODO: let all = await Notifications.getAllScheduledNotificationsAsync();
   return arrayOfNotifications;
 }
 
@@ -296,31 +297,35 @@ export const initLateNotifications = async (userName, userId) => {
             console.log("YOU'RE LATE")
             console.log("AND YOU'RE LATE BY", minDiff, "MINUTES")
             const notif = await notificationForgot(userName, { medName: take.medName, take: take }, (minDiff + 1)) // On programme une notification dans 5 minutes
-            const returnedNotif: Notif = {
-              notifId: notif,
-              userId: userName,
-              date: dateNotification,
-              type: "late",
-              datas: [{
-                medName: take.medName,
-                take: take,
-              }]
-            };
-            arrayOfNotifications.push(returnedNotif);
+            
+            // TODO: Fix the following code
+            // const returnedNotif: Notif = {
+            //   notifId: notif,
+            //   userId: userName,
+            //   date: dateNotification,
+            //   type: "late",
+            //   datas: [{
+            //     medName: take.medName,
+            //     take: take,
+            //   }]
+            // };
+            // arrayOfNotifications.push(returnedNotif);
           } else {
             console.log("YOU LL BE LATE")
             const notif = await notificationForgot(userName, { medName: take.medName, take: take }, 60) // On programme une notification pour 60 minutes après l'heure de prise
-            const returnedNotif: Notif = {
-              notifId: notif,
-              userId: userName,
-              date: dateNotification,
-              type: "late",
-              datas: [{
-                medName: take.medName,
-                take: take,
-              }]
-            };
-            arrayOfNotifications.push(returnedNotif);
+            
+            // TODO: Fix the following code
+            // const returnedNotif: Notif = {
+            //   notifId: notif,
+            //   userId: userName,
+            //   date: dateNotification,
+            //   type: "late",
+            //   datas: [{
+            //     medName: take.medName,
+            //     take: take,
+            //   }]
+            // };
+            // arrayOfNotifications.push(returnedNotif);
           }
         }
 

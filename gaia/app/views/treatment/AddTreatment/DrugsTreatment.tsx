@@ -1,19 +1,19 @@
-import GaiaButtonA from "app/component/Buttons/GaiaButtonA";
-import GaiaButtonB from "app/component/Buttons/GaiaButtonB";
-import GaiaItemsSelected from "app/component/GaiaItemsSelected";
-import GaiaSearchList from "app/component/GaiaSearchList";
-import PageTitle from "app/component/PageTitle";
-import { searchMed } from "dao/Search";
-import React, { useCallback, useRef } from "react";
-import { View, Text, Modal } from "react-native";
+import GaiaButtonA from "../../../components/Buttons/GaiaButtonA";
+import GaiaButtonB from "../../../components/Buttons/GaiaButtonB";
+import GaiaItemsSelected from "../../../components/GaiaItemsSelected";
+import GaiaSearchList from "../../../components/GaiaSearchList";
+import PageTitle from "../../../components/PageTitle";
+import { searchMed } from "../../../../data/Search";
+import React, { useCallback } from "react";
+import { View, Modal } from "react-native";
 import { AlertNotificationRoot } from "react-native-alert-notification";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { GestureHandlerRootView, ScrollView } from "react-native-gesture-handler";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SearchDrug } from "types/Search";
-import { NewInstructionFactory } from "types/Factories";
-import { Instruction, NewInstruction } from "types/Medical";
-import ModalInstructionDetails from "app/component/ModalInstructionDetail";
-import { getMedbyCIS } from "dao/Meds";
+import { NewInstructionFactory } from "../../../../types/Factories";
+import { NewInstruction } from "types/Medical";
+import ModalInstructionDetails from "../../../components/ModalInstructionDetail";
+import { getMedbyCIS } from "../../../../data/Meds";
 
 
 export default function DrugsTreatment({ route, navigation }) {

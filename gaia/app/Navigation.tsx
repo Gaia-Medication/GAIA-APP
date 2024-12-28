@@ -1,20 +1,33 @@
 import React, { useEffect, useState } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import {
-  NavigationContainer
-} from "@react-navigation/native";
+import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import Home from "./views/home/Home";
-import Suivis from "./views/suivis/Suivis";
-import Journal from "./views/suivis/Journal";
 import * as Icon from "react-native-feather";
-import {
-  SafeAreaView,
-} from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { Provider } from "react-native-paper";
 import { useColorScheme } from "nativewind";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
+import Home from "./views/home/Home";
+import Suivis from "./views/treatment/Suivis";
+import Journal from "./views/treatment/Journal";
+import CreateProfile from "./views/profile/CreateProfile";
+import Welcome from "./views/profile/Welcome";
+import ModifyProfile from "./views/profile/ModifyProfile";
+import ManageTreatments from "./views/treatment/ManageTreatments";
+import DrugsTreatment from "./views/treatment/AddTreatment/DrugsTreatment";
+import CreateTreatment from "./views/treatment/AddTreatment/CreateTreatment";
+import CreateInstruction from "./views/treatment/AddTreatment/CreateInstruction";
+import QuantitiesInstruction from "./views/treatment/AddTreatment/QuantitiesInstruction";
+import Notifications from "./views/home/Notifications";
+import NotificationsSettings from "./views/home/Settings/NotificationsSettings";
+import Drug from "./views/medication/Drug";
+import Search from "./views/medication/Search";
+import Atc from "./views/medication/AtcPage";
+import Laboratoire from "./views/medication/LaboratoirePage";
+import MapPoint from "./views/home/MapPages/MapPointPage";
+import AvatarChange from "./views/home/Settings/AvatarChange";
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -41,6 +54,34 @@ export default function Navigation() {
             screenOptions={{ headerShown: false }}
           >
             <Stack.Screen name="HomeHandler" component={HomeHandler} />
+            <Stack.Screen name="CreateProfile" component={CreateProfile} />
+            <Stack.Screen name="Welcome" component={Welcome} />
+            <Stack.Screen name="ModifyProfile" component={ModifyProfile} />
+            <Stack.Screen
+              name="ManageTreatments"
+              component={ManageTreatments}
+            />
+            <Stack.Screen name="CreateTreatment" component={CreateTreatment} />
+            <Stack.Screen name="DrugsTreatment" component={DrugsTreatment} />
+            <Stack.Screen name="CreateInstruction" component={CreateInstruction} />
+            <Stack.Screen name="QuantitiesInstruction" component={QuantitiesInstruction} />
+            <Stack.Screen name="Notifications" component={Notifications} />
+            <Stack.Screen
+              name="NotificationsSettings"
+              component={NotificationsSettings}
+            />
+            <Stack.Screen name="Drug" component={Drug} />
+            <Stack.Screen name="Search" component={Search} />
+            <Stack.Screen name="AtcPage" component={Atc} />
+            <Stack.Screen name="LaboratoirePage" component={Laboratoire} />
+            <Stack.Screen name="MapPointPage" component={MapPoint} />
+            <Stack.Screen
+              name="AvatarChange"
+              component={AvatarChange}
+              options={{
+                animation: "fade",
+              }}
+            />
           </Stack.Navigator>
         </NavigationContainer>
       )}

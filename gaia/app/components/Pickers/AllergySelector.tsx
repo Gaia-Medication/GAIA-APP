@@ -1,8 +1,7 @@
 import React, { useState } from "react";
-import { FlatList, TouchableOpacity, View } from "react-native";
+import { FlatList, TouchableOpacity, View, Text, TextInput } from "react-native";
 import { styles } from "../../../style/style";
-import { Input, Text } from "react-native-elements";
-import { SearchAllergy } from "../../../dao/Search";
+import { SearchAllergy } from "../../../data/Search";
 import { X } from "react-native-feather";
 import CustomButton from "../Buttons/CustomButton";
 
@@ -12,11 +11,9 @@ const AllergySelector = ({ isAllergySelectorValid, preference, onPreferenceChang
 
   return (
     <View className="bg-white h-[90%] w-full p-4 flex justify-center items-center">
-      <Input
-        label="Allergies médicamenteuses"
+      <TextInput
         placeholder="Rechercher"
         placeholderTextColor={"#dedede"}
-        labelStyle={styles.label}
         onChangeText={(text) => {
           const newSearch = SearchAllergy(text);
           setSearchAllergy(newSearch);
