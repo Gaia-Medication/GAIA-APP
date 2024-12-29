@@ -226,7 +226,7 @@ export default function Home({ navigation }) {
         ]}
       >
         <Image
-          className="h-12 w-24 self-center mt-2 bg-red-500"
+          className="h-12 w-24 self-center mt-2"
           source={require('../../../assets/logo_title_gaia.png')}
          />
         <View className=" flex w-full h-full flex-1" style={{ gap: 20 }}>

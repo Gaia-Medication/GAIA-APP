@@ -1242,6 +1242,8 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
+  - react-native-maps (1.20.1):
+    - React-Core
   - react-native-pager-view (6.6.1):
     - DoubleConversion
     - glog
@@ -1815,6 +1817,49 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
+  - RNSVG (15.10.1):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - RNSVG/common (= 15.10.1)
+    - Yoga
+  - RNSVG/common (15.10.1):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - RNVectorIcons (10.2.0):
     - DoubleConversion
     - glog
@@ -1877,6 +1922,7 @@ DEPENDENCIES:
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - React-Mapbuffer (from `../node_modules/react-native/ReactCommon`)
   - React-microtasksnativemodule (from `../node_modules/react-native/ReactCommon/react/nativemodule/microtasks`)
+  - react-native-maps (from `../node_modules/react-native-maps`)
   - react-native-pager-view (from `../node_modules/react-native-pager-view`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - "react-native-slider (from `../node_modules/@react-native-community/slider`)"
@@ -1912,6 +1958,7 @@ DEPENDENCIES:
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
+  - RNSVG (from `../node_modules/react-native-svg`)
   - RNVectorIcons (from `../node_modules/react-native-vector-icons`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
@@ -1991,6 +2038,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   React-microtasksnativemodule:
     :path: "../node_modules/react-native/ReactCommon/react/nativemodule/microtasks"
+  react-native-maps:
+    :path: "../node_modules/react-native-maps"
   react-native-pager-view:
     :path: "../node_modules/react-native-pager-view"
   react-native-safe-area-context:
@@ -2061,6 +2110,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-reanimated"
   RNScreens:
     :path: "../node_modules/react-native-screens"
+  RNSVG:
+    :path: "../node_modules/react-native-svg"
   RNVectorIcons:
     :path: "../node_modules/react-native-vector-icons"
   Yoga:
@@ -2102,6 +2153,7 @@ SPEC CHECKSUMS:
   React-logger: ae95f0effa7e1791bd6f7283caddca323d4fbc1e
   React-Mapbuffer: 7eb5d69e1154e7743487ef0c8d7261e5b59afb32
   React-microtasksnativemodule: 01dd998649ff5f8814846b7eee84c4d57f5d3671
+  react-native-maps: 9febd31278b35cd21e4fad2cf6fa708993be5dab
   react-native-pager-view: f744922595bb0a6a7804617b7505869c8add2e06
   react-native-safe-area-context: f145b8906585d648f9f9c7dfa3885bac54f38fcc
   react-native-slider: d1a9121980fc81678c6d30b82f312c778fba563c
@@ -2137,6 +2189,7 @@ SPEC CHECKSUMS:
   RNGestureHandler: e1dcb274c17ca0680a04d7ff357e35e37c384185
   RNReanimated: ee9a749b8f2ee2a743d2dd7b4ab66f22d63f3bda
   RNScreens: 351f431ef2a042a1887d4d90e1c1024b8ae9d123
+  RNSVG: 588c85abb474f7ee58dd886ed1fe198cc73772b2
   RNVectorIcons: a24016b773380b1aa37fca501ec6b94a951890a0
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: fcc198acd4a55599b3468cfb6ebc526baff5f06e

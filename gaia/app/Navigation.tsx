@@ -132,7 +132,7 @@ function HomeHandler() {
         tabBarShowLabel: false,
         tabBarStyle: {
           position: "absolute",
-          height: 120,
+          height: 110,
           borderTopWidth: 0,
           backgroundColor: "#111111FF",
           width: "100%",
@@ -156,17 +156,17 @@ function HomeHandler() {
       }}
     >
       <BottomTab.Screen
-        name="Home"
-        component={Home}
-        options={{
-          tabBarIcon: ({ color }) => <Icon.Home color={color} />,
-        }}
-      />
-      <BottomTab.Screen
         name="SuivisHandler"
         component={SuivisHandler}
         options={{
           tabBarIcon: ({ color }) => <Icon.Package color={color} />,
+        }}
+      />
+      <BottomTab.Screen
+        name="Home"
+        component={Home}
+        options={{
+          tabBarIcon: ({ color }) => <Icon.Home color={color} />,
         }}
       />
       <BottomTab.Screen

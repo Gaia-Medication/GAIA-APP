@@ -126,7 +126,6 @@ export default function Map({ navigation }) {
         customMapStyle={colorScheme == "dark" ? darkMapType : standardMapType}
         toolbarEnabled={false}
         showsUserLocation={currentLocation != null}
-        provider={PROVIDER_GOOGLE}
       >
         {points &&
           points.map((point) => {
