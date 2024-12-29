@@ -5,9 +5,7 @@ import {
 } from 'react-native';
 import { NewInstruction } from 'types/Medical';
 import GaiaBottomSheetHeader from './GaiaBottomSheetHeader';
-import { ScrollView } from 'react-native-gesture-handler';
 import MedIconByType from './MedIconByType';
-import { formatDate } from 'app/utils/functions';
 
 interface ModalInstructionDetailsProps {
     instruction: NewInstruction;

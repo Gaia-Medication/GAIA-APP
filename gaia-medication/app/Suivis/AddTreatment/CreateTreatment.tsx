@@ -53,19 +53,22 @@ export default function CreateTreatment({ route, navigation }) {
                         placeholder={"Nom du traitement"}
                         width={undefined}
                     />
-                    <GaiaTitleInput
+                    {/* <GaiaTitleInput
                         value={treatmentName}
                         onChangeText={(text: string) => {
                             setTreatmentName(text.charAt(0).toUpperCase() + text.slice(1))
                         }}
                         placeholder={"Nom du traitement"}
                         width={undefined}
-                    />
+                    /> */}
 
                     <GaiaDateTimePicker
+                        date={treatmentStartDate}
+                        onLongPress={() => {}}
                         buttonPlaceholder="Début"
                         buttonDisabled={false}
                         onDateChange={(date: Date) => setTreatmentStartDate(date)}
+                        mode={"date"}
                     />
 
                     <GaiaInput
