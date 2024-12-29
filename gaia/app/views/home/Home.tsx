@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   View,
   TextInput,
-  useColorScheme,
 } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import callGoogleVisionAsync from '../../../OCR/helperFunctions';
@@ -27,6 +26,7 @@ import {
 import { searchDoctor } from '../../../data/Doctor';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { UserContext } from '../../contexts/UserContext';
+import { useColorScheme } from 'nativewind';
 
 export default function Home({ navigation }) {
   const userContext = useContext(UserContext);
@@ -36,7 +36,7 @@ export default function Home({ navigation }) {
   const { user, setUser } = userContext;
 
   const isFocused = useIsFocused();
-  const { colorScheme } = useColorScheme();
+  const { colorScheme, setColorScheme } = useColorScheme();
   const [loading, setLoading] = useState(false);
   const [isMedModalVisible, setIsMedModalVisible] = useState(false);
   const [takes, setTakes] = useState(null);
@@ -50,6 +50,7 @@ export default function Home({ navigation }) {
   const [tutoHome, setTutoHome] = useState(null);
 
   const init = async () => {
+    setColorScheme("dark");
     let isFirstConnectionAsync: string|null = await AsyncStorage.getItem('isFirstConnection');
     let isFirstConnection: boolean = JSON.parse(isFirstConnectionAsync ? isFirstConnectionAsync : 'null');
     if (isFirstConnection === null) {

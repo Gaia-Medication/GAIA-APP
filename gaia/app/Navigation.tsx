@@ -28,6 +28,7 @@ import Atc from "./views/medication/AtcPage";
 import Laboratoire from "./views/medication/LaboratoirePage";
 import MapPoint from "./views/home/MapPages/MapPointPage";
 import AvatarChange from "./views/home/Settings/AvatarChange";
+import Map from "./views/home/Map";
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -54,7 +55,6 @@ export default function Navigation() {
             screenOptions={{ headerShown: false }}
           >
             <Stack.Screen name="HomeHandler" component={HomeHandler} />
-            <Stack.Screen name="CreateProfile" component={CreateProfile} />
             <Stack.Screen name="Welcome" component={Welcome} />
             <Stack.Screen name="ModifyProfile" component={ModifyProfile} />
             <Stack.Screen
@@ -167,6 +167,13 @@ function HomeHandler() {
         component={SuivisHandler}
         options={{
           tabBarIcon: ({ color }) => <Icon.Package color={color} />,
+        }}
+      />
+      <BottomTab.Screen
+        name="Map"
+        component={Map}
+        options={{
+          tabBarIcon: ({ color }) => <Icon.MapPin color={color} />,
         }}
       />
     </BottomTab.Navigator>

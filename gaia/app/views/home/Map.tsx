@@ -15,12 +15,10 @@ import MapView, {
   PROVIDER_GOOGLE,
   UrlTile,
 } from "react-native-maps";
-import * as Location from "expo-location";
-import { getPointsbyRegion } from "../../dao/MapPoint";
-import ModalComponent from "../component/Modal";
-import TutorialBubble from "../component/TutorialBubble";
+import { getPointsbyRegion } from "../../../data/MapPoint";
+import ModalComponent from "../../components/Modal";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getDoctorbyRegion } from "../../dao/Doctor";
+import { getDoctorbyRegion } from "../../../data/Doctor";
 import { useColorScheme } from "nativewind";
 
 export default function Map({ navigation }) {
@@ -40,12 +38,12 @@ export default function Map({ navigation }) {
   const [isMedModalVisible, setIsMedModalVisible] = useState(false);
 
   const markerIcons = {
-    Pharmacie: require("./../../assets/map-icons/pharma.png"),
-    Centre: require("./../../assets/map-icons/hopital.png"),
-    Etablissement: require("./../../assets/map-icons/clinique.png"),
-    Maison: require("./../../assets/map-icons/maison_de_sante.png"),
-    map: require("./../../assets/map-icons/map.png"),
-    medical: require("./../../assets/medical-team.png"),
+    Pharmacie: require("./../../../assets/map-icons/pharma.png"),
+    Centre: require("./../../../assets/map-icons/hopital.png"),
+    Etablissement: require("./../../../assets/map-icons/clinique.png"),
+    Maison: require("./../../../assets/map-icons/maison_de_sante.png"),
+    map: require("./../../../assets/map-icons/map.png"),
+    medical: require("./../../../assets/medical-team.png"),
   };
 
   const openMedModal = () => {
@@ -208,7 +206,7 @@ export default function Map({ navigation }) {
                       >
                         <Image
                           className=" object-cover h-5 w-5 self-center mt-1"
-                          source={require("../../assets/telephone.png")}
+                          source={require("../../../assets/telephone.png")}
                         />
                       </TouchableOpacity>
                     )}
@@ -219,7 +217,7 @@ export default function Map({ navigation }) {
                       >
                         <Image
                           className=" object-cover h-5 w-5 self-center mt-1"
-                          source={require("../../assets/email.png")}
+                          source={require("../../../assets/email.png")}
                         />
                       </TouchableOpacity>
                     )}
