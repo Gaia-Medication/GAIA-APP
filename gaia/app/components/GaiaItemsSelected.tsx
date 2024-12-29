@@ -1,42 +1,97 @@
-import React, { useRef, useState } from 'react';
+import React from 'react';
 import {
   View,
   Text,
-  Modal,
   TouchableOpacity,
-  FlatList,
-  StyleSheet,
-  SafeAreaView,
   ScrollView,
-  PanResponder,
 } from 'react-native';
-import { SearchDrug } from '../../dao/Search';
 import MedIconByType from './MedIconByType';
 import { NewInstruction } from 'types/Medical';
+import { ContextMenuView } from 'react-native-ios-context-menu';
 
-const GaiaItemSelected = ({ item, complete, onPress }) => {
+interface GaiaItemSelectedProps {
+  item: NewInstruction;
+  complete: boolean;
+  onPress: (item: NewInstruction) => void;
+  onEdit: (item: NewInstruction) => void;
+  onDelete: (item: NewInstruction) => void;
+}
+
+const GaiaItemSelected = ({ item, complete, onPress, onEdit, onDelete }) => {
   complete = complete as boolean;
 
   return (
-    <TouchableOpacity
-      className={`flex-row bg-grey-100 mt-2 mx-2 p-2 rounded-md border-2 ${complete ? 'border-green-100' : 'border-grey-200'} p-5`}
-      onLongPress={() => {
-        console.log('Long Press');
+    <ContextMenuView
+      menuConfig={{
+        menuTitle: 'Doliprane',
+        menuPreferredElementSize: 'medium',
+        menuItems: [{
+          actionKey: 'details',
+          actionTitle: 'Résumé',
+          icon: {
+            type: 'IMAGE_SYSTEM',
+            imageValue: {
+              systemName: 'doc.text',
+            },
+          }
+        }, {
+          actionKey: 'modify',
+          actionTitle: 'Modifier',
+          icon: {
+            type: 'IMAGE_SYSTEM',
+            imageValue: {
+              systemName: 'pencil',
+            },
+          }
+        }, {
+          actionKey: 'delete',
+          actionTitle: 'Supprimer',
+          menuAttributes: ['destructive'],
+          icon: {
+            type: 'IMAGE_SYSTEM',
+            imageValue: {
+              systemName: 'trash',
+            },
+          }
+        }],
+
       }}
-      onPress={() => onPress(item)}
+      onPressMenuItem={({ nativeEvent }) => {
+        switch (nativeEvent.actionKey) {
+          case 'details':
+            onPress(item);
+            break;
+          case 'modify':
+            onEdit(item);
+            break;
+          case 'delete':
+            onDelete(item);
+            break;
+        }
+      }}
     >
-      <MedIconByType type={item.type} />
-      <Text className='text-white text-base font-semibold ml-4'>{item.name}</Text>
-    </TouchableOpacity>
+
+      <TouchableOpacity
+        className={`flex-row bg-grey-100 mt-2 mx-2 p-2 rounded-md border-2 ${complete ? 'border-green-100' : 'border-grey-200'} p-5`}
+        onLongPress={() => {
+          console.log('Long Press');
+        }}
+        onPress={() => onPress(item)}
+      >
+        <MedIconByType type={item.type} />
+        <Text className='text-white text-base font-semibold ml-4'>{item.name}</Text>
+      </TouchableOpacity>
+    </ContextMenuView>
   );
 };
 
-const GaiaItemsSelected = ({ items, onItemPressed }) => {
+const GaiaItemsSelected = ({ items, onItemPressed, onItemEdit, onItemDelete }) => {
   return (
     <View className='w-full flex-row justify-start align start flex-wrap h-full'>
       <ScrollView className='h-full'>
         {items.map((item: NewInstruction) => (
-          <GaiaItemSelected key={item.CIS} item={item} complete={item.completed} onPress={onItemPressed}/>
+
+          <GaiaItemSelected key={item.CIS} item={item} complete={item.completed} onPress={onItemPressed} onEdit={onItemEdit} onDelete={onItemDelete} />
 
         ))}
       </ScrollView>

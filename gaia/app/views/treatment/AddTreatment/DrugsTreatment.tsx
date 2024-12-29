@@ -15,48 +15,10 @@ import { NewInstruction } from "types/Medical";
 import ModalInstructionDetails from "../../../components/ModalInstructionDetail";
 import { getMedbyCIS } from "../../../../data/Meds";
 
-
 export default function DrugsTreatment({ route, navigation }) {
     const { user } = route.params as {
         user: User;
     };
-
-    const [selectedDrug, setSelectedDrug] = React.useState(undefined); // * Used to be passed to the CreateInstruction screen
-    const [selectedInstruction, setSelectedInstruction] = React.useState(undefined); // * Used to display information about a selected instruction in the modal
-    const [instructionModalVisible, setInstructionModalVisible] = React.useState(false); // * Used to display information about a created instruction
-
-    const handleSheetChanges = useCallback((index) => {
-        if (index === -1) {
-            setInstructionModalVisible(false);
-        }
-    }, []);
-
-    const handleDrugSelection = async (drug: SearchDrug) => {
-        const newInstruction = NewInstructionFactory(drug);
-        console.log(newInstruction);
-        navigation.navigate("CreateInstruction", { newInstruction: newInstruction, user: user });
-    };
-
-    const handleInstructionClick = (instruction: NewInstruction) => {
-        console.log(instruction);
-        setSelectedInstruction(instruction);
-        let drugRelated = getMedbyCIS(instruction.CIS);
-        setSelectedDrug(drugRelated);
-        setInstructionModalVisible(true);
-    };
-
-    const canContinue = (): boolean => {
-        // TODO Check if TreatmentName is available
-
-        for (const instruction of TESTinstructions) {
-            if (!instruction.completed) {
-                return false;
-            }
-        }
-        
-        return true;
-    }
-
     const TESTinstructions: NewInstruction[] = [
         {
             CIS: 67119691,
@@ -134,6 +96,52 @@ export default function DrugsTreatment({ route, navigation }) {
         }
     ];
 
+    const [selectedDrug, setSelectedDrug] = React.useState(undefined); // * Used to be passed to the CreateInstruction screen
+    const [selectedInstruction, setSelectedInstruction] = React.useState(undefined); // * Used to display information about a selected instruction in the modal
+    const [instructionModalVisible, setInstructionModalVisible] = React.useState(false); // * Used to display information about a created instruction
+    const [instructions, setInstructions] = React.useState<NewInstruction[]>(TESTinstructions);
+
+    const handleSheetChanges = useCallback((index) => {
+        if (index === -1) {
+            setInstructionModalVisible(false);
+        }
+    }, []);
+
+    const handleDrugSelection = async (drug: SearchDrug) => {
+        const newInstruction = NewInstructionFactory(drug);
+        console.log(newInstruction);
+        navigation.navigate("CreateInstruction", { newInstruction: newInstruction, user: user });
+    };
+
+    const handleInstructionClick = (instruction: NewInstruction) => {
+        console.log(instruction);
+        setSelectedInstruction(instruction);
+        let drugRelated = getMedbyCIS(instruction.CIS);
+        setSelectedDrug(drugRelated);
+        setInstructionModalVisible(true);
+    };
+
+    const handleInstructionEdit = (instruction: NewInstruction) => {
+        navigation.navigate("CreateInstruction", { newInstruction: instruction, user: user });
+    }
+
+    const handleInstructionDelete = (instruction: NewInstruction) => {
+        let newInstructions = instructions.filter((item) => item.CIS !== instruction.CIS);
+        setInstructions(newInstructions);   
+    }
+
+    const canContinue = (): boolean => {
+        // TODO Check if TreatmentName is available
+
+        for (const instruction of TESTinstructions) {
+            if (!instruction.completed) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <SafeAreaView className="bg-white w-full h-full dark:bg-grey-100 px-4">
@@ -155,11 +163,12 @@ export default function DrugsTreatment({ route, navigation }) {
                             onItemMaintained={undefined}
                             allergies={user.allergies}
                         />
+
                         <GaiaItemsSelected
-                            items={TESTinstructions}
-                            onItemPressed={(item: NewInstruction) => {
-                                handleInstructionClick(item);
-                            }}
+                            items={instructions}
+                            onItemPressed={(item: NewInstruction) => handleInstructionClick(item)}
+                            onItemEdit={(item: NewInstruction) => handleInstructionEdit(item)}
+                            onItemDelete={(item: NewInstruction) => handleInstructionDelete(item)}
                         />
 
                         <Modal
@@ -180,6 +189,7 @@ export default function DrugsTreatment({ route, navigation }) {
                         </Modal>
 
                     </View>
+
                     <View className="w-[100%] flex-row justify-around bg-red-30 mb-4">
                         <GaiaButtonB
                             width="45%"
