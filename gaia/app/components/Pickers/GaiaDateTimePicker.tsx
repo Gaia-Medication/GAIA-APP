@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { TouchableOpacity, Text, TextInput, View } from 'react-native';
-import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { TouchableOpacity, Text, TextInput, View, Platform, SafeAreaView } from 'react-native';
 import { formatDate } from '../../utils/functions';
+// Remove this:
+import DateTimePickerModal from "react-native-modal-datetime-picker";
+import DateTimePicker from '@react-native-community/datetimepicker'; // <-- NEW IMPORT
 
 interface GaiaDateTimePickerProps {
     date: Date;
@@ -9,20 +11,37 @@ interface GaiaDateTimePickerProps {
     buttonDisabled: boolean;
     onDateChange: (date: Date) => void;
     onLongPress?: () => void;
-    mode: "date" | "time" | "datetime";
+    mode: 'date' | 'time' | 'datetime' | 'calendar';
 }
 
-const GaiaDateTimePicker = ({ date, buttonPlaceholder, buttonDisabled, onDateChange, onLongPress, mode }) => {
-
+const GaiaDateTimePicker = ({
+    date,
+    buttonPlaceholder,
+    buttonDisabled,
+    onDateChange,
+    onLongPress,
+    mode,
+}: GaiaDateTimePickerProps) => {
     const [selectedDate, setSelectedDate] = useState(date);
     const [pickerVisible, setPickerVisible] = useState(false);
-    const [buttonText, setButtonText] = useState(buttonPlaceholder);
 
-    const handleConfirm = (date) => {
-        setSelectedDate(date);
-        setPickerVisible(false);
-        onDateChange(date);
-    }
+    // We'll store the text shown in the left TextInput
+    const [buttonText] = useState(buttonPlaceholder);
+
+    // Handler for when user picks/dismisses
+    const handleChange = (event: any, newDate?: Date) => {
+        // On Android, pressing "cancel" or system back can give newDate as undefined
+        // On iOS, tapping outside or 'Cancel' sets event.type='dismissed'
+        if (Platform.OS === 'android') {
+            setPickerVisible(false);
+        }
+
+        if (event.type === 'set' && newDate) {
+            setSelectedDate(newDate);
+            onDateChange(newDate);
+        }
+        // If event.type === 'dismissed', do nothing special, just close.
+    };
 
     return (
         <TouchableOpacity
@@ -37,31 +56,60 @@ const GaiaDateTimePicker = ({ date, buttonPlaceholder, buttonDisabled, onDateCha
                 value={buttonText}
             />
             <View className="flex flex-row justify-center items-center gap-2">
+                {/* Date portion */}
                 <View className="flex flex-row justify-center items-center bg-grey-200 rounded-md p-2">
                     <Text className={`text-white text-center font-medium ${pickerVisible ? "text-green-100" : "text-white"}`}>
-                        {formatDate("dd mon yyyy", selectedDate)}
-                        
+                    {formatDate('dd mon yyyy', selectedDate)}
+                </Text>
+            </View>
+
+            {/* Time portion if mode='datetime' */}
+            {mode === 'datetime' && (
+                <View className="flex flex-row justify-center items-center bg-grey-200 rounded-md p-2">
+                    <Text className={`text-white text-center font-medium ${pickerVisible ? "text-green-100" : "text-white"}`}>
+                        {formatDate('hh:mm', selectedDate)}
                     </Text>
                 </View>
+            )}
+        </View>
 
-                {mode === "datetime" && (
-                    <View className="flex flex-row justify-center items-center bg-grey-200 rounded-md p-2">
-                        <Text className={`text-white text-center font-medium ${pickerVisible ? "text-green-100" : "text-white"}`}>
-                            {formatDate("hh:mm", selectedDate)}
-                        </Text>
-                    </View>
-                )}
-            </View>
+      {/* Conditionally render the native picker */ }
+    {
+        pickerVisible && mode == "calendar" && (
+            <DateTimePicker
+                value={selectedDate}
+                mode='date'
+                // For iOS only: 'datetime' is valid. On Android, 'datetime' is not
+                // officially supported. Typically we do two passes: one for date, then time.
+                // If you want a single pass on iOS, use mode="datetime" here.
+
+                display="default" // or "spinner", "calendar", etc.
+                onChange={handleChange}
+            // optional: is24Hour={true}
+            />
+        )
+    }
+
+    {
+        pickerVisible && mode !== "calendar" && (
 
             <DateTimePickerModal
                 isVisible={pickerVisible}
                 mode={mode}
-                onConfirm={handleConfirm}
-                onCancel={() => setPickerVisible(false)}
                 date={selectedDate}
+                onConfirm={(date: Date) => {
+                    setSelectedDate(date);
+                    onDateChange(date);
+                    setPickerVisible(false);
+                }}
+                onCancel={() => setPickerVisible(false)}
+                modalStyleIOS={{ marginBottom: 40 }}
             />
-        </TouchableOpacity>
-    );
+        )
+    }
+
+    </TouchableOpacity >
+  );
 };
 
 export default GaiaDateTimePicker;

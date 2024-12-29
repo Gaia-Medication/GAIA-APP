@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from "react";
-import { View, Text, Alert, ScrollView, Animated, Platform } from "react-native";
+import React, { useState, useRef } from "react";
+import { View, Text, Alert, ScrollView, Animated } from "react-native";
 import { AlertNotificationRoot } from "react-native-alert-notification";
 import { SafeAreaView } from "react-native-safe-area-context";
 import GaiaChoiceButtons from "../../../components/Buttons/GaiaChoiceButtons";
@@ -118,84 +118,79 @@ export default function CreateInstruction({ route, navigation }) {
     };
 
     return (
-            <SafeAreaView className="bg-white w-full h-full dark:bg-grey-100">
-                <AlertNotificationRoot>
-                    <View className="flex-1">
-                        <PageTitle title={newInstruction.name} />
-                        <ScrollView className="flex-1">
-                            <View className="px-4 pb-10">
-                                <View className="mb-10">
-                                    <Text className="color-grey-200 text-2xl font-medium mb-2">{"Fréquence"}</Text>
-                                    <GaiaChoiceButtons
-                                        buttons={[
-                                            { placeholder: "Régulier", selected: true },
-                                            { placeholder: "Flexible", selected: false },
-                                        ]}
-                                        onSelectionChange={handleSelectionChange}
-                                        canBeMultiple={false}
-                                        orientation={"horizontal"}
-                                        gap={""}
+        <SafeAreaView className="bg-white w-full h-full dark:bg-grey-100">
+            <AlertNotificationRoot>
+                <View className="flex-1">
+                    <PageTitle title={newInstruction.name} />
+                    <ScrollView className="flex-1">
+                        <View className="px-4 pb-10">
+                            <View className="mb-10">
+                                <Text className="color-grey-200 text-2xl font-medium mb-2">{"Fréquence"}</Text>
+                                <GaiaChoiceButtons
+                                    buttons={[
+                                        { placeholder: "Régulier", selected: true },
+                                        { placeholder: "Flexible", selected: false },
+                                    ]}
+                                    onSelectionChange={handleSelectionChange}
+                                    canBeMultiple={false}
+                                    orientation={"horizontal"}
+                                    gap={"4"}
+                                />
+                            </View>
+                            {regularity === "Régulier" ? (
+                                <View>
+                                    <Text className="color-grey-200 text-2xl font-medium mb-2">{"Sélectionner la fréquence"}</Text>
+                                    <FrequencySelector
+                                        menuItems={
+                                            [
+                                                {
+                                                    actionKey: 'key-01',
+                                                    actionTitle: 'Action #1',
+                                                },
+                                                {
+                                                    actionKey: 'key-02',
+                                                    actionTitle: 'Action #2',
+                                                },
+                                                {
+                                                    actionKey: 'key-03',
+                                                    actionTitle: 'Action #3',
+                                                }
+                                            ]
+                                        }
                                     />
                                 </View>
-                                {regularity === "Régulier" ? (
-                                    <View>
-                                        <Text className="color-grey-200 text-2xl font-medium mb-2">{"Sélectionner la fréquence"}</Text>
-                                        <FrequencySelector
-                                            menuItems={
-                                                [
-                                                    {
-                                                        actionKey: 'key-01',
-                                                        actionTitle: 'Action #1',
-                                                    },
-                                                    {
-                                                        actionKey: 'key-02',
-                                                        actionTitle: 'Action #2',
-                                                    },
-                                                    {
-                                                        actionKey: 'key-03',
-                                                        actionTitle: 'Action #3',
-                                                    }
-                                                ]
-                                            }
-                                        />
-                                    </View>
-                                ) : (
-                                    <View>
-                                        <Text className="color-grey-200 text-2xl font-medium mb-2">{"Prises"}</Text>
-                                        {customTakes.length > 0 && (
-                                            <FlatList
-                                                data={customTakes}
-                                                keyExtractor={(item) => item.id.toString()}
-                                                renderItem={({ item, index }) => (
-                                                    <Animated.View
-                                                        style={{
-                                                            opacity: item.animation, // Bind the opacity to the animation value
-                                                            transform: [{ translateY: item.translateY }] // Add vertical movement
-                                                        }}
-                                                        className="flex-row"
-                                                    >
-                                                        <GaiaDateTimePicker
-                                                            date={new Date(item.date)}
-                                                            mode={"datetime"}
-                                                            buttonPlaceholder={"Date et heure"}
-                                                            onLongPress={() => ShowAlertDelete(index)}
-                                                            buttonDisabled={undefined}
-                                                            onDateChange={handleDateChange(item)}
-                                                        />
-                                                    </Animated.View>
-                                                )}
+                            ) : (
+                                <View>
+                                    <Text className="color-grey-200 text-2xl font-medium mb-2">{"Prises"}</Text>
+                                    {customTakes.length > 0 && customTakes.map((item, index) => (
+                                        <Animated.View
+                                            key={item.id.toString()}
+                                            style={{
+                                                opacity: item.animation,
+                                                transform: [{ translateY: item.translateY }]
+                                            }}
+                                            className="flex-row"
+                                        >
+                                            <GaiaDateTimePicker
+                                                date={new Date(item.date)}
+                                                mode={"datetime"}
+                                                buttonPlaceholder={"Date et heure"}
+                                                onLongPress={() => ShowAlertDelete(index)}
+                                                buttonDisabled={undefined}
+                                                onDateChange={handleDateChange(item)}
                                             />
-                                        )}
-                                        <GaiaButtonB margin={"mt-4"} title={"Ajouter une prise"} onPress={handleAddTakeCustom} />
+                                        </Animated.View>
+                                    ))}
+                                    <GaiaButtonB margin={"mt-4"} title={"Ajouter une prise"} onPress={handleAddTakeCustom} />
 
-                                    </View>
-                                )}
+                                </View>
+                            )}
 
 
-                            </View>
-                        </ScrollView>
+                        </View>
+                    </ScrollView>
 
-                        { // TODO: Add a gradient to the bottom of the screen (no more expo grandiant, find RN gradient)
+                    { // TODO: Add a gradient to the bottom of the screen (no more expo grandiant, find RN gradient)
                         /* <LinearGradient
                             colors={['#1F1F1F00', '#1F1F1FFF']}
                             style={{
@@ -206,20 +201,20 @@ export default function CreateInstruction({ route, navigation }) {
                                 height: 30,
                             }}
                         /> */}
-                        
-                    </View>
 
-                    {/* Bottom buttons */}
-                    <View className="w-[100%] flex-row justify-around py-8 bg-grey-100">
-                        <GaiaButtonB width="45%" title="Précédent" onPress={() => navigation.goBack()} />
-                        <GaiaButtonA
-                            width="45%"
-                            disabled={!canContinue()} // Replace with your validation logic
-                            title="Suivant"
-                            onPress={handleButtonNext}
-                        />
-                    </View>
-                </AlertNotificationRoot>
-            </SafeAreaView>
+                </View>
+
+                {/* Bottom buttons */}
+                <View className="w-[100%] flex-row justify-around py-8 bg-grey-100">
+                    <GaiaButtonB width="45%" title="Précédent" onPress={() => navigation.goBack()} />
+                    <GaiaButtonA
+                        width="45%"
+                        disabled={!canContinue()} // Replace with your validation logic
+                        title="Suivant"
+                        onPress={handleButtonNext}
+                    />
+                </View>
+            </AlertNotificationRoot>
+        </SafeAreaView>
     );
 }

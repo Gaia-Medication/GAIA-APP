@@ -19,7 +19,7 @@ const GaiaChoiceButtons: React.FC<GaiaChoiceButtonsProps> = ({
     buttons: initialButtons,
     canBeMultiple,
     orientation,
-    gap,
+    gap="0",
     onSelectionChange
 }) => {
     // Use state to manage button selection

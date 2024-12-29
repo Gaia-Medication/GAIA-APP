@@ -146,7 +146,11 @@ export default function DrugsTreatment({ route, navigation }) {
                             searchFunction={searchMed}
                             editable={true}
                             onItemPressed={(item: SearchDrug) => {
-                                handleDrugSelection(item);
+                                try {
+                                    handleDrugSelection(item);
+                                } catch (error) {
+                                    console.log(error);
+                                }
                             }}
                             onItemMaintained={undefined}
                             allergies={user.allergies}
