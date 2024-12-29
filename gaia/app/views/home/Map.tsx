@@ -109,15 +109,6 @@ export default function Map({ navigation }) {
 
   return (
     <View className=" flex bg-white w-full h-full dark:bg-[#131f24]">
-      {tutoMap === "0" && (
-        <TutorialBubble
-          isClicked={handleTuto}
-          styleAdded={{ top: "70%", left: "5%" }}
-          text={
-            "Voici la page de la carte où vous pouvez retrouver les établissements\nde santé proche de chez vous, 1/1"
-          }
-        ></TutorialBubble>
-      )}
       <MapView
         ref={(map) => (this.map = map)}
         style={{ width: "100%", height: "100%" }}

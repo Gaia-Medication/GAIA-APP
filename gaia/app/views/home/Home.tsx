@@ -8,6 +8,7 @@ import {
   View,
   TextInput,
 } from 'react-native';
+import { Input } from "react-native-elements";
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import callGoogleVisionAsync from '../../../OCR/helperFunctions';
 import {
@@ -256,11 +257,17 @@ export default function Home({ navigation }) {
                 </Text>
                 <View style={styles.searchBarwQR}>
                   <View style={styles.searchBar}>
-                    <TextInput
+                  <Input
                       style={styles.searchBarInput}
                       placeholder="Doliprane, Aspirine ..."
                       placeholderTextColor="#9CDE00"
+                      leftIcon={{
+                        type: "feather",
+                        name: "search",
+                        color: "#9CDE00",
+                      }}
                       value={""}
+                      inputContainerStyle={styles.searchBarContainer}
                       //editable={false}
                       onPressIn={() => navigation.navigate("Search", { user: user })}
                     />
