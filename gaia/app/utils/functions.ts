@@ -13,6 +13,7 @@ export const formatDate = (format: string, date: Date) => {
     const year = date.getFullYear();
     const monthName = date.toLocaleString('default', { month: 'short' });
 
+    // Sun Jan 05 2025 02:48:56 GMT+0100
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
 
@@ -20,13 +21,12 @@ export const formatDate = (format: string, date: Date) => {
 
     // Replace date tokens
     formattedDate = formattedDate.replace('dd', day);
-    formattedDate = formattedDate.replace('mm', month);
     formattedDate = formattedDate.replace('yyyy', year.toString());
     formattedDate = formattedDate.replace('mon', monthName);
 
     // Replace time tokens
     formattedDate = formattedDate.replace('hh', hours);
-    formattedDate = formattedDate.replace('ii', minutes);
+    formattedDate = formattedDate.replace('mm', minutes);
 
     return formattedDate;
 };

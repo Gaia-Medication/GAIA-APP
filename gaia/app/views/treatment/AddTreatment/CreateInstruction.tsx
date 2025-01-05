@@ -7,58 +7,129 @@ import GaiaButtonB from "../../../components/Buttons/GaiaButtonB";
 import GaiaButtonA from "../../../components/Buttons/GaiaButtonA";
 import GaiaDateTimePicker from "../../../components/Pickers/GaiaDateTimePicker";
 import PageTitle from "../../../components/PageTitle";
-import { FlatList } from "react-native";
-import FrequencySelector from "../../../components/FrequencySelector";
+import { GaiaDropdownMenu } from "../../../components/Pickers/GaiaDropdownMenu";
+import LinearGradient from "react-native-linear-gradient";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import GaiaButtonD from "components/Buttons/GaiaButtonD";
+import { CustomTake, RegularContinuityMode, RegularIntervalType, RegularIntervalUnit } from "types/Medical";
+import { RegularTakesTime } from "./components/RegularTakesTime.tsx";
+import { Calendar, CalendarTheme, toDateId } from "@marceloterreiro/flash-calendar";
+import { GaiaCalendar } from "components/GaiaCalendar";
+import { Modal } from "react-native";
 
 export default function CreateInstruction({ route, navigation }) {
+    // ! ADD IMPOSSIBILITY TO SELECT A DATE ALREADY USED IN A TAKE (id conflict)
     const { newInstruction, user } = route.params;
-    const [regularity, setRegularity] = useState("Régulier");
-    const [customTakes, setCustomTakes] = useState([]);
 
-    const animations = useRef([]); // Store animations in useRef so they persist through re-renders
+    const [regularity, setRegularity] = useState("Régulier");
+    const [customTakes, setCustomTakes] = useState<CustomTake[]>([]);
+    const [numOpen, setNumOpen] = useState(false);
+    const [freqOpen, setFreqOpen] = useState(false);
+    const [regularityOpen, setRegularityOpen] = useState(false);
+    const [frequencyNumber, setFrequencyNumber] = useState("1");
+    const [frequencyPeriod, setFrequencyPeriod] = useState("jour");
+    const [regularContinuityMode, setRegularContinuityMode] = useState<string>(RegularContinuityMode.DAILY.toString());
+
+    const items = [
+        { label: "jour", value: "day" },
+        { label: "semaine", value: "week" },
+    ];
+
+    const numbers = [
+        { label: "1", value: "1" },
+        { label: "2", value: "2" },
+        { label: "3", value: "3" },
+        { label: "4", value: "4" },
+        { label: "5", value: "5" },
+    ];
+
+    const regularContinuities = [
+        { label: "Tous les jours", value: RegularContinuityMode.DAILY },
+        { label: "Certains jours", value: RegularContinuityMode.CUSTOM },
+    ];
+
+    const [selectedItem, setSelectedItem] = useState("jour");
+
+    /**
+     *  Stockage séparé des Animated.Value pour que:
+     *  - L'état de navigation ne contienne pas ces valeurs non sérialisables.
+     *  - On associe animations.current[index] à un "take" donné.
+     */
+    const animations = useRef([]);
 
     const handleSelectionChange = (selectedRegularity) => {
         setRegularity(selectedRegularity);
     };
 
     const handleAddTakeCustom = () => {
-        let newDate = customTakes.length > 0 ? new Date(customTakes[customTakes.length - 1].date) : new Date();
+        let newDate =
+            customTakes.length > 0
+                ? new Date(customTakes[customTakes.length - 1].date)
+                : new Date();
         newDate.setHours(newDate.getHours() + 1);
-        const newTake = {
-            id: customTakes.length,
+
+        // Objet de prise (SANS Animated.Value)
+        const newTake: CustomTake = {
+
+            CIS: newInstruction.CIS,
             date: newDate.toString(),
+            quantity: 1,
+        };
+
+        // On initialise l'animation associée dans un useRef séparé
+        animations.current[customTakes.length] = {
             animation: new Animated.Value(1),
             translateY: new Animated.Value(0),
         };
-        animations.current.push(newTake); // Store the new animation in the ref
+
         setCustomTakes([...customTakes, newTake]);
+        console.log("customTakes => ", customTakes);
     };
 
-    const handleButtonNext = () => {
-        navigation.navigate("QuantitiesInstruction", { newInstruction, user, takes: customTakes });
+    const handleRemoveAllTakes = () => {
+        setCustomTakes([]);
+        animations.current = [];
     };
 
-    const ShowAlertDelete = (index: number) => {
+    const ShowAlertDelete = (index) => {
         Alert.alert(
             "Supprimer",
             "Voulez-vous vraiment supprimer cette prise ?",
             [
                 {
                     text: "Annuler",
-                    style: "cancel"
+                    style: "cancel",
                 },
                 {
                     text: "Supprimer",
                     onPress: () => handleDeleteItem(index),
-                    style: "destructive"
-                }
+                    style: "destructive",
+                },
             ]
         );
     };
 
+    const showAlertDeleteAll = () => {
+        Alert.alert(
+            "Supprimer tout",
+            "Voulez-vous vraiment supprimer toutes les prises ?",
+            [
+                {
+                    text: "Annuler",
+                    style: "cancel",
+                },
+                {
+                    text: "Supprimer",
+                    onPress: handleRemoveAllTakes,
+                    style: "destructive",
+                },
+            ]
+        );
+    }
+
     const handleDateChange = (take) => (date) => {
         const updatedTakes = customTakes.map((item) => {
-            if (item.id === take.id) {
+            if (item.date === take.date) {
                 return {
                     ...item,
                     date: date.toString(),
@@ -70,151 +141,224 @@ export default function CreateInstruction({ route, navigation }) {
         setCustomTakes(updatedTakes);
     };
 
-    const animateOtherItems = (index: number) => { // TODO: Try to make it work to add an animation to the other items
-        customTakes.forEach((item, i) => {
-            console.log("i", i);
-            if (i !== index && i > index) {
-                console.log("*i", i);
-                Animated.timing(item.translateY, {
-                    toValue: -55,
-                    duration: 200,
-                    useNativeDriver: true,
-                }).start();
-            }
-        });
-    };
-
     const handleDeleteItem = (index) => {
-        const item = customTakes[index];
-        Animated.timing(item.animation, {
-            toValue: 0,
-            duration: 300,
-            useNativeDriver: true,
-        }).start(() => {
-            const updatedTakes = customTakes.filter((item, i) => i !== index);
+        const itemAnimations = animations.current[index];
+        if (itemAnimations) {
+            // Animation de sortie
+            Animated.timing(itemAnimations.animation, {
+                toValue: 0,
+                duration: 300,
+                useNativeDriver: true,
+            }).start(() => {
+                // Une fois l'animation terminée, on supprime la prise
+                const updatedTakes = customTakes.filter((_, i) => i !== index);
+                setCustomTakes(updatedTakes);
+
+                // On retire aussi l'animation associée
+                animations.current = animations.current.filter((_, i) => i !== index);
+
+                // Optionnel: animateOtherItems(index);
+            });
+        } else {
+            // S'il n'y avait pas d'animations pour cet index
+            const updatedTakes = customTakes.filter((_, i) => i !== index);
             setCustomTakes(updatedTakes);
-            //animateOtherItems(index);
-        });
+        }
     };
 
     const canContinue = () => {
-
         if (regularity === "Régulier") {
             return true;
         } else {
-            const minDelay = 1000 * 60 * 60; // 1 hour
-            if (customTakes.length == 0) {
+            if (customTakes.length === 0) {
                 return false;
             }
             for (let i = 0; i < customTakes.length; i++) {
                 if (new Date(customTakes[i].date) < new Date()) {
                     return false;
                 }
-                // TODO: Check if the next take is at least 1 hour after the previous one
+                // TODO: Vérifier le délai d'au moins 1h entre deux prises
             }
             return true;
-
         }
     };
 
+    const handleButtonNext = () => {
+        navigation.navigate("QuantitiesInstruction", {
+            newInstruction,
+            user,
+            takes: customTakes,
+        });
+    };
+
+    const today = toDateId(new Date());
+
     return (
-        <SafeAreaView className="bg-white w-full h-full dark:bg-grey-100">
-            <AlertNotificationRoot>
-                <View className="flex-1">
-                    <PageTitle title={newInstruction.name} />
-                    <ScrollView className="flex-1">
-                        <View className="px-4 pb-10">
-                            <View className="mb-10">
-                                <Text className="color-grey-200 text-2xl font-medium mb-2">{"Fréquence"}</Text>
-                                <GaiaChoiceButtons
-                                    buttons={[
-                                        { placeholder: "Régulier", selected: true },
-                                        { placeholder: "Flexible", selected: false },
-                                    ]}
-                                    onSelectionChange={handleSelectionChange}
-                                    canBeMultiple={false}
-                                    orientation={"horizontal"}
-                                    gap={"4"}
-                                />
-                            </View>
-                            {regularity === "Régulier" ? (
-                                <View>
-                                    <Text className="color-grey-200 text-2xl font-medium mb-2">{"Sélectionner la fréquence"}</Text>
-                                    <FrequencySelector
-                                        menuItems={
-                                            [
-                                                {
-                                                    actionKey: 'key-01',
-                                                    actionTitle: 'Action #1',
-                                                },
-                                                {
-                                                    actionKey: 'key-02',
-                                                    actionTitle: 'Action #2',
-                                                },
-                                                {
-                                                    actionKey: 'key-03',
-                                                    actionTitle: 'Action #3',
-                                                }
-                                            ]
-                                        }
+        <GestureHandlerRootView style={{ flex: 1 }}>
+            <SafeAreaView className="bg-white w-full h-full dark:bg-grey-100">
+                <AlertNotificationRoot>
+                    <View className="flex-1">
+                        <PageTitle title={newInstruction.name} />
+                        <ScrollView className="flex-1" keyboardShouldPersistTaps="handled">
+                            <View className="px-4 pb-20">
+                                {/* Choix Régulier/Flexible */}
+                                <View className="mb-10">
+                                    <Text className="color-grey-200 text-2xl font-medium mb-2">
+                                        {"Fréquence"}
+                                    </Text>
+                                    <GaiaChoiceButtons
+                                        buttons={[
+                                            { placeholder: "Régulier", selected: true },
+                                            { placeholder: "Flexible", selected: false },
+                                        ]}
+                                        onSelectionChange={handleSelectionChange}
+                                        canBeMultiple={false}
+                                        orientation={"horizontal"}
+                                        gap={"4"}
                                     />
                                 </View>
-                            ) : (
-                                <View>
-                                    <Text className="color-grey-200 text-2xl font-medium mb-2">{"Prises"}</Text>
-                                    {customTakes.length > 0 && customTakes.map((item, index) => (
-                                        <Animated.View
-                                            key={item.id.toString()}
-                                            style={{
-                                                opacity: item.animation,
-                                                transform: [{ translateY: item.translateY }]
-                                            }}
-                                            className="flex-row"
-                                        >
-                                            <GaiaDateTimePicker
-                                                date={new Date(item.date)}
-                                                mode={"datetime"}
-                                                buttonPlaceholder={"Date et heure"}
-                                                onLongPress={() => ShowAlertDelete(index)}
-                                                buttonDisabled={undefined}
-                                                onDateChange={handleDateChange(item)}
+
+                                {/* Mode Régulier */}
+                                {regularity === "Régulier" ? (
+                                    <View>
+                                        <Text className="color-grey-200 text-2xl font-medium mb-2">
+                                            {"Sélectionner la fréquence"}
+                                        </Text>
+                                        <View className="flex-row items-center mb-4">
+                                            <GaiaDropdownMenu
+                                                placeholder={frequencyNumber}
+                                                visible={numOpen}
+                                                handleClose={() => setNumOpen(false)}
+                                                handleOpen={() => setNumOpen(true)}
+                                                menuItems={numbers}
+                                                onMenuItemPress={setFrequencyNumber}
                                             />
-                                        </Animated.View>
-                                    ))}
-                                    <GaiaButtonB margin={"mt-4"} title={"Ajouter une prise"} onPress={handleAddTakeCustom} />
+                                            <Text className="text-white text-xl font-semibold mx-2">
+                                                fois par
+                                            </Text>
+                                            <GaiaDropdownMenu
+                                                visible={freqOpen}
+                                                handleClose={() => setFreqOpen(false)}
+                                                handleOpen={() => setFreqOpen(true)}
+                                                menuItems={items}
+                                                placeholder={frequencyPeriod}
+                                                onMenuItemPress={setFrequencyPeriod}
+                                            />
+                                        </View>
 
-                                </View>
-                            )}
+                                        <RegularTakesTime
+                                            CIS={newInstruction.CIS}
+                                            frequencyNumber={parseInt(frequencyNumber)}
+                                            frequencyUnit={RegularIntervalUnit.DAY}
+                                            updateTakes={setCustomTakes}
+                                        />
 
+                                        <GaiaDropdownMenu
+                                            placeholder={regularContinuityMode}
+                                            visible={regularityOpen}
+                                            handleClose={() => setRegularityOpen(false)}
+                                            handleOpen={() => setRegularityOpen(true)}
+                                            menuItems={regularContinuities}
+                                            onMenuItemPress={setRegularContinuityMode}
+                                        />
 
-                        </View>
-                    </ScrollView>
+                                        <Modal
+                                            visible={false}
+                                            animationType="slide"
+                                            presentationStyle="pageSheet"
+                                        >
+                                            <GaiaCalendar
+                                                markedDates={customTakes.map((take) => new Date(take.date))}
+                                                onDayPress={(date) => {
+                                                    console.log("Date selected => ", date);
+                                                }}
+                                            />
+                                        </Modal>
 
-                    { // TODO: Add a gradient to the bottom of the screen (no more expo grandiant, find RN gradient)
-                        /* <LinearGradient
-                            colors={['#1F1F1F00', '#1F1F1FFF']}
+                                    </View>
+                                ) : (
+
+                                    // Mode Flexible
+                                    <View>
+                                        <View className="flex-row justify-between items-end mb-4">
+                                            <Text className="color-grey-200 text-2xl font-medium mb-2">
+                                                {"Prises "}{customTakes.length > 0 ? `(${customTakes.length})` : ""}
+                                            </Text>
+                                            <GaiaButtonD
+                                                title={"Tout effacer"}
+                                                onPress={showAlertDeleteAll}
+                                                width={"45%"}
+                                                disabled={customTakes.length === 0}
+                                            />
+                                        </View>
+                                        {customTakes.length > 0 &&
+                                            customTakes.map((item, index) => {
+                                                // Récupération des Animated.Value pour l'item
+                                                const currentAnimations = animations.current[index];
+                                                return (
+                                                    <Animated.View
+                                                        key={item.date.toString()}
+                                                        style={{
+                                                            opacity: currentAnimations?.animation ?? 1,
+                                                            transform: [
+                                                                {
+                                                                    translateY:
+                                                                        currentAnimations?.translateY ?? 0,
+                                                                },
+                                                            ],
+                                                        }}
+                                                        className="flex-row"
+                                                    >
+                                                        <GaiaDateTimePicker
+                                                            date={new Date(item.date)}
+                                                            mode={"datetime"}
+                                                            buttonPlaceholder={"Date et heure"}
+                                                            onLongPress={() => ShowAlertDelete(index)}
+                                                            buttonDisabled={undefined}
+                                                            onDateChange={handleDateChange(item)}
+                                                        />
+                                                    </Animated.View>
+                                                );
+                                            })}
+                                        <GaiaButtonB
+                                            margin={"mt-4"}
+                                            title={"Ajouter une prise"}
+                                            onPress={handleAddTakeCustom}
+                                        />
+                                    </View>
+                                )}
+                            </View>
+                        </ScrollView>
+
+                        {/* Linear gradient en bas */}
+                        <LinearGradient
+                            colors={["#1F1F1F00", "#1F1F1FFF"]}
                             style={{
-                                position: 'absolute',
+                                position: "absolute",
                                 left: 0,
                                 right: 0,
                                 bottom: 0,
-                                height: 30,
+                                height: 80,
                             }}
-                        /> */}
+                        />
+                    </View>
 
-                </View>
-
-                {/* Bottom buttons */}
-                <View className="w-[100%] flex-row justify-around py-8 bg-grey-100">
-                    <GaiaButtonB width="45%" title="Précédent" onPress={() => navigation.goBack()} />
-                    <GaiaButtonA
-                        width="45%"
-                        disabled={!canContinue()} // Replace with your validation logic
-                        title="Suivant"
-                        onPress={handleButtonNext}
-                    />
-                </View>
-            </AlertNotificationRoot>
-        </SafeAreaView>
+                    {/* Bottom buttons */}
+                    <View className="w-[100%] flex-row justify-around py-8 bg-grey-100">
+                        <GaiaButtonB
+                            width="45%"
+                            title="Précédent"
+                            onPress={() => navigation.goBack()}
+                        />
+                        <GaiaButtonA
+                            width="45%"
+                            disabled={!canContinue()}
+                            title="Suivant"
+                            onPress={handleButtonNext}
+                        />
+                    </View>
+                </AlertNotificationRoot>
+            </SafeAreaView>
+        </GestureHandlerRootView>
     );
 }

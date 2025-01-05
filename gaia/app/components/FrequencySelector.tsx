@@ -1,66 +1,65 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
     View,
     Text,
     TextInput,
+    TouchableOpacity,
 } from 'react-native';
-import { ContextMenuView } from 'react-native-ios-context-menu';
+import { GaiaDropdownMenu } from './Pickers/GaiaDropdownMenu';
 
 
 interface MenuItem {
-    actionKey: string;
+    actionKey: string ;
     actionTitle: string;
 }
 
 interface FrequencyPickerProps {
     menuItems: MenuItem[];
+    numberItems: MenuItem[];
+    handleFrequencyChange: (actionKey: string) => void;
 }
 
-const FrequencyPicker: React.FC<FrequencyPickerProps> = ({ menuItems }) => {
+const FrequencyPicker: React.FC<FrequencyPickerProps> = ({ menuItems, numberItems, handleFrequencyChange }) => {
+    const [frequency, setFrequency] = useState('day');
+    const [frequencyNumber, setFrequencyNumber] = useState('1');
+
+    const [visibleFrequency, setVisibleFrequency] = useState(false);
+    const [visibleNumber, setVisibleNumber] = useState(false);
 
     return (
         <View className='flex-row gap-3 items-center'>
-            <TextInput className='w-auto bg-grey-200 p-2 rounded-xl text-xl text-white' style={{ textAlignVertical: 'center' }} />
-            <Text className='text-white text-xl font-semibold ml-4 w-50'>fois par</Text>
-            <ContextMenuView
-                menuConfig={{
-                    menuTitle: 'Actions',
-                    menuItems: [{
-                        actionKey: 'details',
-                        actionTitle: 'Résumé',
-                        icon: {
-                            type: 'IMAGE_SYSTEM',
-                            imageValue: {
-                              systemName: 'doc.text',
-                            },
-                          }
-                    }, {
-                        actionKey: 'modify',
-                        actionTitle: 'Modifier',
-                        icon: {
-                            type: 'IMAGE_SYSTEM',
-                            imageValue: {
-                              systemName: 'pencil',
-                            },
-                          }
-                    }, {
-                        actionKey: 'delete',
-                        actionTitle: 'Supprimer',
-                        menuAttributes: ['destructive'],
-                        icon: {
-                            type: 'IMAGE_SYSTEM',
-                            imageValue: {
-                              systemName: 'trash',
-                            },
-                          }
-                    }],
-
+            <GaiaDropdownMenu
+                visible={visibleNumber}
+                handleOpen={() => setVisibleNumber(true)}
+                handleClose={() => setVisibleNumber(false)}
+                trigger={
+                    <TouchableOpacity onPress={() => setVisibleNumber(true)}>
+                        <Text className='text-white text-xl font-semibold text-center'>{frequencyNumber}</Text>
+                    </TouchableOpacity>
+                }
+                menuItems={numberItems}
+                onMenuItemPress={(actionKey) => {
+                    handleFrequencyChange(actionKey)
+                    console.log(actionKey)
                 }}
-            >
-                <Text>
-                    Press And Hold To Show Context Menu
-                </Text>
-            </ContextMenuView>
+            />
+            <Text className='text-white text-xl font-semibold ml-4 w-50'>fois par</Text>
+            <GaiaDropdownMenu
+                visible={visibleFrequency}
+                handleOpen={() => setVisibleFrequency(true)}
+                handleClose={() => setVisibleFrequency(false)}
+                trigger={
+                    <TouchableOpacity onPress={() => setVisibleFrequency(true)}>
+                        <Text className='text-white text-xl font-semibold text-center'>{menuItems.find(item => item.actionKey === frequency)?.actionTitle}</Text>
+                    </TouchableOpacity>
+                }
+                menuItems={menuItems}
+                onMenuItemPress={(actionKey) => {
+                    handleFrequencyChange(actionKey)
+                    console.log(actionKey)
+                }}
+            />
+
 
         </View>
     );

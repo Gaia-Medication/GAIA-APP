@@ -11,6 +11,7 @@ interface GaiaDateTimePickerProps {
     buttonDisabled: boolean;
     onDateChange: (date: Date) => void;
     onLongPress?: () => void;
+    timeDayOnly?: boolean;
     mode: 'date' | 'time' | 'datetime' | 'calendar';
 }
 
@@ -20,6 +21,7 @@ const GaiaDateTimePicker = ({
     buttonDisabled,
     onDateChange,
     onLongPress,
+    timeDayOnly,
     mode,
 }: GaiaDateTimePickerProps) => {
     const [selectedDate, setSelectedDate] = useState(date);
@@ -48,6 +50,7 @@ const GaiaDateTimePicker = ({
             disabled={buttonDisabled}
             onPress={() => setPickerVisible(true)}
             onLongPress={onLongPress}
+            delayLongPress={400}
             className="flex flex-row justify-between items-center bg-grey-300 rounded-lg w-[100%] py-1 my-2 h-fit-content px-3"
         >
             <TextInput
@@ -56,60 +59,64 @@ const GaiaDateTimePicker = ({
                 value={buttonText}
             />
             <View className="flex flex-row justify-center items-center gap-2">
-                {/* Date portion */}
-                <View className="flex flex-row justify-center items-center bg-grey-200 rounded-md p-2">
-                    <Text className={`text-white text-center font-medium ${pickerVisible ? "text-green-100" : "text-white"}`}>
-                    {formatDate('dd mon yyyy', selectedDate)}
-                </Text>
+                {(mode === 'calendar' || mode === 'datetime' || mode === 'date') && (
+                    <View className="flex flex-row justify-center items-center">
+                        {/* Date portion */}
+                        <View className="flex flex-row justify-center items-center bg-grey-200 rounded-md p-2">
+                            <Text className={`text-white text-center font-medium ${pickerVisible ? "text-green-100" : "text-white"}`}>
+                                {formatDate('dd mon yyyy', selectedDate)}
+                            </Text>
+                        </View>
+                    </View>
+                )}
+
+                {/* Time portion if mode='datetime' */}
+                {(mode === 'datetime' || mode === 'time') && (
+                    <View className="flex flex-row justify-center items-center bg-grey-200 rounded-md p-2">
+                        <Text className={`text-white text-center font-medium ${pickerVisible ? "text-green-100" : "text-white"}`}>
+                            {formatDate('hh:mm', selectedDate)}
+                        </Text>
+                    </View>
+                )}
             </View>
 
-            {/* Time portion if mode='datetime' */}
-            {mode === 'datetime' && (
-                <View className="flex flex-row justify-center items-center bg-grey-200 rounded-md p-2">
-                    <Text className={`text-white text-center font-medium ${pickerVisible ? "text-green-100" : "text-white"}`}>
-                        {formatDate('hh:mm', selectedDate)}
-                    </Text>
-                </View>
-            )}
-        </View>
+            {/* Conditionally render the native picker */}
+            {
+                pickerVisible && mode == "calendar" && (
+                    <DateTimePicker
+                        value={selectedDate}
+                        mode='date'
+                        // For iOS only: 'datetime' is valid. On Android, 'datetime' is not
+                        // officially supported. Typically we do two passes: one for date, then time.
+                        // If you want a single pass on iOS, use mode="datetime" here.
 
-      {/* Conditionally render the native picker */ }
-    {
-        pickerVisible && mode == "calendar" && (
-            <DateTimePicker
-                value={selectedDate}
-                mode='date'
-                // For iOS only: 'datetime' is valid. On Android, 'datetime' is not
-                // officially supported. Typically we do two passes: one for date, then time.
-                // If you want a single pass on iOS, use mode="datetime" here.
+                        display="default" // or "spinner", "calendar", etc.
+                        onChange={handleChange}
+                    // optional: is24Hour={true}
+                    />
+                )
+            }
 
-                display="default" // or "spinner", "calendar", etc.
-                onChange={handleChange}
-            // optional: is24Hour={true}
-            />
-        )
-    }
+            {
+                pickerVisible && mode !== "calendar" && (
 
-    {
-        pickerVisible && mode !== "calendar" && (
+                    <DateTimePickerModal
+                        isVisible={pickerVisible}
+                        mode={mode}
+                        date={selectedDate}
+                        onConfirm={(date: Date) => {
+                            setSelectedDate(date);
+                            onDateChange(date);
+                            setPickerVisible(false);
+                        }}
+                        onCancel={() => setPickerVisible(false)}
+                        modalStyleIOS={{ marginBottom: 40 }}
+                    />
+                )
+            }
 
-            <DateTimePickerModal
-                isVisible={pickerVisible}
-                mode={mode}
-                date={selectedDate}
-                onConfirm={(date: Date) => {
-                    setSelectedDate(date);
-                    onDateChange(date);
-                    setPickerVisible(false);
-                }}
-                onCancel={() => setPickerVisible(false)}
-                modalStyleIOS={{ marginBottom: 40 }}
-            />
-        )
-    }
-
-    </TouchableOpacity >
-  );
+        </TouchableOpacity >
+    );
 };
 
 export default GaiaDateTimePicker;

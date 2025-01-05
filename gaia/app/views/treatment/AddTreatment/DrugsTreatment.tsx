@@ -5,12 +5,12 @@ import GaiaSearchList from "../../../components/GaiaSearchList";
 import PageTitle from "../../../components/PageTitle";
 import { searchMed } from "../../../../data/Search";
 import React, { useCallback } from "react";
-import { View, Modal } from "react-native";
+import { View, Modal, KeyboardAvoidingView, Platform } from "react-native";
 import { AlertNotificationRoot } from "react-native-alert-notification";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SearchDrug } from "types/Search";
-import { NewInstructionFactory } from "../../../../types/Factories";
+import { NewInstructionFactory } from "../../../types/Factories";
 import { NewInstruction } from "types/Medical";
 import ModalInstructionDetails from "../../../components/ModalInstructionDetail";
 import { getMedbyCIS } from "../../../../data/Meds";
@@ -19,6 +19,7 @@ export default function DrugsTreatment({ route, navigation }) {
     const { user } = route.params as {
         user: User;
     };
+    
     const TESTinstructions: NewInstruction[] = [
         {
             CIS: 67119691,
@@ -127,7 +128,7 @@ export default function DrugsTreatment({ route, navigation }) {
 
     const handleInstructionDelete = (instruction: NewInstruction) => {
         let newInstructions = instructions.filter((item) => item.CIS !== instruction.CIS);
-        setInstructions(newInstructions);   
+        setInstructions(newInstructions);
     }
 
     const canContinue = (): boolean => {
@@ -138,7 +139,7 @@ export default function DrugsTreatment({ route, navigation }) {
                 return false;
             }
         }
-        
+
         return true;
     }
 
@@ -146,63 +147,70 @@ export default function DrugsTreatment({ route, navigation }) {
         <GestureHandlerRootView style={{ flex: 1 }}>
             <SafeAreaView className="bg-white w-full h-full dark:bg-grey-100 px-4">
                 <AlertNotificationRoot>
-                    <PageTitle title={"Nouveau traitement"} />
-                    <View className="flex-1">
+                    <KeyboardAvoidingView
+                        keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
+                        behavior="padding"
+                        style={{ flex: 1, paddingBottom: 20 }}
+                    >
 
-                        <GaiaSearchList
-                            inputPlaceholder="Rechercher un médicament"
-                            searchFunction={searchMed}
-                            editable={true}
-                            onItemPressed={(item: SearchDrug) => {
-                                try {
-                                    handleDrugSelection(item);
-                                } catch (error) {
-                                    console.log(error);
-                                }
-                            }}
-                            onItemMaintained={undefined}
-                            allergies={user.allergies}
-                        />
+                        <PageTitle title={"Nouveau traitement"} />
+                        <View className="flex-1">
 
-                        <GaiaItemsSelected
-                            items={instructions}
-                            onItemPressed={(item: NewInstruction) => handleInstructionClick(item)}
-                            onItemEdit={(item: NewInstruction) => handleInstructionEdit(item)}
-                            onItemDelete={(item: NewInstruction) => handleInstructionDelete(item)}
-                        />
-
-                        <Modal
-                            animationType="slide"
-                            presentationStyle="pageSheet"
-                            visible={instructionModalVisible}
-                            onRequestClose={() => {
-                                setInstructionModalVisible(false);
-                            }}
-                        >
-                            <ModalInstructionDetails
-                                instruction={selectedInstruction}
-                                drugRelated={selectedDrug}
-                                onClickClose={() => setInstructionModalVisible(false)}
-                                onClickValidate={() => setInstructionModalVisible(false)}
-                                canValidate={false}
+                            <GaiaSearchList
+                                inputPlaceholder="Rechercher un médicament"
+                                searchFunction={searchMed}
+                                editable={true}
+                                onItemPressed={(item: SearchDrug) => {
+                                    try {
+                                        handleDrugSelection(item);
+                                    } catch (error) {
+                                        console.log(error);
+                                    }
+                                }}
+                                onItemMaintained={undefined}
+                                allergies={user.allergies}
                             />
-                        </Modal>
 
-                    </View>
+                            <GaiaItemsSelected
+                                items={instructions}
+                                onItemPressed={(item: NewInstruction) => handleInstructionClick(item)}
+                                onItemEdit={(item: NewInstruction) => handleInstructionEdit(item)}
+                                onItemDelete={(item: NewInstruction) => handleInstructionDelete(item)}
+                            />
 
-                    <View className="w-[100%] flex-row justify-around bg-red-30 mb-4">
-                        <GaiaButtonB
-                            width="45%"
-                            title="Précédent"
-                            onPress={() => navigation.goBack()}
-                        />
-                        <GaiaButtonA
-                            width="45%"
-                            disabled={!canContinue()}
-                            title="Suivant"
-                            onPress={() => navigation.navigate("DrugsTreatment")}
-                        />
-                    </View>
+                            <Modal
+                                animationType="slide"
+                                presentationStyle="pageSheet"
+                                visible={instructionModalVisible}
+                                onRequestClose={() => {
+                                    setInstructionModalVisible(false);
+                                }}
+                            >
+                                <ModalInstructionDetails
+                                    instruction={selectedInstruction}
+                                    drugRelated={selectedDrug}
+                                    onClickClose={() => setInstructionModalVisible(false)}
+                                    onClickValidate={() => setInstructionModalVisible(false)}
+                                    canValidate={false}
+                                />
+                            </Modal>
+
+                        </View>
+
+                        <View className="w-[100%] flex-row justify-around bg-red-30 mb-4">
+                            <GaiaButtonB
+                                width="45%"
+                                title="Précédent"
+                                onPress={() => navigation.goBack()}
+                            />
+                            <GaiaButtonA
+                                width="45%"
+                                disabled={!canContinue()}
+                                title="Suivant"
+                                onPress={() => navigation.navigate("DrugsTreatment")}
+                            />
+                        </View>
+                    </KeyboardAvoidingView>
 
                 </AlertNotificationRoot>
             </SafeAreaView>

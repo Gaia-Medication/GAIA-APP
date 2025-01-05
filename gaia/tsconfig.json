@@ -6,7 +6,8 @@
 
     "baseUrl": "./",
     "paths": {
-      "types/*": ["./types/*"],
+      "types/*": ["app/types/*"],
+      "components/*": ["app/components/*"],
     }
   },
   "extends": "expo/tsconfig.base"
